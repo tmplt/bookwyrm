@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import sys
+import libgen
+
+def main(argv):
+    if len(argv) > 1:
+        print("Usage: %s" % argv[0])
+        return 1
+
+    r = libgen.results()
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
