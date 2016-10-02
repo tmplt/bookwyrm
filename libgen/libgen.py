@@ -2,6 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup as bs
+from .item import item
 
 mirrors = (
     'libgen.io',
@@ -32,6 +33,7 @@ def _fetch_results(query):
         # The search result table gives every book an integer ID,
         # so we only want those table rows.
         if row.find('td').text.isdigit():
+            #result = item(row)
             results.append(row)
 
     return results
