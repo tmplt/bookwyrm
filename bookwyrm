@@ -2,14 +2,19 @@
 # coding: utf-8
 
 import sys
+import argparse
 import libgen
 
 def main(argv):
-    if len(argv) > 1:
-        print("Usage: %s" % argv[0])
-        return 1
+    parser = argparse.ArgumentParser(description='Find some books and download them.')
+    parser.add_argument('query', metavar='query',
+            help='the search query for Library Genesis')
 
-    r = libgen.results()
+    args = parser.parse_args()
+    query = args.query
+
+    r = libgen.search(query)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
+

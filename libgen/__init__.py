@@ -15,8 +15,6 @@ mirrors = (
 
 def _fetch_results(query):
     """Returns a list of search results."""
-    #query = {'req': 'temeraire'}
-    query = {'req': 'we were soldiers once'}
 
     r = None
     for mirror in mirrors:
@@ -33,6 +31,8 @@ def _fetch_results(query):
 
     results = []
     for row in soup.find_all('tr'):
+        # The search result table gives every book an integer ID,
+        # so we only want those table rows.
         if row.find('td').text.isdigit():
             results.append(row)
 
@@ -44,7 +44,8 @@ def _format_results():
     # which we can iterate over?
     pass
 
-def results():
-    query = {'req': 'temeraire'}
+def search(query):
+    query = {'req': query}
     found = _fetch_results(query)
     print("I found %d result(s)!" % len(found))
+
