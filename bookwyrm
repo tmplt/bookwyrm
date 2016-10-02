@@ -5,6 +5,24 @@ import sys
 import argparse
 import libgen
 
+# Allow these to be set when initializing?
+# Read from config/args for that?
+sources = (
+    'libgen',
+
+# Not yet implemented sources:
+#    'sci-hub',
+#    'irc',
+#    'torrents'
+)
+
+def search(source, query):
+    if source == "libgen":
+        return libgen.search(query)
+    else:
+        print("Unsupported source.")
+        sys.exit(2)
+
 def main(argv):
     parser = argparse.ArgumentParser(description='Find some books and download them.')
     parser.add_argument('query', metavar='query',
@@ -13,7 +31,8 @@ def main(argv):
     args = parser.parse_args()
     query = args.query
 
-    r = libgen.search(query)
+    for source in sources:
+        r = search(source, query)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
