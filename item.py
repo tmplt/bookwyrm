@@ -23,6 +23,9 @@ class item(object):
     isbn = None
     doi = None
 
+    def __new__(self, args):
+        # check for <class 'argparse.Namespace'>
+
     def __new__(self, html_row):
         if html_row.__name__ != "Tag":
             raise NotImplementedError('items can only be initialized from BeautifulSoup tags')

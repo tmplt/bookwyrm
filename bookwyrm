@@ -25,14 +25,21 @@ def search(source, query):
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Find some books and download them.')
-    parser.add_argument('query', metavar='query',
-            help='the search query for Library Genesis')
+
+    parser.add_argument('-a', '--author', required=False)
+    parser.add_argument('-t', '--title', required=False)
+    parser.add_argument('-p', '--publisher', required=False)
+    parser.add_argument('-y', '--year', type=int, required=False)
+    parser.add_argument('-l', '--lang' ,'--language', required=False)
+    parser.add_argument('-e', '--ext', '--extension', required=False, help='Filename extension without period')
+    parser.add_argument('-i', '--isbn', required=False)
+    parser.add_argument('-d', '--doi', required=False)
 
     args = parser.parse_args()
-    query = args.query
-
-    for source in sources:
-        r = search(source, query)
+#    query = args.query
+#
+#    for source in sources:
+#        r = search(source, query)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
