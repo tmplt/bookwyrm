@@ -36,11 +36,15 @@ def _fetch_results(query):
             #result = item(row)
             results.append(row)
 
+#       for row in soup.find_all('tr'):
+#           item = item(row)
+#
+#           for item in results:
+#               if item.name = 
+
     return results
 
-def _format_results():
-    # format the result of _fetch_results into a PoD
-    # which we can iterate over?
+def get_entity(html_row, name):
     pass
 
 def search(query):

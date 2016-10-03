@@ -4,6 +4,17 @@ from enum import Enum, unique
 from bs4 import BeautifulSoup as bs
 import libgen
 
+entities = (
+    'author',
+    'title',
+    'year',
+    'language',
+    'size',
+    'ext',
+    'isbn',
+    'doi'
+)
+
 # Use <https://docs.python.org/3/library/enum.html#orderedenum>
 # for specified priority?
 @unique
@@ -23,8 +34,11 @@ class item(object):
     isbn = None
     doi = None
 
+    # lets not do this.
+    # lets instead only use this class for found items
     def __new__(self, args):
         # check for <class 'argparse.Namespace'>
+        pass
 
     def __new__(self, html_row):
         if html_row.__name__ != "Tag":
