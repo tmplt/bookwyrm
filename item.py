@@ -44,6 +44,8 @@ class item(object):
         if html_row.__name__ != "Tag":
             raise NotImplementedError('items can only be initialized from BeautifulSoup tags')
 
+        #libgen.get_entities(html_row, self) ?
+
         # do the thing with bs
         pass
 
