@@ -2,7 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup as bs
-from .item import item
+import item
 
 mirrors = (
     'libgen.io',
