@@ -1,8 +1,7 @@
 # coding: utf-8
 
 from enum import Enum, unique
-from bs4 import BeautifulSoup as bs
-import libgen
+import argparse
 
 entities = (
     'author',
@@ -24,31 +23,21 @@ class ext(Enum):
     djvu = 3
 
 class item(object):
-    author = None
-    title = None
-    publisher = None
-    year = None
-    language = None
-    size = None
-    ext = None
-    isbn = None
-    doi = None
+    """A class to hold att data for a book or paper."""
 
-    # lets not do this.
-    # lets instead only use this class for found items
-    def __new__(self, args):
-        # check for <class 'argparse.Namespace'>
-        pass
+    def __init__(self, args):
+        if not isinstance(args, argparse.Namespace):
+            raise NotImplementedError('items can only be initialized from argparse.Namespace')
 
-    def __new__(self, html_row):
-        if html_row.__name__ != "Tag":
-            raise NotImplementedError('items can only be initialized from BeautifulSoup tags')
+        self.author = args.author
+        self.title = args.title
+        self.publisher = args.publisher
+        self.year = args.year
+        self.lang = args.language
+        self.isbn = args.isbn
+        self.doi = args.doi
+        self.ext = args.extension
 
-        #libgen.get_entities(html_row, self) ?
-
-        # do the thing with bs
-        pass
-
-    # Do we want pages and ID too?
-
-
+    def __str__(self):
+        return self.author
+        #return "%s, %s, %s" % (self.author, self.title, self.year)
