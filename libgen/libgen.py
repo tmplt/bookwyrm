@@ -86,6 +86,8 @@ def _get_publisher(html_row):
     pass
 
 def _get_entity(html_row, column):
+    # does this actually work, since we are
+    # grabbing a _column_?
     return html_row.find_all('td')[column]
 
 def search(query):
