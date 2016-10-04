@@ -44,6 +44,13 @@ def _fetch_results(query):
 
     return results
 
+def _get_author(html_row):
+    entry = html_row.find('a')
+    return entry.text if entry else None
+
+def _get_title(html_row):
+    pass
+
 def get_entity(html_row, name):
     pass
 
