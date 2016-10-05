@@ -26,6 +26,7 @@ class column(IntEnum):
     id = 0
     author = 1
     title = 2
+    isbns = 2
     publisher = 3
     year = 4
     # skip page count column,
@@ -71,6 +72,13 @@ class fetcher(object):
 
         author = soup.text.strip()
         return author if author else None
+
+    def _get_isbn(self, index):
+        soup = self._get_column(index, column.isbns)
+        soup = soup.find('br').find('i')
+
+        isbn = soup.text.split(', ')
+        return isbn if isbn else None
 
     def _get_title(self, index):
         soup = self._get_column(index, column.title)
@@ -125,6 +133,8 @@ class fetcher(object):
 
     def debugprint(self):
         print("I found %d result(s)!" % len(self.items))
+        print("The item has %d isbn numbers" % len(self._get_isbn(0)))
+        print("----------------------------")
         print("The author is:    %s" % self._get_author(0))
         print("The title is:     %s" % self._get_title(0))
         print("The publisher is: %s" % self._get_publisher(0))
