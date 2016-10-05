@@ -35,7 +35,7 @@ class column(IntEnum):
     ext = 8
     mirrors = 9
 
-class fetcher(object):
+class _fetcher(object):
     items = []
 
     # Note that any dictionary keys whose value is None
@@ -145,6 +145,6 @@ class fetcher(object):
 def search(query):
     # debugging and testing
     query = {'req': query.title}
-    f = fetcher(query)
+    f = _fetcher(query)
     f.debugprint()
 
