@@ -38,6 +38,6 @@ class item(object):
         self.doi = args.doi
         self.ext = args.extension
 
-    def __str__(self):
-        return self.author
+#    def __str__(self):
+#        return self.author
         #return "%s, %s, %s" % (self.author, self.title, self.year)
