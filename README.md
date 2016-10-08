@@ -24,6 +24,7 @@ Not sure yet.
 ## Planned supported sources
 ### High priority
 * Library Genesis
+* Bookzz and Booksc
 * Sci-Hub
 * IRC channels
     - #ebooks on irc-highway
