@@ -15,7 +15,8 @@ Common variable descriptions:
 import requests
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
-import item
+
+#from bookwyrm import item
 
 mirrors = (
     'libgen.io',
