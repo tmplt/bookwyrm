@@ -19,6 +19,7 @@ With this data, she'll look trough all manners of sources (see [here](#planned-s
 find some URIs, and then use an external downloader of your choice for processing.
 By default, `bookwyrm` might use `aria2c`,
 or perhaps something that all systems have at boot.
+Not sure yet.
 
 ## Planned supported sources
 ### High priority
@@ -32,5 +33,4 @@ or perhaps something that all systems have at boot.
     - Private (bB, biblotik, etc.)
     - Torrent Project
     - etc.
-### Low priority
-* ICanHazPDF
+
