@@ -12,7 +12,7 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from .libgen import search
+from .libgen import get_results
 
 """Fetch URIs from libgen.io and its mirrors"""
 

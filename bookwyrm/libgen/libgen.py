@@ -29,7 +29,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
 
-#from bookwyrm import item
+from item import Item
 
 mirrors = (
     'libgen.io',
@@ -50,7 +50,7 @@ class column(IntEnum):
     mirrors = 9
 
 class _fetcher(object):
-    items = []
+    results = []
 
     # Note that any dictionary keys whose value is None
     # will not be added to the URL's query string.
@@ -76,89 +76,105 @@ class _fetcher(object):
             # The search result table gives every item an integer ID,
             # so we only want those rows.
             if row.find('td').text.isdigit():
-                self.items.append(row)
+                self.results.append(row)
 
-    def _get_column(self, index, column):
-        return self.items[index].find_all('td')[column]
+    def __iter__(self):
+        self.current = 0
+        return self
 
-    def _get_author(self, index):
-        soup = self._get_column(index, column.author)
+    def __next__(self):
+        result = [r for n, r in enumerate(self.results) if n == self.current]
+        if not result:
+            raise StopIteration
+        self.current += 1
+        return result[0]
 
-        author = soup.text.strip()
-        return author if author else None
+def _get_column(row, column):
+    return row.find_all('td')[column]
 
-    def _get_isbn(self, index):
-        soup = self._get_column(index, column.isbns)
-        soup = soup.find('br').find('i')
+def _get_author(row):
+    soup = _get_column(row, column.author)
 
-        isbn = soup.text.split(', ')
-        return isbn if isbn else None
+    author = soup.text.strip()
+    return author if author else None
 
-    def _get_title(self, index):
-        soup = self._get_column(index, column.title)
+def _get_isbn(row):
+    soup = _get_column(row, column.isbns)
+    soup = soup.find('br').find('i')
 
-        def inner_isdigit(value):
-            try:
-                return value.isdigit()
-            except AttributeError:
-                return False
+    isbn = soup.text.split(', ')
+    return isbn if isbn else None
 
-        # A book which is part of a serie will have the same row index
-        # for the title as a book which isn't part of a series.
-        # What the two books share, however, is that the <a> tag has the
-        # book's ID (an integer) in the "id" attribute.
-        # TODO: can this be simplified by using BeautifulSoup's attributes?
-        soup = soup.find(id=inner_isdigit)
+def _get_title(row):
+    soup = _get_column(row, column.title)
 
-        # This also affects the top-most object, self.items,
-        # and since this strips ISBNs, we should probably extract those,
-        # before running this. Course, we could probably deepcopy it,
-        # but may not be necessary.
-        rmtags = ['br', 'font']
-        for x in soup(rmtags):
-            x.decompose()
+    def inner_isdigit(value):
+        try:
+            return value.isdigit()
+        except AttributeError:
+            return False
 
-        title = soup.text.strip()
-        return title if title else None
+    # A book which is part of a serie will have the same row index
+    # for the title as a book which isn't part of a series.
+    # What the two books share, however, is that the <a> tag has the
+    # book's ID (an integer) in the "id" attribute.
+    # NOTE: can this be simplified by using BeautifulSoup's attributes?
+    soup = soup.find(id=inner_isdigit)
 
-    def _get_publisher(self, index):
-        soup = self._get_column(index, column.publisher)
+    # This will affect the top-most object,
+    # and since this strips ISBNs, we should probably extract those,
+    # before running this. Course, we could probably deepcopy it,
+    # but may not be necessary.
+    rmtags = ['br', 'font']
+    for tag in soup(rmtags):
+        tag.decompose()
 
-        publisher = soup.text.strip()
-        return publisher if publisher else None
+    title = soup.text.strip()
+    return title if title else None
 
-    def _get_year(self, index):
-        soup = self._get_column(index, column.year)
+def _get_publisher(row):
+    soup = _get_column(row, column.publisher)
 
-        year = soup.text.strip()
-        return year if year else None
+    publisher = soup.text.strip()
+    return publisher if publisher else None
 
-    def _get_lang(self, index):
-        soup = self._get_column(index, column.lang)
+def _get_year(row):
+    soup = _get_column(row, column.year)
 
-        lang = soup.text.strip()
-        return lang if lang else None
+    year = soup.text.strip()
+    return year if year else None
 
-    def _get_ext(self, index):
-        soup = self._get_column(index, column.ext)
+def _get_lang(row):
+    soup = _get_column(row, column.lang)
 
-        ext = soup.text.strip()
-        return ext if ext else None
+    lang = soup.text.strip()
+    return lang if lang else None
 
-    def debugprint(self):
-        print("I found %d result(s)!" % len(self.items))
-        print("The item has %d isbn numbers" % len(self._get_isbn(0)))
-        print("----------------------------")
-        print("The author is:    %s" % self._get_author(0))
-        print("The title is:     %s" % self._get_title(0))
-        print("The publisher is: %s" % self._get_publisher(0))
-        print("The year is:      %s" % self._get_year(0))
-        print("The lang is:      %s" % self._get_lang(0))
-        print("The ext is:       %s" % self._get_ext(0))
+def _get_ext(row):
+    soup = _get_column(row, column.ext)
 
-def search(query):
+    ext = soup.text.strip()
+    return ext if ext else None
+
+def get_results(query):
     # debugging and testing
     query = {'req': query.title}
-    f = _fetcher(query)
-    f.debugprint()
+    results = _fetcher(query)
+
+    items = []
+    for result in results:
+        item = Item
+
+        item.isbn = _get_isbn(result)
+        item.author = _get_author(result)
+        item.title = _get_title(result)
+        item.publisher = _get_publisher(result)
+        item.year = _get_year(result)
+        item.lang = _get_lang(result)
+        # item.doi = _get_doi(result)
+        item.ext = _get_ext(result)
+
+        items.append(item)
+
+    return items
 

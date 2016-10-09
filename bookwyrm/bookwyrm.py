@@ -20,7 +20,7 @@ from __future__ import print_function
 import sys
 import argparse
 
-from item import item
+from item import Item
 import libgen
 
 # Allow these to be set when initializing?
@@ -74,8 +74,23 @@ def main(argv):
         parser.print_help()
         sys.exit(1)
 
-    needle = item(args)
-    libgen.search(needle)
+    wanted = Item(args)
+    found = libgen.get_results(wanted)
+
+    output = (
+        "Found %d results!" % len(found),
+        "title: %s" % found[0].title,
+        "author: %s" % found[0].author,
+        "publisher: %s" % found[0].publisher,
+        "year: %s" % found[0].year,
+        "language: %s" % found[0].lang,
+        "extension: %s" % found[0].ext
+    )
+
+    for line in output:
+        print(line)
+
+    # print all results here
 
 #    query = args.query
 #

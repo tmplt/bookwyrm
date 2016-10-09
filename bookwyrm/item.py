@@ -16,17 +16,6 @@
 from enum import Enum, unique
 import argparse
 
-entities = (
-    'author',
-    'title',
-    'year',
-    'language',
-    'size',
-    'ext',
-    'isbn',
-    'doi'
-)
-
 # Use <https://docs.python.org/3/library/enum.html#orderedenum>
 # for specified priority?
 @unique
@@ -35,13 +24,25 @@ class ext(Enum):
     epub = 2
     djvu = 3
 
-class item(object):
+class Item:
     """A class to hold att data for a book or paper."""
 
-    def __init__(self, args):
-        if not isinstance(args, argparse.Namespace):
-            raise NotImplementedError('items can only be initialized from argparse.Namespace')
+    def __init__(self, *args):
+        author = None
+        title = None
+        publisher = None
+        year = None
+        lang = None
+        isbn = None
+        doi = None
+        ext = None
 
+        if len(args) == 1 and isinstance(args[0], argparse.Namespace):
+                self.init_from_argparse(args[0])
+        elif len(args) > 1:
+            raise NotImplementedError('invalid initialization method')
+
+    def init_from_argparse(self, args):
         self.author = args.author
         self.title = args.title
         self.publisher = args.publisher
@@ -51,6 +52,3 @@ class item(object):
         self.doi = args.doi
         self.ext = args.extension
 
-#    def __str__(self):
-#        return self.author
-        #return "%s, %s, %s" % (self.author, self.title, self.year)
