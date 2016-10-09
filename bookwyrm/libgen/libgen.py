@@ -163,7 +163,7 @@ def get_results(query):
 
     items = []
     for result in results:
-        item = Item
+        item = Item()
 
         item.isbn = _get_isbn(result)
         item.author = _get_author(result)
