@@ -49,22 +49,24 @@ def main(argv):
             epilog='Licensed under the MIT license. Created by Tmplt <ttemplate223@gmail.com>. \
                     Please report any bugs to my email or at https://github.com/Tmplt/bookwyrm')
 
+    addarg = parser.add_argument
+
     # Program functionality arguments.
-    parser.add_argument('-a', '--author', required=False)
-    parser.add_argument('-t', '--title', required=False)
-    parser.add_argument('-p', '--publisher', required=False)
-    parser.add_argument('-y', '--year', type=int, required=False)
-    parser.add_argument('-l', '--language', required=False,
+    addarg('-a', '--author', required=False)
+    addarg('-t', '--title', required=False)
+    addarg('-p', '--publisher', required=False)
+    addarg('-y', '--year', type=int, required=False)
+    addarg('-l', '--language', required=False,
             help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
-    parser.add_argument('-e', '--extension', required=False,
+    addarg('-e', '--extension', required=False,
             help='Filename extension without period')
-    parser.add_argument('-i', '--isbn', required=False)
-    parser.add_argument('-d', '--doi', required=False)
+    addarg('-i', '--isbn', required=False)
+    addarg('-d', '--doi', required=False)
 
     # Utility.
-    parser.add_argument('-v', '--verbose', action='count',
+    addarg('-v', '--verbose', action='count',
             help='Set verbosity level; more \'v\'s increases the level.')
-    parser.add_argument('--version', action='version', version='%(prog)s no.ver.yet')
+    addarg('--version', action='version', version='%(prog)s no.ver.yet')
 
     args = parser.parse_args()
 
