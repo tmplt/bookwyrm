@@ -77,20 +77,20 @@ def main(argv):
     wanted = Item(args)
     found = libgen.get_results(wanted)
 
-    output = (
-        "Found %d results!" % len(found),
-        "title: %s" % found[0].title,
-        "author: %s" % found[0].author,
-        "publisher: %s" % found[0].publisher,
-        "year: %s" % found[0].year,
-        "language: %s" % found[0].lang,
-        "extension: %s" % found[0].ext
-    )
+    print("Found %d items!" % len(found))
+    for item in found:
+        output = (
+            "title: %s" % item.title,
+            "author: %s" % item.author,
+            "publisher: %s" % item.publisher,
+            "year: %s" % item.year,
+            "language: %s" % item.lang,
+            "extension: %s" % item.ext
+        )
 
-    for line in output:
-        print(line)
-
-    # print all results here
+        for line in output:
+            print(line)
+        print("--------------------")
 
 #    query = args.query
 #
