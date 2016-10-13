@@ -27,7 +27,7 @@ Not sure yet.
 * Bookzz and Booksc
 * Sci-Hub
 * IRC channels
-    - #ebooks on irc-highway
+    - <p>#ebooks on irc-highway</p>
     - etc.
 ### Medium priority
 * Various torrent sides
