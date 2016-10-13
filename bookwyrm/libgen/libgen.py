@@ -40,7 +40,7 @@ class column(IntEnum):
     id = 0
     author = 1
     title = 2
-    isbns = 2
+    isbn = 2
     publisher = 3
     year = 4
     # skip page count column,
@@ -83,6 +83,7 @@ class _fetcher(object):
         return self
 
     def __next__(self):
+        # NOTE: superfluous code, since self.results is a list already.
         result = [r for n, r in enumerate(self.results) if n == self.current]
         if not result:
             raise StopIteration
@@ -99,7 +100,7 @@ def _get_author(row):
     return author if author else None
 
 def _get_isbn(row):
-    soup = _get_column(row, column.isbns)
+    soup = _get_column(row, column.isbn)
     soup = soup.find('br').find('i')
 
     isbn = soup.text.split(', ')
