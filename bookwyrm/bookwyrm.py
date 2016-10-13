@@ -58,7 +58,8 @@ def main(argv):
     addarg('-y', '--year', type=int, required=False)
     addarg('-l', '--language', required=False,
             help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
-    addarg('-e', '--extension', required=False,
+    addarg('-e-', '--edition', type=int, required=False)
+    addarg('-E', '--extension', required=False,
             help='Filename extension without period')
     addarg('-i', '--isbn', required=False)
     addarg('-d', '--doi', required=False)
@@ -85,6 +86,7 @@ def main(argv):
             "publisher: %s" % item.publisher,
             "year: %s" % item.year,
             "language: %s" % item.lang,
+            "edition: %s" % item.edition,
             "extension: %s" % item.ext
         )
 

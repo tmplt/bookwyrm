@@ -33,7 +33,8 @@ class Item:
         publisher = None
         year = None
         lang = None
-        isbn = None
+        isbns = None
+        edition = None
         doi = None
         ext = None
 
@@ -49,6 +50,7 @@ class Item:
         self.year = args.year
         self.lang = args.language
         self.isbn = args.isbn
+        self.edition = args.edition
         self.doi = args.doi
         self.ext = args.extension
 

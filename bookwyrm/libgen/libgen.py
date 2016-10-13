@@ -28,6 +28,7 @@ Common variable descriptions:
 import requests
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
+import re
 
 from item import Item
 
@@ -41,6 +42,7 @@ class column(IntEnum):
     author = 1
     title = 2
     isbn = 2
+    edition = 2
     publisher = 3
     year = 4
     # skip page count column,
@@ -109,6 +111,26 @@ def _get_isbn(row):
     except AttributeError: # not all entries will have ISBN numbers
         return None
 
+def _get_edition(row):
+    soup = _get_column(row, column.edition)
+    soup = soup.find('i')
+
+    try:
+        edition = soup.text
+    except AttributeError:
+        return None
+
+    # Item editions are always incased in brackets,
+    # e.g. '[6ed.]', '[7th Revised Edition]',
+    if edition[0] != '[':
+        return None
+
+    # We could use substring to get the edition number,
+    # but in the case that the number is more than one digit,
+    # we regex it instead.
+    edition = re.findall(r'\d+', edition)[0]
+    return edition
+
 def _get_title(row):
     soup = _get_column(row, column.title)
 
@@ -169,13 +191,16 @@ def get_results(query):
     for result in results:
         item = Item()
 
-        item.isbn = _get_isbn(result)
+        # Existing in the same column as the title -- for which
+        # we must decompose all <i>-tags -- these must be extracted first.
+        item.edition = _get_edition(result)
+        item.isbns = _get_isbn(result)
+
         item.author = _get_author(result)
         item.title = _get_title(result)
         item.publisher = _get_publisher(result)
         item.year = _get_year(result)
         item.lang = _get_lang(result)
-        # item.doi = _get_doi(result)
         item.ext = _get_ext(result)
 
         items.append(item)
