@@ -101,6 +101,33 @@ def _get_author(row):
     author = soup.text.strip()
     return author if author else None
 
+def _get_title(row):
+    soup = _get_column(row, column.title)
+
+    def inner_isdigit(value):
+        try:
+            return value.isdigit()
+        except AttributeError:
+            return False
+
+    # A book which is part of a serie will have the same row index
+    # for the title as a book which isn't part of a series.
+    # What the two books share, however, is that the <a> tag has the
+    # book's ID (an integer) in the "id" attribute.
+    # NOTE: can this be simplified by using BeautifulSoup's attributes?
+    soup = soup.find(id=inner_isdigit)
+
+    # This will affect the top-most object,
+    # and since this strips ISBNs, we should probably extract those,
+    # before running this. Course, we could probably deepcopy it,
+    # but may not be necessary.
+    rmtags = ['br', 'font']
+    for tag in soup(rmtags):
+        tag.decompose()
+
+    title = soup.text.strip()
+    return title if title else None
+
 def _get_isbn(row):
     soup = _get_column(row, column.isbn)
     try:
@@ -130,33 +157,6 @@ def _get_edition(row):
     # we regex it instead.
     edition = re.findall(r'\d+', edition)[0]
     return edition
-
-def _get_title(row):
-    soup = _get_column(row, column.title)
-
-    def inner_isdigit(value):
-        try:
-            return value.isdigit()
-        except AttributeError:
-            return False
-
-    # A book which is part of a serie will have the same row index
-    # for the title as a book which isn't part of a series.
-    # What the two books share, however, is that the <a> tag has the
-    # book's ID (an integer) in the "id" attribute.
-    # NOTE: can this be simplified by using BeautifulSoup's attributes?
-    soup = soup.find(id=inner_isdigit)
-
-    # This will affect the top-most object,
-    # and since this strips ISBNs, we should probably extract those,
-    # before running this. Course, we could probably deepcopy it,
-    # but may not be necessary.
-    rmtags = ['br', 'font']
-    for tag in soup(rmtags):
-        tag.decompose()
-
-    title = soup.text.strip()
-    return title if title else None
 
 def _get_publisher(row):
     soup = _get_column(row, column.publisher)
