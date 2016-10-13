@@ -101,10 +101,13 @@ def _get_author(row):
 
 def _get_isbn(row):
     soup = _get_column(row, column.isbn)
-    soup = soup.find('br').find('i')
+    try:
+        soup = soup.find('br').find('i')
 
-    isbn = soup.text.split(', ')
-    return isbn if isbn else None
+        isbn = soup.text.split(', ')
+        return isbn if isbn else None
+    except AttributeError: # not all entries will have ISBN numbers
+        return None
 
 def _get_title(row):
     soup = _get_column(row, column.title)
