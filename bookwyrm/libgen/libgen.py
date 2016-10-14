@@ -152,8 +152,6 @@ def _get_edition(row):
         except AttributeError:
             return None
 
-        print(edition)
-
         # Item editions are always incased in brackets,
         # e.g. '[6ed.]', '[7th Revised Edition]',
         if edition[0] != '[':
