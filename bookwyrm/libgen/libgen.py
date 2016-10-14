@@ -144,23 +144,29 @@ def _get_isbn(row):
 
 def _get_edition(row):
     soup = _get_column(row, column.edition)
-    soup = soup.find('i')
+    soups = soup.find_all('i')
 
-    try:
-        edition = soup.text
-    except AttributeError:
-        return None
+    for soup in soups:
+        try:
+            edition = soup.text
+        except AttributeError:
+            return None
 
-    # Item editions are always incased in brackets,
-    # e.g. '[6ed.]', '[7th Revised Edition]',
-    if edition[0] != '[':
-        return None
+        print(edition)
 
-    # We could use substring to get the edition number,
-    # but in the case that the number is more than one digit,
-    # we regex it instead.
-    edition = re.findall(r'\d+', edition)[0]
-    return edition
+        # Item editions are always incased in brackets,
+        # e.g. '[6ed.]', '[7th Revised Edition]',
+        if edition[0] != '[':
+            continue
+
+        # We could use substring to get the edition number,
+        # but in the case that the number is more than one digit,
+        # we regex it instead.
+        try:
+            edition = int(re.findall(r'\d+', edition)[0])
+            return edition
+        except (TypeError, ValueError):
+            return None
 
 def _get_publisher(row):
     soup = _get_column(row, column.publisher)
