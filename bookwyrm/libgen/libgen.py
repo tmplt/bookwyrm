@@ -26,7 +26,9 @@ Common variable descriptions:
 """
 
 import requests
+import urllib
 from bs4 import BeautifulSoup as bs
+import bs4
 from enum import IntEnum
 import re
 
@@ -49,7 +51,8 @@ class column(IntEnum):
     lang = 6
     # and file size.
     ext = 8
-    mirrors = 9
+    mirrors_start = 9
+    mirrors_end = 12
 
 class _fetcher(object):
     results = []
@@ -182,6 +185,45 @@ def _get_ext(row):
     ext = soup.text.strip()
     return ext if ext else None
 
+def _get_mirrors(row):
+    """Parse all mirrors and return URIs which can be downloaded
+    with a single request."""
+
+    urls = []
+    for col in range(column.mirrors_start, column.mirrors_end):
+        soup = _get_column(row, col)
+        url = soup.find('a')['href']
+        urls.append(url)
+
+    uris = []
+    for url in urls:
+        r = requests.get(url)
+        soup = bs(r.text, 'html.parser')
+
+        if "golibgen" in url:
+            # golibgen gives us a form with three <input>-tags.
+            # Of these, we just want the ones named 'hidden' and 'hidden0',
+            # which contains the uid and file name, respectively.
+            # NOTE: there must be a better way to do this..
+            action = soup.find('form', attrs={'name': 'receive'})['action']
+
+            inputs = soup.find('input', attrs={'name': 'hidden'})
+            uid = inputs['value'] # of first tag
+
+            child = next(c for c in inputs.children if isinstance(c, bs4.element.Tag))
+            filename = child['value']
+
+            params = {
+                'hidden': uid,
+                'hidden0': filename
+            }
+            params = urllib.parse.urlencode(params)
+
+            query = ('http://golibgen.io/%s?' % action) + params
+            uris.append(query)
+
+    return uris
+
 def get_results(query):
     # debugging and testing
     query = {'req': query.title}
@@ -202,6 +244,8 @@ def get_results(query):
         item.year = _get_year(result)
         item.lang = _get_lang(result)
         item.ext = _get_ext(result)
+
+        item.mirrors = _get_mirrors(result)[0]
 
         items.append(item)
 

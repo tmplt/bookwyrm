@@ -87,7 +87,8 @@ def main(argv):
             "year: %s" % item.year,
             "language: %s" % item.lang,
             "edition: %s" % item.edition,
-            "extension: %s" % item.ext
+            "extension: %s" % item.ext,
+            "mirror: %s" % item.mirrors
         )
 
         for line in output:

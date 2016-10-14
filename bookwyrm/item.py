@@ -38,6 +38,8 @@ class Item:
         doi = None
         ext = None
 
+        mirrors = None
+
         if len(args) == 1 and isinstance(args[0], argparse.Namespace):
                 self.init_from_argparse(args[0])
         elif len(args) > 1:
