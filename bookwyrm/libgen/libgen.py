@@ -25,12 +25,13 @@ Common variable descriptions:
     html_row: a soup, but that of a html table row from libgen.
 """
 
+from bs4 import BeautifulSoup as bs
+from enum import IntEnum
+import utils
 import requests
 import urllib
-from bs4 import BeautifulSoup as bs
-import bs4
-from enum import IntEnum
 import re
+import bs4
 
 from item import Item
 
@@ -189,6 +190,9 @@ def _get_mirrors(row):
     """Parse all mirrors and return URIs which can be downloaded
     with a single request."""
 
+    # NOTE: URLs and URIs are kinda similar, so URLs are not exclusively
+    # used for http(s) locations. Make up a better variable name.
+
     urls = []
     for col in range(column.mirrors_start, column.mirrors_end):
         soup = _get_column(row, col)
@@ -197,30 +201,48 @@ def _get_mirrors(row):
 
     uris = []
     for url in urls:
-        r = requests.get(url)
-        soup = bs(r.text, 'html.parser')
+        if url.startswith('http'):
+            r = requests.get(url)
+            soup = bs(r.text, 'html.parser')
 
-        if "golibgen" in url:
-            # golibgen gives us a form with three <input>-tags.
-            # Of these, we just want the ones named 'hidden' and 'hidden0',
-            # which contains the uid and file name, respectively.
-            # NOTE: there must be a better way to do this..
-            action = soup.find('form', attrs={'name': 'receive'})['action']
+            if "golibgen" in url:
+                # golibgen gives us a form with three <input>-tags.
+                # Of these, we just want the ones named 'hidden' and 'hidden0',
+                # which contains the uid and file name, respectively.
+                # NOTE: there must be a better way to do this..
+                action = soup.find('form', attrs={'name': 'receive'})
+                action = action['action']
 
-            inputs = soup.find('input', attrs={'name': 'hidden'})
-            uid = inputs['value'] # of first tag
+                inputs = soup.find('input', attrs={'name': 'hidden'})
+                uid = inputs['value'] # of first tag
 
-            child = next(c for c in inputs.children if isinstance(c, bs4.element.Tag))
-            filename = child['value']
+                child = next(c for c in inputs.children if isinstance(c, bs4.element.Tag))
+                filename = child['value']
 
-            params = {
-                'hidden': uid,
-                'hidden0': filename
-            }
-            params = urllib.parse.urlencode(params)
+                params = {
+                    'hidden': uid,
+                    'hidden0': filename
+                }
+                params = urllib.parse.urlencode(params)
 
-            query = ('http://golibgen.io/%s?' % action) + params
-            uris.append(query)
+                # NOTE: HTTP refer(r)er "http://golibgen.io/" required to GET this.
+                url = ('http://golibgen.io/%s?' % action) + params
+                uris.append(url)
+
+                continue
+
+        elif url.startswith("/ads"):
+            # The query contains an identifier we can use to
+            # get the .torrent-file directly; skipping a request.
+            o = urllib.parse.urlparse(url)
+            ident_attr = o.query # includes attribute name
+
+            torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % ident_attr
+            r = requests.get(torrent_url)
+            magnet = utils.magnet_from_torrent(r.content)
+            uris.append(magnet)
+
+            continue
 
     return uris
 
@@ -245,7 +267,7 @@ def get_results(query):
         item.lang = _get_lang(result)
         item.ext = _get_ext(result)
 
-        item.mirrors = _get_mirrors(result)[0]
+        item.mirrors = _get_mirrors(result)[1]
 
         items.append(item)
 

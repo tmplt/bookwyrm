@@ -47,7 +47,8 @@ setup(
     install_requires=[
         'argparse',
         'requests',
-        'urllib3'
+        'urllib3',
+        'bencodepy'
     ] + (['enum34>=1.0.4'] if sys.version_info < (3, 4, 0) else []),
 
     classifiers=[
