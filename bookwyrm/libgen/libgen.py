@@ -32,6 +32,7 @@ import requests
 import urllib
 import re
 import bs4
+import bencodepy
 
 from item import Item
 
@@ -243,8 +244,12 @@ def _get_mirrors(row):
 
             torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % ident_attr
             r = requests.get(torrent_url)
-            magnet = utils.magnet_from_torrent(r.content)
-            uris.append(magnet)
+
+            try:
+                magnet = utils.magnet_from_torrent(r.content)
+                uris.append(magnet)
+            except bencodepy.DecodingError:
+                pass
 
             continue
 
