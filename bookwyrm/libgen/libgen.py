@@ -225,8 +225,8 @@ def _get_mirrors(row):
                 #
                 # The <form> looks like the following:
                 # <form name="receive" method="GET" onSubmit="this.submit.disabled=true;search.push.disabled=true;" action="noleech1.php">
-                #    <input  name='hidden'  type='hidden'  value=item-UID-here>
-                #    <input  name="hidden0" type="hidden"  value="item file name here">
+                #     <input  name='hidden'  type='hidden'  value=item-UID-here>
+                #     <input  name="hidden0" type="hidden"  value="item file name here">
                 # </form>
 
                 action_tag = soup.find('form', attrs={'name': 'receive'})
@@ -246,6 +246,26 @@ def _get_mirrors(row):
 
                 # NOTE: HTTP refer(r)er "http://golibgen.io/" required to GET this.
                 url = ('http://golibgen.io/%s?' % action) + params
+                uris.append(url)
+
+                continue
+
+            if "bookzz" in url:
+                # Every item is held within in a <div class="actionsHolder">,
+                # but since this search is for an exact match, we will only ever
+                # get one result.
+                #
+                # The <div> looks like the following (with useless data removed):
+                # <div class="actionsHolder">
+                #     <div style="float:left;">
+                #         <a class="ddownload color2 dnthandler" href="http://bookzz.org/dl/1014779/9a9ab2" />
+                #     </div>
+                # </div>
+
+                div = soup.find(attrs={'class': 'actionsHolder'})
+
+                # NOTE: HTTP refer(r)er "http://bookzz.org/" required to GET this.
+                url = div.div.a['href']
                 uris.append(url)
 
                 continue
@@ -291,8 +311,7 @@ def get_results(query):
         item.lang = _get_lang(result)
         item.ext = _get_ext(result)
 
-        # item.mirrors = _get_mirrors(result)[1]
-        item.mirrors = None
+        item.mirrors = _get_mirrors(result)
 
         items.append(item)
 
