@@ -69,7 +69,7 @@ class _fetcher(object):
             r = requests.get(url % mirror, params=query)
             if r.status_code == requests.codes.ok:
                 # Don't bother with the other mirrors if
-                # we already have what we wanted.
+                # we already have what we want.
                 break
 
         # If not 200, raises requests.exceptions.HTTPError
@@ -115,17 +115,17 @@ def _get_title(row):
         except AttributeError:
             return False
 
-    # A book which is part of a serie will have the same row index
-    # for the title as a book which isn't part of a series.
-    # What the two books share, however, is that the <a> tag has the
-    # book's ID (an integer) in the "id" attribute.
-    # NOTE: can this be simplified by using BeautifulSoup's attributes?
+    # Book series name, its title, the edition of it and all of its
+    # ISBN numbers share the same column. Luckily, the title's tag will
+    # have an 'id'-attribute containing a digit, differing it from the
+    # other tags in the column; we search for that tag.
+    #
+    # NOTE: the 'id'-attribute only appears where the title text is.
+    #       Perhaps we don't need to verify it is a digit?
     soup = soup.find(id=inner_isdigit)
 
-    # This will affect the top-most object,
-    # and since this strips ISBNs, we should probably extract those,
-    # before running this. Course, we could probably deepcopy it,
-    # but may not be necessary.
+    # The found tags are references, so the top-most object will be affected,
+    # and since this strips ISBNs, we will extract those before running this.
     rmtags = ['br', 'font']
     for tag in soup(rmtags):
         tag.decompose()
@@ -154,7 +154,7 @@ def _get_edition(row):
             return None
 
         # Item editions are always incased in brackets,
-        # e.g. '[6ed.]', '[7th Revised Edition]',
+        # e.g. '[6ed.]', '[7th Revised Edition]'.
         if edition[0] != '[':
             continue
 
@@ -192,8 +192,10 @@ def _get_ext(row):
     return ext if ext else None
 
 def _get_mirrors(row):
-    """Parse all mirrors and return URIs which can be downloaded
-    with a single request."""
+    """
+    Parse all mirrors and return URIs which can be downloaded
+    with a single request or less.
+    """
 
     # NOTE: URLs and URIs are kinda similar, so URLs are not exclusively
     # used for http(s) locations. Make up a better variable name.
@@ -211,16 +213,30 @@ def _get_mirrors(row):
             soup = bs(r.text, 'html.parser')
 
             if "golibgen" in url:
-                # golibgen gives us a form with three <input>-tags.
-                # Of these, we just want the ones named 'hidden' and 'hidden0',
-                # which contains the uid and file name, respectively.
-                # NOTE: there must be a better way to do this..
-                action = soup.find('form', attrs={'name': 'receive'})
-                action = action['action']
+                # To retrieve an item from golibgen, we must construct a query
+                # which contains the item's unique ID and it's file name.
+                #
+                # Golibgen gives us a <form> which contains all this data.
+                # the uid can be found in the 'hidden' attribute and the file
+                # name in 'hidden0'.
+                #
+                # While the .php-script found in the 'action' attribute seems to be
+                # "noleech1.php" for all items, the name seems temporary, so we extract that too.
+                #
+                # The <form> looks like the following:
+                # <form name="receive" method="GET" onSubmit="this.submit.disabled=true;search.push.disabled=true;" action="noleech1.php">
+                #    <input  name='hidden'  type='hidden'  value=item-UID-here>
+                #    <input  name="hidden0" type="hidden"  value="item file name here">
+                # </form>
+                # NOTE: there must be a better way.
+
+                action_tag = soup.find('form', attrs={'name': 'receive'})
+                action = action_tag['action']
 
                 inputs = soup.find('input', attrs={'name': 'hidden'})
-                uid = inputs['value'] # of first tag
+                uid = inputs['value'] # 'value' of the first <input>
 
+                # Get the second <input>.
                 child = next(c for c in inputs.children if isinstance(c, bs4.element.Tag))
                 filename = child['value']
 
@@ -237,10 +253,11 @@ def _get_mirrors(row):
                 continue
 
         elif url.startswith("/ads"):
-            # The query contains an identifier we can use to
-            # get the .torrent-file directly; skipping a request.
+            # The relative link contains but one parameter which happens to
+            # be the md5 of the item. To retrieve the .torrent-file, we only need
+            # this.
             o = urllib.parse.urlparse(url)
-            ident_attr = o.query # includes attribute name
+            ident_attr = o.query
 
             torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % ident_attr
             r = requests.get(torrent_url)
@@ -276,7 +293,8 @@ def get_results(query):
         item.lang = _get_lang(result)
         item.ext = _get_ext(result)
 
-        item.mirrors = _get_mirrors(result)[1]
+        # item.mirrors = _get_mirrors(result)[1]
+        item.mirrors = None
 
         items.append(item)
 
