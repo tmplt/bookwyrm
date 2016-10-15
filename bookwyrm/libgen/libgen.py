@@ -228,7 +228,6 @@ def _get_mirrors(row):
                 #    <input  name='hidden'  type='hidden'  value=item-UID-here>
                 #    <input  name="hidden0" type="hidden"  value="item file name here">
                 # </form>
-                # NOTE: there must be a better way.
 
                 action_tag = soup.find('form', attrs={'name': 'receive'})
                 action = action_tag['action']
@@ -236,8 +235,7 @@ def _get_mirrors(row):
                 inputs = soup.find('input', attrs={'name': 'hidden'})
                 uid = inputs['value'] # 'value' of the first <input>
 
-                # Get the second <input>.
-                child = next(c for c in inputs.children if isinstance(c, bs4.element.Tag))
+                child = inputs.input
                 filename = child['value']
 
                 params = {
