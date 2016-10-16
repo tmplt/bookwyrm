@@ -22,7 +22,6 @@ and extract the data we want in their respective _get_* function.
 
 Common variable descriptions:
     soup: a BeautifulSoup.Resultset which we are gonna parse.
-    html_row: a soup, but that of a html table row from libgen.
 """
 
 from bs4 import BeautifulSoup as bs
@@ -197,16 +196,13 @@ def _get_mirrors(row):
     with a single request or less.
     """
 
-    # NOTE: URLs and URIs are kinda similar, so URLs are not exclusively
-    # used for http(s) locations. Make up a better variable name.
-
     urls = []
     for col in range(column.mirrors_start, column.mirrors_end):
         soup = _get_column(row, col)
         url = soup.find('a')['href']
         urls.append(url)
 
-    uris = []
+    mirrors = []
     for url in urls:
         if url.startswith('http'):
             r = requests.get(url)
@@ -246,7 +242,7 @@ def _get_mirrors(row):
 
                 # NOTE: HTTP refer(r)er "http://golibgen.io/" required to GET this.
                 url = ('http://golibgen.io/%s?' % action) + params
-                uris.append(url)
+                mirrors.append(url)
 
                 continue
 
@@ -266,7 +262,7 @@ def _get_mirrors(row):
 
                 # NOTE: HTTP refer(r)er "http://bookzz.org/" required to GET this.
                 url = div.div.a['href']
-                uris.append(url)
+                mirrors.append(url)
 
                 continue
 
@@ -275,14 +271,14 @@ def _get_mirrors(row):
             # be the md5 of the item. To retrieve the .torrent-file, we only need
             # this.
             o = urllib.parse.urlparse(url)
-            ident_attr = o.query
+            md5_attr = o.query
 
-            torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % ident_attr
+            torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % md5_attr
             r = requests.get(torrent_url)
 
             try:
                 magnet = utils.magnet_from_torrent(r.content)
-                uris.append(magnet)
+                mirrors.append(magnet)
             except bencodepy.DecodingError:
                 pass
 
