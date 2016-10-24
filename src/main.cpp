@@ -17,18 +17,22 @@
 #include <iostream>
 #include <string>
 #include "../3rdparty/cxxopts.hpp"
+#include "../3rdparty/fmt/printf.h"
 
 int main(int argc, char *argv[])
 {
     try {
-        cxxopts::Options options(argv[0], " - find books and papers online and download them.");
+        cxxopts::Options options(argv[0], "find books and papers online and download them.");
 
         bool apple = false;
 
         options.add_options()
-            ("b,bob", "Bob", cxxopts::value<bool>(apple))
-            ("i,input", "Input", cxxopts::value<std::string>())
-            //("a,author", cxxopts::value<bool>());
+            ("v,verbose", "Verbose mode")
+            ("d,debug", "Enable debugging")
+            ("t,test", "test flag")
+            /* ("b,bob", "Bob", cxxopts::value<bool>(apple)) */
+            /* ("i,input", "Input", cxxopts::value<std::string>()) */
+            /* ("a,author", cxxopts::value<bool>()) */
             /* ("t,title", cxxopts::value<std::string>()) */
             /* ("p,publisher", cxxopts::value<std::string>()) */
             /* ("y,year", cxxopts::value<std::string>()) */
@@ -42,9 +46,15 @@ int main(int argc, char *argv[])
         ;
 
         options.parse(argc, argv);
+
+        if (options["debug"].as<bool>())
+            std::cout << "yeah" << std::endl;
+
     }
-    catch(...) {
-        std::cout << "oops" << std::endl;
+    catch(cxxopts::option_not_exists_exception &e) {
+        fmt::printf("%s: %s", argv[0], e.what());
     }
+
+    return 0;
 }
 
