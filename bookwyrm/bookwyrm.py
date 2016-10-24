@@ -45,9 +45,7 @@ def main(argv):
     parser = argparse.ArgumentParser(
             allow_abbrev=False,
             description='%(prog)s - find books and papers online and download them. \
-                         When called with no arguments, bookwyrm prints this screen and exits.',
-            epilog='Licensed under the MIT license. Created by Tmplt <ttemplate223@gmail.com>. \
-                    Please report any bugs to my email or at https://github.com/Tmplt/bookwyrm')
+                         When called with no arguments, bookwyrm prints this screen and exits.')
 
     addarg = parser.add_argument
 
@@ -58,7 +56,7 @@ def main(argv):
     addarg('-y', '--year', type=int, required=False)
     addarg('-l', '--language', required=False,
             help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
-    addarg('-e-', '--edition', type=int, required=False)
+    addarg('-e', '--edition', type=int, required=False)
     addarg('-E', '--extension', required=False,
             help='Filename extension without period')
     addarg('-i', '--isbn', required=False)
@@ -73,7 +71,7 @@ def main(argv):
 
     if len(argv) < 2:
         parser.print_help()
-        sys.exit(1)
+        sys.exit(0)
 
     wanted = Item(args)
     found = libgen.get_results(wanted)
