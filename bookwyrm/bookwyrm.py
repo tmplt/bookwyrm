@@ -61,6 +61,7 @@ def main(argv):
             help='Filename extension without period')
     addarg('-i', '--isbn')
     addarg('-d', '--doi')
+    addarg('-u', '--url')
 
     # Utility.
     addarg('-v', '--verbose', action='count',
