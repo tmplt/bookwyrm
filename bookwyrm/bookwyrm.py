@@ -50,17 +50,17 @@ def main(argv):
     addarg = parser.add_argument
 
     # Program functionality arguments.
-    addarg('-a', '--author', required=False)
-    addarg('-t', '--title', required=False)
-    addarg('-p', '--publisher', required=False)
-    addarg('-y', '--year', type=int, required=False)
-    addarg('-l', '--language', required=False,
+    addarg('-a', '--author')
+    addarg('-t', '--title')
+    addarg('-p', '--publisher')
+    addarg('-y', '--year', type=int)
+    addarg('-l', '--language',
             help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
-    addarg('-e', '--edition', type=int, required=False)
-    addarg('-E', '--extension', required=False,
+    addarg('-e', '--edition', type=int)
+    addarg('-E', '--extension',
             help='Filename extension without period')
-    addarg('-i', '--isbn', required=False)
-    addarg('-d', '--doi', required=False)
+    addarg('-i', '--isbn')
+    addarg('-d', '--doi')
 
     # Utility.
     addarg('-v', '--verbose', action='count',
