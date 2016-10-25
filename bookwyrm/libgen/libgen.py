@@ -307,8 +307,6 @@ def search(query):
         item.lang = _get_lang(result)
         item.ext = _get_ext(result)
 
-        item.mirrors = _get_mirrors(result)
-
         items.append(item)
 
     return items

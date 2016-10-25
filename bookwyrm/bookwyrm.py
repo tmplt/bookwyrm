@@ -87,7 +87,6 @@ def main(argv):
             "language: %s" % item.lang,
             "edition: %s" % item.edition,
             "extension: %s" % item.ext,
-            "mirror: %s" % str(item.mirrors)
         )
 
         for line in output:
