@@ -42,9 +42,9 @@ mirrors = (
 
 class column(IntEnum):
     id = 0
-    author = 1
+    authors = 1
     title = 2
-    isbn = 2
+    isbns = 2
     edition = 2
     publisher = 3
     year = 4
@@ -99,8 +99,8 @@ class _fetcher(object):
 def _get_column(row, column):
     return row.find_all('td')[column]
 
-def _get_author(row):
-    soup = _get_column(row, column.author)
+def _get_authors(row):
+    soup = _get_column(row, column.authors)
 
     author = soup.text.strip()
     return author if author else None
@@ -132,13 +132,13 @@ def _get_title(row):
     title = soup.text.strip()
     return title if title else None
 
-def _get_isbn(row):
-    soup = _get_column(row, column.isbn)
+def _get_isbns(row):
+    soup = _get_column(row, column.isbns)
     try:
         soup = soup.find('br').find('i')
 
-        isbn = soup.text.split(', ')
-        return isbn if isbn else None
+        isbns = soup.text.split(', ')
+        return isbns if isbns else None
     except AttributeError: # not all entries will have ISBN numbers
         return None
 
@@ -286,7 +286,7 @@ def _get_mirrors(row):
 
     return uris
 
-def get_results(query):
+def search(query):
     # debugging and testing
     query = {'req': query.title}
     results = _fetcher(query)
@@ -298,9 +298,9 @@ def get_results(query):
         # Existing in the same column as the title -- for which
         # we must decompose all <i>-tags -- these must be extracted first.
         item.edition = _get_edition(result)
-        item.isbns = _get_isbn(result)
+        item.isbns = _get_isbns(result)
 
-        item.author = _get_author(result)
+        item.authors = _get_authors(result)
         item.title = _get_title(result)
         item.publisher = _get_publisher(result)
         item.year = _get_year(result)

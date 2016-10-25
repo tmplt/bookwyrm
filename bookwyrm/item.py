@@ -28,12 +28,12 @@ class Item:
     """A class to hold att data for a book or paper."""
 
     def __init__(self, *args):
-        author = None
+        authors = None
         title = None
         publisher = None
         year = None
         lang = None
-        isbns = None
+        isbn = None
         edition = None
         doi = None
         ext = None
@@ -46,7 +46,7 @@ class Item:
             raise NotImplementedError('invalid initialization method')
 
     def init_from_argparse(self, args):
-        self.author = args.author
+        self.authors = args.author
         self.title = args.title
         self.publisher = args.publisher
         self.year = args.year
