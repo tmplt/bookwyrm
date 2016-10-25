@@ -202,7 +202,7 @@ def _get_lang(row):
     soup = _get_column(row, column.lang)
 
     lang = soup.text.strip()
-    return lang if lang else None
+    return lang.lower() if lang else None
 
 def _get_ext(row):
     soup = _get_column(row, column.ext)
