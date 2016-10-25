@@ -102,8 +102,13 @@ def _get_column(row, column):
 def _get_authors(row):
     soup = _get_column(row, column.authors)
 
-    author = soup.text.strip()
-    return author if author else None
+    delim = r'[,;]' # NOTE: 'and' is also used, it seems
+    authors = re.split(delim, soup.text.strip())
+
+    # NOTE: can we strip with re.split() instead?
+    authors = [author.strip() for author in authors]
+
+    return authors if authors else None
 
 def _get_title(row):
     soup = _get_column(row, column.title)

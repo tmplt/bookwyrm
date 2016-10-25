@@ -81,7 +81,7 @@ def main(argv):
     for item in found:
         output = (
             "title: %s" % item.title,
-            "author: %s" % item.author,
+            "author: %s" % str(item.authors),
             "publisher: %s" % item.publisher,
             "year: %s" % item.year,
             "language: %s" % item.lang,
