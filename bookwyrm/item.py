@@ -16,6 +16,12 @@
 from enum import Enum, unique
 import argparse
 
+try:
+    from fuzzywuzzy import fuzz
+    fuzzy = True
+except ImportError:
+    fuzzy = False
+
 # Use <https://docs.python.org/3/library/enum.html#orderedenum>
 # for specified priority?
 @unique
@@ -50,9 +56,29 @@ class Item:
         self.title = args.title
         self.publisher = args.publisher
         self.year = args.year
-        self.lang = args.language
+        self.lang = args.language.lower() if args.language else None
         self.isbn = args.isbn
         self.edition = args.edition
         self.doi = args.doi
         self.ext = args.extension
+
+    def __eq__(self, wanted):
+        if ((wanted.year and self.year != wanted.year) or
+                (wanted.lang and self.lang != wanted.lang) or
+                (wanted.edition and self.edition != wanted.edition) or
+                (wanted.doi and self.doi != wanted.doi) or
+                (wanted.ext and self.ext != wanted.ext)):
+            return False
+
+        if (wanted.isbn and wanted.isbn not in self.isbn):
+            return False
+
+        if wanted.authors:
+            if fuzzy:
+                ratio = 0
+                for author in self.authors:
+                    ratio = fuzz.partial_ratio(author, wanted.authors)
+                return ratio == 100
+
+        return True
 

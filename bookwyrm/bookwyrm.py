@@ -34,12 +34,22 @@ sources = (
 #    'torrents'
 )
 
-def search(source, query):
+def search(item, source):
+    results = []
     if source == "libgen":
-        return libgen.search(query)
-    else:
-        print("Unsupported source.")
-        sys.exit(2)
+        results += libgen.search(item)
+
+    results = filter_unwanted(item, results)
+
+    return results
+
+def filter_unwanted(wanted, results):
+    new = []
+    for item in results:
+        if item == wanted:
+            new.append(item)
+
+    return new
 
 def main(argv):
     parser = argparse.ArgumentParser(
@@ -75,9 +85,12 @@ def main(argv):
         sys.exit(0)
 
     wanted = Item(args)
-    found = libgen.get_results(wanted)
 
-    print("Found %d items!" % len(found))
+    found = []
+    for source in sources:
+        found += search(wanted, source)
+
+    print("Found %d items!\n" % len(found))
     for item in found:
         output = (
             "title: %s" % item.title,
