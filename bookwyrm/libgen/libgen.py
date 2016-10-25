@@ -284,7 +284,7 @@ def _get_mirrors(row):
 
             continue
 
-    return uris
+    return mirrors
 
 def search(query):
     # debugging and testing
