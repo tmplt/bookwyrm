@@ -62,21 +62,33 @@ class _fetcher(object):
     # will not be added to the URL's query string.
     def __init__(self, query):
         r = None
-        url = "http://%s/search.php"
+        filename = "/tmp/bookwyrm-%s" % query['req']
 
-        for mirror in mirrors:
-            r = requests.get(url % mirror, params=query)
-            if r.status_code == requests.codes.ok:
-                # Don't bother with the other mirrors if
-                # we already have what we want.
-                break
+        try:
+            with open(filename, 'r') as f:
+                r = f.read()
+            soup = bs(r, 'html.parser')
 
-        # If not 200, raises requests.exceptions.HTTPError
-        # (or somethig else?)
-        # TODO: catch this!
-        r.raise_for_status()
+        except IOError:
+            url = "http://%s/search.php"
 
-        soup = bs(r.text, 'html.parser')
+            for mirror in mirrors:
+                r = requests.get(url % mirror, params=query)
+                if r.status_code == requests.codes.ok:
+                    # Don't bother with the other mirrors if
+                    # we already have what we want.
+                    print("fetched from libgen!")
+                    break
+
+            # If not 200, raises requests.exceptions.HTTPError
+            # (or somethig else?)
+            # TODO: catch this!
+            r.raise_for_status()
+
+            with open(filename, 'w+') as f:
+                f.write(r.text)
+
+            soup = bs(r.text, 'html.parser')
 
         for row in soup.find_all('tr'):
             # The search result table gives every item an integer ID,
