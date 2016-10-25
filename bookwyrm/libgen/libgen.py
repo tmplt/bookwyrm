@@ -192,8 +192,11 @@ def _get_publisher(row):
 def _get_year(row):
     soup = _get_column(row, column.year)
 
-    year = soup.text.strip()
-    return year if year else None
+    try:
+        year = int(soup.text.strip())
+    except ValueError:
+        return None
+    return year
 
 def _get_lang(row):
     soup = _get_column(row, column.lang)
