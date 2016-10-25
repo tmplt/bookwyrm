@@ -288,7 +288,11 @@ def _get_mirrors(row):
 
 def search(query):
     # debugging and testing
-    query = {'req': query.title}
+    query = {
+        'req': query.title,
+        'view': 'simple'
+    }
+
     results = _fetcher(query)
 
     items = []
