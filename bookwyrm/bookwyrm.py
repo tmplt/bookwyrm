@@ -79,17 +79,19 @@ def main(argv):
     addarg('-p', '--publisher')
     addarg('-y', '--year', type=int)
     addarg('-l', '--language',
-            help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
+            #help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
+            )
     addarg('-e', '--edition', type=int)
     addarg('-E', '--extension',
-            help='Filename extension without period')
+            help='filename extension without period, e.g. \'pdf\'.')
     addarg('-i', '--isbn')
     addarg('-d', '--doi')
     addarg('-u', '--url')
 
     # Utility.
     addarg('-v', '--verbose', action='count',
-            help='Set verbosity level; more \'v\'s increases the level.')
+            help='verbose mode; prints out a lot of debug information. \
+                  Can be used more than once, e.g. -vv, to increase the level of verbosity.')
     addarg('--version', action='version', version='%(prog)s no.ver.yet')
 
     args = parser.parse_args()
