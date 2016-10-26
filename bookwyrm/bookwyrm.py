@@ -19,20 +19,20 @@ from __future__ import print_function
 
 import sys
 import argparse
+from enum import Enum
 
 from item import Item
 import libgen
 
 # Allow these to be set when initializing?
 # Read from config/args for that?
-sources = (
-    'libgen',
+class Sources(Enum):
+    libgen = 1
 
-# Not yet implemented sources:
-#    'sci-hub',
-#    'irc',
-#    'torrents'
-)
+    # Not yet implemented sources:
+    # sci-hub = 2
+    # irc = 3
+    # torrents = 4
 
 def search(item, source):
 
@@ -42,7 +42,7 @@ def search(item, source):
                 lst.remove(item)
 
     results = []
-    if source == "libgen":
+    if source == Sources.libgen:
         results += libgen.search(item)
 
     filter_unwanted(item, results)
@@ -85,7 +85,7 @@ def main(argv):
     wanted = Item(args)
 
     found = []
-    for source in sources:
+    for source in Sources:
         found += search(wanted, source)
 
     print("Found %d items!\n" % len(found))
