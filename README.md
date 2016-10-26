@@ -1,25 +1,38 @@
-## What is this?
-The town's local bookwyrm has a vast library
-ranging from old classical screen-plays to freshly-minted academia.
-Without her help, retrieving one of these items may get tricky, or nigh impossible.
-Where would you look to get that one paper you really need?
-Where can you get your hands on newly released digital page-turners
-that aren't bogged down DRM to the point you need Abobe's permissions to read its content?
-Do you really have to pay the Evil Conglomerates humongous sums for that *single* paper?
-
-The Search might fear you, for there are many a trap, but fret not,
-`bookwyrm` will do the dirty work for you.
-Just give her a DOI, ISBN, title, URL or other entity used to identify reading material
-and she'll fetch it for you - be it a childrens' adventure book or the Necronomicon.
-No due time, guaranteed!
-
-## How will `bookwyrm` work?
-You give her some data which relates to a book, paper or similar.
-With this data, she'll look trough all manners of sources (see [here](#planned-supported-sources)),
+## What is this
+Give `bookwyrm` some data which relates to a book, paper or similar.
+With this data, it'll look trough all manners of sources (see [here](#planned-supported-sources)),
 find some URIs, and then use an external downloader of your choice for processing.
 By default, `bookwyrm` might use `aria2c`,
 or perhaps something that all systems have at boot.
 Not sure yet.
+
+## Usage
+```
+usage: bookwyrm [-h] [-a AUTHOR] [-t TITLE] [-p PUBLISHER] [-y YEAR]
+                [-l LANGUAGE] [-e EDITION] [-E EXTENSION] [-i ISBN]
+                [-d DOI] [-u URL] [-v] [--version]
+
+bookwyrm - find books and papers online and download them. When called with
+no arguments, bookwyrm prints this screen and exits.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a AUTHOR, --author AUTHOR
+  -t TITLE, --title TITLE
+  -p PUBLISHER, --publisher PUBLISHER
+  -y YEAR, --year YEAR
+  -l LANGUAGE, --language LANGUAGE
+  -e EDITION, --edition EDITION
+  -E EXTENSION, --extension EXTENSION
+                        filename extension without period, e.g. 'pdf'.
+  -i ISBN, --isbn ISBN
+  -d DOI, --doi DOI
+  -u URL, --url URL
+  -v, --verbose         verbose mode; prints out a lot of debug information.
+                        Can be used more than once, e.g. -vv, to increase the
+                        level of verbosity.
+  --version             show program's version number and exit
+```
 
 ## Planned supported sources
 ### High priority
