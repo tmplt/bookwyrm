@@ -17,6 +17,7 @@ from enum import Enum, unique
 from fuzzywuzzy import fuzz
 import argparse
 
+FUZZ_RATIO_DEF = 75
 
 # Use <https://docs.python.org/3/library/enum.html#orderedenum>
 # for specified priority?
@@ -59,6 +60,9 @@ class Item:
         self.ext = args.extension
 
     def __eq__(self, wanted):
+        # Exact values
+        # NOTE: mention these as 'exact' in docs.
+        # NOTE: is this the right place for lang?
         if ((wanted.year and self.year != wanted.year) or
                 (wanted.lang and self.lang != wanted.lang) or
                 (wanted.edition and self.edition != wanted.edition) or
@@ -69,12 +73,30 @@ class Item:
         if (wanted.isbn and wanted.isbn not in self.isbn):
             return False
 
+        # Useful for course literature which can have some
+        # crazy long titles.
+        if wanted.title:
+            ratio = fuzz.partial_ratio(self.title, wanted.title)
+            if ratio < FUZZ_RATIO_DEF:
+                return False
+
+        # token_set seems to work best here, both when only
+        # the last name is given but also when something like
+        # "J. Doe" is given.
         if wanted.authors:
-            if fuzzy:
-                ratio = 0
-                for author in self.authors:
-                    ratio = fuzz.partial_ratio(author, wanted.authors)
-                return ratio == 100
+            ratio_thus_far = 0
+            for author in self.authors:
+                fuzz_ratio = fuzz.token_set_ratio(author, wanted.authors)
+                ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
+
+            if ratio_thus_far < FUZZ_RATIO_DEF:
+                return False
+
+        # Often short; no need to do anything special.
+        if wanted.publisher:
+            ratio = fuzz.ratio(self.publisher, wanted.publisher)
+            if ratio > FUZZ_RATIO_DEF:
+                return False
 
         return True
 
