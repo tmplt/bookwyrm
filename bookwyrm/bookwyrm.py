@@ -35,21 +35,19 @@ sources = (
 )
 
 def search(item, source):
+
+    def filter_unwanted(wanted, lst):
+        for item in lst[:]:
+            if item != wanted:
+                lst.remove(item)
+
     results = []
     if source == "libgen":
         results += libgen.search(item)
 
-    results = filter_unwanted(item, results)
+    filter_unwanted(item, results)
 
     return results
-
-def filter_unwanted(wanted, results):
-    new = []
-    for item in results:
-        if item == wanted:
-            new.append(item)
-
-    return new
 
 def main(argv):
     parser = argparse.ArgumentParser(
