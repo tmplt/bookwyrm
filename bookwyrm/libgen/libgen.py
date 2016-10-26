@@ -35,7 +35,7 @@ import bencodepy
 
 from item import Item
 
-mirrors = (
+MIRRORS = (
     'libgen.io',
     'gen.lib.rus.ec'
 )
@@ -72,7 +72,7 @@ class _fetcher(object):
         except IOError:
             url = "http://%s/search.php"
 
-            for mirror in mirrors:
+            for mirror in MIRRORS:
                 r = requests.get(url % mirror, params=query)
                 if r.status_code == requests.codes.ok:
                     # Don't bother with the other mirrors if
