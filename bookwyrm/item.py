@@ -34,15 +34,15 @@ class Item:
     """A class to hold att data for a book or paper."""
 
     def __init__(self, *args):
-        authors = None
-        title = None
-        publisher = None
-        year = None
-        lang = None
-        isbn = None
-        edition = None
-        doi = None
-        ext = None
+        self.authors = None
+        self.title = None
+        self.publisher = None
+        self.year = None
+        self.lang = None
+        self.isbn = None
+        self.edition = None
+        self.doi = None
+        self.ext = None
 
         mirrors = None
 
