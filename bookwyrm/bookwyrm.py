@@ -104,11 +104,6 @@ def main(argv):
             print(line)
         print("--------------------")
 
-#    query = args.query
-#
-#    for source in sources:
-#        r = search(source, query)
-
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
 
