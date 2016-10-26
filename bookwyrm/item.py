@@ -16,6 +16,7 @@
 from enum import Enum, unique
 from fuzzywuzzy import fuzz
 import argparse
+import itertools
 
 FUZZ_RATIO_DEF = 75
 
@@ -41,7 +42,7 @@ class Item:
         self.doi = None
         self.ext = None
 
-        mirrors = None
+        self.mirrors = None
 
         if len(args) == 1 and isinstance(args[0], argparse.Namespace):
                 self.init_from_argparse(args[0])
@@ -84,9 +85,11 @@ class Item:
         # the last name is given but also when something like
         # "J. Doe" is given.
         if wanted.authors:
+            combinations = list(itertools.product(self.authors, wanted.authors))
+
             ratio_thus_far = 0
-            for author in self.authors:
-                fuzz_ratio = fuzz.token_set_ratio(author, wanted.authors)
+            for comb in combinations:
+                fuzz_ratio = fuzz.token_set_ratio(comb[0], comb[1])
                 ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
 
             if ratio_thus_far < FUZZ_RATIO_DEF:

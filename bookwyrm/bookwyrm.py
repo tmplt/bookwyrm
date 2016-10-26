@@ -168,7 +168,7 @@ def main(argv):
     addarg = parser.add_argument
 
     # Program functionality arguments.
-    addarg('-a', '--author')
+    addarg('-a', '--author', action='append')
     addarg('-t', '--title')
     addarg('-p', '--publisher')
     addarg('-y', '--year', type=int)
