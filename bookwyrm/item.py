@@ -83,10 +83,8 @@ class Item:
         # the last name is given but also when something like
         # "J. Doe" is given.
         if wanted.authors:
-            combinations = list(itertools.product(self.authors, wanted.authors))
-
             ratio_thus_far = 0
-            for comb in combinations:
+            for comb in itertools.product(self.authors, wanted.authors):
                 fuzz_ratio = fuzz.token_set_ratio(comb[0], comb[1])
                 ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
 
