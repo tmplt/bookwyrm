@@ -190,7 +190,7 @@ def main(argv):
 
     args = parser.parse_args()
 
-    if len(argv) < 2:
+    if len(argv) < 2: # at least one flag with an argument
         parser.print_help()
         sys.exit(0)
 
