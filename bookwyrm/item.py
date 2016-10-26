@@ -14,13 +14,9 @@
 # included in all copies or substantial portions of the Software.
 
 from enum import Enum, unique
+from fuzzywuzzy import fuzz
 import argparse
 
-try:
-    from fuzzywuzzy import fuzz
-    fuzzy = True
-except ImportError:
-    fuzzy = False
 
 # Use <https://docs.python.org/3/library/enum.html#orderedenum>
 # for specified priority?
