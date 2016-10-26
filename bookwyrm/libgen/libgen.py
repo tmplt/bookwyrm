@@ -180,7 +180,7 @@ def _get_edition(row):
         try:
             edition = int(re.findall(r'\d+', edition)[0])
             return edition
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, IndexError):
             return None
 
 def _get_publisher(row):
