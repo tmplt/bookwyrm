@@ -49,6 +49,22 @@ def search(item, source):
 
     return results
 
+def print_items(items):
+    for item in items:
+        output = (
+            "title:     %s" % item.title,
+            "author:    %s" % ', '.join(item.authors),
+            "publisher: %s" % item.publisher,
+            "year:      %s" % item.year,
+            "language:  %s" % item.lang,
+            "edition:   %s" % item.edition,
+            "extension: %s" % item.ext,
+        )
+
+        for line in output:
+            print(line)
+        print("--------------------")
+
 def main(argv):
     parser = argparse.ArgumentParser(
             allow_abbrev=False,
@@ -88,21 +104,15 @@ def main(argv):
     for source in Sources:
         found += search(wanted, source)
 
-    print("Found %d items!\n" % len(found))
-    for item in found:
-        output = (
-            "title: %s" % item.title,
-            "author: %s" % str(item.authors),
-            "publisher: %s" % item.publisher,
-            "year: %s" % item.year,
-            "language: %s" % item.lang,
-            "edition: %s" % item.edition,
-            "extension: %s" % item.ext,
-        )
+    cnt = len(found)
+    if cnt > 0:
+        print("I found %d items:" % cnt)
+    else:
+        print("I couldn't find anything.")
+        sys.exit(1)
 
-        for line in output:
-            print(line)
-        print("--------------------")
+    print_items(found)
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
