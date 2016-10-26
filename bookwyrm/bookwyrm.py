@@ -159,6 +159,18 @@ def process_mirrors(urls):
 
     return mirrors
 
+def download(uri, filename=None):
+    if url.startswith("http"):
+        s = requests.Session()
+        referrer = utils.http_domain(uri)
+        s.headers.update({'referer': referrer})
+
+        r = s.get(uri)
+        with open(filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+
 def main(argv):
     parser = argparse.ArgumentParser(
             allow_abbrev=False,

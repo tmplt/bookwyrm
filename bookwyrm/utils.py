@@ -16,3 +16,6 @@ def magnet_from_torrent(torrent):
              + '&dn=' + metadata[b'info'][b'name'].decode() \
              + '&tr=' + metadata[b'announce'].decode() \
              + '&xl=' + str(metadata[b'info'][b'length'])
+
+def http_domain(url):
+    return url.split('/')[2]
