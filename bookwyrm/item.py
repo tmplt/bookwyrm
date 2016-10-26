@@ -72,7 +72,7 @@ class Item:
         if (wanted.isbn and wanted.isbn not in self.isbn):
             return False
 
-        # Useful for course literature which can have some
+        # partial_ratio, useful for course literature which can have some
         # crazy long titles.
         if wanted.title:
             ratio = fuzz.partial_ratio(self.title, wanted.title)
