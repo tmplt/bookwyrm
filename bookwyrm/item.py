@@ -94,7 +94,7 @@ class Item:
 
         # Often short; no need to do anything special.
         if wanted.publisher:
-            ratio = fuzz.ratio(self.publisher, wanted.publisher)
+            ratio = fuzz.partial_ratio(self.publisher, wanted.publisher)
             if ratio > FUZZ_RATIO_DEF:
                 return False
 
