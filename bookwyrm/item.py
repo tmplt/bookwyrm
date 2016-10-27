@@ -29,7 +29,7 @@ class ext(Enum):
     djvu = 3
 
 class Item:
-    """A class to hold att data for a book or paper."""
+    """A class to hold all data for a book or paper."""
 
     def __init__(self, *args):
         if len(args) == 1 and isinstance(args[0], argparse.Namespace):
@@ -91,10 +91,11 @@ class Item:
             if ratio_thus_far < FUZZ_RATIO_DEF:
                 return False
 
-        # Often short; no need to do anything special.
+        # We use partial ratio here since some sources may not use the
+        # publisher's full name.
         if wanted.publisher:
             ratio = fuzz.partial_ratio(self.publisher, wanted.publisher)
-            if ratio > FUZZ_RATIO_DEF:
+            if ratio < FUZZ_RATIO_DEF:
                 return False
 
         return True
