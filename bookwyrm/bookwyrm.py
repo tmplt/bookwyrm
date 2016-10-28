@@ -60,19 +60,21 @@ class bookwyrm:
 
     def search(self, source):
 
-        def filter_unwanted():
-            for idx in range(len(results)):
-                try:
-                    if results[idx] != self.wanted:
-                        del results[idx]
-                except IndexError:
-                    break
+        # NOTE: This is bad code:
+        # - __eq__ for all items is run twice (.remove()).
+        # - this could probably be made into a zero-parameter function.
+        # - the bloody list is copied, which isn't very efficient.
+        def filter_unwanted(wanted, lst):
+            for item in lst[:]:
+                if item != wanted:
+                    lst.remove(item)
+
+            return lst
 
         if source == Sources.libgen:
             results = libgen.search(self.wanted)
 
-        filter_unwanted()
-        self.results = results
+        self.results = filter_unwanted(self.wanted, results)
 
         self.count = len(results) # used elsewhere
         return self.count
