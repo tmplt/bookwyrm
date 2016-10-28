@@ -19,3 +19,22 @@ def magnet_from_torrent(torrent):
 
 def http_domain(url):
     return url.split('/')[2]
+
+def download(uri, filename=None, referrer=None):
+    if uri.startswith("http"):
+        s = requests.Session()
+
+        if referrer is not None:
+            s.headers.update({'referer': referrer})
+
+        r = s.get(uri)
+
+        # check filename here
+
+        with open(filename, 'w') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+
+    elif uri.startswith("magnet:?"):
+        pass
