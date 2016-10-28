@@ -21,7 +21,7 @@ import sys
 import argparse
 import requests
 import bencodepy
-from enum import Enum
+from enum import Enum, IntEnum
 from bs4 import BeautifulSoup as bs
 
 from item import Item
@@ -37,6 +37,9 @@ class Sources(Enum):
     # sci-hub = 2
     # irc = 3
     # torrents = 4
+
+class Errno(IntEnum):
+    no_results_found = 1
 
 class bookwyrm:
 
@@ -212,7 +215,7 @@ def main(argv):
         print("I found %d items!" % found)
     else:
         print("I couldn't find anything.")
-        return 1
+        return Errno.no_results_found
 
     bw.print_items()
 
