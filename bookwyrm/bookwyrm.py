@@ -196,9 +196,8 @@ def main(argv):
 
     wanted = Item(args)
 
-    found = []
     for source in Sources:
-        found += search(wanted, source)
+        found = search(wanted, source)
 
     cnt = len(found)
     if cnt > 0:
@@ -208,7 +207,6 @@ def main(argv):
         sys.exit(1)
 
     print_items(found)
-
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
