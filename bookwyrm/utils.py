@@ -41,12 +41,12 @@ def download(uri, filename=None, referrer=None):
 
 def ordinal_num(n):
     ordinals = {
-        1: "st",
-        2: "nd",
-        3: "rd"
+        1: 'st',
+        2: 'nd',
+        3: 'rd'
     }
 
     return "%d%s" % (
         n,
-        ordinals.get(n if n < 20 else n % 10, "th")
+        ordinals.get(n if n < 20 else n % 10, 'th')
     )
