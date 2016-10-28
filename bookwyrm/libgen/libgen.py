@@ -29,7 +29,7 @@ from enum import IntEnum
 import requests
 import re
 
-from item import Item
+from item import Item, OptNamedTuple, Data
 
 MIRRORS = (
     'libgen.io',
@@ -219,7 +219,7 @@ def _get_mirrors(row):
 def search(query):
     # debugging and testing
     query = {
-        'req': query.title,
+        'req': query.data.title,
         'view': 'simple'
     }
 
@@ -227,20 +227,28 @@ def search(query):
 
     items = []
     for result in results:
-        item = Item()
 
         # Existing in the same column as the title -- for which
         # we must decompose all <i>-tags -- these must be extracted first.
-        item.edition = _get_edition(result)
-        item.isbns = _get_isbns(result)
+        edition = _get_edition(result)
+        isbns = _get_isbns(result)
 
-        item.authors = _get_authors(result)
-        item.title = _get_title(result)
-        item.publisher = _get_publisher(result)
-        item.year = _get_year(result)
-        item.lang = _get_lang(result)
-        item.ext = _get_ext(result)
-        item.mirrors = _get_mirrors(result)
+        exacts = OptNamedTuple(
+            year = _get_year(result),
+            lang = _get_lang(result),
+            edition = edition,
+            ext = _get_ext(result)
+        )
+
+        data = Data(
+            title = _get_title(result),
+            authors = _get_authors(result),
+            publisher = _get_publisher(result),
+            mirrors = _get_mirrors(result),
+            isbns = isbns
+        )
+
+        item = Item(data, exacts)
 
         items.append(item)
 
