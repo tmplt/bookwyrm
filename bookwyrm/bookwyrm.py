@@ -38,33 +38,46 @@ class Sources(Enum):
     # irc = 3
     # torrents = 4
 
-def search(item, source):
+class bookwyrm:
 
-    def filter_unwanted(wanted, lst):
-        for item in lst[:]:
-            if item != wanted:
-                lst.remove(item)
+    def __init__(self, arg):
+        self.arg = arg
+        self.wanted = Item(arg)
 
-    results = []
-    if source == Sources.libgen:
-        results += libgen.search(item)
+        self.count = 0
+        self.results = []
 
-    filter_unwanted(item, results)
+    def print_items(self):
+        for idx, item in enumerate(self.results):
+            output = "%d | %s, %s, %s" % (
+                idx,
+                item.title,
+                utils.ordinal_num(item.edition) + " ed." if item.edition else "n/a ed.",
+                item.ext
+            )
 
-    return results
+            print(output)
 
-def print_items(items):
-    for idx, item in enumerate(items):
-        output = "%d | %s, %s, %s" % (
-            idx,
-            item.title,
-            utils.ordinal_num(item.edition) + " ed." if item.edition else "n/a ed.",
-            item.ext
-        )
+    def search(self, source):
 
-        print(output)
+        def filter_unwanted():
+            for idx in range(len(results)):
+                try:
+                    if results[idx] != self.wanted:
+                        del results[idx]
+                except IndexError:
+                    break
 
-def process_mirrors(urls):
+        if source == Sources.libgen:
+            results = libgen.search(self.wanted)
+
+        filter_unwanted()
+        self.results = results
+
+        self.count = len(results) # used elsewhere
+        return self.count
+
+def process_mirrors(urls, source=None):
     """
     Parse all mirrors and return URIs which can be downloaded
     with a single request.
@@ -187,21 +200,19 @@ def main(argv):
 
     if len(argv) < 2: # at least one flag with an argument
         parser.print_help()
-        sys.exit(0)
+        return
 
-    wanted = Item(args)
-
+    bw = bookwyrm(args)
     for source in Sources:
-        found = search(wanted, source)
+        found = bw.search(source)
 
-    cnt = len(found)
-    if cnt > 0:
-        print("I found %d items:" % cnt)
+    if found > 0:
+        print("I found %d items!" % found)
     else:
         print("I couldn't find anything.")
-        sys.exit(1)
+        return 1
 
-    print_items(found)
+    bw.print_items()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
