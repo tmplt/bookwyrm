@@ -54,20 +54,15 @@ def search(item, source):
     return results
 
 def print_items(items):
-    for item in items:
-        output = (
-            "title:     %s" % item.title,
-            "author:    %s" % ', '.join(item.authors),
-            "publisher: %s" % item.publisher,
-            "year:      %s" % item.year,
-            "language:  %s" % item.lang,
-            "edition:   %s" % item.edition,
-            "extension: %s" % item.ext,
+    for idx, item in enumerate(items):
+        output = "%d | %s, %s, %s" % (
+            idx,
+            item.title,
+            utils.ordinal_num(item.edition) + " ed." if item.edition else "n/a ed.",
+            item.ext
         )
 
-        for line in output:
-            print(line)
-        print("--------------------")
+        print(output)
 
 def process_mirrors(urls):
     """
