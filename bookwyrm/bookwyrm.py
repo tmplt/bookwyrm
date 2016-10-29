@@ -23,6 +23,7 @@ import requests
 import bencodepy
 from enum import Enum, IntEnum
 from bs4 import BeautifulSoup as bs
+from urllib.parse import urlparse, urlencode
 
 from item import Item
 import libgen
@@ -128,7 +129,7 @@ def process_mirrors(urls, source=None):
                     'hidden': uid,
                     'hidden0': filename
                 }
-                params = urllib.parse.urlencode(params)
+                params = urlencode(params)
 
                 # NOTE: HTTP refer(r)er "http://golibgen.io/" required to GET this.
                 url = ('http://golibgen.io/%s?' % action) + params
@@ -160,7 +161,7 @@ def process_mirrors(urls, source=None):
             # The relative link contains but one parameter which happens to
             # be the md5 of the item. To retrieve the .torrent-file, we only need
             # this.
-            o = urllib.parse.urlparse(url)
+            o = urlparse(url)
             md5_attr = o.query
 
             torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % md5_attr
