@@ -29,7 +29,7 @@ class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'doi', 'ext'])):
     def __new__(cls, year=None, lang=None, edition=None, doi=None, ext=None):
         return super(Exacts, cls).__new__(cls, year, lang, edition, doi, ext)
 
-Data = namedtuple('Data', 'authors title publisher isbns mirrors exacts')
+Data = namedtuple('Data', 'authors title serie publisher isbns mirrors exacts')
 
 class Item:
     """A class to hold all data for a book or paper."""
@@ -44,6 +44,7 @@ class Item:
         self.data = Data(
             authors = args.author,
             title = args.title,
+            serie = args.serie,
             publisher = args.publisher,
             isbns = args.isbn,
 
@@ -82,8 +83,8 @@ class Item:
             except TypeError:
                 return False
 
-        in_result = (self.title, self.publisher)
-        requested = (wanted.title, wanted.publisher)
+        in_result = (self.title, self.serie, self.publisher)
+        requested = (wanted.title, wanted.serie, wanted.publisher)
 
         for val, req in zip(in_result, requested):
             if req is not None:

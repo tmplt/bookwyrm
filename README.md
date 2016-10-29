@@ -19,6 +19,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -a AUTHOR, --author AUTHOR
   -t TITLE, --title TITLE
+  -s SERIE, --serie SERIE
   -p PUBLISHER, --publisher PUBLISHER
   -y YEAR, --year YEAR
   -l LANGUAGE, --language LANGUAGE

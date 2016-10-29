@@ -188,6 +188,7 @@ def main(argv):
     # Program functionality arguments.
     addarg('-a', '--author', action='append')
     addarg('-t', '--title')
+    addarg('-s', '--serie')
     addarg('-p', '--publisher')
     addarg('-y', '--year', type=int)
     addarg('-l', '--language',

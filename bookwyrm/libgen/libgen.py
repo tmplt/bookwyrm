@@ -26,6 +26,7 @@ Common variable descriptions:
 
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
+from urllib.parse import urlparse, parse_qs
 import requests
 import re
 
@@ -40,6 +41,7 @@ class column(IntEnum):
     id = 0
     authors = 1
     title = 2
+    serie = 2
     isbns = 2
     edition = 2
     publisher = 3
@@ -145,6 +147,20 @@ def _get_title(row):
     title = soup.text.strip()
     return title if title else None
 
+def _get_serie(row):
+    soup = _get_column(row, column.serie)
+
+    query = soup.a['href']
+    o = urlparse(query)
+    od = parse_qs(o.query)
+
+    try:
+        serie = od.get['req'][0]
+    except (KeyError, TypeError):
+        serie = None
+
+    return serie
+
 def _get_isbns(row):
     soup = _get_column(row, column.isbns)
     try:
@@ -236,6 +252,7 @@ def search(query):
         data = Data(
             title = _get_title(result),
             authors = _get_authors(result),
+            serie = _get_serie(result),
             publisher = _get_publisher(result),
             mirrors = _get_mirrors(result),
             isbns = isbns,
