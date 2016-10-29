@@ -24,6 +24,7 @@ FUZZ_RATIO_DEF = 75
 # A namedtuple, but with optional arguments.
 # Credits:
 # <https://stackoverflow.com/questions/11351032/named-tuple-and-optional-keyword-arguments/16721002#16721002>
+# NOTE: this is ugly, can we make it look better?
 class OptNamedTuple(namedtuple('OptNamedTuple', ['year', 'lang', 'edition', 'doi', 'ext'])):
     __slots__ = ()
     def __new__(cls, year=None, lang=None, edition=None, doi=None, ext=None):
@@ -45,6 +46,8 @@ class Item:
             self.exacts = args[1]
 
     def init_from_argparse(self, args):
+        # NOTE: change this so exacts is nested within data,
+        # would look so much better.
         self.data = Data(
             authors = args.author,
             title = args.title,
@@ -63,13 +66,13 @@ class Item:
     def matches(self, wanted):
 
         # Parallell iteration over the two tuples of exact values.
-        for val, wnt in zip(self.exacts, wanted.exacts):
-            if wnt is not None:
-                return val == wnt
+        for val, requested in zip(self.exacts, wanted.exacts):
+            if requested is not None:
+                return val == requested
 
         if wanted.data.isbns:
             try:
-                if not set(wanted.data.isbns).intersection(self.data.isbns):
+                if not set(wanted.data.isbns) & set(self.data.isbns):
                     return False
             except TypeError:
                 return False
