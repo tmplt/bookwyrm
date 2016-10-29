@@ -34,11 +34,11 @@ Data = namedtuple('Data', 'authors title publisher isbns mirrors exacts')
 class Item:
     """A class to hold all data for a book or paper."""
 
-    def __init__(self, *args):
-        if len(args) == 1 and isinstance(args[0], argparse.Namespace):
-                self.init_from_argparse(args[0])
-        elif len(args) == 1 and isinstance(args[0], Data): # check type
-            self.data = args[0]
+    def __init__(self, arg):
+        if arg is argparse.Namespace:
+            self.init_from_argparse(arg)
+        elif arg is Data:
+            self.data = arg
 
     def init_from_argparse(self, args):
         # NOTE: change this so exacts is nested within data,
@@ -49,6 +49,10 @@ class Item:
             title = args.title,
             publisher = args.publisher,
             isbns = args.isbn,
+
+            # Since Data's attributes aren't optional and using a
+            # named tuple with optional arguments made for some
+            # wierd behavior.
             mirrors = None,
 
             exacts = Exacts(
