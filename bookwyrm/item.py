@@ -74,7 +74,8 @@ class Item:
         # Parallell iteration over the two tuples of exact values.
         for val, req in zip(self.exacts, wanted.exacts):
             if req is not None:
-                return val == req
+                if val != req:
+                    return False
 
         if wanted.isbns:
             try:
