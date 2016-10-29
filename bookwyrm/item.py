@@ -35,15 +35,12 @@ class Item:
     """A class to hold all data for a book or paper."""
 
     def __init__(self, arg):
-        if arg is argparse.Namespace:
+        if isinstance(arg, argparse.Namespace):
             self.init_from_argparse(arg)
-        elif arg is Data:
+        elif isinstance(arg, Data):
             self.data = arg
 
     def init_from_argparse(self, args):
-        # NOTE: change this so exacts is nested within data,
-        # would look so much better.
-
         self.data = Data(
             authors = args.author,
             title = args.title,
@@ -65,7 +62,7 @@ class Item:
         )
 
     def __getattr__(self, key):
-        return getattr(object.__getattribute__(self, 'data'), key)
+        return getattr(super(Item, self).__getattribute__('data'), key)
 
     def matches(self, wanted):
 

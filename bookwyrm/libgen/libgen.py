@@ -219,7 +219,7 @@ def _get_mirrors(row):
 def search(query):
     # debugging and testing
     query = {
-        'req': query.data.title,
+        'req': query.title,
         'view': 'simple'
     }
 
