@@ -203,7 +203,7 @@ def main(argv):
     addarg('-v', '--verbose', action='count',
             help='verbose mode; prints out a lot of debug information. \
                   Can be used more than once, e.g. -vv, to increase the level of verbosity.')
-    addarg('--version', action='version', version='%(prog)s no.ver.yet')
+    addarg('--version', action='version', version='%(prog)s 0.1.0-alpha.2')
 
     args = parser.parse_args()
 
