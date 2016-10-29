@@ -29,7 +29,7 @@ from enum import IntEnum
 import requests
 import re
 
-from item import Item, OptNamedTuple, Data
+from item import Item, Data, Exacts
 
 MIRRORS = (
     'libgen.io',
@@ -233,23 +233,22 @@ def search(query):
         edition = _get_edition(result)
         isbns = _get_isbns(result)
 
-        exacts = OptNamedTuple(
-            year = _get_year(result),
-            lang = _get_lang(result),
-            edition = edition,
-            ext = _get_ext(result)
-        )
-
         data = Data(
             title = _get_title(result),
             authors = _get_authors(result),
             publisher = _get_publisher(result),
             mirrors = _get_mirrors(result),
-            isbns = isbns
+            isbns = isbns,
+
+            exacts = Exacts(
+                year = _get_year(result),
+                lang = _get_lang(result),
+                edition = edition,
+                ext = _get_ext(result)
+            )
         )
 
-        item = Item(data, exacts)
-
+        item = Item(data)
         items.append(item)
 
     return items
