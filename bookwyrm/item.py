@@ -21,14 +21,6 @@ import itertools
 
 FUZZ_RATIO_DEF = 75
 
-# Use <https://docs.python.org/3/library/enum.html#orderedenum>
-# for specified priority?
-@unique
-class ext(Enum):
-    pdf = 1
-    epub = 2
-    djvu = 3
-
 # A namedtuple, but with optional arguments.
 # Credits:
 # <https://stackoverflow.com/questions/11351032/named-tuple-and-optional-keyword-arguments/16721002#16721002>
@@ -69,7 +61,6 @@ class Item:
         )
 
     def __eq__(self, wanted):
-        import sys
 
         # Parallell iteration over the two tuples of exact values.
         for val, wnt in zip(self.exacts, wanted.exacts):
