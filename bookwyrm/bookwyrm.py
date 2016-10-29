@@ -53,13 +53,12 @@ class bookwyrm:
 
     def print_items(self):
         for idx, item in enumerate(self.results):
-            title = item.data.title
             edition = item.exacts.edition
             ext = item.exacts.ext
 
             output = "%d | %s, %s, %s" % (
                 idx,
-                title,
+                item.title,
                 utils.ordinal_num(edition) + " ed." if edition else "n/a ed.",
                 ext
             )
