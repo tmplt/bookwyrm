@@ -60,7 +60,7 @@ class Item:
             ext = args.extension
         )
 
-    def __eq__(self, wanted):
+    def matches(self, wanted):
 
         # Parallell iteration over the two tuples of exact values.
         for val, wnt in zip(self.exacts, wanted.exacts):

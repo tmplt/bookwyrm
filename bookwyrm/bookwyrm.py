@@ -73,7 +73,7 @@ class bookwyrm:
         # - the bloody list is copied, which isn't very efficient.
         def filter_unwanted(wanted, lst):
             for item in lst[:]:
-                if item != wanted:
+                if not item.matches(wanted):
                     lst.remove(item)
 
             return lst
