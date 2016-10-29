@@ -66,10 +66,14 @@ class Item:
 
     def matches(self, wanted):
 
+        def match_partial(s1, s2):
+            ratio = fuzz.partial_ratio(s1, s2)
+            return ratio >= FUZZ_RATIO_DEF
+
         # Parallell iteration over the two tuples of exact values.
-        for val, requested in zip(self.exacts, wanted.exacts):
-            if requested is not None:
-                return val == requested
+        for val, req in zip(self.exacts, wanted.exacts):
+            if req is not None:
+                return val == req
 
         if wanted.isbns:
             try:
@@ -78,12 +82,16 @@ class Item:
             except TypeError:
                 return False
 
-        # partial_ratio, useful for course literature which can have some
-        # crazy long titles.
-        if wanted.title:
-            ratio = fuzz.partial_ratio(self.data.title, wanted.data.title)
-            if ratio < FUZZ_RATIO_DEF:
-                return False
+        in_result = (self.title, self.publisher)
+        requested = (wanted.title, wanted.publisher)
+
+        for val, req in zip(in_result, requested):
+            if req is not None:
+                # partial: useful for course literature which can have some
+                # crazy long titles. Also useful for publisher, because some entries
+                # may not use the full name of it.
+                if not match_partial(val, req):
+                    return False
 
         # token_set seems to work best here, both when only
         # the last name is given but also when something like
@@ -95,13 +103,6 @@ class Item:
                 ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
 
             if ratio_thus_far < FUZZ_RATIO_DEF:
-                return False
-
-        # We use partial ratio here since some sources may not use the
-        # publisher's full name.
-        if wanted.publisher:
-            ratio = fuzz.partial_ratio(self.data.publisher, wanted.data.publisher)
-            if ratio < FUZZ_RATIO_DEF:
                 return False
 
         return True
