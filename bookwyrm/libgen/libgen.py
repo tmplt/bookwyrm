@@ -239,10 +239,8 @@ def search(query):
         'view': 'simple'
     }
 
-    results = _fetcher(query)
-
     items = []
-    for result in results:
+    for result in _fetcher(query):
 
         # Existing in the same column as the title -- for which
         # we must decompose all <i>-tags -- these must be extracted first.
