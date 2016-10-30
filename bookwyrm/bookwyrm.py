@@ -51,6 +51,12 @@ class bookwyrm:
         self.count = 0
         self.results = []
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
     def print_items(self):
         for idx, item in enumerate(self.results):
             edition = item.exacts.edition
@@ -212,17 +218,17 @@ def main(argv):
         parser.print_help()
         return
 
-    bw = bookwyrm(args)
-    for source in Sources:
-        found = bw.search(source)
+    with bookwyrm(args) as bw:
+        for source in Sources:
+            bw.search(source)
 
-    if found > 0:
-        print("I found %d items!" % found)
-    else:
-        print("I couldn't find anything.")
-        return Errno.no_results_found
+        if bw.count > 0:
+            print("I found %d items!" % bw.count)
+        else:
+            print("I couldn't find anything.")
+            return Errno.no_results_found
 
-    bw.print_items()
+        bw.print_items()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
