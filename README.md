@@ -49,3 +49,6 @@ optional arguments:
     - Torrent Project
     - etc.
 
+
+## Notes
+* If an URL for an academic paper is ever needed, [dx.doi.org](http://dx.doi.org) can be used.
