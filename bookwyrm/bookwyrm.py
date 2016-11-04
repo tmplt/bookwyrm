@@ -29,6 +29,7 @@ from item import Item
 import libgen
 import utils
 
+
 # Allow these to be set when initializing?
 # Read from config/args for that?
 class Sources(Enum):
@@ -39,8 +40,10 @@ class Sources(Enum):
     # irc = 3
     # torrents = 4
 
+
 class Errno(IntEnum):
     no_results_found = 1
+
 
 class bookwyrm:
 
@@ -89,8 +92,9 @@ class bookwyrm:
 
         self.results = filter_unwanted(self.wanted, results)
 
-        self.count = len(results) # used elsewhere
+        self.count = len(results)  # used elsewhere
         return self.count
+
 
 def process_mirrors(urls, source=None):
     """
@@ -112,20 +116,21 @@ def process_mirrors(urls, source=None):
                 # the uid can be found in the 'hidden' attribute and the file
                 # name in 'hidden0'.
                 #
-                # While the .php-script found in the 'action' attribute seems to be
-                # "noleech1.php" for all items, the name seems temporary, so we extract that too.
+                # While the .php-script found in the 'action' attribute seems
+                # to be "noleech1.php" for all items, the name seems temporary,
+                # so we extract that too.
                 #
                 # The <form> looks like the following:
-                # <form name="receive" method="GET" onSubmit="this.submit.disabled=true;search.push.disabled=true;" action="noleech1.php">
-                #     <input  name='hidden'  type='hidden'  value=item-UID-here>
-                #     <input  name="hidden0" type="hidden"  value="item file name here">
+                # <form name="receive" method="GET" action="noleech1.php">
+                #   <input name="hidden"  type="hidden" value="item-UID">
+                #   <input name="hidden0" type="hidden" value="filename">
                 # </form>
 
                 action_tag = soup.find('form', attrs={'name': 'receive'})
                 action = action_tag['action']
 
                 inputs = soup.find('input', attrs={'name': 'hidden'})
-                uid = inputs['value'] # 'value' of the first <input>
+                uid = inputs['value']  # 'value' of the first <input>
 
                 child = inputs.input
                 filename = child['value']
@@ -136,7 +141,8 @@ def process_mirrors(urls, source=None):
                 }
                 params = urlencode(params)
 
-                # NOTE: HTTP refer(r)er "http://golibgen.io/" required to GET this.
+                # NOTE: HTTP refer(r)er "http://golibgen.io/" required
+                # to GET this.
                 url = ('http://golibgen.io/%s?' % action) + params
                 mirrors.append(url)
 
@@ -144,19 +150,20 @@ def process_mirrors(urls, source=None):
 
             if "bookzz" in url:
                 # Every item is held within in a <div class="actionsHolder">,
-                # but since this search is for an exact match, we will only ever
-                # get one result.
+                # but since this search is for an exact match, we will only
+                # ever get one result.
                 #
-                # The <div> looks like the following (with useless data removed):
+                # The <div> looks like the following:
                 # <div class="actionsHolder">
-                #     <div style="float:left;">
-                #         <a class="ddownload color2 dnthandler" href="http://bookzz.org/dl/1014779/9a9ab2" />
-                #     </div>
+                #   <div style="float:left;">
+                #    <a class="ddownload color2 dnthandler" href="..." />
+                #   </div>
                 # </div>
 
                 div = soup.find(attrs={'class': 'actionsHolder'})
 
-                # NOTE: HTTP refer(r)er "http://bookzz.org/" required to GET this.
+                # NOTE: HTTP refer(r)er "http://bookzz.org/" required
+                # to GET this.
                 url = div.div.a['href']
                 mirrors.append(url)
 
@@ -164,12 +171,12 @@ def process_mirrors(urls, source=None):
 
         elif url.startswith("/ads"):
             # The relative link contains but one parameter which happens to
-            # be the md5 of the item. To retrieve the .torrent-file, we only need
-            # this.
+            # be the md5 of the item.
+            # To retrieve the .torrent-file, we only need this.
             o = urlparse(url)
-            md5_attr = o.query
+            md5 = o.query
 
-            torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % md5_attr
+            torrent_url = "http://libgen.io/book/index.php?%s&oftorrent=" % md5
             r = requests.get(torrent_url)
 
             try:
@@ -182,11 +189,16 @@ def process_mirrors(urls, source=None):
 
     return mirrors
 
+
 def main(argv):
     parser = argparse.ArgumentParser(
             allow_abbrev=False,
-            description='%(prog)s - find books and papers online and download them. \
-                         When called with no arguments, bookwyrm prints this screen and exits.')
+            description='''
+            %(prog)s - find books and papers online and download them.
+            When called with no arguments,
+            bookwyrm prints this screen and exits.
+            '''
+    )
 
     addarg = parser.add_argument
 
@@ -196,25 +208,26 @@ def main(argv):
     addarg('-s', '--serie')
     addarg('-p', '--publisher')
     addarg('-y', '--year', type=int)
-    addarg('-l', '--language',
-            #help='Two letters denoting the item\'s language. e.g. \'en\' for English or \'sv\' for Swedish')
-            )
+    addarg('-l', '--language')
     addarg('-e', '--edition', type=int)
     addarg('-E', '--extension',
-            help='filename extension without period, e.g. \'pdf\'.')
+           help='filename extension without period, e.g. \'pdf\'.')
     addarg('-i', '--isbn')
     addarg('-d', '--doi')
     addarg('-u', '--url')
 
     # Utility.
     addarg('-v', '--verbose', action='count',
-            help='verbose mode; prints out a lot of debug information. \
-                  Can be used more than once, e.g. -vv, to increase the level of verbosity.')
+           help='''
+           verbose mode; prints out a lot of debug information.
+           Can be used more than once, e.g. -vv,
+           to increase the level of verbosity.
+           ''')
     addarg('--version', action='version', version='%(prog)s 0.1.0-alpha.2')
 
     args = parser.parse_args()
 
-    if len(argv) < 2: # at least one flag with an argument
+    if len(argv) < 2:  # at least one flag with an argument
         parser.print_help()
         return
 
@@ -232,4 +245,3 @@ def main(argv):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
-

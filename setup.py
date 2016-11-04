@@ -18,7 +18,7 @@
 import os
 import sys
 from setuptools import setup
-import bookwyrm
+
 
 def _read(fn):
     path = os.path.join(os.path.dirname(__file__), fn)
@@ -58,6 +58,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: POSIX',
         'Programming Lanugage :: Python :: 3',
-        #'Topic :: ???'
+        # 'Topic :: ???'
     ],
 )

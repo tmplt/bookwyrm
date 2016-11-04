@@ -13,23 +13,25 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-from enum import Enum, unique
-from fuzzywuzzy import fuzz
-from collections import namedtuple
 import argparse
 import itertools
+from fuzzywuzzy import fuzz
+from collections import namedtuple
 
 FUZZ_RATIO_DEF = 75
+
 
 # A namedtuple, but with optional arguments.
 # Credits:
 # <https://stackoverflow.com/questions/11351032/named-tuple-and-optional-keyword-arguments/16721002#16721002>
 class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'doi', 'ext'])):
     __slots__ = ()
+
     def __new__(cls, year=None, lang=None, edition=None, doi=None, ext=None):
         return super(Exacts, cls).__new__(cls, year, lang, edition, doi, ext)
 
 Data = namedtuple('Data', 'authors title serie publisher isbns mirrors exacts')
+
 
 class Item:
     """A class to hold all data for a book or paper."""
@@ -41,6 +43,7 @@ class Item:
             self.data = arg
 
     def init_from_argparse(self, args):
+
         self.data = Data(
             authors = args.author,
             title = args.title,
@@ -90,8 +93,8 @@ class Item:
         for val, req in zip(in_result, requested):
             if req is not None:
                 # partial: useful for course literature which can have some
-                # crazy long titles. Also useful for publisher, because some entries
-                # may not use the full name of it.
+                # crazy long titles. Also useful for publisher,
+                # because some entries may not use the full name of it.
                 if not match_partial(val, req):
                     return False
 
@@ -100,7 +103,8 @@ class Item:
         # "J. Doe" is given.
         if wanted.authors:
             ratio_thus_far = 0
-            for comb in itertools.product(self.data.authors, wanted.data.authors):
+            for comb in itertools.product(self.data.authors,
+                                          wanted.data.authors):
                 fuzz_ratio = fuzz.token_set_ratio(comb[0], comb[1])
                 ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
 
@@ -108,4 +112,3 @@ class Item:
                 return False
 
         return True
-

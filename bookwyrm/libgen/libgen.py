@@ -24,11 +24,12 @@ Common variable descriptions:
     soup: a BeautifulSoup.Resultset which we are gonna parse.
 """
 
+
+import requests
+import re
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
 from urllib.parse import urlparse, parse_qs
-import requests
-import re
 
 from item import Item, Data, Exacts
 
@@ -36,6 +37,7 @@ MIRRORS = (
     'libgen.io',
     'gen.lib.rus.ec'
 )
+
 
 class column(IntEnum):
     id = 0
@@ -52,6 +54,7 @@ class column(IntEnum):
     ext = 8
     mirrors_start = 9
     mirrors_end = 12
+
 
 class _fetcher(object):
     results = []
@@ -106,19 +109,22 @@ class _fetcher(object):
         self.current += 1
         return result[0]
 
+
 def _get_column(row, column):
     return row.find_all('td')[column]
+
 
 def _get_authors(row):
     soup = _get_column(row, column.authors)
 
-    delim = r'[,;]' # NOTE: 'and' is also used, it seems
+    delim = r'[,;]'  # NOTE: 'and' is also used, it seems
     authors = re.split(delim, soup.text.strip())
 
     # NOTE: can we strip with re.split() instead?
     authors = [author.strip() for author in authors]
 
     return authors if authors else None
+
 
 def _get_title(row):
     soup = _get_column(row, column.title)
@@ -147,6 +153,7 @@ def _get_title(row):
     title = soup.text.strip()
     return title if title else None
 
+
 def _get_serie(row):
     soup = _get_column(row, column.serie)
 
@@ -161,6 +168,7 @@ def _get_serie(row):
 
     return serie
 
+
 def _get_isbns(row):
     soup = _get_column(row, column.isbns)
     try:
@@ -168,8 +176,9 @@ def _get_isbns(row):
 
         isbns = soup.text.split(', ')
         return isbns if isbns else None
-    except AttributeError: # not all entries will have ISBN numbers
+    except AttributeError:  # not all entries will have ISBN numbers
         return None
+
 
 def _get_edition(row):
     soup = _get_column(row, column.edition)
@@ -195,11 +204,13 @@ def _get_edition(row):
         except (TypeError, ValueError, IndexError):
             return None
 
+
 def _get_publisher(row):
     soup = _get_column(row, column.publisher)
 
     publisher = soup.text.strip()
     return publisher if publisher else None
+
 
 def _get_year(row):
     soup = _get_column(row, column.year)
@@ -210,17 +221,20 @@ def _get_year(row):
         return None
     return year
 
+
 def _get_lang(row):
     soup = _get_column(row, column.lang)
 
     lang = soup.text.strip()
     return lang.lower() if lang else None
 
+
 def _get_ext(row):
     soup = _get_column(row, column.ext)
 
     ext = soup.text.strip()
     return ext if ext else None
+
 
 def _get_mirrors(row):
     urls = []
@@ -267,4 +281,3 @@ def search(query):
         items.append(item)
 
     return items
-
