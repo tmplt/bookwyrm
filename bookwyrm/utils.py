@@ -3,6 +3,12 @@ import hashlib
 import base64
 import requests
 
+SI_PREFIXES = {
+    'k': 1e3,  # kilo
+    'M': 1e6,  # Mega
+    'G': 1e9   # Giga
+}
+
 
 def magnet_from_torrent(torrent):
     """
@@ -74,12 +80,5 @@ def ordinal_num(n):
     )
 
 
-def de_siprefix(c):
-    translation = {
-        'k': 1e3,  # kilo
-        'M': 1e6,  # Mega
-        'G': 1e9   # Giga
-        # Will we ever have terrabyte sized books?
-    }
-
-    return translation.get(c, None)
+def translate_si_prefix(key):
+    return SI_PREFIXES.get(key, None)

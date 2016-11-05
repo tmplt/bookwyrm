@@ -252,7 +252,7 @@ def _get_size(row):
     number = size[0]
     prefix = size[0][1]  # without the 'b' in e.g. 'kb'
 
-    bytesize = int(number * utils.de_siprefix(prefix) / 8)
+    bytesize = int(number * utils.translate_si_prefix(prefix) / 8)
     return bytesize
 
 
