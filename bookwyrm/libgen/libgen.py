@@ -48,7 +48,7 @@ class column(IntEnum):
     edition = 2
     publisher = 3
     year = 4
-    # skip page count column,
+    pages = 5
     lang = 6
     # and file size.
     ext = 8
@@ -224,6 +224,13 @@ def _get_year(row):
     except ValueError:
         return None
     return year
+
+
+def _get_page_count(row):
+    soup = _get_column(row, column.pages)
+
+    count = soup.text.strip()
+    return count if count else None
 
 
 def _get_lang(row):
