@@ -241,12 +241,20 @@ def main(argv):
     )
 
     args = parse_command_line(parser)
+    required_arg = (
+        args.author,
+        args.title,
+        args.serie,
+        args.publisher,
+        # args.url,
+        # args.doi
+    )
 
     if len(argv) < 2:  # no arguments given
         parser.print_help()
         return
 
-    elif not (args.author or args.title or args.serie or args.publisher):
+    elif not any(required_arg):
         parser.error('At least a title, serie, publisher or an author must be specified.')
 
     with bookwyrm(args) as bw:
