@@ -190,6 +190,44 @@ def process_mirrors(urls, source=None):
     return mirrors
 
 
+def parse_command_line(parser):
+    # NOTE: Keep an eye on <https://bugs.python.org/issue11588>
+    add_optarg = parser.add_argument
+    addgroup = parser.add_argument_group
+
+    # Main arguments; one of these are required.
+    main = addgroup('necessarily inclusive arguments; at least one required')
+    main.add_argument('-a', '--author', action='append')
+    main.add_argument('-t', '--title')
+    main.add_argument('-s', '--serie')
+    main.add_argument('-p', '--publisher')
+
+    # Exact data arguments; all optional
+    exact = addgroup('exact arguments; optional')
+    exact.add_argument('-y', '--year', type=int)
+    exact.add_argument('-l', '--language')
+    exact.add_argument('-e', '--edition', type=int)
+    exact.add_argument('-E', '--extension',
+                       help='filename extension without period, e.g. \'pdf\'.')
+    exact.add_argument('-i', '--isbn')
+    exact.add_argument('-d', '--doi')
+    exact.add_argument('-u', '--url')
+
+    # Utility arguments; optional
+    add_optarg('-v', '--verbose', action='count',
+               help='''
+               verbose mode; prints out a lot of debug information.
+               Can be used more than once, e.g. -vv,
+               to increase the level of verbosity.
+               ''')
+    add_optarg('--version', action='version', version='%(prog)s 0.1.0-alpha.2')
+    add_optarg('--debug', action='store_true')
+
+    args = parser.parse_args()
+
+    return args
+
+
 def main(argv):
     parser = argparse.ArgumentParser(
         allow_abbrev=False,
@@ -197,39 +235,18 @@ def main(argv):
         %(prog)s - find books and papers online and download them.
         When called with no arguments,
         bookwyrm prints this screen and exits.
-        '''
+        ''',
+        add_help=True
     )
 
-    addarg = parser.add_argument
+    args = parse_command_line(parser)
 
-    # Program functionality arguments.
-    addarg('-a', '--author', action='append')
-    addarg('-t', '--title')
-    addarg('-s', '--serie')
-    addarg('-p', '--publisher')
-    addarg('-y', '--year', type=int)
-    addarg('-l', '--language')
-    addarg('-e', '--edition', type=int)
-    addarg('-E', '--extension',
-           help='filename extension without period, e.g. \'pdf\'.')
-    addarg('-i', '--isbn')
-    addarg('-d', '--doi')
-    addarg('-u', '--url')
-
-    # Utility.
-    addarg('-v', '--verbose', action='count',
-           help='''
-           verbose mode; prints out a lot of debug information.
-           Can be used more than once, e.g. -vv,
-           to increase the level of verbosity.
-           ''')
-    addarg('--version', action='version', version='%(prog)s 0.1.0-alpha.2')
-
-    args = parser.parse_args()
-
-    if len(argv) < 2:  # at least one flag with an argument
+    if len(argv) < 2:  # no arguments given
         parser.print_help()
         return
+
+    elif not (args.author or args.title or args.serie or args.publisher):
+        parser.error('At least a title, serie, publisher or an author must be specified.')
 
     with bookwyrm(args) as bw:
         for source in Sources:
