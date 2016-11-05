@@ -31,6 +31,7 @@ from bs4 import BeautifulSoup as bs
 from enum import IntEnum
 from urllib.parse import urlparse, parse_qs
 
+import utils
 from item import Item, Data, Exacts
 
 MIRRORS = (
@@ -50,7 +51,7 @@ class column(IntEnum):
     year = 4
     pages = 5
     lang = 6
-    # and file size.
+    size = 7
     ext = 8
     mirrors_start = 9
     mirrors_end = 12
@@ -238,6 +239,21 @@ def _get_lang(row):
 
     lang = soup.text.strip()
     return lang.lower() if lang else None
+
+
+def _get_size(row):
+    """
+    Return size in bytes;
+    e.g., "816 kb" -> "816 * 10^3 / 8"
+    """
+    soup = _get_column(row, column.size)
+
+    size = soup.text.strip().split()
+    number = size[0]
+    prefix = size[0][1]  # without the 'b' in e.g. 'kb'
+
+    bytesize = int(number * utils.de_siprefix(prefix) / 8)
+    return bytesize
 
 
 def _get_ext(row):

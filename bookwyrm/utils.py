@@ -72,3 +72,14 @@ def ordinal_num(n):
         n,
         ordinals.get(n if n < 20 else n % 10, 'th')
     )
+
+
+def de_siprefix(c):
+    translation = {
+        'k': 1e3,  # kilo
+        'M': 1e6,  # Mega
+        'G': 1e9   # Giga
+        # Will we ever have terrabyte sized books?
+    }
+
+    return translation.get(c, None)
