@@ -235,7 +235,7 @@ class _Row(object):
         return Item(data)
 
 
-class _fetcher(object):
+class _TableFetcher(object):
     """
     Retrieve the html table and iterate over its rows.
     """
@@ -305,7 +305,7 @@ def search(query):
     }
 
     items = []
-    for result in _fetcher(query):
+    for result in _TableFetcher(query):
         row = _Row(result)
         item = row.as_item()
 
