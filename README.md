@@ -52,3 +52,8 @@ optional arguments:
 
 ## Notes
 * If an URL for an academic paper is ever needed, [dx.doi.org](http://dx.doi.org) can be used.
+* Present results in a menu ála mutt.
+    - One result per line in main menu; "n authors title (ext?)"
+    - Entering an item takes you to a more detailed menu, where you can download the item.
+    - Make program able to download from main menu also.
+    - Select multiple items to download all all of them.
