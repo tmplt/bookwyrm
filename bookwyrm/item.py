@@ -21,28 +21,27 @@ from collections import namedtuple
 FUZZ_RATIO_DEF = 75
 
 
-# A namedtuple, but with optional arguments.
-# Credits:
-# <https://stackoverflow.com/questions/11351032/named-tuple-and-optional-keyword-arguments/16721002#16721002>
 class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'doi', 'ext'])):
+    """A named tuple, but with optional arguments."""
     __slots__ = ()
 
     def __new__(cls, year=None, lang=None, edition=None, doi=None, ext=None):
         return super(Exacts, cls).__new__(cls, year, lang, edition, doi, ext)
 
-Data = namedtuple('Data', 'authors title serie publisher isbns mirrors exacts')
+Data = namedtuple('Data', ['authors', 'title', 'serie', 'publisher',
+                           'isbns', 'mirrors', 'exacts'])
 
 
 class Item:
-    """A class to hold all data for a book or paper."""
+    """Holds all data for a item."""
 
     def __init__(self, arg):
         if isinstance(arg, argparse.Namespace):
-            self.init_from_argparse(arg)
+            self.__init_from_argparse(arg)
         elif isinstance(arg, Data):
             self.data = arg
 
-    def init_from_argparse(self, args):
+    def __init_from_argparse(self, args):
 
         self.data = Data(
             authors = args.author,
@@ -68,11 +67,15 @@ class Item:
     def __getattr__(self, key):
         return getattr(super(Item, self).__getattribute__('data'), key)
 
-    def matches(self, wanted):
+    def matches(self, wanted, fuzzy_min=FUZZ_RATIO_DEF):
+        """
+        Returns true if all specified exact values are equal
+        and if all specified non-exact values pass the fuzzy ratio.
+        """
 
         def match_partial(s1, s2):
             ratio = fuzz.partial_ratio(s1, s2)
-            return ratio >= FUZZ_RATIO_DEF
+            return ratio >= fuzzy_min
 
         # Parallell iteration over the two tuples of exact values.
         for val, req in zip(self.exacts, wanted.exacts):
@@ -105,10 +108,10 @@ class Item:
             ratio_thus_far = 0
             for comb in itertools.product(self.data.authors,
                                           wanted.data.authors):
-                fuzz_ratio = fuzz.token_set_ratio(comb[0], comb[1])
-                ratio_thus_far = max(fuzz_ratio, ratio_thus_far)
+                ratio = fuzz.token_set_ratio(comb[0], comb[1])
+                ratio_thus_far = max(ratio, ratio_thus_far)
 
-            if ratio_thus_far < FUZZ_RATIO_DEF:
+            if ratio_thus_far < fuzzy_min:
                 return False
 
         return True

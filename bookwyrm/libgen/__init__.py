@@ -14,4 +14,7 @@
 
 from .libgen import search
 
-"""Fetch URIs from libgen.io and its mirrors"""
+"""
+Fetch search result data from libgen.io and its mirrors.
+Put retrieved data into an Item.
+"""

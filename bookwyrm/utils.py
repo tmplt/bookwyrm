@@ -4,9 +4,11 @@ import base64
 import requests
 
 
-# Credit to Danilo "DanySK" Pianini
-# <https://github.com/DanySK/torrent2magnet>
 def magnet_from_torrent(torrent):
+    """
+    Generate a torrent magnet link from a .torrent-file.
+    """
+
     metadata = bencodepy.decode(torrent)
     subj = metadata[b'info']
     hashcontents = bencodepy.encode(subj)
@@ -21,10 +23,20 @@ def magnet_from_torrent(torrent):
 
 
 def http_domain(url):
+    """
+    Return the top-level domain from an URL;
+    e.g. "libgen.io" from "http://libgen.io/?req=temeraire".
+    """
+
     return url.split('/')[2]
 
 
 def download(uri, filename=None, referrer=None):
+    """
+    HTTP GET the file at `uri` as `filename`, with
+    the referer header `referrer`.
+    """
+
     if uri.startswith("http"):
         s = requests.Session()
 
@@ -45,6 +57,11 @@ def download(uri, filename=None, referrer=None):
 
 
 def ordinal_num(n):
+    """
+    Concatenate the integer `n` with its ordinal
+    "st", "nd", "rd" or "th".
+    """
+
     ordinals = {
         1: 'st',
         2: 'nd',

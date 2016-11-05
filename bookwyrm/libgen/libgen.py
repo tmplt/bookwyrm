@@ -57,6 +57,10 @@ class column(IntEnum):
 
 
 class _fetcher(object):
+    """
+    Retrieve the html table and iterate over its rows.
+    """
+
     results = []
 
     # Note that any dictionary keys whose value is None
@@ -247,6 +251,10 @@ def _get_mirrors(row):
 
 
 def search(query):
+    """
+    Search libgen for `query` and sort the results into a list of Items.
+    """
+
     # debugging and testing
     query = {
         'req': query.title,
