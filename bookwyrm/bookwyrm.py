@@ -192,12 +192,12 @@ def process_mirrors(urls, source=None):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-            allow_abbrev=False,
-            description='''
-            %(prog)s - find books and papers online and download them.
-            When called with no arguments,
-            bookwyrm prints this screen and exits.
-            '''
+        allow_abbrev=False,
+        description='''
+        %(prog)s - find books and papers online and download them.
+        When called with no arguments,
+        bookwyrm prints this screen and exits.
+        '''
     )
 
     addarg = parser.add_argument
