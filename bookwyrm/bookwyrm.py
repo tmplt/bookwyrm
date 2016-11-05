@@ -230,6 +230,7 @@ def parse_command_line(parser):
 
 def main(argv):
     parser = argparse.ArgumentParser(
+        prog='bookwyrm',
         allow_abbrev=False,
         description='''
         %(prog)s - find books and papers online and download them.
