@@ -14,16 +14,12 @@
 # included in all copies or substantial portions of the Software.
 
 """
-This file contains functions for parsing search results of
-Library Genesis and its mirrors.
-    Fortunately, libgen gives us a html table, so we fetch each row,
-zoom into the right column (with the help of _get_column and the column enums)
-and extract the data we want in their respective _get_* function.
+This module will HTTP GET a result table from Library Genesis (_TableFetcher())
+with the given query (search()), iterate through each table row and extract the
+row data into an Item (_Row.as_item()).
 
-Common variable descriptions:
-    soup: a BeautifulSoup.Resultset which we are gonna parse.
+A list of found Items is then returned.
 """
-
 
 import requests
 import re
