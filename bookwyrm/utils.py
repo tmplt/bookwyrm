@@ -2,6 +2,7 @@ import bencodepy
 import hashlib
 import base64
 import requests
+from furl import furl
 
 SI_PREFIXES = {
     'k': 1e3,  # kilo
@@ -34,7 +35,8 @@ def http_domain(url):
     e.g. "libgen.io" from "http://libgen.io/?req=temeraire".
     """
 
-    return url.split('/')[2]
+    f = furl(url)
+    return f.host
 
 
 def download(uri, filename=None, referrer=None):
@@ -44,12 +46,13 @@ def download(uri, filename=None, referrer=None):
     """
 
     if uri.startswith("http"):
-        s = requests.Session()
 
         if referrer is not None:
-            s.headers.update({'referer': referrer})
+            headers = {'referer': referrer}
+        else:
+            headers = {'referer': http_domain(uri)}
 
-        r = s.get(uri)
+        r = requests.get(uri, headers=headers)
 
         # check filename here
 
