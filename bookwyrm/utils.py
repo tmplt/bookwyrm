@@ -10,6 +10,13 @@ SI_PREFIXES = {
     'G': 1e9   # Giga
 }
 
+ORDINAL_NUMS = {
+    1: 'st',
+    2: 'nd',
+    3: 'rd'
+    # 'th' in ordinal_num()
+}
+
 
 def magnet_from_torrent(torrent):
     """
@@ -71,15 +78,9 @@ def ordinal_num(n):
     "st", "nd", "rd" or "th".
     """
 
-    ordinals = {
-        1: 'st',
-        2: 'nd',
-        3: 'rd'
-    }
-
     return "%d%s" % (
         n,
-        ordinals.get(n if n < 20 else n % 10, 'th')
+        ORDINAL_NUMS.get(n if n < 20 else n % 10, 'th')
     )
 
 
