@@ -14,7 +14,7 @@
 # included in all copies or substantial portions of the Software.
 
 """
-This module will HTTP GET a result table from Library Genesis (_TableFetcher())
+This module will HTTP GET a result table from Library Genesis (_LibGen())
 with the given query (search()), iterate through each table row and extract the
 row data into an Item (_Row.as_item()).
 
@@ -230,7 +230,7 @@ class _Row(object):
         return Item(data)
 
 
-class _TableFetcher(object):
+class _LibGen(object):
     """
     Retrieve the html table and iterate over its rows.
     """
@@ -300,7 +300,7 @@ def search(query):
     }
 
     items = []
-    for result in _TableFetcher(query):
+    for result in _LibGen(query):
         row = _Row(result)
         item = row.as_item()
 
