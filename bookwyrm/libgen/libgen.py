@@ -29,7 +29,7 @@ import requests
 import re
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
-from urllib.parse import urlparse, parse_qs
+from furl import furl
 
 import utils
 from item import Item, Data, Exacts
@@ -109,13 +109,12 @@ class _Row(object):
     def _get_serie(self):
         soup = self._get_column(column.serie)
 
-        query = soup.a['href']
-        o = urlparse(query)
-        od = parse_qs(o.query)
+        url = soup.a['href']
+        f = furl(url)
 
         try:
-            serie = od.get['req'][0]
-        except (KeyError, TypeError):
+            serie = f.args['req']
+        except KeyError:
             serie = None
 
         return serie
