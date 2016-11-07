@@ -84,10 +84,7 @@ class Item:
                     return False
 
         if wanted.isbns:
-            try:
-                if not set(wanted.isbns) & set(self.isbns):
-                    return False
-            except TypeError:
+            if not set(wanted.isbns) & set(self.isbns):
                 return False
 
         in_result = (self.title, self.serie, self.publisher)
