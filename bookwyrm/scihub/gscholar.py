@@ -11,9 +11,10 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 SCHOLARS_BASE_URL = "https://scholar.google.com/scholar"
+HEADERS = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0'}
 
 
-def search(query, limit=10, download=False):
+def search(query, limit=10):
     """
     Performs a query on scholar.google.com, and returns a dictionary
     of results in the form {'papers': ...}. Unfortunately, as of now,
@@ -26,7 +27,7 @@ def search(query, limit=10, download=False):
 
     while len(results['papers']) < limit:
         try:
-            r = requests.get(SCHOLARS_BASE_URL, params={'q': query, 'start': page_id})
+            r = requests.get(SCHOLARS_BASE_URL, params={'q': query, 'start': page_id}, headers=HEADERS)
         except requests.exceptions.RequestException as e:
             results['error'] = "query: '%s'; reason: '%s'" % (query, e)
             return results

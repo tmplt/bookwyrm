@@ -28,6 +28,7 @@ from urllib.parse import urlparse, urlencode
 from item import Item
 import libgen
 import utils
+import scihub
 
 
 # Allow these to be set when initializing?
@@ -43,6 +44,12 @@ class Sources(Enum):
 
 class Errno(IntEnum):
     no_results_found = 1
+
+
+class IdentType(Enum):
+    direct = 0
+    paywall = 1
+    doi = 2
 
 
 class bookwyrm:
@@ -94,6 +101,39 @@ class bookwyrm:
 
         self.count = len(results)  # used elsewhere
         return self.count
+
+    def fetch(self, ident):
+        url = self._get_direct_url(ident)
+
+        try:
+            r = requests.get(url)
+
+            return {
+                'pdf': r.content,
+                'url': url,
+                'name': scihub.generate_name(r)
+            }
+        except requests.exceptions.RequestException as e:
+            print(e)
+
+    def _get_direct_url(self, ident):
+        id_type = self._classify(ident)
+
+        if id_type == IdentType.direct:
+            return ident
+        else:
+            return scihub.search_direct_url(ident)
+
+    def _classify(self, ident):
+        if ident.startswith('http'):
+            if ident.endswith('pdf'):
+                return IdentType.direct
+            else:
+                return IdentType.paywall
+        elif utils.valid_doi(ident):
+            return IdentType.doi
+        else:
+            return None
 
 
 def process_mirrors(urls, source=None):
@@ -210,8 +250,7 @@ def parse_command_line(parser):
     exact.add_argument('-E', '--extension',
                        help='filename extension without period, e.g. \'pdf\'.')
     exact.add_argument('-i', '--isbn')
-    exact.add_argument('-d', '--doi')
-    exact.add_argument('-u', '--url')
+    exact.add_argument('-d', '--ident')
 
     # Utility arguments; optional
     add_optarg('-v', '--verbose', action='count',
@@ -246,10 +285,15 @@ def main(argv):
         parser.print_help()
         return
 
-    elif not (args.author or args.title or args.serie or args.publisher):
-        parser.error('At least a title, serie, publisher or an author must be specified.')
+    elif not (args.author or args.title or args.serie or args.publisher or args.ident):
+        parser.error('At least a title, serie, publisher, author or ident must be specified.')
 
     with bookwyrm(args) as bw:
+        if args.ident:
+            pdf = bw.fetch(args.ident)
+            utils.write(pdf)
+            return
+
         for source in Sources:
             bw.search(source)
 

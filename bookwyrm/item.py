@@ -21,12 +21,12 @@ from collections import namedtuple
 FUZZ_RATIO_DEF = 75
 
 
-class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'doi', 'ext'])):
+class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'ext'])):
     """A named tuple, but with optional arguments."""
     __slots__ = ()
 
-    def __new__(cls, year=None, lang=None, edition=None, doi=None, ext=None):
-        return super(Exacts, cls).__new__(cls, year, lang, edition, doi, ext)
+    def __new__(cls, year=None, lang=None, edition=None, ext=None):
+        return super(Exacts, cls).__new__(cls, year, lang, edition, ext)
 
 Data = namedtuple('Data', ['authors', 'title', 'serie', 'publisher',
                            'isbns', 'mirrors', 'exacts'])
@@ -59,7 +59,6 @@ class Item:
                 year = args.year,
                 lang = args.language,
                 edition = args.edition,
-                doi = args.doi,
                 ext = args.extension
             )
         )
