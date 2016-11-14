@@ -17,15 +17,17 @@
 
 from __future__ import print_function
 
+from enum import Enum, IntEnum
 import sys
 import argparse
 import requests
-from enum import Enum, IntEnum
+import logging
 
 from item import Item
+from scihub import SciHub
+from utils import eprint
 import libgen
 import utils
-import scihub
 
 
 # Allow these to be set when initializing?
@@ -51,18 +53,23 @@ class IdentType(Enum):
 
 class bookwyrm:
 
-    def __init__(self, arg):
+    def __init__(self, arg, logger):
         self.arg = arg
         self.wanted = Item(arg)
+        self.logger = logger
 
         self.count = 0
         self.results = []
 
+        self.scihub = SciHub()
+
     def __enter__(self):
+        self.logger.debug('summoning the mighty, all-knowing bookwyrm!')
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        pass
+        self.logger.debug('killed the bookwyrm (:c) with exc_type, exc_value, traceback = (%s, %s, %s)'
+                          % (exc_type, exc_value, traceback))
 
     def print_items(self):
         for idx, item in enumerate(self.results):
@@ -85,6 +92,8 @@ class bookwyrm:
         # - this could probably be made into a zero-parameter function.
         # - the bloody list is copied, which isn't very efficient.
         def filter_unwanted(wanted, lst):
+            self.logger.debug('filtering items to match wanted values')
+
             for item in lst[:]:
                 if not item.matches(wanted):
                     lst.remove(item)
@@ -96,30 +105,28 @@ class bookwyrm:
 
         self.results = filter_unwanted(self.wanted, results)
 
-        self.count = len(results)  # used elsewhere
+        self.count = len(results)  # used in main()
         return self.count
 
     def fetch(self, ident):
         url = self._get_direct_url(ident)
+        r = requests.get(url)
 
-        try:
-            r = requests.get(url)
-
-            return {
-                'pdf': r.content,
-                'url': url,
-                'name': scihub.generate_name(r)
-            }
-        except requests.exceptions.RequestException as e:
-            print(e)
+        return {
+            'pdf': r.content,
+            'url': url,
+            'name': self.scihub.generate_name(r)
+        }
 
     def _get_direct_url(self, ident):
+        self.logger.debug('classifying \'%s\'' % ident)
         id_type = self._classify(ident)
+        self.logger.debug('\'%s\' classified as %s' % (ident, id_type))
 
         if id_type == IdentType.direct:
             return ident
         else:
-            return scihub.search_direct_url(ident)
+            return self.scihub.search_direct_url(ident)
 
     def _classify(self, ident):
         if ident.startswith('http'):
@@ -156,21 +163,13 @@ def parse_command_line(parser):
     exact.add_argument('-d', '--ident')
 
     # Utility arguments; optional
-    add_optarg('-v', '--verbose', action='count',
-               help='''
-               verbose mode; prints out a lot of debug information.
-               Can be used more than once, e.g. -vv,
-               to increase the level of verbosity.
-               ''')
     add_optarg('--version', action='version', version='%(prog)s 0.1.0-alpha.2')
     add_optarg('--debug', action='store_true')
 
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
-def main(argv):
+def main(argv, logger):
     parser = argparse.ArgumentParser(
         prog='bookwyrm',
         allow_abbrev=False,
@@ -183,6 +182,10 @@ def main(argv):
     )
 
     args = parse_command_line(parser)
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
     required_arg = (
         args.author,
         args.title,
@@ -198,22 +201,32 @@ def main(argv):
     elif not any(required_arg):
         parser.error('At least a title, serie, publisher or an author must be specified.')
 
-    with bookwyrm(args) as bw:
+    with bookwyrm(args, logger) as bw:
         if args.ident:
+            bw.logger.debug('ident specified, ignoring everything else.')
+
             pdf = bw.fetch(args.ident)
+            bw.logger.debug('writing to disk...')
+
             utils.write(pdf)
             return
 
         for source in Sources:
+            bw.logger.debug('traversing %s...' % source)
             bw.search(source)
 
         if bw.count > 0:
             print("I found %d items!" % bw.count)
         else:
-            print("I couldn't find anything.")
+            eprint("I couldn't find anything.")
             return Errno.no_results_found
 
         bw.print_items()
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    logging.basicConfig(format='%(levelname)s:%(name)s:%(funcName)s: %(message)s')
+    logger = logging.getLogger('bookwyrm')
+
+    retval = main(sys.argv, logger)
+    logger.debug('reached termination, exit code = {}'.format(0 if retval is None else retval))
+    sys.exit(retval)

@@ -21,16 +21,17 @@ row data into an Item (_Row.as_item()).
 A list of found Items is then returned.
 """
 
-import requests
-import re
-import bencodepy
 from bs4 import BeautifulSoup as bs
 from enum import IntEnum
 from furl import furl
 from urllib.parse import urlencode, urlparse
+import requests
+import re
+import bencodepy
+import logging
 
-import utils
 from item import Item, Data, Exacts
+import utils
 
 MIRRORS = (
     'libgen.io',
@@ -232,7 +233,7 @@ class _Row(object):
         return Item(data)
 
 
-class _LibGen(object):
+class _LibGen:
     """
     Retrieve the html table and iterate over its rows.
     """
@@ -241,25 +242,32 @@ class _LibGen(object):
 
     # Note that any dictionary keys whose value is None
     # will not be added to the URL's query string.
-    def __init__(self, query):
+    def __init__(self, query, logger):
+        self.logger = logger
         r = None
         filename = "/tmp/bookwyrm-%s" % query['req']
 
         try:
             with open(filename, 'r') as f:
                 r = f.read()
+                self.logger.debug('\'%s\' exists' % filename)
+
             soup = bs(r, 'html.parser')
 
         except IOError:
             url = "http://%s/search.php"
 
             for mirror in MIRRORS:
+                self.logger.debug('fetching from %s...' % mirror)
+
                 r = requests.get(url % mirror, params=query)
                 if r.status_code == requests.codes.ok:
                     # Don't bother with the other mirrors if
                     # we already have what we want.
-                    print("fetched from libgen!")
+                    self.logger.debug('...fetched!')
                     break
+                else:
+                    self.logger.debug('request returned code %d, throwing...' % r.status_code)
 
             # If not 200, raises requests.exceptions.HTTPError
             # (or somethig else?)
@@ -389,17 +397,21 @@ def search(query):
     Search libgen for `query` and sort the results into a list of Items.
     """
 
+    logger = logging.getLogger('bookwyrm.libgen')
+
     # debugging and testing
     query = {
         'req': query.title,
         'view': 'simple'
     }
+    logger.debug('querying with \'%s\'' % query)
 
     items = []
-    for result in _LibGen(query):
+    for result in _LibGen(query, logger):
         row = _Row(result)
         item = row.as_item()
 
         items.append(item)
 
+    logger.debug('I found %d items traversing libgen' % len(items))
     return items

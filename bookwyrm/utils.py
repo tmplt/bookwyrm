@@ -1,8 +1,11 @@
+from __future__ import print_function
+
+from furl import furl
 import bencodepy
 import hashlib
 import base64
 import requests
-from furl import furl
+import sys
 
 SI_PREFIXES = {
     'k': 1e3,  # kilo
@@ -16,6 +19,10 @@ ORDINAL_NUMS = {
     3: 'rd'
     # 'th' in ordinal_num()
 }
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def magnet_from_torrent(torrent):
@@ -96,7 +103,7 @@ def valid_doi(doi):
     """
 
     prefix, suffix = doi.split('/', 1)
-    for part in prefix:
+    for part in prefix.split('.'):
         if not part.isdigit():
             return False
 

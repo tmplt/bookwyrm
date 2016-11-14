@@ -8,31 +8,32 @@ Not sure yet.
 
 ## Usage
 ```
-usage: bookwyrm [-h] [-a AUTHOR] [-t TITLE] [-p PUBLISHER] [-y YEAR]
-                [-l LANGUAGE] [-e EDITION] [-E EXTENSION] [-i ISBN]
-                [-d DOI] [-u URL] [-v] [--version]
+usage: bookwyrm [-h] [-a AUTHOR] [-t TITLE] [-s SERIE] [-p PUBLISHER]
+                [-y YEAR] [-l LANGUAGE] [-e EDITION] [-E EXTENSION] [-i ISBN]
+                [-d IDENT] [--version] [--debug]
 
-bookwyrm - find books and papers online and download them. When called with
-no arguments, bookwyrm prints this screen and exits.
+bookwyrm - find books and papers online and download them. When called with no
+arguments, bookwyrm prints this screen and exits.
 
 optional arguments:
   -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --debug
+
+necessarily inclusive arguments; at least one required:
   -a AUTHOR, --author AUTHOR
   -t TITLE, --title TITLE
   -s SERIE, --serie SERIE
   -p PUBLISHER, --publisher PUBLISHER
+
+exact arguments; optional:
   -y YEAR, --year YEAR
   -l LANGUAGE, --language LANGUAGE
   -e EDITION, --edition EDITION
   -E EXTENSION, --extension EXTENSION
                         filename extension without period, e.g. 'pdf'.
   -i ISBN, --isbn ISBN
-  -d DOI, --doi DOI
-  -u URL, --url URL
-  -v, --verbose         verbose mode; prints out a lot of debug information.
-                        Can be used more than once, e.g. -vv, to increase the
-                        level of verbosity.
-  --version             show program's version number and exit
+  -d IDENT, --ident IDENT
 ```
 
 ## Planned supported sources

@@ -13,7 +13,7 @@
 # included in all copies or substantial portions of the Software.
 
 """
-Fetch research papers from scihub.cc and it's mirrors.
+Fetch research papers from sci-hub.cc and it's mirrors.
 """
 
 # Original author and source:
@@ -23,10 +23,11 @@ Fetch research papers from scihub.cc and it's mirrors.
 #   - rewritten for Python 3 and
 #   - stripped of code not used by bookwyrm
 
-import requests
-import hashlib
 from bs4 import BeautifulSoup as bs
 from furl import furl
+import requests
+import hashlib
+import logging
 
 MIRRORS = (
     'sci-hub.cc',
@@ -34,32 +35,44 @@ MIRRORS = (
 )
 
 
-def search_direct_url(ident):
-    r = None
+class SciHub:
 
-    for mirror in MIRRORS:
-        url = "http://{}/{}".format(mirror, ident)
-        r = requests.get(url)
-        if r.status_code == requests.codes.ok:
-            break
+    def __init__(self):
+        self.logger = logging.getLogger('bookwyrm.scihub')
 
-    r.raise_for_status()
+    def search_direct_url(self, ident):
+        r = None
 
-    soup = bs(r.content, 'html.parser')
-    iframe = soup.iframe
+        for mirror in MIRRORS:
+            url = "http://{}/{}".format(mirror, ident)
+            self.logger.debug('trying url: \'%s\'' % url)
 
-    return iframe.get('src')
+            r = requests.get(url)
+            if r.status_code == requests.codes.ok:
+                break
 
+        r.raise_for_status()
 
-def generate_name(r):
-    """
-    Generate unique filename for paper. Returns a name by calcuating
-    sha1 hash of file contents, then appending the last 20 characters
-    of the url which typically provides a good paper identifier.
-    """
+        soup = bs(r.content, 'html.parser')
+        iframe = soup.iframe
 
-    f = furl(r.url)
-    name = f.path.segments[-1]
-    pdf_hash = hashlib.sha1(r.content).hexdigest()
+        if iframe is None:
+            self.logger.debug('unable to find iframe; captcha?')
 
-    return "{}-{}".format(pdf_hash, name[-20:])
+        return iframe.get('src')
+
+    def generate_name(self, r):
+        """
+        Generate unique filename for paper. Returns a name by calcuating
+        sha1 hash of file contents, then appending the last 20 characters
+        of the url which typically provides a good paper identifier.
+        """
+
+        f = furl(r.url)
+        name = f.path.segments[-1]
+        pdf_hash = hashlib.sha1(r.content).hexdigest()
+
+        gen_name = "{}-{}".format(pdf_hash, name[-20:])
+
+        self.logger.debug('generated filename: \'%s\'' % gen_name)
+        return gen_name
