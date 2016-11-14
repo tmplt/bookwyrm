@@ -285,8 +285,7 @@ def main(argv):
         args.title,
         args.serie,
         args.publisher,
-        # args.url,
-        # args.doi
+        args.ident,
     )
 
     if len(argv) < 2:  # no arguments given
