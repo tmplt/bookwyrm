@@ -51,7 +51,7 @@ class IdentType(Enum):
     doi = 2
 
 
-class bookwyrm:
+class Bookwyrm:
 
     def __init__(self, arg, logger):
         self.arg = arg
@@ -201,7 +201,7 @@ def main(argv, logger):
     elif not any(required_arg):
         parser.error('At least a title, serie, publisher or an author must be specified.')
 
-    with bookwyrm(args, logger) as bw:
+    with Bookwyrm(args, logger) as bw:
         if args.ident:
             bw.logger.debug('ident specified, ignoring everything else.')
 
