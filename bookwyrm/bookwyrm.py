@@ -217,12 +217,12 @@ def main(logger):
 
             if pdf is None:
                 eprint('I couldn\'t find anything.')
-                return Errno.no_results_found
+                return ExitCode.no_results_found
 
             bw.logger.debug('writing to disk...')
             utils.write(pdf)
 
-            return
+            return ExitCode.success
 
         for source in Sources:
             bw.logger.debug('traversing %s...' % source)
@@ -232,7 +232,7 @@ def main(logger):
             print('I found %d items!' % bw.count)
         else:
             eprint('I couldn\'t find anything.')
-            return Errno.no_results_found
+            return ExitCode.no_results_found
 
         bw.print_items()
 

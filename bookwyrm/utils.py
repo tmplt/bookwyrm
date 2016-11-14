@@ -22,7 +22,8 @@ ORDINAL_NUMS = {
 }
 
 
-class Errno(IntEnum):
+class ExitCode(IntEnum):
+    success = 0
     no_results_found = 1
 
 
