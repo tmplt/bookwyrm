@@ -54,12 +54,12 @@ class SciHub:
         r.raise_for_status()
 
         soup = bs(r.content, 'html.parser')
-        iframe = soup.iframe
 
-        if iframe is None:
+        try:
+            return soup.iframe.get('src')
+        except AttributeError:
             self.logger.debug('unable to find iframe; captcha?')
-
-        return iframe.get('src')
+            return None
 
     def generate_name(self, r):
         """
