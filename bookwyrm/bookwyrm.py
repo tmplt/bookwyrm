@@ -106,6 +106,10 @@ class Bookwyrm:
 
     def fetch(self, ident):
         url = self._get_direct_url(ident)
+
+        if url is None:
+            return None
+
         r = requests.get(url)
 
         return {
@@ -202,9 +206,14 @@ def main(argv, logger):
             bw.logger.debug('ident specified, ignoring everything else.')
 
             pdf = bw.fetch(args.ident)
-            bw.logger.debug('writing to disk...')
 
+            if pdf is None:
+                eprint('I couldn\'t find anything.')
+                return Errno.no_results_found
+
+            bw.logger.debug('writing to disk...')
             utils.write(pdf)
+
             return
 
         for source in Sources:
@@ -224,5 +233,5 @@ if __name__ == '__main__':
     logger = logging.getLogger('bookwyrm')
 
     retval = main(sys.argv, logger)
-    logger.debug('reached termination, exit code = {}'.format(0 if retval is None else retval))
+    logger.debug('reached termination, exit code = %d' % 0 if retval is None else retval)
     sys.exit(retval)
