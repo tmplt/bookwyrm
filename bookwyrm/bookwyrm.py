@@ -17,7 +17,7 @@
 
 from __future__ import print_function
 
-from enum import Enum, IntEnum
+from enum import Enum
 import sys
 import argparse
 import requests
@@ -25,7 +25,7 @@ import logging
 
 from item import Item
 from scihub import SciHub
-from utils import eprint
+from utils import eprint, Errno
 import libgen
 import utils
 
@@ -39,10 +39,6 @@ class Sources(Enum):
     # sci-hub = 2
     # irc = 3
     # torrents = 4
-
-
-class Errno(IntEnum):
-    no_results_found = 1
 
 
 class IdentType(Enum):
@@ -216,9 +212,9 @@ def main(argv, logger):
             bw.search(source)
 
         if bw.count > 0:
-            print("I found %d items!" % bw.count)
+            print('I found %d items!' % bw.count)
         else:
-            eprint("I couldn't find anything.")
+            eprint('I couldn\'t find anything.')
             return Errno.no_results_found
 
         bw.print_items()

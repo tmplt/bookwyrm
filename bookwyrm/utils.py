@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 from furl import furl
+from enum import IntEnum
 import bencodepy
 import hashlib
 import base64
@@ -19,6 +20,10 @@ ORDINAL_NUMS = {
     3: 'rd'
     # 'th' in ordinal_num()
 }
+
+
+class Errno(IntEnum):
+    no_results_found = 1
 
 
 def eprint(*args, **kwargs):
