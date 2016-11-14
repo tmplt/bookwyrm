@@ -86,3 +86,23 @@ def ordinal_num(n):
 
 def translate_si_prefix(key):
     return SI_PREFIXES.get(key, None)
+
+
+def valid_doi(doi):
+    """
+    A very simple validation:
+    only checks whether the suffix contains numbers.
+    Is is possible to validate the suffix?
+    """
+
+    prefix, suffix = doi.split('/', 1)
+    for part in prefix:
+        if not part.isdigit():
+            return False
+
+    return True
+
+
+def write(content):
+    with open(content['name'], 'bw+') as f:
+        f.write(content['pdf'])
