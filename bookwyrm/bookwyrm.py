@@ -181,7 +181,7 @@ def validate_arguments(args, parser):
         args.title,
         args.serie,
         args.publisher,
-        args.ident,
+        args.ident
     )
 
     if not any(required_arg):
