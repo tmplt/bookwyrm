@@ -166,10 +166,36 @@ def parse_command_line(parser):
     add_optarg('--version', action='version', version='%(prog)s 0.2.0-alpha.1')
     add_optarg('--debug', action='store_true')
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    validate_arguments(args, parser)
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
+    return args
 
 
-def main(argv, logger):
+def validate_arguments(args, parser):
+    required_arg = (
+        args.author,
+        args.title,
+        args.serie,
+        args.publisher,
+        args.ident,
+    )
+
+    if not any(required_arg):
+        if len(sys.argv) > 2:
+            parser.error('missing necessarily inclusive argument.')
+
+        parser.print_help()
+        sys.exit(0)
+
+    elif any(required_arg[:-1]) and args.ident:
+        parser.error('ident flag is exclusive, and may not be passed with another flag.')
+
+
+def main(logger):
     parser = argparse.ArgumentParser(
         prog='bookwyrm',
         allow_abbrev=False,
@@ -183,27 +209,9 @@ def main(argv, logger):
 
     args = parse_command_line(parser)
 
-    if args.debug:
-        logger.setLevel(logging.DEBUG)
-
-    required_arg = (
-        args.author,
-        args.title,
-        args.serie,
-        args.publisher,
-        args.ident,
-    )
-
-    if len(argv) < 2:  # no arguments given
-        parser.print_help()
-        return
-
-    elif not any(required_arg):
-        parser.error('At least a title, serie, publisher or an author must be specified.')
-
     with Bookwyrm(args, logger) as bw:
-        if args.ident:
-            bw.logger.debug('ident specified, ignoring everything else.')
+        if bw.arg.ident:
+            bw.logger.debug('ident specified.')
 
             pdf = bw.fetch(args.ident)
 
@@ -232,6 +240,6 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s:%(name)s:%(funcName)s: %(message)s')
     logger = logging.getLogger('bookwyrm')
 
-    retval = main(sys.argv, logger)
+    retval = main(logger)
     logger.debug('reached termination, exit code = %d' % 0 if retval is None else retval)
     sys.exit(retval)
