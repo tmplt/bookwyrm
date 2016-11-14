@@ -107,7 +107,11 @@ def valid_doi(doi):
     Is is possible to validate the suffix?
     """
 
-    prefix, suffix = doi.split('/', 1)
+    try:
+        prefix, suffix = doi.split('/', 1)
+    except ValueError:
+        return False
+
     for part in prefix.split('.'):
         if not part.isdigit():
             return False
