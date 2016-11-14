@@ -14,4 +14,4 @@
 # included in all copies or substantial portions of the Software.
 
 __version__ = u'0.1.0'
-__author__ = u'Tmplt <ttemplate223@gmail.com>'
+__author__ = u'Tmplt <tmplt@dragons.rocks>'
