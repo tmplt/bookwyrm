@@ -26,10 +26,10 @@ def _read(fn):
 
 setup(
     name='bookwyrm',
-    version='0.1.0',
+    version='0.2.0',
     description='book/paper finder and retriever',
     author='Tmplt',
-    author_email='ttemplate223@gmail.com',
+    author_email='tmplt@dragons.rocks',
     license='MIT',
     long_description=_read('README.md'),
 
