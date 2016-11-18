@@ -21,14 +21,14 @@ import itertools
 FUZZ_RATIO_DEF = 75
 
 
-class Exacts(namedtuple('Exacts', ['year', 'lang', 'edition', 'ext'])):
+class BookExacts(namedtuple('BookExacts', ['year', 'lang', 'edition', 'ext'])):
     """A named tuple, but with optional arguments."""
     __slots__ = ()
 
     def __new__(cls, year=None, lang=None, edition=None, ext=None):
-        return super(Exacts, cls).__new__(cls, year, lang, edition, ext)
+        return super(BookExacts, cls).__new__(cls, year, lang, edition, ext)
 
-Data = namedtuple('Data', ['authors', 'title', 'serie', 'publisher',
+Book = namedtuple('Book', ['authors', 'title', 'serie', 'publisher',
                            'isbns', 'mirrors', 'exacts'])
 
 
@@ -38,24 +38,24 @@ class Item:
     def __init__(self, arg):
         if isinstance(arg, argparse.Namespace):
             self.__init_from_argparse(arg)
-        elif isinstance(arg, Data):
+        elif isinstance(arg, Book):
             self.data = arg
 
     def __init_from_argparse(self, args):
 
-        self.data = Data(
+        self.data = Book(
             authors = args.author,
             title = args.title,
             serie = args.serie,
             publisher = args.publisher,
             isbns = args.isbn,
 
-            # Since Data's attributes aren't optional and using a
+            # Since Book's attributes aren't optional and using a
             # named tuple with optional arguments made for some
             # wierd behavior.
             mirrors = None,
 
-            exacts = Exacts(
+            exacts = BookExacts(
                 year = args.year,
                 lang = args.language,
                 edition = args.edition,
