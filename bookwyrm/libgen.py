@@ -286,16 +286,7 @@ class _LibGen:
                 self.results.append(row)
 
     def __iter__(self):
-        self.current = 0
-        return self
-
-    def __next__(self):
-        # NOTE: superfluous code, since self.results is a list already.
-        result = [r for n, r in enumerate(self.results) if n == self.current]
-        if not result:
-            raise StopIteration
-        self.current += 1
-        return result[0]
+        return iter(self.results)
 
 
 def process_mirrors(urls, source=None):
