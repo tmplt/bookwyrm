@@ -24,21 +24,23 @@ import requests
 import logging
 
 from item import Item
-from scihub import SciHub
-from utils import eprint, Errno
+from utils import eprint, ExitCode
 import libgen
+import scihub
 import utils
 
 
-# Allow these to be set when initializing?
-# Read from config/args for that?
+# NOTE: enable the user to config there.
 class Sources(Enum):
     libgen = 1
 
     # Not yet implemented sources:
-    # sci-hub = 2
     # irc = 3
     # torrents = 4
+
+SEARCH_TABLE = {
+    Sources.libgen: libgen.search
+}
 
 
 class IdentType(Enum):
@@ -49,15 +51,13 @@ class IdentType(Enum):
 
 class Bookwyrm:
 
-    def __init__(self, arg, logger):
-        self.arg = arg
-        self.wanted = Item(arg)
+    def __init__(self, args, logger):
+        self.args = args
+        self.wanted = Item(args)
         self.logger = logger
 
         self.count = 0
         self.results = []
-
-        self.scihub = SciHub()
 
     def __enter__(self):
         self.logger.debug('summoning the mighty, all-knowing bookwyrm!')
@@ -81,63 +81,54 @@ class Bookwyrm:
 
             print(line)
 
+    def _filter_unwanted(self, wanted, lst):
+        self.logger.debug('filtering items to match wanted values')
+
+        # NOTE: are we eq'ing items twice here?
+        for item in lst[:]:
+            if not item.matches(wanted):
+                lst.remove(item)
+
+        return lst
+
     def search(self, source):
-
-        # NOTE: This is bad code:
-        # - __eq__ for all items is run twice (.remove()).
-        # - this could probably be made into a zero-parameter function.
-        # - the bloody list is copied, which isn't very efficient.
-        def filter_unwanted(wanted, lst):
-            self.logger.debug('filtering items to match wanted values')
-
-            for item in lst[:]:
-                if not item.matches(wanted):
-                    lst.remove(item)
-
-            return lst
-
-        if source == Sources.libgen:
-            results = libgen.search(self.wanted)
-
-        self.results = filter_unwanted(self.wanted, results)
+        """Search all sources for an item matching what's wanted."""
+        results = SEARCH_TABLE[source](self.wanted)
+        self.results = self._filter_unwanted(self.wanted, results)
 
         self.count = len(results)  # used in main()
-        return self.count
 
     def fetch(self, ident):
+        """Download (fetch) an item from an identifyer."""
         url = self._get_direct_url(ident)
-
-        if url is None:
-            return None
-
         r = requests.get(url)
 
         return {
             'pdf': r.content,
             'url': url,
-            'name': self.scihub.generate_name(r)
+            'name': scihub.generate_name(r)
         }
 
     def _get_direct_url(self, ident):
-        self.logger.debug('classifying \'%s\'' % ident)
         id_type = self._classify(ident)
         self.logger.debug('\'%s\' classified as %s' % (ident, id_type))
 
         if id_type == IdentType.direct:
             return ident
         else:
-            return self.scihub.search_direct_url(ident)
+            return scihub.search_direct_url(ident)
 
     def _classify(self, ident):
-        if ident.startswith('http'):
+        if utils.valid_doi(ident):
+            return IdentType.doi
+        elif ident.endswith('http'):
+            # NOTE: Of course, direct links to a .pdf can end with something else.
             if ident.endswith('pdf'):
                 return IdentType.direct
             else:
                 return IdentType.paywall
-        elif utils.valid_doi(ident):
-            return IdentType.doi
         else:
-            return None
+            raise ValueError('invalid ident')
 
 
 def parse_command_line(parser):
@@ -209,11 +200,13 @@ def main(logger):
         if args.ident:
             logger.debug('ident specified.')
 
-            pdf = bw.fetch(args.ident)
-
-            if pdf is None:
+            try:
+                pdf = bw.fetch(args.ident)
+            except ValueError:
                 eprint('I couldn\'t find anything.')
                 return ExitCode.no_results_found
+
+            logger.debug('generated filename \'%s\'' % pdf['name'])
 
             logger.debug('writing to disk...')
             utils.write(pdf)

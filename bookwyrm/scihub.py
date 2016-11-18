@@ -37,14 +37,13 @@ MIRRORS = (
 
 class SciHub:
 
-    def __init__(self):
-        self.logger = logging.getLogger('bookwyrm.scihub')
-
-    def search_direct_url(self, ident):
+    def __init__(self, ident, logger):
+        self.logger = logger
+        self.url = ""
         r = None
 
         for mirror in MIRRORS:
-            url = "http://{}/{}".format(mirror, ident)
+            url = "http://%s/%s" % (mirror, ident)
             self.logger.debug('trying url: \'%s\'' % url)
 
             r = requests.get(url)
@@ -52,27 +51,33 @@ class SciHub:
                 break
 
         r.raise_for_status()
-
         soup = bs(r.content, 'html.parser')
 
         try:
-            return soup.iframe.get('src')
+            self.url = soup.iframe.get('src')
         except AttributeError:
-            self.logger.debug('unable to find iframe; captcha?')
-            return None
+            self.logger.critical('unable to find iframe; captcha?')
 
-    def generate_name(self, r):
-        """
-        Generate unique filename for paper. Returns a name by calcuating
-        sha1 hash of file contents, then appending the last 20 characters
-        of the url which typically provides a good paper identifier.
-        """
 
-        f = furl(r.url)
-        name = f.path.segments[-1]
-        pdf_hash = hashlib.sha1(r.content).hexdigest()
+def generate_name(resource):
+    """
+    Generate unique filename for paper. Returns a name by calcuating
+    sha1 hash of file contents, then appending the last 20 characters
+    of the url which typically provides a good paper identifier.
+    """
 
-        gen_name = "{}-{}".format(pdf_hash, name[-20:])
+    f = furl(resource.url)
+    name = f.path.segments[-1]  # server-side filename
 
-        self.logger.debug('generated filename: \'%s\'' % gen_name)
-        return gen_name
+    # Hash may change, even thought the same file is downloaded.
+    pdf_hash = hashlib.sha1(resource.content).hexdigest()
+
+    gen_name = "%s-%s" % (pdf_hash, name[-20:])
+    return gen_name
+
+
+def search_direct_url(ident):
+    logger = logging.getLogger('Bookwyrm.scihub')
+
+    s = SciHub(ident, logger)
+    return s.url
