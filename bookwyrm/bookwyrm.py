@@ -184,12 +184,8 @@ def validate_arguments(args, parser):
         args.ident
     )
 
-    if not any(required_arg):
-        if len(sys.argv) > 2:
-            parser.error('missing necessarily inclusive argument.')
-
-        parser.print_help()
-        sys.exit(0)
+    if not any(required_arg) and len(sys.argv) > 2:
+        parser.error('missing necessarily inclusive argument.')
 
     elif any(required_arg[:-1]) and args.ident:
         parser.error('ident flag is exclusive, and may not be passed with another flag.')
