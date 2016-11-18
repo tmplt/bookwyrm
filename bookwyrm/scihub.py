@@ -37,9 +37,11 @@ MIRRORS = (
 
 class SciHub:
 
+    logger = None
+    url = ""
+
     def __init__(self, ident, logger):
         self.logger = logger
-        self.url = ""
         r = None
 
         for mirror in MIRRORS:

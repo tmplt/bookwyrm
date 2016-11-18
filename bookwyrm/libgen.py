@@ -238,12 +238,14 @@ class _LibGen:
     Retrieve the html table and iterate over its rows.
     """
 
+    logger = None
     results = []
 
-    # Note that any dictionary keys whose value is None
-    # will not be added to the URL's query string.
     def __init__(self, query, logger):
         self.logger = logger
+        self._search(query)
+
+    def _search(self, query):
         r = None
         filename = "/tmp/bookwyrm-%s" % query['req']
 
@@ -260,6 +262,8 @@ class _LibGen:
             for mirror in MIRRORS:
                 self.logger.debug('fetching from %s...' % mirror)
 
+                # Note that any dictionary keys whose value is None
+                # will not be added to the URL's query string.
                 r = requests.get(url % mirror, params=query)
                 if r.status_code == requests.codes.ok:
                     # Don't bother with the other mirrors if
