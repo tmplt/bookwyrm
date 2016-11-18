@@ -72,14 +72,14 @@ class Bookwyrm:
             edition = item.exacts.edition
             ext = item.exacts.ext
 
-            output = "%d | %s, %s, %s" % (
+            line = "%d | %s, %s, %s" % (
                 idx,
                 item.title,
                 utils.ordinal_num(edition) + " ed." if edition else "n/a ed.",
                 ext
             )
 
-            print(output)
+            print(line)
 
     def search(self, source):
 
@@ -206,8 +206,8 @@ def main(logger):
     args = parse_command_line(parser)
 
     with Bookwyrm(args, logger) as bw:
-        if bw.arg.ident:
-            bw.logger.debug('ident specified.')
+        if args.ident:
+            logger.debug('ident specified.')
 
             pdf = bw.fetch(args.ident)
 
@@ -215,27 +215,27 @@ def main(logger):
                 eprint('I couldn\'t find anything.')
                 return ExitCode.no_results_found
 
-            bw.logger.debug('writing to disk...')
+            logger.debug('writing to disk...')
             utils.write(pdf)
 
             return ExitCode.success
 
         for source in Sources:
-            bw.logger.debug('traversing %s...' % source)
+            logger.debug('traversing %s...' % source)
             bw.search(source)
 
         if bw.count > 0:
             print('I found %d items!' % bw.count)
+            bw.print_items()
         else:
             eprint('I couldn\'t find anything.')
             return ExitCode.no_results_found
 
-        bw.print_items()
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s:%(name)s:%(funcName)s: %(message)s')
     logger = logging.getLogger('bookwyrm')
 
     retval = main(logger)
-    logger.debug('reached termination, exit code = %d' % 0 if retval is None else retval)
+    logger.debug('reached termination, exit code = %d' % retval)
     sys.exit(retval)
