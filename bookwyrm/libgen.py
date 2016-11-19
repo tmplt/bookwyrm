@@ -30,7 +30,7 @@ import re
 import bencodepy
 import logging
 
-from item import Item, Data, Exacts
+from item import Item, NonExacts, Exacts, Misc
 import utils
 
 MIRRORS = (
@@ -214,23 +214,31 @@ class _Row(object):
         edition = self._get_edition()
         isbns = self._get_isbns()
 
-        data = Data(
-            title = self._get_title(),
+        nonexacts = NonExacts(
             authors = self._get_authors(),
+            title = self._get_title(),
             serie = self._get_serie(),
-            publisher = self._get_publisher(),
-            mirrors = self._get_mirrors(),
-            isbns = isbns,
-
-            exacts = Exacts(
-                year = self._get_year(),
-                lang = self._get_lang(),
-                edition = edition,
-                ext = self._get_ext()
-            )
+            publisher = self._get_publisher()
         )
 
-        return Item(data)
+        exacts = Exacts(
+            year = self._get_year(),
+            lang = self._get_lang(),
+            edition = edition,
+            ext = self._get_ext(),
+            pages = self._get_page_count()
+        )
+
+        misc = Misc(
+            isbns = isbns,
+            mirrors = self._get_mirrors()
+        )
+
+        return Item(
+            nonexacts = nonexacts,
+            exacts = exacts,
+            misc = misc
+        )
 
 
 class _LibGen:
@@ -396,7 +404,7 @@ def search(query):
 
     # debugging and testing
     query = {
-        'req': query.title,
+        'req': query.nonexacts.title,
         'view': 'simple'
     }
     logger.debug('querying with \'%s\'' % query)

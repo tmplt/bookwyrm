@@ -53,7 +53,7 @@ class Bookwyrm:
 
     def __init__(self, args, logger):
         self.args = args
-        self.wanted = Item(args)
+        self.wanted = Item(namespace=args)
         self.logger = logger
 
         self.count = 0
@@ -74,7 +74,7 @@ class Bookwyrm:
 
             line = "%d | %s, %s, %s" % (
                 idx,
-                item.title,
+                item.nonexacts.title,
                 utils.ordinal_num(edition) + " ed." if edition else "n/a ed.",
                 ext
             )
@@ -93,6 +93,7 @@ class Bookwyrm:
 
     def search(self, source):
         """Search all sources for an item matching what's wanted."""
+
         results = SEARCH_TABLE[source](self.wanted)
         self.results = self._filter_unwanted(self.wanted, results)
 
@@ -100,6 +101,7 @@ class Bookwyrm:
 
     def fetch(self, ident):
         """Download (fetch) an item from an identifyer."""
+
         url = self._get_direct_url(ident)
         r = requests.get(url)
 
@@ -223,6 +225,8 @@ def main(logger):
         else:
             eprint('I couldn\'t find anything.')
             return ExitCode.no_results_found
+
+        return ExitCode.success
 
 
 if __name__ == '__main__':
