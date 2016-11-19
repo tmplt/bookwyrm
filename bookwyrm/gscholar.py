@@ -37,11 +37,9 @@ class _GScholar:
 
     def _search(self, query, limit=10):
         """
-        Performs a query on scholar.google.com, and returns a dictionary
-        of results in the form {'papers': ...}. Unfortunately, as of now,
+        Performs a query on scholar.googl.com, and appends each result in
+        the class' self.results. Unfortunately, as of now,
         captchas can potentially prevent searches after a certain limit.
-
-        Potential errors can be found in papers['error'].
         """
 
         page_id = 0
@@ -107,6 +105,7 @@ class _GScholar:
         bibtex_file = self._get_bibtex(paper)
         bib = bibtexparser.loads(bibtex_file).entries[0]
 
+        # TODO: clean this mess up.
         nonexacts = NonExacts(
             authors = bib.get('author', None),
             title = bib.get('title', None),
