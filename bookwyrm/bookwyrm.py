@@ -67,8 +67,8 @@ class Bookwyrm:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.logger.debug('killed the bookwyrm (:c) with exc_type, exc_value, traceback = (%s, %s, %s)'
-                          % (exc_type, exc_value, traceback))
+        self.logger.debug('killed the bookwyrm (:c) with exc_type, exc_value = (%s, %s)'
+                          % (exc_type, exc_value))
 
     def print_items(self):
         for idx, item in enumerate(self.results):
