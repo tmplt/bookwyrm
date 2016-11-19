@@ -13,5 +13,5 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-__version__ = u'0.2.0'
+__version__ = u'0.3.0'
 __author__ = u'Tmplt <tmplt@dragons.rocks>'

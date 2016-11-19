@@ -159,7 +159,7 @@ def parse_command_line(parser):
     exact.add_argument('-d', '--ident')
 
     # Utility arguments; optional
-    add_optarg('--version', action='version', version='%(prog)s 0.2.0-alpha.1')
+    add_optarg('--version', action='version', version='%(prog)s 0.3.0-alpha')
     add_optarg('--debug', action='store_true')
 
     args = parser.parse_args()

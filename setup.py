@@ -26,7 +26,7 @@ def _read(fn):
 
 setup(
     name='bookwyrm',
-    version='0.2.0',
+    version='0.3.0',
     description='book/paper finder and retriever',
     author='Tmplt',
     author_email='tmplt@dragons.rocks',
