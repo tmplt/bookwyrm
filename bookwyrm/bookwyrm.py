@@ -27,19 +27,22 @@ from item import Item
 from utils import eprint, ExitCode
 import libgen
 import scihub
+import gscholar
 import utils
 
 
 # NOTE: enable the user to config there.
 class Sources(Enum):
-    libgen = 1
+    libgen = 0
+    gscholar = 1
 
     # Not yet implemented sources:
     # irc = 3
     # torrents = 4
 
 SEARCH_TABLE = {
-    Sources.libgen: libgen.search
+    Sources.libgen: libgen.search,
+    Sources.gscholar: gscholar.search
 }
 
 
@@ -94,10 +97,10 @@ class Bookwyrm:
     def search(self, source):
         """Search all sources for an item matching what's wanted."""
 
-        results = SEARCH_TABLE[source](self.wanted)
-        self.results = self._filter_unwanted(self.wanted, results)
+        unprocessed_results = SEARCH_TABLE[source](self.wanted)
+        self.results += self._filter_unwanted(self.wanted, unprocessed_results)
 
-        self.count = len(results)  # used in main()
+        self.count += len(self.results)  # used in main()
 
     def fetch(self, ident):
         """Download (fetch) an item from an identifyer."""

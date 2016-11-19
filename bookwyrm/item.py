@@ -96,9 +96,9 @@ class Item:
         )
 
         self.exacts = Exacts(
-            # year = args.year,
-            # edition = args.edition,
-            # ext = args.extension,
+            year = args.year,
+            edition = args.edition,
+            ext = args.extension,
             # volume = args.volume,
             # number = args.number
         )
@@ -134,7 +134,7 @@ class Item:
             return ratio >= fuzzy_min
 
         # Don't check if a Paper matches a Book and vise-versa.
-        if not self.item_type() is wanted.item_type():
+        if self.item_type() != wanted.item_type():
             return False
 
         # Parallell iteration over the two tuples of exact values.
@@ -143,13 +143,9 @@ class Item:
                 if val != req:
                     return False
 
-        try:
-            if wanted.misc.isbns:
-                if not set(wanted.misc.isbns) & set(self.misc.isbns):
-                    return False
-        except TypeError:
-            # Book.isbns exists, but Paper.isbns doesn't.
-            pass
+        if wanted.misc.isbns:
+            if not set(wanted.misc.isbns) & set(self.misc.isbns):
+                return False
 
         in_result = (self.nonexacts.title, self.nonexacts.serie, self.nonexacts.publisher)
         requested = (wanted.nonexacts.title, wanted.nonexacts.serie, wanted.nonexacts.publisher)
