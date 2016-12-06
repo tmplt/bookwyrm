@@ -17,20 +17,33 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stdexcept>
 #include "../3rdparty/cxxopts.hpp"
 #include "printf.hpp"
 
-/* void */
-/* validate_arguments(cxxopts::Options options) */
-/* { */
-/*     std::array<void*, 5> required_arg= { */
-/*         options["author"].as<std::vector<std::string>>(), */
-/*         options["title"].as<std::string>(), */
-/*         options["serie"].as<std::string>(), */
-/*         options["publisher"].as<std::string>(), */
-/*         options["ident"].as<std::string>() */
-/*     }; */
-/* } */
+void
+validate_arguments(cxxopts::Options options)
+{
+    /* Is any of the required arguments passed? */
+    if (options["author"].as<std::vector<std::string>>().size() == 0 &&
+            options["title"].as<std::string>().empty()     &&
+            options["serie"].as<std::string>().empty()     &&
+            options["publisher"].as<std::string>().empty() &&
+            options["ident"].as<std::string>().empty()) {
+        throw std::invalid_argument("missing necessary inclusive argument.");
+    }
+
+    /* Is any required argument passed alongside --ident? */
+    if ((options["author"].as<std::vector<std::string>>().size() != 0 ||
+            !options["title"].as<std::string>().empty()      ||
+            !options["serie"].as<std::string>().empty()      ||
+            !options["publisher"].as<std::string>().empty()) &&
+            !options["ident"].as<std::string>().empty()) {
+        throw std::invalid_argument("ident flag is exclusive, and may not be passed with another flag.");
+    }
+
+    return;
+}
 
 cxxopts::Options
 parse_command_line(int argc, char *argv[])
@@ -61,7 +74,7 @@ parse_command_line(int argc, char *argv[])
     ;
 
     options.parse(argc, argv);
-    /* validate_arguments(options); */
+    validate_arguments(options);
 
     return options;
 }
@@ -70,51 +83,21 @@ int
 main(int argc, char *argv[])
 {
     if (argc < 2) {
-        fmt::fprintf(stderr, "Print usage here.");
+        fmt::fprintf(stderr, "Print usage here.\n");
         return 0;
     }
 
     try {
         cxxopts::Options options = parse_command_line(argc, argv);
     }
-    catch (cxxopts::OptionException &e) {
-        fmt::printf("%s: %s\n", argv[0], e.what());
+    catch (cxxopts::OptionException &oe) {
+        fmt::printf("%s: %s\n", argv[0], oe.what());
         return 1;
     }
-
-    /* try { */
-    /*     cxxopts::Options options(argv[0], "find books and papers online and download them."); */
-
-    /*     bool apple = false; */
-
-    /*     options.add_options() */
-    /*         ("v,verbose", "Verbose mode") */
-    /*         ("d,debug", "Enable debugging") */
-    /*         ("t,test", "test flag") */
-    /*         /1* ("b,bob", "Bob", cxxopts::value<bool>(apple)) *1/ */
-    /*         /1* ("i,input", "Input", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("a,author", cxxopts::value<bool>()) *1/ */
-    /*         /1* ("t,title", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("p,publisher", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("y,year", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("l,language", "two letters denoting the item's language; e.g. 'sv' or 'en'", *1/ */
-    /*         /1*     cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("e,extension", "filename extension without period", *1/ */
-    /*         /1*     cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("i,isbn", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("d,doi", cxxopts::value<std::string>()) *1/ */
-    /*         /1* ("h,help", "print help") *1/ */
-    /*     ; */
-
-    /*     options.parse(argc, argv); */
-
-    /*     if (options["debug"].as<bool>()) */
-    /*         std::cout << "yeah" << std::endl; */
-
-    /* } */
-    /* catch(cxxopts::option_not_exists_exception &e) { */
-    /*     fmt::printf("%s: %s\n", argv[0], e.what()); */
-    /* } */
+    catch (std::invalid_argument &ia) {
+        fmt::printf("%s: %s\n", argv[0], ia.what());
+        return 1;
+    }
 
     return 0;
 }
