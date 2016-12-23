@@ -20,7 +20,6 @@
 #include <stdexcept>
 #include "../3rdparty/cxxopts.hpp"
 #include "../3rdparty/fmt/fmt/format.h"
-#include "../3rdparty/spdlog/include/spdlog/spdlog.h"
 #include "bookwyrm.hpp"
 
 void
