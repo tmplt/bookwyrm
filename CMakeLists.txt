@@ -37,6 +37,7 @@ endif()
 #set(LINK_LIBS libircppclient ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${OPENSSL_LIBRARIES})
 
 # Include CMakeLists.txt from src/ and tests/
+add_subdirectory(3rdparty)
 add_subdirectory(src)
 
 string(CONCAT PROJECT_NAME_VERSION ${PROJECT_NAME}\ v${VERSION_STRING}+${GIT_COMMIT_HASH})

@@ -19,27 +19,31 @@
 #include <vector>
 #include <stdexcept>
 #include "../3rdparty/cxxopts.hpp"
-#include "printf.hpp"
+#include "../3rdparty/fmt/format.h"
+/* #include "../3rdparty/spdlog/spdlog.h" */
+/* #include "spdlog/spdlog.h" */
+/* #include "printf.hpp" */
+#include "bookwyrm.hpp"
 
 void
 validate_arguments(cxxopts::Options options)
 {
     /* Is any of the required arguments passed? */
-    if (options["author"].as<std::vector<std::string>>().size() == 0 &&
-            options["title"].as<std::string>().empty()     &&
-            options["serie"].as<std::string>().empty()     &&
-            options["publisher"].as<std::string>().empty() &&
+    if (options["authors"].as<std::vector<std::string>>().size() == 0 &&
+            options["title"].as<std::string>().empty()                &&
+            options["serie"].as<std::string>().empty()                &&
+            options["publisher"].as<std::string>().empty()            &&
             options["ident"].as<std::string>().empty()) {
-        throw std::invalid_argument("missing necessary inclusive argument.");
+        throw std::invalid_argument("missing necessary inclusive argument(s).");
     }
 
     /* Is any required argument passed alongside --ident? */
-    if ((options["author"].as<std::vector<std::string>>().size() != 0 ||
-            !options["title"].as<std::string>().empty()      ||
-            !options["serie"].as<std::string>().empty()      ||
-            !options["publisher"].as<std::string>().empty()) &&
+    if ((options["authors"].as<std::vector<std::string>>().size() != 0 ||
+            !options["title"].as<std::string>().empty()                ||
+            !options["serie"].as<std::string>().empty()                ||
+            !options["publisher"].as<std::string>().empty())           &&
             !options["ident"].as<std::string>().empty()) {
-        throw std::invalid_argument("ident flag is exclusive, and may not be passed with another flag.");
+        throw std::invalid_argument("--ident flag is exclusive, and may not be passed with another master flag.");
     }
 
     return;
@@ -51,19 +55,21 @@ parse_command_line(int argc, char *argv[])
     cxxopts::Options options(argv[0], "- find books and papers online and download them.");
 
     options.add_options("Necessarily inclusive arguments; at least one is required")
-        ("a,author", "Author", cxxopts::value<std::vector<std::string>>())
+        ("a,authors", "Author", cxxopts::value<std::vector<std::string>>())
         ("t,title", "Title", cxxopts::value<std::string>())
         ("s,serie", "Serie", cxxopts::value<std::string>())
         ("p,publisher", "Publisher", cxxopts::value<std::string>())
+        ("j,journal", "Journal", cxxopts::value<std::string>())
         ("d,ident", "Unique identifier, such as an URL or DOI", cxxopts::value<std::string>())
     ;
 
     options.add_options("Exact arguments; optional")
         ("y,year", "Year", cxxopts::value<int>())
-        ("l,language", "Language", cxxopts::value<std::string>())
-        ("e,edition", "Edition", cxxopts::value<std::string>())
-        ("E,extention", "File extension without period, e.g. 'pdf'.", cxxopts::value<std::string>())
-        ("i,isbn", "ISBN string", cxxopts::value<std::string>())
+        ("l,lang", "Language", cxxopts::value<std::string>())
+        ("e,edition", "Edition", cxxopts::value<int>())
+        ("E,ext", "File extension without period, e.g. 'pdf'.", cxxopts::value<std::string>())
+        ("i,isbns", "ISBN string", cxxopts::value<std::string>())
+        ("v,volume", "Volume", cxxopts::value<int>())
     ;
 
     options.add_options()
@@ -82,6 +88,9 @@ parse_command_line(int argc, char *argv[])
 int
 main(int argc, char *argv[])
 {
+    /* auto logger = spdlog::stdout_logger_mt("logger"); */
+    /* logger->info("Summoning the Great Eldwyrm!"); */
+
     if (argc < 2) {
         fmt::fprintf(stderr, "Print usage here.\n");
         return 0;
@@ -89,6 +98,9 @@ main(int argc, char *argv[])
 
     try {
         cxxopts::Options options = parse_command_line(argc, argv);
+
+        bw::Bookwyrm bw(options);
+        bw.printtest();
     }
     catch (cxxopts::OptionException &oe) {
         fmt::printf("%s: %s\n", argv[0], oe.what());
@@ -99,6 +111,7 @@ main(int argc, char *argv[])
         return 1;
     }
 
+    /* spdlog::drop_all(); */
     return 0;
 }
 

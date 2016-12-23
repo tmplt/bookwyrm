@@ -4,4 +4,5 @@ file(GLOB SOURCE_FILES
 )
 
 add_executable(bookwyrm ${SOURCE_FILES})
+target_link_libraries(bookwyrm fmt)
 
