@@ -65,7 +65,7 @@ parse_command_line(int argc, char *argv[])
         ("l,lang", "Language", cxxopts::value<std::string>())
         ("e,edition", "Edition", cxxopts::value<int>())
         ("E,ext", "File extension without period, e.g. 'pdf'.", cxxopts::value<std::string>())
-        ("i,isbns", "ISBN string", cxxopts::value<std::string>())
+        ("i,isbns", "ISBN string", cxxopts::value<std::vector<std::string>>())
         ("v,volume", "Volume", cxxopts::value<int>())
     ;
 
@@ -97,7 +97,6 @@ main(int argc, char *argv[])
         cxxopts::Options options = parse_command_line(argc, argv);
 
         bw::Bookwyrm bw(options);
-        /* bw.printtest(); */
     }
     catch (cxxopts::OptionException &oe) {
         printf("%s: %s\n", argv[0], oe.what());
