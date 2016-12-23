@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include "../3rdparty/cxxopts.hpp"
-#include "../3rdparty/fmt/format.h"
 
 namespace bw {
 
@@ -15,10 +14,6 @@ struct mirror_t {
 class Bookwyrm {
 public:
     Bookwyrm(const cxxopts::Options &options);
-    void printtest()
-    {
-        fmt::printf("%s\n", title_);
-    }
 
 private:
     /* Exacts, these are diff'd without the usage of fuzzy. */

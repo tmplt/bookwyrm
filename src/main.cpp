@@ -19,10 +19,8 @@
 #include <vector>
 #include <stdexcept>
 #include "../3rdparty/cxxopts.hpp"
-#include "../3rdparty/fmt/format.h"
-/* #include "../3rdparty/spdlog/spdlog.h" */
-/* #include "spdlog/spdlog.h" */
-/* #include "printf.hpp" */
+#include "../3rdparty/fmt/fmt/format.h"
+#include "../3rdparty/spdlog/include/spdlog/spdlog.h"
 #include "bookwyrm.hpp"
 
 void
@@ -92,7 +90,7 @@ main(int argc, char *argv[])
     /* logger->info("Summoning the Great Eldwyrm!"); */
 
     if (argc < 2) {
-        fmt::fprintf(stderr, "Print usage here.\n");
+        fprintf(stderr, "Print usage here.\n");
         return 0;
     }
 
@@ -100,14 +98,14 @@ main(int argc, char *argv[])
         cxxopts::Options options = parse_command_line(argc, argv);
 
         bw::Bookwyrm bw(options);
-        bw.printtest();
+        /* bw.printtest(); */
     }
     catch (cxxopts::OptionException &oe) {
-        fmt::printf("%s: %s\n", argv[0], oe.what());
+        printf("%s: %s\n", argv[0], oe.what());
         return 1;
     }
     catch (std::invalid_argument &ia) {
-        fmt::printf("%s: %s\n", argv[0], ia.what());
+        printf("%s: %s\n", argv[0], ia.what());
         return 1;
     }
 
