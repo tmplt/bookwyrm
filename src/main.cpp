@@ -1,8 +1,10 @@
-#include "components/command_line.hpp"
-#include "config.hpp"
 #include <iostream>
 #include <cstdint>
 #include <exception>
+
+#include "components/command_line.hpp"
+#include "spdlog/spdlog.h"
+#include "config.hpp"
 
 using add_arg = command_line::option;
 
@@ -12,8 +14,7 @@ main(int argc, char *argv[])
     const command_line::options opts{
         add_arg("-h", "--help",      "Display this text and exit "),
         add_arg("-v", "--version",   "Print version information"),
-        add_arg("-l", "--log",       "Set the logging verbosity (default: WARNING)", "LEVEL",
-                {"error", "warning", "info", "trace"}),
+        add_arg("-l", "--log",       "Set logging level to info"),
 
         /* Exclusive arguments; cannot be combined with any other arguments. */
         add_arg("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)"),
@@ -38,6 +39,9 @@ main(int argc, char *argv[])
 
     uint8_t exit_code = EXIT_SUCCESS;
 
+    auto logger = spdlog::stdout_color_mt("logger");
+    spdlog::set_pattern("%l: %v");
+
     try {
         /* Parse command line arguments */
         std::string progname = argv[0];
@@ -57,8 +61,13 @@ main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-    } catch(const std::exception &err) {
-        std::cout << err.what() << std::endl;
+        if (cli->has("log"))
+            spdlog::set_level(spdlog::level::info);
+
+        logger->info("The mighty eldwyrm has been summoned!");
+
+    } catch (const std::exception &err) {
+        logger->error(err.what());
         exit_code = EXIT_FAILURE;
     }
 

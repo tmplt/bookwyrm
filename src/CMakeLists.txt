@@ -4,18 +4,23 @@
 
 file(GLOB_RECURSE SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src *.c[p]*)
 
-# Locate dependencies
+# Required dependencies
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED QUIET)
 
-#set(THREADS_PREFER_PTHREAD_FLAG ON)
-# Required dependenc
-#find_package(Threads REQUIRED)
-#set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Required dependency: libcurl {{{
 
 find_package(CURL REQUIRED)
 set(APP_LIBRARIES ${APP_LIBRARIES} ${CURL_LIBRARY})
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CURL_INCLUDE_DIR})
+
+# }}}
+
+# Required dependency: spdlog {{{
+
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/include)
 
 # }}}
 
@@ -40,7 +45,7 @@ make_executable(${PROJECT_NAME}
     RAW_DEPENDS
       ${APP_LIBRARIES})
 
-#target_link_libraries(${PROJECT_NAME} Threads::Threads)
+target_link_libraries(${PROJECT_NAME} Threads::Threads)
 
 # }}}
 # Export target details {{{
