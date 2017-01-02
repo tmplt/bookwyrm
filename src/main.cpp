@@ -1,7 +1,8 @@
+#include "components/command_line.hpp"
+#include "config.hpp"
 #include <iostream>
 #include <cstdint>
 #include <exception>
-#include "components/command_line.hpp"
 
 using add_arg = command_line::option;
 
@@ -49,10 +50,7 @@ main(int argc, char *argv[])
             cli->usage();
             return EXIT_SUCCESS;
         } else if (cli->has("version")) {
-            /*
-             * TODO:
-             * print_build_info(version_details(args));
-             */
+            print_build_info();
             return EXIT_SUCCESS;
         } else if (args.empty()) {
             cli->usage();

@@ -53,10 +53,10 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} PARENT_SCOPE)
 
 execute_process(COMMAND git describe --tags --dirty=-git
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-  OUTPUT_VARIABLE APP_VERSION
+  OUTPUT_VARIABLE PROG_VERSION
   OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 
-#configure_file(
-#  ${PROJECT_SOURCE_DIR}/include/config.hpp.cmake
-#  ${CMAKE_SOURCE_DIR}/include/config.hpp
-#  ESCAPE_QUOTES @ONLY)
+configure_file(
+  ${PROJECT_SOURCE_DIR}/include/config.hpp.cmake
+  ${CMAKE_SOURCE_DIR}/include/config.hpp
+  ESCAPE_QUOTES @ONLY)
