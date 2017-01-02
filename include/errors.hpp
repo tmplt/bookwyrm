@@ -1,10 +1,5 @@
 #pragma once
 
-#include <cerrno>
-#include <cstring>
-
-#include <string>
-
 class program_error : public std::runtime_error {
 public:
     explicit program_error(const std::string &message, int code = 0)
