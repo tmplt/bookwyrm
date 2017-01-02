@@ -8,6 +8,6 @@ or that they had a project of their own that provided some help/inspiration.
 
 Direct authors
 ---
-A list of people who have commited code to this repo.
+A list of people who have directly commited code to this repo.
 
 * Tmplt <ttemplate223@gmail.com>, maintainer.
