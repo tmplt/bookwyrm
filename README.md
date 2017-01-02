@@ -1,4 +1,3 @@
----
 
 bookwyrm is a cli-based program written in C++17 which, given some input data,
 searches for matching books and academic papers on various sources.
