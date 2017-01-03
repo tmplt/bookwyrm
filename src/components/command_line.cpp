@@ -24,7 +24,7 @@ cliparser::parser(string &&synopsis, const options &&opts)
 void
 cliparser::usage() const
 {
-    std::cout << synopsis_ << '\n' << std::endl;
+    std::cout << synopsis_ << "\n\n";
 
     size_t maxlen = 0;
 
@@ -58,7 +58,7 @@ cliparser::usage() const
          */
         if (!opt.values.empty()) {
             std::cout << std::setw(pad + opt.desc.length())
-                      << opt.desc << std::endl;
+                      << opt.desc << '\n';
 
             pad = pad + opt.flag_long.length() + opt.token.length() + 7;
 
