@@ -23,8 +23,7 @@
 #include "components/command_line.hpp"
 
 /* Create the instance */
-cliparser::make_type
-cliparser::make(string &&progname, const options &&opts)
+cliparser::make_type cliparser::make(string &&progname, const options &&opts)
 {
     return std::make_unique<cliparser>(
         "Usage: " + progname + " OPTION...", std::forward<decltype(opts)>(opts)
@@ -38,8 +37,7 @@ cliparser::parser(string &&synopsis, const options &&opts)
 }
 
 /* Print program usage message. */
-void
-cliparser::usage() const
+void cliparser::usage() const
 {
     std::cout << synopsis_ << "\n\n";
 
@@ -92,15 +90,13 @@ cliparser::usage() const
 
 
 /* Check if the passed option was provided. */
-bool
-cliparser::has(const string &option) const
+bool cliparser::has(const string &option) const
 {
     return optvalues_.find(option) != optvalues_.end();
 }
 
 /* Gets the value for a given option. */
-string
-cliparser::get(string opt) const
+string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
         return optvalues_.find(opt)->second;
@@ -109,39 +105,31 @@ cliparser::get(string opt) const
 }
 
 /* Compare option value with given string. */
-bool
-cliparser::compare(string opt, const string_view &val) const
+bool cliparser::compare(string opt, const string_view &val) const
 {
     return get(std::move(opt)) == val;
 }
 
 /* Compare option with its short version. */
-auto
-cliparser::is_short(const string_view &option, const string_view &opt_short) const
+auto cliparser::is_short(const string_view &option, const string_view &opt_short) const
 {
     return option.compare(0, opt_short.length(), opt_short) == 0;
 }
 
 /* Compare option with its long version */
-auto
-cliparser::is_long(const string_view &option, const string_view &opt_long) const
+auto cliparser::is_long(const string_view &option, const string_view &opt_long) const
 {
     return option.compare(0, opt_long.length(), opt_long) == 0;
 }
 
 /* Compare with both versions. */
-auto
-cliparser::is(const string_view &option, string opt_short, string opt_long) const
+auto cliparser::is(const string_view &option, string opt_short, string opt_long) const
 {
     return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
 }
 
-/*
- * Process argument vector.
- * TODO: make this cleaner.
- */
-void
-cliparser::process_input(const vector<string> &values)
+/* Process argument vector. */
+void cliparser::process_input(const vector<string> &values)
 {
     for (size_t i = 0; i < values.size(); i++) {
         const string_view &arg = values[i];
@@ -152,8 +140,7 @@ cliparser::process_input(const vector<string> &values)
 }
 
 /* Parse option value. */
-auto
-cliparser::parse_value(string input, const string_view &input_next, choices values) const
+auto cliparser::parse_value(string input, const string_view &input_next, choices values) const
 {
     string opt = std::move(input);
     size_t pos;
@@ -179,8 +166,7 @@ cliparser::parse_value(string input, const string_view &input_next, choices valu
 }
 
 /* Parse and validate passed arguments and flags. */
-void
-cliparser::parse(const string_view &input, const string_view &input_next)
+void cliparser::parse(const string_view &input, const string_view &input_next)
 {
     if (skipnext_) {
         skipnext_ = false;

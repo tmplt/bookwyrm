@@ -25,8 +25,7 @@
 
 using add_arg = command_line::option;
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     const command_line::options opts{
         add_arg("-h", "--help",      "Display this text and exit "),
