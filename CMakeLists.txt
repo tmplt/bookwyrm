@@ -25,7 +25,6 @@ set(CMAKE_MODULE_PATH
 include(utils)
 include(build/core)
 include(build/options)
-#include(build/targets)
 include(build/summary)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
