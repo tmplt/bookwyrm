@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
 
     auto logger = spdlog::stdout_color_mt("logger");
     spdlog::set_pattern("%l: %v");
+    spdlog::set_level(spdlog::level::err);
 
     try {
         /* Parse command line arguments */
@@ -65,6 +66,11 @@ int main(int argc, char *argv[])
 
         cliparser::make_type cli = cliparser::make(std::move(progname), std::move(opts));
         cli->process_input(args);
+
+        if (cli->has("log"))
+            spdlog::set_level(spdlog::level::info);
+
+        logger->info("The mighty eldwyrm has been summoned!");
 
         if (cli->has("help")) {
             cli->usage();
@@ -76,11 +82,6 @@ int main(int argc, char *argv[])
             cli->usage();
             return EXIT_FAILURE;
         }
-
-        if (cli->has("log"))
-            spdlog::set_level(spdlog::level::info);
-
-        logger->info("The mighty eldwyrm has been summoned!");
 
     } catch (const std::exception &err) {
         logger->error(err.what());
