@@ -37,6 +37,15 @@ cliparser::parser(string &&synopsis, const options &&opts)
 {
 }
 
+auto cliparser::valid_choices_str(const choices &valid_choices) const
+{
+    string retstring = "";
+    for (auto &v : valid_choices)
+        retstring += v + (v != valid_choices.back() ? ", " : "");
+
+    return retstring;
+}
+
 /* Print program usage message. */
 void cliparser::usage() const
 {
@@ -64,7 +73,7 @@ void cliparser::usage() const
         fmt::print("  {}, {}", opt.flag, opt.flag_long);
 
         if (!opt.token.empty()) {
-            std::cout << '=' << opt.token;
+            std::cout << ' ' << opt.token;
             pad--;
         }
 
@@ -78,9 +87,8 @@ void cliparser::usage() const
 
             pad = pad + opt.flag_long.length() + opt.token.length() + 7;
 
-            std::cout << string(pad, ' ') << opt.token << " is one of: ";
-            for (auto &v : opt.values)
-                std::cout << v << (v != opt.values.back() ? ", " : "");
+            std::cout << string(pad, ' ') << opt.token << " is one of: "
+                      << valid_choices_str(opt.values);
         } else {
             std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
         }
@@ -88,7 +96,6 @@ void cliparser::usage() const
         std::cout << std::endl;
     }
 }
-
 
 /* Check if an option has been passed. */
 bool cliparser::has(const string &option) const
@@ -151,9 +158,9 @@ auto cliparser::get_value(const string_view &flag, const string_view &value, con
         throw value_error("Missing value for " + string(flag.data()));
 
     if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end()) {
-        // print valid values
         throw value_error(
-            "Invalid value '" + string(value.data()) + "' for argument " + string(flag.data())
+            "Invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
+            "; valid options are: " + valid_choices_str(values)
         );
     }
 

@@ -54,7 +54,7 @@ public:
 
     /*
      * For options where a set of values are allowed,
-     * e.g. --log=LEVEL, where LEVEL is one of:
+     * e.g. --log LEVEL, where LEVEL is one of:
      * error, warning, info, trace.
      */
     const choices values;
@@ -79,6 +79,8 @@ public:
     bool compare(string opt, const string_view &val) const;
 
 protected:
+    auto valid_choices_str(const choices &valid_choices) const;
+
     auto is_short(const string_view &option, const string_view &opt_short) const;
     auto is_long(const string_view &option, const string_view &opt_long) const;
     auto is(const string_view &option, string opt_short, string opt_long) const;
