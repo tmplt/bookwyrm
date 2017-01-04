@@ -90,13 +90,13 @@ void cliparser::usage() const
 }
 
 
-/* Check if the passed option was provided. */
+/* Check if an option has been passed. */
 bool cliparser::has(const string &option) const
 {
     return passed_opts_.find(option) != passed_opts_.end();
 }
 
-/* Gets the value for a given option. */
+/* Gets the value for the given option. */
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
@@ -123,7 +123,10 @@ auto cliparser::is_long(const string_view &option, const string_view &opt_long) 
     return option.compare(0, opt_long.length(), opt_long) == 0;
 }
 
-/* Compare with both versions. */
+/*
+ * Compare passed option with it's short and long flag.
+ * Returns true if option is valid.
+ */
 auto cliparser::is(const string_view &option, string opt_short, string opt_long) const
 {
     return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
@@ -140,48 +143,39 @@ void cliparser::process_arguments(const vector<string> &args)
     }
 }
 
-/* Parse option value. */
-auto cliparser::parse_value(string input, const string_view &input_next, choices values) const
+/* Get the value of the option. */
+auto cliparser::get_value(const string_view &flag, const string_view &value, const choices &values) const
 {
-    string opt = std::move(input);
-    size_t pos;
-    string_view value;
 
-    if (input_next.empty() && opt.compare(0, 2, "--") != 0)
-        throw value_error("Missing value for " + string(opt.data()));
-    else if ((pos = opt.find('=')) == string_view::npos && opt.compare(0, 2, "--") == 0)
-        throw value_error("Missing value for " + string(opt.data()));
-    else if (pos == string::npos && !input_next.empty())
-        value = input_next;
-    else {
-        value = opt.substr(pos + 1);
-        opt = opt.substr(0, pos);
-    }
+    if (value.empty())
+        throw value_error("Missing value for " + string(flag.data()));
 
-    if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end())
+    if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end()) {
+        // print valid values
         throw value_error(
-            "Invalid value '" + string(value.data()) + "' for argument " + string(opt.data())
+            "Invalid value '" + string(value.data()) + "' for argument " + string(flag.data())
         );
+    }
 
     return value;
 }
 
-/* Parse and validate passed arguments and flags. */
+/* Parse and validate given option. */
 void cliparser::parse(const string_view &input, const string_view &input_next)
 {
     if (skipnext_) {
         skipnext_ = false;
-
-        if (!input_next.empty())
-            return;
+        return;
     }
 
     for (auto &&opt : valid_opts_) {
         if (is(input, opt.flag, opt.flag_long)) {
             if (opt.token.empty()) {
+                /* The option is only a flag. */
                 passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
             } else {
-                auto value = parse_value(input.data(), input_next, opt.values);
+                /* The option should have an accompanied value. */
+                auto value = get_value(input.data(), input_next, opt.values);
                 skipnext_ = (value == input_next);
                 passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
             }
@@ -190,6 +184,5 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         }
     }
 
-    if (input.compare(0, 1, "-") == 0)
-        throw argument_error("Unrecognized option " + string(input.data()));
+    throw argument_error("Unrecognized option " + string(input.data()));
 }
