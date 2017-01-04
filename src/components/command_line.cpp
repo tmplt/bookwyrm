@@ -130,11 +130,11 @@ auto cliparser::is(const string_view &option, string opt_short, string opt_long)
 }
 
 /* Process argument vector. */
-void cliparser::process_input(const vector<string> &values)
+void cliparser::process_arguments(const vector<string> &args)
 {
-    for (size_t i = 0; i < values.size(); i++) {
-        const string_view &arg = values[i];
-        const string_view &next_arg = values.size() > i + 1 ? values[i + 1] : "";
+    for (size_t i = 0; i < args.size(); i++) {
+        const string_view &arg = args[i];
+        const string_view &next_arg = args.size() > i + 1 ? args[i + 1] : "";
 
         parse(arg, next_arg);
     }

@@ -72,7 +72,7 @@ public:
 
     void usage() const;
 
-    void process_input(const vector<string> &values);
+    void process_arguments(const vector<string> &args);
 
     bool has(const string &option) const;
     string get(string opt) const;

@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         std::vector<std::string> args(argv + 1, argv + argc);
 
         cliparser::make_type cli = cliparser::make(std::move(progname), std::move(opts));
-        cli->process_input(args);
+        cli->process_arguments(args);
 
         if (cli->has("log"))
             spdlog::set_level(spdlog::level::info);
