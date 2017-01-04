@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "components/command_line.hpp"
+#include "fmt/format.h"
 
 /* Create the instance */
 cliparser::make_type cliparser::make(string &&progname, const options &&opts)
@@ -60,7 +61,7 @@ void cliparser::usage() const
         /* Padding between flags and description. */
         size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
 
-        std::cout << "  " << opt.flag << ", " << opt.flag_long;
+        fmt::print("  {}, {}", opt.flag, opt.flag_long);
 
         if (!opt.token.empty()) {
             std::cout << '=' << opt.token;
