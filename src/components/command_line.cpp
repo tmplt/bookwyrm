@@ -57,7 +57,7 @@ void cliparser::usage() const
      * Print each option, its description and token and possible
      * values for said token (if any).
      */
-    for (auto &opt : valid_opts_) {
+    for (const auto &opt : valid_opts_) {
         /* Padding between flags and description. */
         size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
 
