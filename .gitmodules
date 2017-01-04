@@ -1,6 +1,7 @@
 [submodule "lib/spdlog"]
 	path = lib/spdlog
 	url = https://github.com/Tmplt/spdlog.git
+	branch = bookwyrm
 [submodule "lib/fmt"]
 	path = lib/fmt
 	url = https://github.com/fmtlib/fmt.git
