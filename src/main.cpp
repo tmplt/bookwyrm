@@ -33,24 +33,24 @@ int main(int argc, char *argv[])
         add_arg("-l", "--log",       "Set logging level to info"),
 
         /* Exclusive arguments; cannot be combined with any other arguments. */
-        add_arg("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)"),
+        add_arg("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT"),
 
         /* Main arguments; at least one of these are required. */
         /* auto main = command_line::add_group( */
         /*     "main", "necessarily inclusive arguments; at least one required" */
         /* ); */
-        add_arg("-a", "--author",    "Specify authors"),
-        add_arg("-t", "--title",     "Specify title"),
-        add_arg("-s", "--serie",     "Specify serie"),
-        add_arg("-p", "--publisher", "Specify publisher"),
+        add_arg("-a", "--author",    "Specify authors", "AUTHOR"),
+        add_arg("-t", "--title",     "Specify title", "TITLE"),
+        add_arg("-s", "--serie",     "Specify serie", "SERIE"),
+        add_arg("-p", "--publisher", "Specify publisher", "PUBLISHER"),
 
         /* Exact data arguments; all are optional. */
-        add_arg("-y", "--year",      "Specify year of release"),
-        add_arg("-L", "--language",  "Specify text language"),
-        add_arg("-e", "--edition",   "Specify item edition"),
+        add_arg("-y", "--year",      "Specify year of release", "YEAR"),
+        add_arg("-L", "--language",  "Specify text language", "LANG"),
+        add_arg("-e", "--edition",   "Specify item edition", "EDITION"),
         add_arg("-E", "--extension", "Specify item extension", "EXT",
                 {"epub", "pdf", "djvu"}),
-        add_arg("-i", "--isbn",      "Specify item ISBN"),
+        add_arg("-i", "--isbn",      "Specify item ISBN", "ISBN"),
     };
 
     uint8_t exit_code = EXIT_SUCCESS;
