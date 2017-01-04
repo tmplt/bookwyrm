@@ -88,8 +88,8 @@ protected:
 
 private:
     string synopsis_;
-    const options opts_;
-    values optvalues_;
+    const options valid_opts_;
+    values passed_opts_;
     bool skipnext_ = false;
 };
 

@@ -33,7 +33,7 @@ cliparser::make_type cliparser::make(string &&progname, const options &&opts)
 
 /* Construct the parser. */
 cliparser::parser(string &&synopsis, const options &&opts)
-    : synopsis_(std::forward<decltype(synopsis)>(synopsis)), opts_(std::forward<decltype(opts)>(opts))
+    : synopsis_(std::forward<decltype(synopsis)>(synopsis)), valid_opts_(std::forward<decltype(opts)>(opts))
 {
 }
 
@@ -48,7 +48,7 @@ void cliparser::usage() const
      * Get the length of the longest string in the flag column
      * which is used to align the description fields.
      */
-    for (const auto &opt : opts_) {
+    for (const auto &opt : valid_opts_) {
         size_t len = opt.flag_long.length() + opt.flag.length() + 4;
         maxlen = std::max(len, maxlen);
     }
@@ -57,7 +57,7 @@ void cliparser::usage() const
      * Print each option, its description and token and possible
      * values for said token (if any).
      */
-    for (auto &opt : opts_) {
+    for (auto &opt : valid_opts_) {
         /* Padding between flags and description. */
         size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
 
@@ -93,14 +93,14 @@ void cliparser::usage() const
 /* Check if the passed option was provided. */
 bool cliparser::has(const string &option) const
 {
-    return optvalues_.find(option) != optvalues_.end();
+    return passed_opts_.find(option) != passed_opts_.end();
 }
 
 /* Gets the value for a given option. */
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
-        return optvalues_.find(opt)->second;
+        return passed_opts_.find(opt)->second;
 
     return "";
 }
@@ -176,14 +176,14 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
             return;
     }
 
-    for (auto &&opt : opts_) {
+    for (auto &&opt : valid_opts_) {
         if (is(input, opt.flag, opt.flag_long)) {
             if (opt.token.empty()) {
-                optvalues_.insert(std::make_pair(opt.flag_long.substr(2), ""));
+                passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
             } else {
                 auto value = parse_value(input.data(), input_next, opt.values);
                 skipnext_ = (value == input_next);
-                optvalues_.insert(make_pair(opt.flag_long.substr(2), value));
+                passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
             }
 
             return;
