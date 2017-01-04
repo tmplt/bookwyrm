@@ -32,10 +32,14 @@ set(APP_LIBRARIES ${APP_LIBRARIES} ${CURL_LIBRARY})
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CURL_INCLUDE_DIR})
 
 # }}}
-
 # Required dependency: spdlog {{{
 
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/include)
+
+# }}}
+# Required dependency: fmtlib {{{
+
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
 
 # }}}
 
@@ -60,7 +64,7 @@ make_executable(${PROJECT_NAME}
     RAW_DEPENDS
       ${APP_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME} Threads::Threads)
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt)
 
 # }}}
 # Export target details {{{

@@ -27,6 +27,7 @@ include(build/core)
 include(build/options)
 include(build/summary)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/fmt)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 
 #if(BUILD_TESTS)
