@@ -58,7 +58,8 @@ void cliparser::usage() const
      * which is used to align the description fields.
      */
     for (const auto &opt : valid_opts_) {
-        size_t len = opt.flag_long.length() + opt.flag.length() + 4;
+        size_t len = opt.flag_long.length() + opt.flag.length() +
+                     opt.token.length() + 4;
         maxlen = std::max(len, maxlen);
     }
 
