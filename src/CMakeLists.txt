@@ -75,6 +75,10 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} PARENT_SCOPE)
 
 # }}}
 
+# HELP WANTED:
+# replace the last occurance of '-' with '.',
+# and the next to last occurance of '-' with '+'
+# to make it comatible with semantic versioning.
 execute_process(COMMAND git describe --tags --dirty=-git
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   OUTPUT_VARIABLE PROG_VERSION
