@@ -88,5 +88,6 @@ int main(int argc, char *argv[])
         exit_code = EXIT_FAILURE;
     }
 
+    spdlog::drop_all();
     return exit_code;
 }
