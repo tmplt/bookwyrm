@@ -79,7 +79,7 @@ public:
     bool compare(string opt, const string_view &val) const;
 
 protected:
-    auto valid_choices_str(const choices &valid_choices) const;
+    auto values_to_str(const choices &values) const;
 
     auto is_short(const string_view &option, const string_view &opt_short) const;
     auto is_long(const string_view &option, const string_view &opt_long) const;

@@ -23,7 +23,7 @@
 #include "components/command_line.hpp"
 #include "fmt/format.h"
 
-/* Create the instance */
+/* Create the instance. */
 cliparser::make_type cliparser::make(string &&progname, const options &&opts)
 {
     return std::make_unique<cliparser>(
@@ -37,11 +37,11 @@ cliparser::parser(string &&synopsis, const options &&opts)
 {
 }
 
-auto cliparser::valid_choices_str(const choices &valid_choices) const
+auto cliparser::values_to_str(const choices &values) const
 {
     string retstring = "";
-    for (auto &v : valid_choices)
-        retstring += v + (v != valid_choices.back() ? ", " : "");
+    for (const auto &v : values)
+        retstring += v + (v != values.back() ? ", " : "");
 
     return retstring;
 }
@@ -89,7 +89,7 @@ void cliparser::usage() const
             pad = pad + opt.flag_long.length() + opt.token.length() + 7;
 
             std::cout << string(pad, ' ') << opt.token << " is one of: "
-                      << valid_choices_str(opt.values);
+                      << values_to_str(opt.values);
         } else {
             std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
         }
@@ -161,7 +161,7 @@ auto cliparser::get_value(const string_view &flag, const string_view &value, con
     if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end()) {
         throw value_error(
             "Invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
-            "; valid options are: " + valid_choices_str(values)
+            "; valid options are: " + values_to_str(values)
         );
     }
 
@@ -176,14 +176,14 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         return;
     }
 
-    for (auto &&opt : valid_opts_) {
+    for (const auto &opt : valid_opts_) {
         if (is(input, opt.flag, opt.flag_long)) {
             if (opt.token.empty()) {
                 /* The option is only a flag. */
                 passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
             } else {
                 /* The option should have an accompanied value. */
-                auto value = get_value(input.data(), input_next, opt.values);
+                auto value = get_value(input, input_next, opt.values);
                 skipnext_ = (value == input_next);
                 passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
             }
