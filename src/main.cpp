@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     spdlog::set_level(spdlog::level::err);
 
     try {
-        /* Parse command line arguments */
+        /* Parse command line arguments. */
         std::string progname = argv[0];
         std::vector<std::string> args(argv + 1, argv + argc);
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         if (cli->has("log"))
             spdlog::set_level(spdlog::level::info);
 
-        logger->info("The mighty eldwyrm has been summoned!");
+        logger->info("the mighty eldwyrm has been summoned!");
 
         if (cli->has("help")) {
             cli->usage();

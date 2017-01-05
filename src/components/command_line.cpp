@@ -156,11 +156,11 @@ auto cliparser::get_value(const string_view &flag, const string_view &value, con
 {
 
     if (value.empty())
-        throw value_error("Missing value for " + string(flag.data()));
+        throw value_error("missing value for " + string(flag.data()));
 
     if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end()) {
         throw value_error(
-            "Invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
+            "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
             "; valid options are: " + values_to_str(values)
         );
     }
@@ -192,5 +192,5 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         }
     }
 
-    throw argument_error("Unrecognized option " + string(input.data()));
+    throw argument_error("unrecognized option " + string(input.data()));
 }
