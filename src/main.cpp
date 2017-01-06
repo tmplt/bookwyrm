@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
         exit_code = EXIT_FAILURE;
     }
 
+    logger->info("dropping all loggers and returning exitval = {}", exit_code);
     spdlog::drop_all();
     return exit_code;
 }
