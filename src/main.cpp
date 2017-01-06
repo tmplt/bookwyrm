@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <cstdint>
-#include <exception>
+#include <cstdint>    // explicitly-sized integral types
+#include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
+#include <exception>  // std::exception
 
 #include "components/command_line.hpp"
 #include "spdlog/spdlog.h"

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <iostream>
+#include <iostream>  // std::cout, std::endl
 
 #include "version.hpp"
 

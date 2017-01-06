@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-#include <memory>
-#include <experimental/string_view>
+#include <map>                       // std::map
+#include <string>                    // std::string
+#include <vector>                    // std::vector
+#include <memory>                    // std:unique_ptr
+#include <experimental/string_view>  // std::experimental::string_view
 
 #include "errors.hpp"
 
@@ -47,7 +47,7 @@ public:
     string desc;
 
     /*
-     * e.g. seen as --log=LEVEL in usage(),
+     * e.g. seen as --log LEVEL in usage(),
      * where LEVEL is the token.
      */
     string token;
