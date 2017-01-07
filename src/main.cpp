@@ -18,15 +18,27 @@
 #include <cstdint>    // explicitly-sized integral types
 #include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
 #include <exception>  // std::exception
+#include <memory>     // std::make_shared
 
 #include "components/command_line.hpp"
+#include "components/logger.hpp"
 #include "spdlog/spdlog.h"
 #include "config.hpp"
 
-using add_arg = command_line::option;
+auto setup_logger()
+{
+    auto sink = std::make_shared<spdlog::custom::split_sink>();
+    auto logger = std::make_shared<spdlog::logger>("main", sink);
+
+    logger->set_pattern("%l: %v");
+    logger->set_level(spdlog::level::err);
+
+    return logger;
+}
 
 int main(int argc, char *argv[])
 {
+    using add_arg = command_line::option;
     const command_line::options opts{
         add_arg("-h", "--help",      "Display this text and exit "),
         add_arg("-v", "--version",   "Print version information"),
@@ -54,10 +66,7 @@ int main(int argc, char *argv[])
     };
 
     uint8_t exit_code = EXIT_SUCCESS;
-
-    auto logger = spdlog::stdout_color_mt("logger");
-    spdlog::set_pattern("%l: %v");
-    spdlog::set_level(spdlog::level::err);
+    auto logger = setup_logger();
 
     try {
         /* Parse command line arguments. */
@@ -68,7 +77,7 @@ int main(int argc, char *argv[])
         cli->process_arguments(args);
 
         if (cli->has("log"))
-            spdlog::set_level(spdlog::level::info);
+            logger->set_level(spdlog::level::info);
 
         logger->info("the mighty eldwyrm has been summoned!");
 
