@@ -65,8 +65,8 @@ public:
 
 class parser {
 public:
-    using make_type = std::unique_ptr<parser>;
-    static make_type make(string &&scriptname, const options &&opts);
+    using cli_type = std::unique_ptr<parser>;
+    static cli_type make(string &&scriptname, const options &&opts);
 
     explicit parser(string &&synposis, const options &&opts);
 

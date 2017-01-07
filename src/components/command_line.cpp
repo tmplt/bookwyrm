@@ -24,7 +24,7 @@
 #include "fmt/format.h"
 
 /* Create the instance. */
-cliparser::make_type cliparser::make(string &&progname, const options &&opts)
+cliparser::cli_type cliparser::make(string &&progname, const options &&opts)
 {
     return std::make_unique<cliparser>(
         "Usage: " + progname + " OPTION...", std::forward<decltype(opts)>(opts)
