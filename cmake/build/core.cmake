@@ -17,7 +17,7 @@
 # Core setup
 #
 #set(CMAKE_CXX_STANDARD 11)
-add_compile_options(-std=c++1y)
+add_compile_options(-std=c++1z)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
