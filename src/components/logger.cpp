@@ -15,26 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <iostream>  // std::cout, std::cerr
+#include <utility>   // std::forward
 
-#include <string>  // std::string
-#include <memory>  // std::shared_ptr
-
-#include "spdlog/sinks/sink.h"
+#include "components/logger.hpp"
 #include "spdlog/details/log_msg.h"
 #include "spdlog/logger.h"
+#include "spdlog/common.h"
 
 namespace spdlog::custom {
 
-class split_sink : public spdlog::sinks::sink {
-    void log(const details::log_msg &msg) override;
-    void flush();
-};
-
+void split_sink::log(const details::log_msg &msg)
+{
+    if (msg.level <= spdlog::level::warn)
+        std::cout << msg.formatted.str();
+    else
+        std::cerr << msg.formatted.str();
 }
 
-namespace logger {
-
-std::shared_ptr<spdlog::logger> make(std::string &&name);
-
+void split_sink::flush()
+{
+    std::cout << std::flush;
+    std::cerr << std::flush;
 }
+
+/* ns spdlog::custom */
+}
+
+std::shared_ptr<spdlog::logger> logger::make(std::string &&name)
+{
+    auto sink = std::make_shared<spdlog::custom::split_sink>();
+    auto logger = std::make_shared<spdlog::logger>(std::forward<std::string>(name), sink);
+
+    return logger;
+}
+

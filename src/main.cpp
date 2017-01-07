@@ -25,17 +25,6 @@
 #include "spdlog/spdlog.h"
 #include "config.hpp"
 
-auto setup_logger()
-{
-    auto sink = std::make_shared<spdlog::custom::split_sink>();
-    auto logger = std::make_shared<spdlog::logger>("main", sink);
-
-    logger->set_pattern("%l: %v");
-    logger->set_level(spdlog::level::err);
-
-    return logger;
-}
-
 int main(int argc, char *argv[])
 {
     using add_arg = command_line::option;
@@ -66,7 +55,10 @@ int main(int argc, char *argv[])
     };
 
     uint8_t exit_code = EXIT_SUCCESS;
-    auto logger = setup_logger();
+
+    auto logger = logger::make("main");
+    logger->set_pattern("%l: %v");
+    logger->set_level(spdlog::level::err);
 
     try {
         /* Parse command line arguments. */
