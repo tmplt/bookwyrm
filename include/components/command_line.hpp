@@ -40,7 +40,6 @@ DEFINE_ERROR(value_error);
 class option;
 using options = vector<option>;
 using choices = vector<string>;
-
 using values  = std::map<string, string>;
 
 class option {
