@@ -26,6 +26,13 @@
 
 namespace spdlog::custom {
 
+/*
+ * A sink which prints level::err and above to stdcerr.
+ * All other levels are considered not-errors, so they are
+ * printed to stdout, alike the inherited sink.
+ *
+ * NOTE: if thread safety is needed, protect with a mutex.
+ */
 class split_sink : public spdlog::sinks::sink {
     void log(const details::log_msg &msg) override;
     void flush();
@@ -35,6 +42,7 @@ class split_sink : public spdlog::sinks::sink {
 
 namespace logger {
 
+/* Create the logger. */
 std::shared_ptr<spdlog::logger> make(std::string &&name);
 
 }
