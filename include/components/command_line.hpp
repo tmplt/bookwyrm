@@ -38,7 +38,9 @@ DEFINE_ERROR(argument_error);
 DEFINE_ERROR(value_error);
 
 class option;
+class option_group;
 using options = vector<option>;
+using groups  = vector<option_group>;
 using choices = vector<string>;
 using values  = std::map<string, string>;
 
@@ -67,12 +69,33 @@ public:
         desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
 };
 
+class option_group {
+public:
+    string name;
+    string synopsis;
+    vector<option> options;
+
+    explicit option_group(string &&name, string &&synopsis, vector<option> options)
+        : name(forward<string>(name)), synopsis(forward<string>(synopsis)),
+                options(forward<vector<option>>(options)) {}
+
+    template <typename... Args>
+    void add_arg(Args&&... args)
+    {
+        auto opt = option(std::forward<Args>(args)...);
+        options.emplace_back(std::move(opt));
+    }
+};
+
 class parser {
 public:
     using cli_type = std::unique_ptr<parser>;
-    static cli_type make(string &&scriptname, const options &&opts);
+    static cli_type make(string &&scriptname, const groups &&groups);
 
-    explicit parser(string &&synposis, const options &&opts);
+    /* Construct the parser. */
+    explicit parser(string &&synopsis, const groups &&groups)
+        : synopsis_(std::forward<decltype(synopsis)>(synopsis)),
+        valid_groups_(std::forward<decltype(groups)>(groups)) {}
 
     void usage() const;
 
@@ -95,6 +118,7 @@ protected:
 private:
     string synopsis_;
     const options valid_opts_;
+    const groups valid_groups_;
     values passed_opts_;
     bool skipnext_ = false;
 };
@@ -102,4 +126,6 @@ private:
 /* ns command_line */
 }
 
-using cliparser  = command_line::parser;
+using cliparser = command_line::parser;
+using cligroup  = command_line::option_group;
+using clioption = command_line::option;

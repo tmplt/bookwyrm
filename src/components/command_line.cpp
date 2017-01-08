@@ -16,7 +16,7 @@
  */
 
 #include <iostream>   // std::cout, std::endl
-#include <algorithm>  // std::max()
+#include <algorithm>  // std::max(), std::set_intersection()
 #include <iomanip>    // std::setw()
 #include <utility>    // std::make_unique<T>(), std::forward<T>()
 
@@ -24,17 +24,11 @@
 #include "fmt/format.h"
 
 /* Create the instance. */
-cliparser::cli_type cliparser::make(string &&progname, const options &&opts)
+cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
-        "Usage: " + progname + " OPTION...", std::forward<decltype(opts)>(opts)
+        "Usage: " + progname + " OPTION...", std::forward<decltype(groups)>(groups)
     );
-}
-
-/* Construct the parser. */
-cliparser::parser(string &&synopsis, const options &&opts)
-    : synopsis_(std::forward<decltype(synopsis)>(synopsis)), valid_opts_(std::forward<decltype(opts)>(opts))
-{
 }
 
 auto cliparser::values_to_str(const choices &values) const
@@ -57,44 +51,53 @@ void cliparser::usage() const
      * Get the length of the longest string in the flag column
      * which is used to align the description fields.
      */
-    for (const auto &opt : valid_opts_) {
-        size_t len = opt.flag_long.length() + opt.flag.length() +
-                     opt.token.length() + 4;
-        maxlen = std::max(len, maxlen);
+    for (const auto &group : valid_groups_) {
+        for (const auto &opt : group.options) {
+            size_t len = opt.flag_long.length() + opt.flag.length() +
+                         opt.token.length() + 4;
+
+            maxlen = std::max(len, maxlen);
+        }
     }
 
     /*
-     * Print each option, its description and token and possible
-     * values for said token (if any).
+     * Print each option group, its options, the options'
+     * descriptions, token and possible values for said token (if any).
      */
-    for (const auto &opt : valid_opts_) {
-        /* Padding between flags and description. */
-        size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
+    for (const auto &group : valid_groups_) {
+        fmt::print("{} arguments - {}:\n", group.name, group.synopsis);
 
-        fmt::print("  {}, {}", opt.flag, opt.flag_long);
+        for (const auto &opt : group.options) {
+            /* Padding between flags and description. */
+            size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
 
-        if (!opt.token.empty()) {
-            std::cout << ' ' << opt.token;
-            pad--;
+            fmt::print("  {}, {}", opt.flag, opt.flag_long);
+
+            if (!opt.token.empty()) {
+                std::cout << ' ' << opt.token;
+                pad--;
+            }
+
+            /*
+             * Print the list with accepted values.
+             * This line is printed below the description.
+             */
+            if (!opt.values.empty()) {
+                std::cout << std::setw(pad + opt.desc.length())
+                          << opt.desc << '\n';
+
+                pad += opt.flag_long.length() + opt.token.length() + 7;
+
+                std::cout << string(pad, ' ') << opt.token << " is one of: "
+                          << values_to_str(opt.values);
+            } else {
+                std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
+            }
+
+            std::cout << std::endl;
         }
 
-        /*
-         * Output the list with accepted values.
-         * This line is printed below the description.
-         */
-        if (!opt.values.empty()) {
-            std::cout << std::setw(pad + opt.desc.length())
-                      << opt.desc << '\n';
-
-            pad = pad + opt.flag_long.length() + opt.token.length() + 7;
-
-            std::cout << string(pad, ' ') << opt.token << " is one of: "
-                      << values_to_str(opt.values);
-        } else {
-            std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
-        }
-
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 }
 
@@ -176,19 +179,21 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         return;
     }
 
-    for (const auto &opt : valid_opts_) {
-        if (is(input, opt.flag, opt.flag_long)) {
-            if (opt.token.empty()) {
-                /* The option is only a flag. */
-                passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
-            } else {
-                /* The option should have an accompanied value. */
-                auto value = get_value(input, input_next, opt.values);
-                skipnext_ = (value == input_next);
-                passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
-            }
+    for (const auto &group : valid_groups_) {
+        for (const auto &opt : group.options) {
+            if (is(input, opt.flag, opt.flag_long)) {
+                if (opt.token.empty()) {
+                    /* The option is only a flag. */
+                    passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
+                } else {
+                    /* The option should have an accompanied value. */
+                    auto value = get_value(input, input_next, opt.values);
+                    skipnext_ = (value == input_next);
+                    passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
+                }
 
-            return;
+                return;
+            }
         }
     }
 
