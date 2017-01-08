@@ -21,6 +21,7 @@
 #include <string>                    // std::string
 #include <vector>                    // std::vector
 #include <memory>                    // std:unique_ptr
+#include <utility>                   // std::forward
 #include <experimental/string_view>  // std::experimental::string_view
 
 #include "errors.hpp"
@@ -28,6 +29,8 @@
 using std::string;
 using std::vector;
 using std::experimental::string_view;
+
+using std::forward;
 
 namespace command_line {
 
@@ -59,8 +62,8 @@ public:
      */
     const choices values;
 
-    explicit option(string flag, string flag_long, string desc, string token = "", const choices c = {})
-        : flag(flag), flag_long(flag_long), desc(desc), token(token), values(c) {}
+    explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "", const choices c = {})
+        : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)), desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
 };
 
 class parser {
