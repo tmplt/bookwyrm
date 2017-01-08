@@ -104,5 +104,3 @@ private:
 }
 
 using cliparser  = command_line::parser;
-using clioption  = command_line::option;
-using clioptions = command_line::options;
