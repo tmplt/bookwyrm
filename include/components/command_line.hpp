@@ -62,8 +62,10 @@ public:
      */
     const choices values;
 
-    explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "", const choices c = {})
-        : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)), desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
+    explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "",
+            const choices c = {})
+        : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)),
+        desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
 };
 
 class parser {
