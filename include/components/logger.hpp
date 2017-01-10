@@ -43,6 +43,6 @@ class split_sink : public spdlog::sinks::sink {
 namespace logger {
 
 /* Create the logger. */
-std::shared_ptr<spdlog::logger> make(std::string &&name);
+std::shared_ptr<spdlog::logger> create(std::string &&name);
 
 }

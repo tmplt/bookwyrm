@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     uint8_t exit_code = EXIT_SUCCESS;
 
-    auto logger = logger::make("main");
+    auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
     logger->set_level(spdlog::level::err);
 

@@ -42,7 +42,7 @@ void split_sink::flush()
 /* ns spdlog::custom */
 }
 
-std::shared_ptr<spdlog::logger> logger::make(std::string &&name)
+std::shared_ptr<spdlog::logger> logger::create(std::string &&name)
 {
     auto sink = std::make_shared<spdlog::custom::split_sink>();
     auto logger = std::make_shared<spdlog::logger>(std::forward<std::string>(name), sink);
