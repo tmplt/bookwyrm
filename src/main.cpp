@@ -18,7 +18,6 @@
 #include <cstdint>    // explicitly-sized integral types
 #include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
 #include <exception>  // std::exception
-#include <memory>     // std::make_shared
 
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
