@@ -154,6 +154,42 @@ void cliparser::process_arguments(const vector<string> &args)
     }
 }
 
+/* Check whether the the option groups' synopsises are adhered to. */
+void cliparser::validate_arguments() const
+{
+    vector<string> passed_opts;
+    vector<string> required_opts;
+    vector<string> intersection;
+
+    for (const auto &opt : passed_opts_) {
+        /* We don't want the value. */
+        passed_opts.emplace_back(opt.first);
+    }
+
+    /* 0 = the "Main" group. Enum it? */
+    for (const auto &opt : valid_groups_[0].options) {
+        required_opts.emplace_back(opt.flag_long.substr(2));
+    }
+
+    std::sort(passed_opts.begin(), passed_opts.end());
+    std::sort(required_opts.begin(), required_opts.end());
+
+    /* Which of the required options have been passed, if any? */
+    std::set_intersection(passed_opts.begin(), passed_opts.end(),
+            required_opts.begin(), required_opts.end(),
+            std::back_inserter(intersection));
+
+    bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
+        passed_opts.end();
+
+    if (intersection.empty() && ident_passed)
+        return;
+
+    if (!intersection.empty() && ident_passed)
+        throw argument_error("ident flag is exclusive and may not be passed with another flag");
+
+}
+
 /* Get the value of the option. */
 auto cliparser::get_value(const string_view &flag, const string_view &value, const choices &values) const
 {

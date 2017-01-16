@@ -100,6 +100,7 @@ public:
     void usage() const;
 
     void process_arguments(const vector<string> &args);
+    void validate_arguments() const;
 
     bool has(const string &option) const;
     string get(string opt) const;

@@ -86,6 +86,8 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
+        cli->validate_arguments();
+
     } catch (const std::exception &err) {
         logger->error(err.what());
         exit_code = EXIT_FAILURE;
