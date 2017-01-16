@@ -182,12 +182,11 @@ void cliparser::validate_arguments() const
     bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
         passed_opts.end();
 
-    if (intersection.empty() && ident_passed)
-        return;
-
-    if (!intersection.empty() && ident_passed)
+    if (ident_passed && passed_opts.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
 
+    if (intersection.empty() && !passed_opts.empty())
+        throw argument_error("at least one main argument must be specified");
 }
 
 /* Get the value of the option. */
