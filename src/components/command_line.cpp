@@ -31,6 +31,9 @@ cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
     );
 }
 
+/*
+ * Return a string in the form of "VAL1, VAL2, VAL3".
+ */
 auto cliparser::values_to_str(const choices &values) const
 {
     string retstring = "";
