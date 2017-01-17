@@ -188,7 +188,7 @@ void cliparser::validate_arguments() const
     if (ident_passed && passed_opts.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
 
-    if (intersection.empty() && !passed_opts.empty())
+    if (intersection.empty() && !ident_passed)
         throw argument_error("at least one main argument must be specified");
 }
 
