@@ -78,13 +78,6 @@ public:
     explicit option_group(string &&name, string &&synopsis, vector<option> options)
         : name(forward<string>(name)), synopsis(forward<string>(synopsis)),
                 options(forward<vector<option>>(options)) {}
-
-    template <typename... Args>
-    void add_arg(Args&&... args)
-    {
-        auto opt = option(std::forward<Args>(args)...);
-        options.emplace_back(std::move(opt));
-    }
 };
 
 class parser {
