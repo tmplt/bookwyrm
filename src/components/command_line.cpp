@@ -203,8 +203,11 @@ void cliparser::validate_arguments() const
         throw argument_error("at least one main argument must be specified");
 }
 
-/* Get the value of the option. */
-auto cliparser::get_value(const string_view &flag, const string_view &value, const choices &values) const
+/*
+ * Check that a flag has a value, and that it matches any of the valid values
+ * (if any valid values are defined).
+ */
+auto cliparser::check_value(const string_view &flag, const string_view &value, const choices &values) const
 {
 
     if (value.empty())
@@ -235,8 +238,11 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
                     /* The option is only a flag. */
                     passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
                 } else {
-                    /* The option should have an accompanied value. */
-                    auto value = get_value(input, input_next, opt.values);
+                    /*
+                     * The option should have an accompanied value.
+                     * And may be that it must be an element in opt.values.
+                     */
+                    auto value = check_value(input, input_next, opt.values);
                     skipnext_ = (value == input_next);
                     passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
                 }

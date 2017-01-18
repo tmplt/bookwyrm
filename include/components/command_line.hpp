@@ -106,7 +106,7 @@ protected:
     auto is_long(const string_view &option, const string_view &opt_long) const;
     auto is(const string_view &option, string opt_short, string opt_long) const;
 
-    auto get_value(const string_view &flag, const string_view &value, const choices &values) const;
+    auto check_value(const string_view &flag, const string_view &value, const choices &values) const;
     void parse(const string_view &input, const string_view &input_next);
 
 private:
