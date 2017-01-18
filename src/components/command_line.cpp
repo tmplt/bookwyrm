@@ -23,6 +23,18 @@
 #include "components/command_line.hpp"
 #include "fmt/format.h"
 
+enum {
+    /*
+     * Same order as they are initialized
+     * in main(). Perhaps we should have a
+     * getter funtion instead?
+     */
+    main,
+    excl,
+    exact,
+    misc
+};
+
 /* Create the instance. */
 cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
 {
@@ -169,8 +181,7 @@ void cliparser::validate_arguments() const
         passed_opts.emplace_back(opt.first);
     }
 
-    /* 0 = the "Main" group. Enum it? */
-    for (const auto &opt : valid_groups_[0].options) {
+    for (const auto &opt : valid_groups_[main].options) {
         required_opts.emplace_back(opt.flag_long.substr(2));
     }
 
