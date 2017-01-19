@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
 #include "item.hpp"
+#include "utils.hpp"
+
+using std::vector;
+using std::string;
 
 /*
  * Returns true if all specified exact values are equal
@@ -25,5 +27,19 @@
  */
 bool bookwyrm::item::matches(const item &wanted)
 {
-    
+    /* Return false if any exact value doesn't match what's wanted. */
+    for (auto i = 0; i <= wanted.exacts.size; i++) {
+        if (wanted.exacts[i] &&
+                wanted.exacts[i] != this->exacts[i])
+            return false;
+    }
+
+    /* Does the item contain a wanted ISBN? */
+    if (!wanted.misc.isbns.empty() &&
+            !utils::any_match(wanted.misc.isbns, this->misc.isbns))
+        return false;
+
+    /* TODO: Check nonexacts and authors. */
+
+    return true;
 }

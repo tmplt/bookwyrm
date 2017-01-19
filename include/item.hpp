@@ -20,33 +20,12 @@
 #include <vector>
 #include <string>
 
+#include "storage.hpp"
+
 using std::string;
 using std::vector;
 
 namespace bookwyrm {
-
-struct nonexacts_t {
-    vector<string> authors;
-    string title;
-    string serie;
-    string publisher;
-    string journal;
-};
-
-struct exacts_t {
-    int year;
-    int edition;
-    int ext; // enum this
-    int volume;
-    int number;
-    int pages;
-    string lang;
-};
-
-struct misc_t {
-    vector<string> isbns;
-    vector<string> mirrors;
-};
 
 class item {
 public:
@@ -54,7 +33,6 @@ public:
 
     bool matches(const item &wanted);
 
-private:
     nonexacts_t nonexacts;
     exacts_t exacts;
     misc_t misc;
