@@ -22,6 +22,7 @@
 
 #include "components/command_line.hpp"
 #include "fmt/format.h"
+#include "utils.hpp"
 
 enum {
     /*
@@ -174,10 +175,9 @@ void cliparser::validate_arguments() const
 {
     vector<string> passed_opts;
     vector<string> required_opts;
-    vector<string> intersection;
 
     for (const auto &opt : passed_opts_) {
-        /* We don't want the value. */
+        /* We don't want the value, only the flag. */
         passed_opts.emplace_back(opt.first);
     }
 
@@ -185,21 +185,15 @@ void cliparser::validate_arguments() const
         required_opts.emplace_back(opt.flag_long.substr(2));
     }
 
-    std::sort(passed_opts.begin(), passed_opts.end());
-    std::sort(required_opts.begin(), required_opts.end());
-
-    /* Which of the required options have been passed, if any? */
-    std::set_intersection(passed_opts.begin(), passed_opts.end(),
-            required_opts.begin(), required_opts.end(),
-            std::back_inserter(intersection));
-
+    /* Has any required arguments been passed? */
+    bool req_match = utils::any_match(passed_opts, required_opts);
     bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
         passed_opts.end();
 
     if (ident_passed && passed_opts.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
 
-    if (intersection.empty() && !ident_passed)
+    if (!req_match && !passed_opts.empty())
         throw argument_error("at least one main argument must be specified");
 }
 
