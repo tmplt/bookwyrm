@@ -1,4 +1,7 @@
 /*
+ * This header defines a few POD-types which we use to
+ * store item data in.
+ *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +20,9 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
+#include <array>
 
-using std::vector;
-using std::string;
+#include "common.hpp"
 
 namespace bookwyrm {
 
@@ -29,14 +30,17 @@ namespace bookwyrm {
 enum { empty = -1 };
 
 struct exacts_t {
-    using store_t = vector<int>;
     /*
-     * A container with members that we can iterate over.
-     * Useful in item::matches() where we want to iterate
-     * over these values and check it they match.
+     * A POD with added index operator.
+     * Useful in item::matches() where we want to
+     * iterate over these values and check if they match.
      *
-     * We also need to get these values by name, which is
-     * why we don't use a vector.
+     * We can then get a field value by name, which we'll
+     * want when printing the stuff out.
+     *
+     * All field are initialized to "empty" (-1). This
+     * makes us able to bool-check (since -1 is false)
+     * whether or not a field is empty or not.
      */
 
     int year    = empty;
@@ -49,7 +53,7 @@ struct exacts_t {
 
     constexpr static int size = 7;
 
-    store_t store = {
+    std::array<int, size> store = {
         year, edition, ext,
         volume, number, pages
     };
@@ -58,29 +62,16 @@ struct exacts_t {
     {
         return store[i];
     }
-
-    /* For complience for for-each loops. */
-    store_t::iterator begin()
-    {
-        return store.begin();
-    }
-
-    store_t::const_iterator begin() const
-    {
-        return store.begin();
-    }
-
-    store_t::iterator end()
-    {
-        return store.end();
-    }
-    store_t::const_iterator end() const
-    {
-        return store.end();
-    }
 };
 
 struct nonexacts_t {
+    /*
+     * As the typename suggests, this POD contains
+     * data that we're not going to match exacly match
+     * exactly with the wanted field. Instead, we use
+     * fuzzy-matching.
+     */
+
     vector<string> authors;
     string title;
     string serie;
@@ -89,6 +80,11 @@ struct nonexacts_t {
 };
 
 struct misc_t {
+    /*
+     * The POD for everything else and undecided
+     * fields.
+     */
+
     vector<string> isbns;
     vector<string> mirrors;
 };

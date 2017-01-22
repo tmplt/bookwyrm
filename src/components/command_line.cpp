@@ -29,6 +29,16 @@ enum {
      * Same order as they are initialized
      * in main(). Perhaps we should have a
      * getter funtion instead?
+     *
+     * These (or well, only main) are used in
+     * validate_arguments() to get the group of
+     * main arguments so that we can find if any of
+     * those are passed.
+     *
+     * I'm a bit unsure if it's worth the time to
+     * implement a better way to do this. This will work
+     * as long as they are in the same order as they are
+     * initialized in in main().
      */
     main,
     excl,
@@ -36,7 +46,6 @@ enum {
     misc
 };
 
-/* Create the instance. */
 cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
@@ -44,9 +53,6 @@ cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
     );
 }
 
-/*
- * Return a string in the form of "VAL1, VAL2, VAL3".
- */
 auto cliparser::values_to_str(const choices &values) const
 {
     string retstring = "";
@@ -56,7 +62,6 @@ auto cliparser::values_to_str(const choices &values) const
     return retstring;
 }
 
-/* Print program usage message. */
 void cliparser::usage() const
 {
     std::cout << synopsis_ << "\n\n";
@@ -117,13 +122,11 @@ void cliparser::usage() const
     }
 }
 
-/* Check if an option has been passed. */
 bool cliparser::has(const string &option) const
 {
     return passed_opts_.find(option) != passed_opts_.end();
 }
 
-/* Gets the value for the given option. */
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
@@ -132,34 +135,26 @@ string cliparser::get(string opt) const
     return "";
 }
 
-/* Compare option value with given string. */
 bool cliparser::compare(string opt, const string_view &val) const
 {
     return get(std::move(opt)) == val;
 }
 
-/* Compare option with its short version. */
 auto cliparser::is_short(const string_view &option, const string_view &opt_short) const
 {
     return option.compare(0, opt_short.length(), opt_short) == 0;
 }
 
-/* Compare option with its long version */
 auto cliparser::is_long(const string_view &option, const string_view &opt_long) const
 {
     return option.compare(0, opt_long.length(), opt_long) == 0;
 }
 
-/*
- * Compare passed option with it's short and long flag.
- * Returns true if option is valid.
- */
 auto cliparser::is(const string_view &option, string opt_short, string opt_long) const
 {
     return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
 }
 
-/* Process argument vector. */
 void cliparser::process_arguments(const vector<string> &args)
 {
     for (size_t i = 0; i < args.size(); i++) {
@@ -170,7 +165,6 @@ void cliparser::process_arguments(const vector<string> &args)
     }
 }
 
-/* Check whether the the option groups' synopsises are adhered to. */
 void cliparser::validate_arguments() const
 {
     vector<string> passed_opts;
@@ -197,10 +191,6 @@ void cliparser::validate_arguments() const
         throw argument_error("at least one main argument must be specified");
 }
 
-/*
- * Check that a flag has a value, and that it matches any of the valid values
- * (if any valid values are defined).
- */
 auto cliparser::check_value(const string_view &flag, const string_view &value, const choices &values) const
 {
 
@@ -217,7 +207,6 @@ auto cliparser::check_value(const string_view &flag, const string_view &value, c
     return value;
 }
 
-/* Parse and validate given option. */
 void cliparser::parse(const string_view &input, const string_view &input_next)
 {
     if (skipnext_) {

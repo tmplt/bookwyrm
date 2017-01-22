@@ -1,7 +1,5 @@
 /*
- * A convenience header when we want to define
- * errors with a more specific name. For an example, see
- * command_line.hpp.
+ * A header which includes commonly used headers.
  *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
@@ -21,16 +19,10 @@
 
 #pragma once
 
-class program_error : public std::runtime_error {
-public:
-    explicit program_error(const std::string &message, int code = 0)
-        : runtime_error(message), code(code) {}
-    virtual ~program_error() {}
-    int code{0};
-};
+#include <string>                    // std::string
+#include <experimental/string_view>  // std::experimental::string_view
+#include <vector>                    // std::vector
 
-#define DEFINE_CHILD_ERROR(error, parent) \
-    class error : public parent {         \
-        using parent::parent;             \
-    }
-#define DEFINE_ERROR(error) DEFINE_CHILD_ERROR(error, program_error)
+using std::string;
+using std::vector;
+using std::experimental::string_view;

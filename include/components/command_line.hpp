@@ -34,6 +34,7 @@ using std::forward;
 
 namespace command_line {
 
+/* A bit more specific than "runtime_error". */
 DEFINE_ERROR(argument_error);
 DEFINE_ERROR(value_error);
 
@@ -42,8 +43,11 @@ class option_group;
 using options = vector<option>;
 using groups  = vector<option_group>;
 using choices = vector<string>;
-using values  = std::map<string, string>;
 
+/*
+ * Holds all properties for an option.
+ * (A possible flag to pass to the program.)
+ */
 class option {
 public:
     string flag;
@@ -69,6 +73,7 @@ public:
         desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
 };
 
+/* A named group with it's related options. */
 class option_group {
 public:
     string name;
@@ -90,30 +95,64 @@ public:
         : synopsis_(std::forward<decltype(synopsis)>(synopsis)),
         valid_groups_(std::forward<decltype(groups)>(groups)) {}
 
+    /* Print which flags you can pass and how to use the program. */
     void usage() const;
 
+    /* Process command line arguments. */
     void process_arguments(const vector<string> &args);
+
+    /*
+     * Program specific; adhere to the options' synopsises seen in main(),
+     * e.g. pass at least one main argument if -d isn't passed.
+     */
     void validate_arguments() const;
 
+    /* Check if an option has been passed. */
     bool has(const string &option) const;
+
+    /* Get the value for a given option. */
     string get(string opt) const;
-    bool compare(string opt, const string_view &val) const;
 
 protected:
+    /*
+     * Construct a string of all valid token values,
+     * e.g. "VAL1, VAL2, VAL3".
+     */
     auto values_to_str(const choices &values) const;
 
+    /*
+     * Is the flag passed in it's long or its short form?
+     * Does it match any of the two?
+     */
     auto is_short(const string_view &option, const string_view &opt_short) const;
     auto is_long(const string_view &option, const string_view &opt_long) const;
     auto is(const string_view &option, string opt_short, string opt_long) const;
 
+    /* Check if the passed value matches an element in the group of valid values. */
     auto check_value(const string_view &flag, const string_view &value, const choices &values) const;
+
+    /* Parse a single argument with the next argument, which may be its value (or another flag). */
     void parse(const string_view &input, const string_view &input_next);
 
+    /*
+     * Used to check if a passed option is valid
+     * between the group of valid options and the group
+     * of passed options.
+     */
+    bool compare(string opt, const string_view &val) const;
+
 private:
+    /* Program synopsis. */
     string synopsis_;
+
     const options valid_opts_;
     const groups valid_groups_;
-    values passed_opts_;
+    std::map<string, string> passed_opts_;
+
+    /*
+     * Is the next argument associated with the previous one,
+     * or should the current argument be treated as another flag?
+     */
     bool skipnext_ = false;
 };
 

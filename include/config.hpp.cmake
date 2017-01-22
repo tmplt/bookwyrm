@@ -1,4 +1,7 @@
 /*
+ * A pre-generation header (or post, if this is config.hpp),
+ * used by cmake to create an up-to-date version string.
+ *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
  * This program is free software: you can redistribute it and/or modify

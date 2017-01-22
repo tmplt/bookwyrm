@@ -1,4 +1,7 @@
 /*
+ * This file contains a bunch of utility functions,
+ * most (if not all) utilizing templates.
+ *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
  * This program is free software: you can redistribute it and/or modify
