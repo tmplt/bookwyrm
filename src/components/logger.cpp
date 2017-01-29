@@ -18,10 +18,11 @@
 #include <iostream>  // std::cout, std::cerr
 #include <utility>   // std::forward
 
+#include <spdlog/details/log_msg.h>
+#include <spdlog/logger.h>
+#include <spdlog/common.h>
+
 #include "components/logger.hpp"
-#include "spdlog/details/log_msg.h"
-#include "spdlog/logger.h"
-#include "spdlog/common.h"
 
 namespace spdlog::custom {
 

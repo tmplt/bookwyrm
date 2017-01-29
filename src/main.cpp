@@ -19,10 +19,11 @@
 #include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
 #include <exception>  // std::exception
 
+#include <spdlog/spdlog.h>
+
 #include "item.hpp"
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
-#include "spdlog/spdlog.h"
 #include "config.hpp"
 
 int main(int argc, char *argv[])

@@ -20,8 +20,9 @@
 #include <iomanip>    // std::setw()
 #include <utility>    // std::make_unique<T>(), std::forward<T>()
 
+#include <fmt/format.h>
+
 #include "components/command_line.hpp"
-#include "fmt/format.h"
 #include "utils.hpp"
 
 enum {

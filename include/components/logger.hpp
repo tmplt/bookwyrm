@@ -20,9 +20,9 @@
 #include <string>  // std::string
 #include <memory>  // std::shared_ptr
 
-#include "spdlog/sinks/sink.h"
-#include "spdlog/details/log_msg.h"
-#include "spdlog/logger.h"
+#include <spdlog/sinks/sink.h>
+#include <spdlog/details/log_msg.h>
+#include <spdlog/logger.h>
 
 namespace spdlog::custom {
 
