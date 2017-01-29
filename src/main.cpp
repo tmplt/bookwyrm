@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         add_arg("-l", "--log",       "Set logging level to info"),
     });
 
-    const command_line::groups groups{main, excl, exact, misc};
+    const command_line::groups groups = {main, excl, exact, misc};
     uint8_t exit_code = EXIT_SUCCESS;
 
     auto logger = logger::create("main");
