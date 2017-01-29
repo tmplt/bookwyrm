@@ -12,6 +12,8 @@ Planned sources are:
 
 bookwyrm is a work-in-progress.
 
+Having just found out about [Open Library](https://openlibrary.org/), I think bookwyrm will query it to get as much info as possible. ISBNs, OverDrive IDs and in many cases the actual books themselves are provided by the library. There is also a (RESTful) API available.
+
 Roadmap
 ---
 Listed from high to low priority
@@ -24,6 +26,9 @@ Listed from high to low priority
     - [ ] fuzzy matching for nonexact data
 - [ ] implement curl
 - [ ] sources
+    - [ ] Open Library (highest priority)
+    - [ ] OverDrive
+    - [ ] University libraries?
     - [ ] Library Genesis
     - [ ] Sci-Hub
     - [ ] IRC
