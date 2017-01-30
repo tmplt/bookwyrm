@@ -36,7 +36,7 @@ bool bookwyrm::item::matches(const item &wanted)
 
     /* Does the item contain a wanted ISBN? */
     if (!wanted.misc.isbns.empty() &&
-            !utils::any_match(wanted.misc.isbns, this->misc.isbns))
+            !utils::any_intersection(wanted.misc.isbns, this->misc.isbns))
         return false;
 
     /* TODO: Check nonexacts and authors. */

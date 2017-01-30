@@ -181,7 +181,7 @@ void cliparser::validate_arguments() const
     }
 
     /* Has any required arguments been passed? */
-    bool req_match = utils::any_match(passed_opts, required_opts);
+    bool req_match = utils::any_intersection(passed_opts, required_opts);
     bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
         passed_opts.end();
 

@@ -24,9 +24,9 @@
 
 namespace utils {
 
-/* Is any elements shared between the two sets? */
+/* Return true if any element is shared between two sets. */
 template <typename Set>
-bool any_match(Set a, Set b)
+bool any_intersection(Set a, Set b)
 {
     std::sort(a.begin(), a.end());
     std::sort(b.begin(), b.end());
