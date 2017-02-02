@@ -30,7 +30,7 @@
     #define PROG_VERSION GIT_TAG
 #endif
 
-auto print_build_info = []() {
+constexpr auto print_build_info = []() {
     std::cout << PROG_NAME << " " << PROG_VERSION << '\n'
               << "Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>.\n"
               << PROG_NAME << " is licensed under the GPLv3+ license, "

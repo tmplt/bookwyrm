@@ -181,8 +181,8 @@ void cliparser::validate_arguments() const
     }
 
     /* Has any required arguments been passed? */
-    bool req_match = utils::any_intersection(passed_opts, required_opts);
-    bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
+    const bool req_match = utils::any_intersection(passed_opts, required_opts);
+    const bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
         passed_opts.end();
 
     if (ident_passed && passed_opts.size() > 1)
@@ -226,7 +226,7 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
                      * The option should have an accompanied value.
                      * And may be that it must be an element in opt.values.
                      */
-                    auto value = check_value(input, input_next, opt.values);
+                    const auto value = check_value(input, input_next, opt.values);
                     skipnext_ = (value == input_next);
                     passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
                 }

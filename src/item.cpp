@@ -28,9 +28,8 @@ using std::string;
 bool bookwyrm::item::matches(const item &wanted)
 {
     /* Return false if any exact value doesn't match what's wanted. */
-    for (auto i = 0; i <= wanted.exacts.size; i++) {
-        if (wanted.exacts[i] &&
-                wanted.exacts[i] != this->exacts[i])
+    for (int i = 0; i <= wanted.exacts.size; i++) {
+        if (wanted.exacts[i] && wanted.exacts[i] != this->exacts[i])
             return false;
     }
 

@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     const command_line::groups groups = {main, excl, exact, misc};
     uint8_t exit_code = EXIT_SUCCESS;
 
-    auto logger = logger::create("main");
+    const auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
     logger->set_level(spdlog::level::err);
 
