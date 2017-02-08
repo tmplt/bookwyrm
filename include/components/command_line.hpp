@@ -83,8 +83,7 @@ public:
     template <typename... Args>
     option_group& operator()(Args&&... args)
     {
-        options.emplace_back(option(forward<Args>(args)...));
-
+        options.emplace_back(forward<Args>(args)...);
         return *this;
     }
 };
