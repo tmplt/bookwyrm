@@ -48,8 +48,7 @@ using choices = vector<string>;
  * Holds all properties for an option.
  * (A possible flag to pass to the program.)
  */
-class option {
-public:
+struct option {
     const string flag, flag_long, desc;
 
     /*
