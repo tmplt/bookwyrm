@@ -72,7 +72,6 @@ struct option {
 
 /* A named group with it's related options. */
 struct option_group {
-public:
     const string name;
     const string synopsis;
     vector<option> options;
