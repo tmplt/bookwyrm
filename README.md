@@ -16,8 +16,6 @@ Having just found out about [Open Library](https://openlibrary.org/), I think bo
 
 Roadmap
 ---
-Listed from high to low priority
-
 - [x] command line parsing
     - [ ] cxxopts-style `.as<T>()` member funtion
 - [x] logging
@@ -25,6 +23,8 @@ Listed from high to low priority
 - [ ] `item` class and data structure
     - [ ] fuzzy matching for nonexact data
 - [ ] implement curl
+
+Listed from high to low priority
 - [ ] sources
     - [ ] Open Library (highest priority)
     - [ ] OverDrive
