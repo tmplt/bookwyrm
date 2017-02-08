@@ -176,14 +176,12 @@ void cliparser::validate_arguments() const
         passed_opts.emplace_back(opt.first);
     }
 
-    for (const auto &opt : valid_groups_[main].options) {
+    for (const auto &opt : valid_groups_[main].options)
         required_opts.emplace_back(opt.flag_long.substr(2));
-    }
 
     /* Has any required arguments been passed? */
     const bool req_match = utils::any_intersection(passed_opts, required_opts);
-    const bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") !=
-        passed_opts.end();
+    const bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") != passed_opts.end();
 
     if (ident_passed && passed_opts.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
