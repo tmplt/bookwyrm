@@ -83,8 +83,7 @@ public:
     template <typename... Args>
     option_group& operator()(Args&&... args)
     {
-        auto const opt = option(forward<Args>(args)...);
-        options.emplace_back(std::move(opt));
+        options.emplace_back(option(forward<Args>(args)...));
 
         return *this;
     }
@@ -93,7 +92,7 @@ public:
 class parser {
 public:
     using cli_type = std::unique_ptr<parser>;
-    static cli_type make(string &&scriptname, const groups &&groups);
+    static cli_type make(const string &&scriptname, const groups &&groups);
 
     /* Construct the parser. */
     explicit parser(string &&synopsis, const groups &&groups)

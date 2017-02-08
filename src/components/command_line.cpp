@@ -47,7 +47,7 @@ enum {
     misc
 };
 
-cliparser::cli_type cliparser::make(string &&progname, const groups &&groups)
+cliparser::cli_type cliparser::make(const string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
         "Usage: " + progname + " OPTION...", std::forward<decltype(groups)>(groups)
@@ -220,7 +220,7 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
             if (is(input, opt.flag, opt.flag_long)) {
                 if (opt.token.empty()) {
                     /* The option is only a flag. */
-                    passed_opts_.insert(std::make_pair(opt.flag_long.substr(2), ""));
+                    passed_opts_.emplace(std::make_pair(opt.flag_long.substr(2), ""));
                 } else {
                     /*
                      * The option should have an accompanied value.
@@ -228,7 +228,7 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
                      */
                     const auto value = check_value(input, input_next, opt.values);
                     skipnext_ = (value == input_next);
-                    passed_opts_.insert(make_pair(opt.flag_long.substr(2), value));
+                    passed_opts_.emplace(make_pair(opt.flag_long.substr(2), value));
                 }
 
                 return;
