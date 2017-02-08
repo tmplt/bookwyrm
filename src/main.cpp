@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     const auto excl = command_line::option_group("Exclusive", "cannot be combined with any other arguments")
         ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
-    const auto exact = command_line::option_group("Exact", "matched fuzzily; all are optional")
+    const auto exact = command_line::option_group("Exact", "all are optional")
         ("-y", "--year",      "Specify year of release", "YEAR")
         ("-L", "--language",  "Specify text language", "LANG")
         ("-e", "--edition",   "Specify item edition", "EDITION")
