@@ -71,7 +71,7 @@ struct option {
 };
 
 /* A named group with it's related options. */
-class option_group {
+struct option_group {
 public:
     const string name;
     const string synopsis;
