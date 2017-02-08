@@ -28,34 +28,30 @@
 
 int main(int argc, char *argv[])
 {
-    using add_arg = command_line::option;
-    using add_group = command_line::option_group;
+    using valid_opts = std::initializer_list<string>;
 
-    const auto main = add_group("Main", "necessarily inclusive arguments; at least one required", {
-        add_arg("-a", "--author",    "Specify authors", "AUTHOR"),
-        add_arg("-t", "--title",     "Specify title", "TITLE"),
-        add_arg("-s", "--serie",     "Specify serie", "SERIE"),
-        add_arg("-p", "--publisher", "Specify publisher", "PUBLISHER")
-    });
+    /* Future work: make main, excl, exact, misc and groups constexpr. */
+    const auto main = command_line::option_group("Main", "necessarily inclusive arguments; at least one required")
+        ("-a", "--author",    "Specify authors", "AUTHOR")
+        ("-t", "--title",     "Specify title", "TITLE")
+        ("-s", "--serie",     "Specify serie", "SERIE")
+        ("-p", "--publisher", "Specify publisher", "PUBLISHER");
 
-    const auto excl = add_group("Exclusive", "cannot be combined with any other arguments", {
-        add_arg("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT")
-    });
+    const auto excl = command_line::option_group("Exclusive", "cannot be combined with any other arguments")
+        ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
-    const auto exact = add_group("Exact", "matched fuzzily; all are optional", {
-        add_arg("-y", "--year",      "Specify year of release", "YEAR"),
-        add_arg("-L", "--language",  "Specify text language", "LANG"),
-        add_arg("-e", "--edition",   "Specify item edition", "EDITION"),
-        add_arg("-E", "--extension", "Specify item extension", "EXT",
-                {"epub", "pdf", "djvu"}),
-        add_arg("-i", "--isbn",      "Specify item ISBN", "ISBN")
-    });
+    const auto exact = command_line::option_group("Exact", "matched fuzzily; all are optional")
+        ("-y", "--year",      "Specify year of release", "YEAR")
+        ("-L", "--language",  "Specify text language", "LANG")
+        ("-e", "--edition",   "Specify item edition", "EDITION")
+        ("-E", "--extension", "Specify item extension", "EXT",
+            valid_opts{"epub", "pdf", "djvu"})
+        ("-i", "--isbn",      "Specify item ISBN", "ISBN");
 
-    const auto misc = add_group("Misc", "miscellaneous arguments", {
-        add_arg("-h", "--help",      "Display this text and exit "),
-        add_arg("-v", "--version",   "Print version information"),
-        add_arg("-l", "--log",       "Set logging level to info"),
-    });
+    const auto misc = command_line::option_group("Misc", "miscellaneous arguments")
+        ("-h", "--help",      "Display this text and exit ")
+        ("-v", "--version",   "Print version information")
+        ("-l", "--log",       "Set logging level to info");
 
     const command_line::groups groups = {main, excl, exact, misc};
     uint8_t exit_code = EXIT_SUCCESS;
@@ -91,7 +87,7 @@ int main(int argc, char *argv[])
         cli->validate_arguments();
 
     } catch (const command_line::argument_error &err) {
-        logger->error(err.what() + string("; see --help"));
+        logger->error(err.what() + std::string("; see --help"));
         exit_code = EXIT_FAILURE;
     } catch (const std::exception &err) {
         logger->error(err.what());

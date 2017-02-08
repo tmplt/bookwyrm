@@ -34,7 +34,7 @@ using std::forward;
 
 namespace command_line {
 
-/* A bit more specific than "runtime_error". */
+/* Something more specific than "runtime_error". */
 DEFINE_ERROR(argument_error);
 DEFINE_ERROR(value_error);
 
@@ -50,15 +50,13 @@ using choices = vector<string>;
  */
 class option {
 public:
-    string flag;
-    string flag_long;
-    string desc;
+    const string flag, flag_long, desc;
 
     /*
      * e.g. seen as --log LEVEL in usage(),
      * where LEVEL is the token.
      */
-    string token;
+    const string token;
 
     /*
      * For options where a set of values are allowed,
@@ -76,13 +74,21 @@ public:
 /* A named group with it's related options. */
 class option_group {
 public:
-    string name;
-    string synopsis;
+    const string name;
+    const string synopsis;
     vector<option> options;
 
-    explicit option_group(string &&name, string &&synopsis, vector<option> options)
-        : name(forward<string>(name)), synopsis(forward<string>(synopsis)),
-                options(forward<vector<option>>(options)) {}
+    explicit option_group(string &&name, string &&synopsis)
+        : name(forward<string>(name)), synopsis(forward<string>(synopsis)) {}
+
+    template <typename... Args>
+    option_group& operator()(Args&&... args)
+    {
+        auto const opt = option(forward<Args>(args)...);
+        options.emplace_back(std::move(opt));
+
+        return *this;
+    }
 };
 
 class parser {
@@ -143,7 +149,7 @@ protected:
 
 private:
     /* Program synopsis. */
-    string synopsis_;
+    const string synopsis_;
 
     const options valid_opts_;
     const groups valid_groups_;
