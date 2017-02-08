@@ -31,10 +31,11 @@
 #endif
 
 constexpr auto print_build_info = []() {
-    std::cout << PROG_NAME << " " << PROG_VERSION << '\n'
-              << "Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>.\n"
+    std::cout << PROG_NAME << ' ' << PROG_VERSION << '\n'
+              << "Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>\n"
               << PROG_NAME << " is licensed under the GPLv3+ license, "
-              << "see <https://github.com/Tmplt/bookwyrm/blob/cpp/master/LICENSE>.\n\n"
+              << "see <http://www.gnu.org/licenses/gpl.html>.\n"
+              << "This if free software: you are free to change and redistribute it.\n\n"
               << "Written by Tmplt and others, see <https://github.com/Tmplt/bookwyrm/blob/cpp/master/AUTHORS.md>."
               << std::endl;
 };
