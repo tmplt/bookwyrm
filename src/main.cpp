@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         ("-i", "--isbn",      "Specify item ISBN", "ISBN");
 
     const auto misc = command_line::option_group("Miscellaneous")
-        ("-h", "--help",      "Display this text and exit ")
+        ("-h", "--help",      "Display this text and exit")
         ("-v", "--version",   "Print version information")
         ("-l", "--log",       "Set logging level to info");
 
