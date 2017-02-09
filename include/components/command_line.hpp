@@ -77,7 +77,7 @@ struct option_group {
     const string synopsis;
     vector<option> options;
 
-    explicit option_group(string &&name, string &&synopsis)
+    explicit option_group(string &&name, string &&synopsis = "")
         : name(forward<string>(name)), synopsis(forward<string>(synopsis)) {}
 
     template <typename... Args>

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             valid_opts{"epub", "pdf", "djvu"})
         ("-i", "--isbn",      "Specify item ISBN", "ISBN");
 
-    const auto misc = command_line::option_group("Misc", "miscellaneous arguments")
+    const auto misc = command_line::option_group("Miscellaneous")
         ("-h", "--help",      "Display this text and exit ")
         ("-v", "--version",   "Print version information")
         ("-l", "--log",       "Set logging level to info");

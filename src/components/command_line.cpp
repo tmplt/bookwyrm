@@ -92,7 +92,9 @@ void cliparser::usage() const
      * descriptions, token and possible values for said token (if any).
      */
     for (const auto &group : valid_groups_) {
-        fmt::print("{} arguments - {}:\n", group.name, group.synopsis);
+        std::cout << group.name << " arguments"
+                  << (group.synopsis.empty() ? ":" : " - " + group.synopsis + ":")
+                  << '\n';
 
         for (const auto &opt : group.options) {
             /* Padding between flags and description. */
