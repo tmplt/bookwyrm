@@ -47,6 +47,11 @@ enum {
     misc
 };
 
+enum { /* magic padding numbers */
+    padding_margin = 4,
+    desc_align_magic = 7
+};
+
 cliparser::cli_type cliparser::make(const string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
@@ -76,7 +81,7 @@ void cliparser::usage() const
     for (const auto &group : valid_groups_) {
         for (const auto &opt : group.options) {
             size_t len = opt.flag_long.length() + opt.flag.length() +
-                         opt.token.length() + 4;
+                         opt.token.length() + padding_margin;
 
             maxlen = std::max(len, maxlen);
         }
@@ -108,7 +113,7 @@ void cliparser::usage() const
                 std::cout << std::setw(pad + opt.desc.length())
                           << opt.desc << '\n';
 
-                pad += opt.flag_long.length() + opt.token.length() + 7;
+                pad += opt.flag_long.length() + opt.token.length() + desc_align_magic;
 
                 std::cout << string(pad, ' ') << opt.token << " is one of: "
                           << values_to_str(opt.values);
@@ -116,10 +121,10 @@ void cliparser::usage() const
                 std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
             }
 
-            std::cout << std::endl;
+            std::cout << '\n';
         }
 
-        std::cout << '\n';
+        std::cout << std::endl;
     }
 }
 
