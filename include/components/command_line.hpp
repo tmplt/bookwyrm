@@ -65,9 +65,10 @@ struct option {
     const choices values;
 
     explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "",
-            const choices c = {})
+            choices &&c = {})
         : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)),
-        desc(forward<string>(desc)), token(forward<string>(token)), values(c) {}
+        desc(forward<string>(desc)), token(forward<string>(token)),
+        values(forward<decltype(c)>(c)) {}
 };
 
 /* A named group with it's related options. */
@@ -82,6 +83,10 @@ struct option_group {
     template <typename... Args>
     option_group& operator()(Args&&... args)
     {
+        /*
+         * Since the underlaying type is an option we just have to
+         * forward the arguments.
+         */
         options.emplace_back(forward<Args>(args)...);
         return *this;
     }
@@ -94,8 +99,8 @@ public:
 
     /* Construct the parser. */
     explicit parser(string &&synopsis, const groups &&groups)
-        : synopsis_(std::forward<decltype(synopsis)>(synopsis)),
-        valid_groups_(std::forward<decltype(groups)>(groups)) {}
+        : synopsis_(forward<string>(synopsis)),
+        valid_groups_(forward<decltype(groups)>(groups)) {}
 
     /* Print which flags you can pass and how to use the program. */
     void usage() const;
