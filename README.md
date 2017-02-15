@@ -33,6 +33,7 @@ Listed from high to low priority
     - [ ] Sci-Hub
     - [ ] IRC
         - [ ] with libircppclient?
+    - [ ] LibriVox (or would that be outside the scope of the project?)
 - [ ] terminal-based gui ala mutt
 
 ---
