@@ -2,3 +2,4 @@ build/
 !cmake/build/
 __pycache__
 include/config.hpp
+*.py
