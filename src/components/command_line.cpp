@@ -59,7 +59,7 @@ cliparser::cli_type cliparser::make(const string &&progname, const groups &&grou
     );
 }
 
-auto cliparser::values_to_str(const choices &values) const
+auto cliparser::values_to_str(const choices &values)
 {
     string retstring = "";
     for (const auto &v : values)
@@ -148,17 +148,17 @@ bool cliparser::compare(string opt, const string_view &val) const
     return get(std::move(opt)) == val;
 }
 
-auto cliparser::is_short(const string_view &option, const string_view &opt_short) const
+auto cliparser::is_short(const string_view &option, const string_view &opt_short)
 {
     return option.compare(0, opt_short.length(), opt_short) == 0;
 }
 
-auto cliparser::is_long(const string_view &option, const string_view &opt_long) const
+auto cliparser::is_long(const string_view &option, const string_view &opt_long)
 {
     return option.compare(0, opt_long.length(), opt_long) == 0;
 }
 
-auto cliparser::is(const string_view &option, string opt_short, string opt_long) const
+auto cliparser::is(const string_view &option, string opt_short, string opt_long)
 {
     return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
 }
@@ -197,7 +197,7 @@ void cliparser::validate_arguments() const
         throw argument_error("at least one main argument must be specified");
 }
 
-auto cliparser::check_value(const string_view &flag, const string_view &value, const choices &values) const
+auto cliparser::check_value(const string_view &flag, const string_view &value, const choices &values)
 {
 
     if (value.empty())

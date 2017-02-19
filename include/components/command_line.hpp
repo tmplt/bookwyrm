@@ -125,18 +125,18 @@ protected:
      * Construct a string of all valid token values,
      * e.g. "VAL1, VAL2, VAL3".
      */
-    auto values_to_str(const choices &values) const;
+    static auto values_to_str(const choices &values);
 
     /*
      * Is the flag passed in it's long or its short form?
      * Does it match any of the two?
      */
-    auto is_short(const string_view &option, const string_view &opt_short) const;
-    auto is_long(const string_view &option, const string_view &opt_long) const;
-    auto is(const string_view &option, string opt_short, string opt_long) const;
+    static auto is_short(const string_view &option, const string_view &opt_short);
+    static auto is_long(const string_view &option, const string_view &opt_long);
+    static auto is(const string_view &option, string opt_short, string opt_long);
 
     /* Check if the passed value matches an element in the group of valid values. */
-    auto check_value(const string_view &flag, const string_view &value, const choices &values) const;
+    static auto check_value(const string_view &flag, const string_view &value, const choices &values);
 
     /* Parse a single argument with the next argument, which may be its value (or another flag). */
     void parse(const string_view &input, const string_view &input_next);
