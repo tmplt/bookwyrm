@@ -102,7 +102,7 @@ public:
         : synopsis_(forward<string>(synopsis)),
         valid_groups_(forward<decltype(groups)>(groups)) {}
 
-    /* Print which flags you can pass and how to use the program. */
+    /* Print program usage. */
     void usage() const;
 
     /* Process command line arguments. */
@@ -122,20 +122,20 @@ public:
 
 protected:
     /*
-     * Construct a string of all valid token values,
+     * Return a string of all valid token values,
      * e.g. "VAL1, VAL2, VAL3".
      */
     static auto values_to_str(const choices &values);
 
     /*
-     * Is the flag passed in it's long or its short form?
-     * Does it match any of the two?
+     * Is the flag valid? If so, is it given in its short
+     * or long form?
      */
+    static auto is(const string_view &option, string opt_short, string opt_long);
     static auto is_short(const string_view &option, const string_view &opt_short);
     static auto is_long(const string_view &option, const string_view &opt_long);
-    static auto is(const string_view &option, string opt_short, string opt_long);
 
-    /* Check if the passed value matches an element in the group of valid values. */
+    /* Is the given option value a valid one? If so, return it. Otherwise throw a value_error. */
     static auto check_value(const string_view &flag, const string_view &value, const choices &values);
 
     /* Parse a single argument with the next argument, which may be its value (or another flag). */
