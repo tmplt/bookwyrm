@@ -138,15 +138,11 @@ protected:
     /* Is the given option value a valid one? If so, return it. Otherwise throw a value_error. */
     static auto check_value(const string_view &flag, const string_view &value, const choices &values);
 
-    /* Parse a single argument with the next argument, which may be its value (or another flag). */
-    void parse(const string_view &input, const string_view &input_next);
-
     /*
-     * Used to check if a passed option is valid
-     * between the group of valid options and the group
-     * of passed options.
+     * Parse a single argument with the next argument, which may be its value (or another flag).
+     * and emplace the valid ones into passed_opts_.
      */
-    bool compare(string opt, const string_view &val) const;
+    void parse(const string_view &input, const string_view &input_next);
 
 private:
     /* Program synopsis. */

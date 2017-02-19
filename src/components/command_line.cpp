@@ -143,11 +143,6 @@ string cliparser::get(string opt) const
     return "";
 }
 
-bool cliparser::compare(string opt, const string_view &val) const
-{
-    return get(std::move(opt)) == val;
-}
-
 auto cliparser::is_short(const string_view &option, const string_view &opt_short)
 {
     return option.compare(0, opt_short.length(), opt_short) == 0;
