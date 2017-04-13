@@ -1,18 +1,30 @@
-
+What is this?
+---
 bookwyrm is a cli-based program written in C++17 which, given some input data,
 searches for matching books and academic papers on various sources.
-When done, all found items are presented in a menu ála mutt where you can select which items you want to download.
+When done, all found items are (will be) presented in a menu ála mutt where you can select which items you want to download.
 
 Planned sources are:
 * Library Genesis,
 * Sci-Hub,
 * various IRC channels (e.g. #ebookz on irc-highway),
 * various trackers (incl. private trackers) and
-* maybe more.
+* possibly more.
 
 bookwyrm is a work-in-progress.
 
-Having just found out about [Open Library](https://openlibrary.org/), I think bookwyrm will query it to get as much info as possible. ISBNs, OverDrive IDs and in many cases the actual books themselves are provided by the library. There is also a (RESTful) API available.
+Having just found out about [Open Library](https://openlibrary.org/), I think bookwyrm might query it to get as much info as possible regarding the wanted item.
+ISBNs, OverDrive IDs and in many cases the actual books themselves are provided by the library.
+There is also a (RESTful) API available.
+
+Regarding sources, the inital plan was to write these traversing of these in C++,
+but since there are a lot of potential sources it may be a better idea to script these.
+So instead of compiling all this,
+we could store scripts in `/etc/bookwyrm/sources/`, allow users to create their own in `~/.config/bookwyrm/sources/`,
+and keep the "front-end" in C++, to which the scripts feeds the found items.
+Doing this, adding support for sources would most likely be faster, easier, and save the eventual overhead of doing it in C++ (efficiency, library porting, etc.).
+
+So, script languages? Python? Support for more?
 
 Roadmap
 ---
@@ -20,11 +32,10 @@ Roadmap
     - [ ] cxxopts-style `.as<T>()` member funtion
 - [x] logging
     - [x] log sink that prints to stderr and stdout
-- [ ] `item` class and data structure
-    - [ ] fuzzy matching for nonexact data
-- [ ] implement curl
+- [x] `item` class and data structure
+    - [x] fuzzy matching for nonexact data
 
-Listed from high to low priority
+listed from high to low priority:
 - [ ] sources
     - [ ] Open Library (highest priority)
     - [ ] OverDrive
@@ -32,7 +43,6 @@ Listed from high to low priority
     - [ ] Library Genesis
     - [ ] Sci-Hub
     - [ ] IRC
-        - [ ] with libircppclient?
     - [ ] LibriVox (or would that be outside the scope of the project?)
 - [ ] terminal-based gui ala mutt
 
@@ -48,6 +58,7 @@ A compiler that supports C++17 features is required, as `std::experimental::stri
 CMake 3.0 or above is also required.
 
 At present, bookwyrm defaults to build in Debug-mode.
+If you wish to build a release executable, pass `-DCMAKE_BUILD_TYPE=Release` to `cmake`.
 
 ```
 $ mkdir build
