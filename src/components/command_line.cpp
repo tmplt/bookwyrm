@@ -236,5 +236,8 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         }
     }
 
-    throw argument_error("unrecognized option " + string(input.data()));
+    if (input[0] == '-')
+        throw argument_error("unrecognized option " + string(input.data()));
+
+    throw argument_error("the bookwyrm takes no positional arguments");
 }
