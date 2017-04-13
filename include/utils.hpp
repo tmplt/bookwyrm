@@ -26,15 +26,9 @@ namespace utils {
 
 /* Return true if any element is shared between two sets. */
 template <typename Set>
-bool any_intersection(Set a, Set b)
+inline bool any_intersection(const Set &a, const Set &b)
 {
-    std::sort(a.begin(), a.end());
-    std::sort(b.begin(), b.end());
-
-    bool match = std::find_first_of(a.begin(), a.end(),
-                                    b.begin(), b.end()) != a.end();
-
-    return match;
+    return std::find_first_of(a.cbegin(), a.cend(), b.cbegin(), b.cend()) != a.cend();
 }
 
 /* ns utils */

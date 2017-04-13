@@ -170,8 +170,7 @@ void cliparser::process_arguments(const vector<string> &args)
 
 void cliparser::validate_arguments() const
 {
-    vector<string> passed_opts;
-    vector<string> required_opts;
+    vector<string> passed_opts, required_opts;
 
     for (const auto &opt : passed_opts_) {
         /* We don't want the value, only the flag. */
@@ -183,7 +182,8 @@ void cliparser::validate_arguments() const
 
     /* Has any required arguments been passed? */
     const bool req_match = utils::any_intersection(passed_opts, required_opts);
-    const bool ident_passed = std::find(passed_opts.begin(), passed_opts.end(), "ident") != passed_opts.end();
+    const bool ident_passed = std::find(passed_opts.cbegin(), passed_opts.cend(), "ident")
+        != passed_opts.cend();
 
     if (ident_passed && passed_opts.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
