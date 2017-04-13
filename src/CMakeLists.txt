@@ -25,13 +25,10 @@ find_package(Threads REQUIRED QUIET)
 
 set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-# Required dependency: libcurl {{{
+# Include-order matters; if there is a header clash, the project-local headers are used.
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
-#find_package(CURL REQUIRED)
-#set(APP_LIBRARIES ${APP_LIBRARIES} ${CURL_LIBRARY})
-#set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CURL_INCLUDE_DIR})
-
-# }}}
 # Required dependency: spdlog {{{
 
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/include)
@@ -42,9 +39,11 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/includ
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
 
 # }}}
+# Required dependency: fmtlib {{{
 
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
+
+# }}}
 
 if(ENABLE_IRC)
   add_subdirectory(${PROJECT_SOURCE_DIR}/lib/libircppclient ${PROJECT_SOURCE_DIR}/lib/libircppclient)
@@ -64,7 +63,7 @@ make_executable(${PROJECT_NAME}
     RAW_DEPENDS
       ${APP_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt)
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy)
 
 # }}}
 # Export target details {{{
