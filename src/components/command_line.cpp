@@ -209,6 +209,7 @@ auto cliparser::check_value(const string_view &flag, const string_view &value, c
 void cliparser::parse(const string_view &input, const string_view &input_next)
 {
     if (skipnext_) {
+        /* The next input is a value, which we've already used. */
         skipnext_ = false;
         return;
     }
