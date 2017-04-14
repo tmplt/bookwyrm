@@ -73,6 +73,9 @@ bool bookwyrm::item::matches(const item &wanted)
              */
             int ratio = fuzz::token_set_ratio(comb.first, comb.second);
             max_ratio = std::max(ratio, max_ratio);
+
+            if (max_ratio >= fuzzy_min)
+                break;
         }
 
         if (max_ratio < fuzzy_min)
