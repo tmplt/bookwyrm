@@ -20,8 +20,6 @@
 #include <iomanip>    // std::setw()
 #include <utility>    // std::make_unique<T>(), std::forward<T>()
 
-#include <fmt/format.h>
-
 #include "components/command_line.hpp"
 #include "utils.hpp"
 
@@ -100,7 +98,7 @@ void cliparser::usage() const
             /* Padding between flags and description. */
             size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
 
-            fmt::print("  {}, {}", opt.flag, opt.flag_long);
+            std::cout << "  " << opt.flag << ", " << opt.flag_long;
 
             if (!opt.token.empty()) {
                 std::cout << ' ' << opt.token;
