@@ -52,7 +52,7 @@ bool bookwyrm::item::matches(const item &wanted)
                                              wanted.nonexacts.publisher};
 
     for (size_t i = 0; i <= in_result.size(); i++) {
-        if (requested[i].empty()) {
+        if (!requested[i].empty()) {
             /*
              * partial: useful for course literature that can have some
              * crazy long titles. Also useful for publishers, because
