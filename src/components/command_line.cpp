@@ -130,7 +130,7 @@ void cliparser::usage() const
 
 bool cliparser::has(const string &option) const
 {
-    return passed_opts_.find(option) != passed_opts_.end();
+    return passed_opts_.find(option) != passed_opts_.cend();
 }
 
 string cliparser::get(string opt) const
@@ -196,7 +196,7 @@ auto cliparser::check_value(const string_view &flag, const string_view &value, c
     if (value.empty())
         throw value_error("missing value for " + string(flag.data()));
 
-    if (!values.empty() && std::find(values.begin(), values.end(), value) == values.end()) {
+    if (!values.empty() && std::find(values.cbegin(), values.cend(), value) == values.cend()) {
         throw value_error(
             "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
             "; valid options are: " + values_to_str(values)
