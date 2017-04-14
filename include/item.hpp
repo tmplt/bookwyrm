@@ -33,9 +33,9 @@ public:
 
     bool matches(const item &wanted);
 
-    nonexacts_t nonexacts;
-    exacts_t exacts;
-    misc_t misc;
+    const nonexacts_t nonexacts;
+    const exacts_t exacts;
+    const misc_t misc;
 };
 
 /* ns bookwyrm */
