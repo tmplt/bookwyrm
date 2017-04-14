@@ -120,7 +120,7 @@ public:
     /* Get the value for a given option. */
     string get(string opt) const;
 
-protected:
+private:
     /*
      * Return a string of all valid token values,
      * e.g. "VAL1, VAL2, VAL3".
@@ -144,7 +144,6 @@ protected:
      */
     void parse(const string_view &input, const string_view &input_next);
 
-private:
     /* Program synopsis. */
     const string synopsis_;
 
