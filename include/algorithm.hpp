@@ -29,6 +29,7 @@ namespace algorithm {
 template <class T1, class T2>
 const auto product(const vector<T1> &a, const vector<T2> &b)
 {
+    /* NOTE: are we copying the references or the full strings here? */
     vector<std::pair<T1, T2>> products;
 
     for (const auto &first : a) {

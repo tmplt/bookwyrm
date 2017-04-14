@@ -25,7 +25,7 @@
 #include "version.hpp"
 
 #define PROG_NAME "@PROJECT_NAME@"
-#cmakedefine PROG_VERSION "@PROG_VERSION@"
+    #cmakedefine PROG_VERSION "@PROG_VERSION@"
 #ifndef PROG_VERSION
     #define PROG_VERSION GIT_TAG
 #endif

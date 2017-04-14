@@ -43,7 +43,7 @@ bool bookwyrm::item::matches(const item &wanted)
             !utils::any_intersection(wanted.misc.isbns, this->misc.isbns))
         return false;
 
-    /* Are we copying the strings here? */
+    /* NOTE: are we copying the strings here? */
     const std::array<string, 3> in_result = {this->nonexacts.title,
                                              this->nonexacts.serie,
                                              this->nonexacts.publisher},
