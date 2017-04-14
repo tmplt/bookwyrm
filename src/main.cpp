@@ -51,14 +51,15 @@ int main(int argc, char *argv[])
     const auto misc = command_line::option_group("Miscellaneous")
         ("-h", "--help",      "Display this text and exit")
         ("-v", "--version",   "Print version information")
-        ("-l", "--log",       "Set logging level to info");
+        ("-D", "--debug",     "Set logging level to debug");
 
     const command_line::groups groups = {main, excl, exact, misc};
     uint8_t exit_code = EXIT_SUCCESS;
 
-    const auto logger = logger::create("main");
+    auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
     logger->set_level(spdlog::level::err);
+    spdlog::register_logger(logger);
 
     try {
         /* Parse command line arguments. */
@@ -68,10 +69,10 @@ int main(int argc, char *argv[])
         auto cli = cliparser::make(std::move(progname), std::move(groups));
         cli->process_arguments(args);
 
-        if (cli->has("log"))
-            logger->set_level(spdlog::level::info);
+        if (cli->has("debug"))
+            logger->set_level(spdlog::level::debug);
 
-        logger->info("the mighty eldwyrm has been summoned!");
+        logger->debug("the mighty eldwyrm has been summoned!");
 
         if (cli->has("help")) {
             cli->usage();
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
         exit_code = EXIT_FAILURE;
     }
 
-    logger->info("dropping all loggers and exiting with return value {}", exit_code);
+    logger->debug("dropping all loggers and exiting with return value {}", exit_code);
     spdlog::drop_all();
     return exit_code;
 }

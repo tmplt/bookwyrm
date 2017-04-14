@@ -17,7 +17,7 @@
 
 #include <array>
 
-#include "fuzzywuzzy.hpp"
+#include <fuzzywuzzy.hpp>
 
 #include "item.hpp"
 #include "utils.hpp"
