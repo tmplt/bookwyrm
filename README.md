@@ -26,6 +26,8 @@ Doing this, adding support for sources would most likely be faster, easier, and 
 
 So, script languages? Python? Support for more?
 
+Also: use [pybind11](https://github.com/pybind/pybind11) for interfacing with Python.
+
 Roadmap
 ---
 - [x] command line parsing
