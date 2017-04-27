@@ -21,6 +21,7 @@
 #include <string>
 
 #include "storage.hpp"
+#include "components/command_line.hpp"
 
 using std::string;
 using std::vector;
@@ -30,12 +31,14 @@ namespace bookwyrm {
 class item {
 public:
     explicit item() {}
+    explicit item(const std::unique_ptr<cliparser> &cli);
 
     bool matches(const item &wanted);
 
-    const nonexacts_t nonexacts;
-    const exacts_t exacts;
-    const misc_t misc;
+    /* TODO: make these const */
+    nonexacts_t nonexacts;
+    exacts_t exacts;
+    misc_t misc;
 };
 
 /* ns bookwyrm */

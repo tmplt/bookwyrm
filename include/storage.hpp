@@ -29,6 +29,18 @@ namespace bookwyrm {
 /* Default value: "this value is empty". */
 enum { empty = -1 };
 
+/*
+ * For --year:
+ *   -y 2157   : list items from 2157 (equal)
+ *   -y =>2157 : list items from 2157 and later (eq_gt)
+ *   -y =<2157 : list items from 2157 and earlier (eq_lt)
+ *   -y >2157  : list items from later than 2157 (gt)
+ *   -y <2157  : list items from earlier than 2157 (lt)
+ *
+ *   NOTE: scope these?
+ */
+enum { equal, eq_gt, eq_lt, lt, gt};
+
 struct exacts_t {
     /*
      * A POD with added index operator.
@@ -43,13 +55,15 @@ struct exacts_t {
      * whether or not a field is empty or not.
      */
 
+    int year_mod = empty;
+
     int year    = empty;
     int edition = empty;
-    int ext     = empty;
+    int ext     = empty; // unused for now
     int volume  = empty;
     int number  = empty;
-    int pages   = empty;
-    int lang    = empty;
+    int pages   = empty; // missing flag
+    int lang    = empty; // unused for now
 
     constexpr static int size = 7;
 

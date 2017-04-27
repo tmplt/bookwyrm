@@ -23,6 +23,10 @@
 #include <experimental/string_view>  // std::experimental::string_view
 #include <vector>                    // std::vector
 
+#include "errors.hpp"
+
 using std::string;
 using std::vector;
 using std::experimental::string_view;
+
+DEFINE_ERROR(value_error);

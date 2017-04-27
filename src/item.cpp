@@ -16,6 +16,7 @@
  */
 
 #include <array>
+#include <cctype>
 
 #include <fuzzywuzzy.hpp>
 
@@ -23,14 +24,93 @@
 #include "utils.hpp"
 #include "common.hpp"
 #include "algorithm.hpp"
+#include "storage.hpp"
+#include "errors.hpp"
+#include "common.hpp"
+
+#include <iostream>
 
 static constexpr int fuzzy_min = 75;
+
+namespace bookwyrm {
+
+item::item(const std::unique_ptr<cliparser> &cli)
+{
+    /* Parse the year which may have a prefixed modifier. */
+    std::tie(exacts.year_mod, exacts.year) = [&cli]() -> std::pair<int, int> {
+        const auto year_str = cli->get("year");
+        if (year_str.empty()) return {empty, empty};
+
+        const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
+            return std::isdigit(c);
+        });
+
+        try {
+            /*
+             * NOTE: this approach allows the year to be represented as a float
+             * (which stoi truncates to an int) and allows appended not-digits.
+             * Will this cause problems?
+             */
+            const auto year = std::stoi(string(start, year_str.cend()));
+
+            if (start != year_str.cbegin()) {
+                /* There is a modifier in front of the year */
+                string mod_str(year_str.cbegin(), start);
+                int mod;
+
+                if (mod_str == "=>")
+                    mod = eq_gt;
+                else if (mod_str == "=<")
+                    mod = eq_lt;
+                else if (mod_str == ">")
+                    mod = gt;
+                else if (mod_str == "<")
+                    mod = lt;
+                else
+                    throw value_error("unrecognized year modifier '" + mod_str + '\'');
+
+                return {mod, year};
+
+            }
+
+            return {equal, year};
+        } catch (const value_error &err) {
+            throw err;
+        } catch (const std::exception &err) {
+            throw value_error("malformed year");
+        }
+    }();
+
+    auto parse_number = [&cli](string &&opt) -> int {
+        auto value_str = cli->get(opt);
+        if (value_str.empty()) return empty;
+
+        try {
+            return std::stoi(value_str);
+        } catch (std::exception &err) {
+            throw value_error("malformed value '" + value_str + "' for argument --" + opt);
+        }
+    };
+
+    exacts.edition = parse_number("edition");
+    exacts.volume  = parse_number("volume");
+    exacts.number  = parse_number("number");
+    exacts.pages   = parse_number("pages");
+
+    nonexacts.authors   = cli->get_many("author");
+    nonexacts.title     = cli->get("title");
+    nonexacts.serie     = cli->get("serie");
+    nonexacts.publisher = cli->get("publisher");
+    nonexacts.journal   = cli->get("journal");
+
+    misc.isbns = cli->get_many("isbn");
+}
 
 /*
  * Returns true if all specified exact values are equal
  * and if all specified non-exact values passes the fuzzy ratio.
  */
-bool bookwyrm::item::matches(const item &wanted)
+bool item::matches(const item &wanted)
 {
     /* Return false if any exact value doesn't match what's wanted. */
     for (int i = 0; i <= wanted.exacts.size; i++) {
@@ -83,4 +163,7 @@ bool bookwyrm::item::matches(const item &wanted)
     }
 
     return true;
+}
+
+/* ns bookwyrm */
 }

@@ -24,7 +24,8 @@
 #include <utility>                   // std::forward
 #include <experimental/string_view>  // std::experimental::string_view
 
-#include "errors.hpp"
+#include "common.hpp"
+
 
 using std::string;
 using std::vector;
@@ -36,7 +37,6 @@ namespace command_line {
 
 /* Something more specific than "runtime_error". */
 DEFINE_ERROR(argument_error);
-DEFINE_ERROR(value_error);
 
 class option;
 class option_group;

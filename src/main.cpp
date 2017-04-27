@@ -25,6 +25,7 @@
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
 #include "config.hpp"
+#include "common.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -41,7 +42,9 @@ int main(int argc, char *argv[])
         ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
     const auto exact = command_line::option_group("Exact", "all are optional")
-        ("-y", "--year",      "Specify year of release", "YEAR")
+        ("-y", "--year",      string("Specify year of release. ") +
+                              "A prefix modifier can be used to broaden the search. " +
+                              "Available prefixes are <, >, <=, >=.", "YEAR")
         ("-L", "--language",  "Specify text language", "LANG")
         ("-e", "--edition",   "Specify item edition", "EDITION")
         ("-E", "--extension", "Specify item extension", "EXT",
@@ -87,7 +90,9 @@ int main(int argc, char *argv[])
 
         cli->validate_arguments();
 
-    } catch (const command_line::argument_error &err) {
+        const bookwyrm::item wanted(cli);
+
+    } catch (const program_error &err) {
         logger->error(err.what() + std::string("; see --help"));
         exit_code = EXIT_FAILURE;
     } catch (const std::exception &err) {
