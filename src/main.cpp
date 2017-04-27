@@ -24,7 +24,7 @@
 #include "item.hpp"
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
-#include "config.hpp"
+#include "version.hpp"
 #include "common.hpp"
 
 int main(int argc, char *argv[])

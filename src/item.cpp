@@ -28,8 +28,6 @@
 #include "errors.hpp"
 #include "common.hpp"
 
-#include <iostream>
-
 static constexpr int fuzzy_min = 75;
 
 namespace bookwyrm {
@@ -70,7 +68,6 @@ item::item(const std::unique_ptr<cliparser> &cli)
                     throw value_error("unrecognized year modifier '" + mod_str + '\'');
 
                 return {mod, year};
-
             }
 
             return {equal, year};

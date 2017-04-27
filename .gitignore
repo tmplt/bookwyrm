@@ -1,5 +1,5 @@
 build/
 !cmake/build/
 __pycache__
-include/config.hpp
+include/version.hpp
 *.py

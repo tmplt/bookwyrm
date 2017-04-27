@@ -83,6 +83,6 @@ execute_process(COMMAND git describe --tags --dirty=-git
   OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 
 configure_file(
-  ${PROJECT_SOURCE_DIR}/include/config.hpp.cmake
-  ${CMAKE_SOURCE_DIR}/include/config.hpp
+  ${PROJECT_SOURCE_DIR}/include/version.hpp.cmake
+  ${CMAKE_SOURCE_DIR}/include/version.hpp
   ESCAPE_QUOTES @ONLY)
