@@ -35,9 +35,9 @@ namespace bookwyrm {
 item::item(const std::unique_ptr<cliparser> &cli)
 {
     /* Parse the year which may have a prefixed modifier. */
-    std::tie(exacts.year_mod, exacts.year) = [&cli]() -> std::pair<int, int> {
+    std::tie(exacts.ymod, exacts.year) = [&cli]() -> std::pair<year_mod, int> {
         const auto year_str = cli->get("year");
-        if (year_str.empty()) return {empty, empty};
+        if (year_str.empty()) return {year_mod::equal, empty};
 
         const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
             return std::isdigit(c);
@@ -54,23 +54,23 @@ item::item(const std::unique_ptr<cliparser> &cli)
             if (start != year_str.cbegin()) {
                 /* There is a modifier in front of the year */
                 string mod_str(year_str.cbegin(), start);
-                int mod;
+                year_mod mod;
 
                 if (mod_str == "=>")
-                    mod = eq_gt;
+                    mod = year_mod::eq_gt;
                 else if (mod_str == "=<")
-                    mod = eq_lt;
+                    mod = year_mod::eq_lt;
                 else if (mod_str == ">")
-                    mod = gt;
+                    mod = year_mod::gt;
                 else if (mod_str == "<")
-                    mod = lt;
+                    mod = year_mod::lt;
                 else
                     throw value_error("unrecognized year modifier '" + mod_str + '\'');
 
                 return {mod, year};
             }
 
-            return {equal, year};
+            return {year_mod::equal, year};
         } catch (const value_error &err) {
             throw err;
         } catch (const std::exception &err) {

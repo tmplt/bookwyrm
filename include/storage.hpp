@@ -36,10 +36,8 @@ enum { empty = -1 };
  *   -y =<2157 : list items from 2157 and earlier (eq_lt)
  *   -y >2157  : list items from later than 2157 (gt)
  *   -y <2157  : list items from earlier than 2157 (lt)
- *
- *   NOTE: scope these?
  */
-enum { equal, eq_gt, eq_lt, lt, gt};
+enum class year_mod {equal, eq_gt, eq_lt, lt, gt};
 
 struct exacts_t {
     /*
@@ -55,7 +53,7 @@ struct exacts_t {
      * whether or not a field is empty or not.
      */
 
-    int year_mod = empty;
+    year_mod ymod = year_mod::equal;
 
     int year    = empty;
     int edition = empty;
