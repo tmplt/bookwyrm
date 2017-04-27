@@ -44,6 +44,11 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
 
 # }}}
+# Required dependency: pybind11 {{{
+
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
+
+# }}}
 
 if(ENABLE_IRC)
   add_subdirectory(${PROJECT_SOURCE_DIR}/lib/libircppclient ${PROJECT_SOURCE_DIR}/lib/libircppclient)
