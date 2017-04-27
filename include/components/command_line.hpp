@@ -120,6 +120,9 @@ public:
     /* Get the value for a given option. */
     string get(string opt) const;
 
+    /* Get all values for a given option. (i.e. --author) */
+    vector<string> get_many(const string &&opt) const;
+
 private:
     /*
      * Return a string of all valid token values,
@@ -149,7 +152,7 @@ private:
 
     const options valid_opts_;
     const groups valid_groups_;
-    std::map<string, string> passed_opts_;
+    std::multimap<string, string> passed_opts_;
 
     /*
      * Is the next argument associated with the previous one,

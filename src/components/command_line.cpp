@@ -141,6 +141,21 @@ string cliparser::get(string opt) const
     return "";
 }
 
+vector<string> cliparser::get_many(const string &&opt) const
+{
+    vector<string> values;
+
+    if (has(opt)) {
+        auto range = passed_opts_.equal_range(opt);
+
+        /* Can't we just return {range.first, range.second} somehow? */
+        for (auto p = range.first; p != range.second; p++)
+            values.push_back(p->second);
+    }
+
+    return values;
+}
+
 auto cliparser::is_short(const string_view &option, const string_view &opt_short)
 {
     return option.compare(0, opt_short.length(), opt_short) == 0;
