@@ -91,3 +91,9 @@ configure_file(
   ${PROJECT_SOURCE_DIR}/include/version.hpp.cmake
   ${CMAKE_SOURCE_DIR}/include/version.hpp
   ESCAPE_QUOTES @ONLY)
+
+# Build Python bindings {{{
+
+pybind11_add_module(bindings bindings.cpp)
+
+# }}}

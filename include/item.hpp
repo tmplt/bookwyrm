@@ -32,8 +32,8 @@ public:
 
     bool matches(const item &wanted);
 
-    const nonexacts_t nonexacts;
-    const exacts_t exacts;
+    nonexacts_t nonexacts;
+    exacts_t exacts;
     misc_t misc;
 };
 

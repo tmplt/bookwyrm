@@ -54,6 +54,7 @@ struct exacts_t {
      * whether or not a field is empty or not.
      */
     explicit exacts_t(const std::unique_ptr<cliparser> &cli);
+    /* explicit exacts_t(const py::dict d); ?*/
 
     year_mod ymod;
 
