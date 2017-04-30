@@ -23,6 +23,7 @@
 #include <array>
 
 #include "common.hpp"
+#include "components/command_line.hpp"
 
 namespace bookwyrm {
 
@@ -37,7 +38,7 @@ enum { empty = -1 };
  *   -y >2157  : list items from later than 2157 (gt)
  *   -y <2157  : list items from earlier than 2157 (lt)
  */
-enum class year_mod {equal, eq_gt, eq_lt, lt, gt};
+enum class year_mod { equal, eq_gt, eq_lt, lt, gt };
 
 struct exacts_t {
     /*
@@ -48,20 +49,21 @@ struct exacts_t {
      * We can then get a field value by name, which we'll
      * want when printing the stuff out.
      *
-     * All field are initialized to "empty" (-1). This
-     * makes us able to bool-check (since -1 is false)
+     * Fields are set to "empty" (-1) during construction.
+     * This makes us able to bool-check (since -1 is false)
      * whether or not a field is empty or not.
      */
+    explicit exacts_t(const std::unique_ptr<cliparser> &cli);
 
-    year_mod ymod = year_mod::equal;
+    year_mod ymod;
 
-    int year    = empty;
-    int edition = empty;
-    int ext     = empty; // unused for now
-    int volume  = empty;
-    int number  = empty;
-    int pages   = empty; // missing flag
-    int lang    = empty; // unused for now
+    int year,
+        edition,
+        ext,   // unused for now
+        volume,
+        number,
+        pages, // missing flag
+        lang;  // unused for now
 
     constexpr static int size = 7;
 
@@ -83,6 +85,7 @@ struct nonexacts_t {
      * exactly with the wanted field. Instead, we use
      * fuzzy-matching.
      */
+    explicit nonexacts_t(const std::unique_ptr<cliparser> &cli);
 
     vector<string> authors;
     string title;

@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 
     try {
         /* Parse command line arguments. */
-        std::string progname = argv[0];
-        std::vector<std::string> args(argv + 1, argv + argc);
+        string progname = argv[0];
+        vector<string> args(argv + 1, argv + argc);
 
         auto cli = cliparser::make(std::move(progname), std::move(groups));
         cli->process_arguments(args);

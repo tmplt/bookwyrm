@@ -17,9 +17,6 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include "storage.hpp"
 #include "components/command_line.hpp"
 
@@ -30,14 +27,13 @@ namespace bookwyrm {
 
 class item {
 public:
-    explicit item() {}
-    explicit item(const std::unique_ptr<cliparser> &cli);
+    explicit item(const std::unique_ptr<cliparser> &cli)
+        : nonexacts(cli), exacts(cli) {};
 
     bool matches(const item &wanted);
 
-    /* TODO: make these const */
-    nonexacts_t nonexacts;
-    exacts_t exacts;
+    const nonexacts_t nonexacts;
+    const exacts_t exacts;
     misc_t misc;
 };
 
