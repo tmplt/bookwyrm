@@ -24,7 +24,9 @@
 #include <spdlog/details/log_msg.h>
 #include <spdlog/logger.h>
 
-namespace spdlog::custom {
+namespace spdlog {
+
+namespace custom {
 
 /*
  * A sink which prints level::err and above to stdcerr.
@@ -38,6 +40,10 @@ class split_sink : public spdlog::sinks::sink {
     void flush();
 };
 
+/* ns custom */
+}
+
+/* ns spdlog */
 }
 
 namespace logger {

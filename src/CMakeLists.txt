@@ -68,7 +68,7 @@ make_executable(${PROJECT_NAME}
     RAW_DEPENDS
       ${APP_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy)
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy pybind11::embed)
 
 # }}}
 # Export target details {{{

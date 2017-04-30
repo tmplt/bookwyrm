@@ -24,7 +24,9 @@
 
 #include "components/logger.hpp"
 
-namespace spdlog::custom {
+namespace spdlog {
+
+namespace custom {
 
 void split_sink::log(const details::log_msg &msg)
 {
@@ -40,7 +42,10 @@ void split_sink::flush()
     std::cerr << std::flush;
 }
 
-/* ns spdlog::custom */
+/* ns custom */
+}
+
+/* ns spdlog */
 }
 
 std::shared_ptr<spdlog::logger> logger::create(std::string &&name)

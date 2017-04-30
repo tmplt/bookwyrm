@@ -20,6 +20,8 @@
 #include <exception>  // std::exception
 
 #include <spdlog/spdlog.h>
+#include <pybind11/embed.h>
+namespace py = pybind11;
 
 #include "item.hpp"
 #include "components/command_line.hpp"
@@ -91,6 +93,9 @@ int main(int argc, char *argv[])
         cli->validate_arguments();
 
         const bookwyrm::item wanted(cli);
+
+        py::scoped_interpreter guard{};
+        py::print("Hello, World! (From python)");
 
     } catch (const program_error &err) {
         logger->error(err.what() + std::string("; see --help"));
