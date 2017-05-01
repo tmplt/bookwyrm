@@ -32,6 +32,26 @@ public:
 
     bool matches(const item &wanted);
 
+    /*
+     * These ought to be const, but since we're binding
+     * these in Python as well, we have two choices:
+     *  i) make these const and instead bind constructors
+     *     taking a py::object of some sort, relying on
+     *     multiple callbacks to C++ code before the item
+     *     has been created wholly.
+     * ii) make these non-const, thus allowing us to assign
+     *     each field as we want in Python code.
+     *
+     * Alternatively, instead of giving back an actual
+     * item to C++, we could return a tuple of three dicts:
+     *     (
+     *         {'authors' : ['a', 'b', ...], 'title' : 'whatev', ...},
+     *         {'year' : 1990, 'edition' : 3, ...},
+     *         {'isbns' : ['123123', ...], ...}
+     *     )
+     * and emplace the new item here in C++. No need to bind
+     * them item class, then, either.
+     */
     nonexacts_t nonexacts;
     exacts_t exacts;
     misc_t misc;

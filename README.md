@@ -9,50 +9,51 @@ Planned sources are:
 * Sci-Hub,
 * various IRC channels (e.g. #ebookz on irc-highway),
 * various trackers (incl. private trackers) and
-* possibly more.
+* more.
 
-bookwyrm is a work-in-progress.
+bookwyrm is a work-in-progress, so this document serves as a place to jot down my thought as of now.
+Nothing is set in stone for a v1.0.0 release, yet.
 
-Having just found out about [Open Library](https://openlibrary.org/), I think bookwyrm might query it to get as much info as possible regarding the wanted item.
-ISBNs, OverDrive IDs and in many cases the actual books themselves are provided by the library.
-There is also a (RESTful) API available.
+How will it work?
+---
+A "front-end" of sorts will be written in C++.
+This will parse command line arguments, sort away unwanted items, and present found items to the user.
 
-Regarding sources, the inital plan was to write these traversing of these in C++,
-but since there are a lot of potential sources it may be a better idea to script these.
-So instead of compiling all this,
-we could store scripts in `/etc/bookwyrm/sources/`, allow users to create their own in `~/.config/bookwyrm/sources/`,
-and keep the "front-end" in C++, to which the scripts feeds the found items.
-Doing this, adding support for sources would most likely be faster, easier, and save the eventual overhead of doing it in C++ (efficiency, library porting, etc.).
+The traversal of sources and thus findings items across multiple sources will be written in seperate Python scripts.
+When an item is found, it's fed back to the front-end for processing.
+The point of this is to make it as easy as possible to add new sources (fit for upstream or not) in some neat path like `~/.config/bookwyrm/sources/`.
 
-So, script languages? Python? Support for more?
+While these scripts run, the program will open a menu ála mutt where the list of found items is updated asyncronously.
+In this menu items can be reviewed and selected for download.
+All info that can be found via a source's main search function (think libgen's) will be seen in this main menu.
+Entering an item will make bookwyrm attempt to fetch some more info about the item.
+(Some sources like libgen offers more info by just clicking on the item,
+but using a database of some sort seems like a better idea.
+[Open Library?](https://openlibrary.org/)
+[WorldCat?](https://www.worldcat.org/)
+Both?)
 
-Also: use [pybind11](https://github.com/pybind/pybind11) for interfacing with Python.
+When it comes to actually download the items I'm not yet sure.
+Python's requests module can do this easy peasy, but wouldn't it be better to do that in C++ code?
+It'd be a hell of a lot easier if we'd want a progress indicator of some kind.
 
-Roadmap
+How does it work thus far?
 ---
 - [x] command line parsing
-    - [ ] cxxopts-style `.as<T>()` member funtion
 - [x] logging
     - [x] log sink that prints to stderr and stdout
 - [x] `item` class and data structure
-    - [x] fuzzy matching for nonexact data
-
-listed from high to low priority:
-- [ ] sources
-    - [ ] Open Library (highest priority)
-    - [ ] OverDrive
-    - [ ] University libraries?
+    - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy))
+- [x] embed Python interpreter with [pybind11](https://github.com/pybind/pybind11)
+- [ ] write a class that does the whole searching thing
+- [ ] write the menu (avoid ncurses, apparently it's a hell to work with)
+- [ ] write scripts for sources (listed in descending priority)
     - [ ] Library Genesis
     - [ ] Sci-Hub
     - [ ] IRC
+    - [ ] OverDrive
+    - [ ] University libraries?
     - [ ] LibriVox (or would that be outside the scope of the project?)
-- [ ] terminal-based gui ala mutt
-
----
-
-**Reporting Bugs**
-
-Please open a [GitHub Issue](https://github.com/Tmplt/bookwyrm/issues) and include as much information as you can.
 
 Building
 ---
