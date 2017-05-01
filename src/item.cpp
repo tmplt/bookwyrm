@@ -65,7 +65,7 @@ exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
                 else if (mod_str == "<")
                     mod = year_mod::lt;
                 else
-                    throw value_error("unrecognized year modifier '" + mod_str + '\'');
+                    throw value_error("unrecognised year modifier '" + mod_str + '\'');
 
                 return {mod, year};
             }
