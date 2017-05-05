@@ -33,9 +33,9 @@ void feed(/*const item wanted*/)
 /* Are these only deprecated in dean0x7d's branch? */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-PYBIND11_PLUGIN(bookwyrm)
+PYBIND11_PLUGIN(pybookwyrm)
 {
-    py::module m("bookwyrm", "data structures used by bookwyrm");
+    py::module m("pybookwyrm", "data structures used by bookwyrm");
 
     py::enum_<year_mod>(m, "year_mod")
         .value("equal", year_mod::equal)
@@ -69,8 +69,8 @@ PYBIND11_PLUGIN(bookwyrm)
             }
         );
 
-    m.def("feed", &feed, "Feed passed books to the bookwyrm");
-    m.attr("empty") = empty;
+    /* m.def("feed", &feed, "Feed passed books to the bookwyrm"); */
+    /* m.attr("empty") = empty; */
 
     return m.ptr();
 }

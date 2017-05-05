@@ -100,6 +100,6 @@ configure_file(
 
 # Build Python bindings {{{
 
-pybind11_add_module(bindings bindings.cpp)
+pybind11_add_module(pybookwyrm bindings.cpp)
 
 # }}}
