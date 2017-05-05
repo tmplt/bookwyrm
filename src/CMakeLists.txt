@@ -17,7 +17,13 @@
 # Create executable
 #
 
-file(GLOB_RECURSE SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src *.c[p]*)
+set(SOURCE
+    ${SOURCE}
+    main.cpp
+    item.cpp
+    components/logger.cpp
+    components/command_line.cpp
+)
 
 # Required dependencies
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -62,7 +68,7 @@ endif()
 
 make_executable(${PROJECT_NAME}
     SOURCES
-      ${SOURCES}
+      ${SOURCE}
     INCLUDE_DIRS
       ${APP_INCLUDE_DIRS}
     RAW_DEPENDS
