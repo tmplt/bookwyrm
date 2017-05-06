@@ -1,6 +1,5 @@
 /*
  * This file contains a bunch of utility functions,
- * most (if not all) utilizing templates.
  *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
@@ -20,6 +19,7 @@
 
 #pragma once
 
+#include <unistd.h>
 #include <algorithm>
 #include <system_error>
 #include <experimental/filesystem>
@@ -37,6 +37,12 @@ inline bool any_intersection(const Set &a, const Set &b)
 
 /* Check if the path is a valid download directory. */
 std::error_code validate_download_dir(const fs::path &path);
+
+/* Check if the given path is a file and can be read. */
+inline bool valid_file(const fs::path &path)
+{
+    return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
+}
 
 /* ns utils */
 }

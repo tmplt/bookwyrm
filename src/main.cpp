@@ -26,8 +26,11 @@
 #include "utils.hpp"
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
+#include "components/searcher.hpp"
 #include "version.hpp"
 #include "common.hpp"
+
+#include <iostream>
 
 namespace py = pybind11;
 namespace fs = std::experimental::filesystem;
@@ -66,7 +69,7 @@ int main(int argc, char *argv[])
 
     auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
-    logger->set_level(spdlog::level::err);
+    logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
 
     try {
@@ -97,12 +100,16 @@ int main(int argc, char *argv[])
         const auto err = utils::validate_download_dir(cli->get(0));
         if (err) throw fs::filesystem_error("invalid download directory", err);
 
+        /*
+         * Start the Python interpreter and keep it alive until
+         * program termination.
+         */
+        py::scoped_interpreter guard{};
+
         const bookwyrm::item wanted(cli);
         bookwyrm::searcher s(wanted);
         /* s.search(); */
-
-        py::scoped_interpreter guard{};
-        py::print("Hello, World! (From python)");
+        s.test_sources();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));

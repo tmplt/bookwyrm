@@ -1,6 +1,4 @@
 /*
- * This file contains a bunch of utility functions.
- *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,24 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cerrno>
+#pragma once
 
-#include "utils.hpp"
+#include <pybind11/pybind11.h>
 
-std::error_code utils::validate_download_dir(const fs::path &path)
-{
-    if (!fs::exists(path))
-        return {ENOENT, std::generic_category()};
+#include "common.hpp"
+#include "item.hpp"
+#include "errors.hpp"
 
-    if (fs::space(path).available == 0)
-        return {ENOSPC, std::generic_category()};
+namespace bookwyrm {
 
-    if (!fs::is_directory(path))
-        return {ENOTDIR, std::generic_category()};
+/*
+ * This class will handle everything between the
+ */
+class searcher {
+public:
+    explicit searcher(const item &wanted);
 
-    /* Can we write to the directory? */
-    if (access(path.c_str(), W_OK) != 0)
-        return {EACCES, std::generic_category()};
+    void test_sources();
 
-    return {};
+private:
+    const item &wanted_;
+    vector<item> items_;
+    vector<pybind11::module> sources_;
+};
+
+/* ns bookwyrm */
 }

@@ -24,6 +24,7 @@ set(SOURCE
     utils.cpp
     components/logger.cpp
     components/command_line.cpp
+    components/searcher.cpp
 )
 
 # Required dependencies
