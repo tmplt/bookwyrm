@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         }
 
         cli->validate_arguments();
-        const auto err = utils::validate_download_dir(".");
+        const auto err = utils::validate_download_dir(cli->get(0));
         if (err) throw fs::filesystem_error("invalid download directory", err);
 
         const bookwyrm::item wanted(cli);

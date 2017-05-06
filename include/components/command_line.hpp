@@ -113,9 +113,11 @@ public:
 
     /* Check if an option has been passed. */
     bool has(const string &option) const;
+    bool has(size_t index) const;
 
     /* Get the value for a given option. */
     string get(string opt) const;
+    string get(size_t index) const;
 
     /* Get all values for a given option. (i.e. --author) */
     vector<string> get_many(const string &&opt) const;
@@ -150,6 +152,7 @@ private:
     const options valid_opts_;
     const groups valid_groups_;
     std::multimap<string, string> passed_opts_;
+    vector<string> positional_args_;
 
     /*
      * Is the next argument associated with the previous one,

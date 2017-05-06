@@ -53,7 +53,7 @@ enum { /* magic padding numbers */
 cliparser::cli_type cliparser::make(const string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
-        "Usage: " + progname + " OPTION...", std::forward<decltype(groups)>(groups)
+        "Usage: " + progname + " OPTION... DOWNLOAD_PATH", std::forward<decltype(groups)>(groups)
     );
 }
 
@@ -133,12 +133,22 @@ bool cliparser::has(const string &option) const
     return passed_opts_.find(option) != passed_opts_.cend();
 }
 
+bool cliparser::has(size_t index) const
+{
+    return positional_args_.size() > index;
+}
+
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
         return passed_opts_.find(opt)->second;
 
     return "";
+}
+
+string cliparser::get(size_t index) const
+{
+    return has(index) ? positional_args_[index] : "";
 }
 
 vector<string> cliparser::get_many(const string &&opt) const
@@ -183,6 +193,12 @@ void cliparser::process_arguments(const vector<string> &args)
 
 void cliparser::validate_arguments() const
 {
+    if (!has(0))
+        throw argument_error("you must specify a download path");
+
+    if (positional_args_.size() > 1)
+        throw argument_error("only one positional argument is allowed");
+
     vector<string> passed_opts, required_opts;
 
     for (const auto &opt : passed_opts_) {
@@ -254,5 +270,5 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
     if (input[0] == '-')
         throw argument_error("unrecognized option " + string(input.data()));
 
-    throw argument_error("the bookwyrm takes no positional arguments");
+    positional_args_.emplace_back(input);
 }
