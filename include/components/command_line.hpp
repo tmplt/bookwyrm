@@ -35,9 +35,6 @@ using std::forward;
 
 namespace command_line {
 
-/* Something more specific than "runtime_error". */
-DEFINE_ERROR(argument_error);
-
 class option;
 class option_group;
 using options = vector<option>;

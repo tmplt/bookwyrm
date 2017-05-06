@@ -93,11 +93,13 @@ int main(int argc, char *argv[])
         cli->validate_arguments();
 
         const bookwyrm::item wanted(cli);
+        bookwyrm::searcher s(wanted);
+        /* s.search(); */
 
         py::scoped_interpreter guard{};
         py::print("Hello, World! (From python)");
 
-    } catch (const program_error &err) {
+    } catch (const cli_error &err) {
         logger->error(err.what() + std::string("; see --help"));
         exit_code = EXIT_FAILURE;
     } catch (const std::exception &err) {

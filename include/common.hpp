@@ -28,5 +28,3 @@
 using std::string;
 using std::vector;
 using std::experimental::string_view;
-
-DEFINE_ERROR(value_error);
