@@ -21,6 +21,7 @@ set(SOURCE
     ${SOURCE}
     main.cpp
     item.cpp
+    utils.cpp
     components/logger.cpp
     components/command_line.cpp
 )
@@ -74,7 +75,8 @@ make_executable(${PROJECT_NAME}
     RAW_DEPENDS
       ${APP_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy pybind11::embed)
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy pybind11::embed
+    stdc++fs)
 
 # }}}
 # Export target details {{{

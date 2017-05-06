@@ -18,25 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <cerrno>
+#include <unistd.h>
 
-#include <algorithm>
-#include <system_error>
-#include <experimental/filesystem>
+#include "utils.hpp"
 
-namespace fs = std::experimental::filesystem;
-
-namespace utils {
-
-/* Return true if any element is shared between two sets. */
-template <typename Set>
-inline bool any_intersection(const Set &a, const Set &b)
+std::error_code utils::validate_download_dir(const fs::path &path)
 {
-    return std::find_first_of(a.cbegin(), a.cend(), b.cbegin(), b.cend()) != a.cend();
+    if (fs::space(path).available == 0)
+        return {ENOSPC, std::generic_category()};
+
+    if (!fs::is_directory(path))
+        return {ENOTDIR, std::generic_category()};
+
+    /* Can we write to the directory? */
+    if (access(path.c_str(), W_OK) != 0)
+        return {EACCES, std::generic_category()};
+
+    return {};
 }
 
-/* Check if the path is a valid download directory. */
-std::error_code validate_download_dir(const fs::path &path);
-
-/* ns utils */
-}

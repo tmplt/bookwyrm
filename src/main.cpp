@@ -18,16 +18,19 @@
 #include <cstdint>    // explicitly-sized integral types
 #include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
 #include <exception>  // std::exception
-
 #include <spdlog/spdlog.h>
 #include <pybind11/embed.h>
-namespace py = pybind11;
+#include <experimental/filesystem>
 
 #include "item.hpp"
+#include "utils.hpp"
 #include "components/command_line.hpp"
 #include "components/logger.hpp"
 #include "version.hpp"
 #include "common.hpp"
+
+namespace py = pybind11;
+namespace fs = std::experimental::filesystem;
 
 int main(int argc, char *argv[])
 {
@@ -91,6 +94,8 @@ int main(int argc, char *argv[])
         }
 
         cli->validate_arguments();
+        const auto err = utils::validate_download_dir(".");
+        if (err) throw fs::filesystem_error("invalid download directory", err);
 
         const bookwyrm::item wanted(cli);
         bookwyrm::searcher s(wanted);
@@ -100,10 +105,11 @@ int main(int argc, char *argv[])
         py::print("Hello, World! (From python)");
 
     } catch (const cli_error &err) {
-        logger->error(err.what() + std::string("; see --help"));
+        logger->error(err.what() + string("; see --help"));
         exit_code = EXIT_FAILURE;
     } catch (const std::exception &err) {
-        logger->error(err.what());
+        /* Is the fs::filesystem_error print-out to verbose? */
+        logger->error(err.what() + string("."));
         exit_code = EXIT_FAILURE;
     }
 
