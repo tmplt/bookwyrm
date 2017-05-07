@@ -43,7 +43,7 @@ searcher::searcher(const item &wanted)
     const std::array<fs::path, 2> paths = {"/etc/bookwyrm/sources",
                                            "~/.config/bookwyrm/sources"};
 #endif
-    /* Append soure_path to Python's sys.path. */
+    /* Append source_path to Python's sys.path. */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
     sys_path.append(source_path.c_str());
 

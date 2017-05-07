@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
         ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
     const auto exact = command_line::option_group("Exact", "all are optional")
-        ("-y", "--year",      string("Specify year of release. ") +
-                              "A prefix modifier can be used to broaden the search. " +
+        ("-y", "--year",      "Specify year of release. "
+                              "A prefix modifier can be used to broaden the search. "
                               "Available prefixes are <, >, <=, >=.", "YEAR")
         ("-L", "--language",  "Specify text language", "LANG")
         ("-e", "--edition",   "Specify item edition", "EDITION")
