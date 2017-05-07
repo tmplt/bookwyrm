@@ -43,7 +43,7 @@ How does it work thus far?
 - [x] logging
     - [x] log sink that prints to stderr and stdout
 - [x] `item` class and data structure
-    - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy))
+    - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy)!)
 - [x] embed Python interpreter with [pybind11](https://github.com/pybind/pybind11)
 - [ ] write a class that does the whole searching thing
 - [ ] write the menu (avoid ncurses, apparently it's a hell to work with)
@@ -57,15 +57,16 @@ How does it work thus far?
 
 Building
 ---
-A compiler that supports C++17 features is required, as `std::experimental::string_view` is used throughout the program.
+bookwyrm uses some C++17 features such as `std::string_view` and `std::filesystem`,
+so a recent compiler is required.
 CMake 3.0 or above is also required.
 
 At present, bookwyrm defaults to build in Debug-mode.
 If you wish to build a release executable, pass `-DCMAKE_BUILD_TYPE=Release` to `cmake`.
 
+Just clone the repo and:
 ```
-$ mkdir build
-$ cd build
+$ mkdir build && cd build
 $ cmake ..
 $ make
 ```
