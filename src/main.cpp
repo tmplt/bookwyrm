@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 
     /* Future work: make main, excl, exact, misc and groups constexpr. */
     const auto main = command_line::option_group("Main", "necessarily inclusive arguments; at least one required")
-        ("-a", "--author",    "Specify authors", "AUTHOR")
-        ("-t", "--title",     "Specify title", "TITLE")
-        ("-s", "--serie",     "Specify serie", "SERIE")
+        ("-a", "--author",    "Specify authors",   "AUTHOR")
+        ("-t", "--title",     "Specify title",     "TITLE")
+        ("-s", "--serie",     "Specify serie",     "SERIE")
         ("-p", "--publisher", "Specify publisher", "PUBLISHER");
 
     const auto excl = command_line::option_group("Exclusive", "cannot be combined with any other arguments")
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
         ("-y", "--year",      "Specify year of release. "
                               "A prefix modifier can be used to broaden the search. "
                               "Available prefixes are <, >, <=, >=.", "YEAR")
-        ("-L", "--language",  "Specify text language", "LANG")
-        ("-e", "--edition",   "Specify item edition", "EDITION")
+        ("-L", "--language",  "Specify text language",  "LANG")
+        ("-e", "--edition",   "Specify item edition",   "EDITION")
         ("-E", "--extension", "Specify item extension", "EXT",
             valid_opts{"epub", "pdf", "djvu"})
         ("-i", "--isbn",      "Specify item ISBN", "ISBN");
