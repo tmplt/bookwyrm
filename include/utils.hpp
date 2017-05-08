@@ -24,6 +24,8 @@
 #include <system_error>
 #include <experimental/filesystem>
 
+#include "common.hpp"
+
 namespace fs = std::experimental::filesystem;
 
 namespace utils {
@@ -37,6 +39,8 @@ inline bool any_intersection(const Set &a, const Set &b)
 
 /* Check if the path is a valid download directory. */
 std::error_code validate_download_dir(const fs::path &path);
+
+string vector_to_string(const vector<string> &vec);
 
 /* Check if the given path is a file and can be read. */
 inline bool valid_file(const fs::path &path)

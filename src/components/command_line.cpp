@@ -57,15 +57,6 @@ cliparser::cli_type cliparser::make(const string &&progname, const groups &&grou
     );
 }
 
-auto cliparser::values_to_str(const choices &values)
-{
-    string retstring = "";
-    for (const auto &v : values)
-        retstring += v + (v != values.back() ? ", " : "");
-
-    return retstring;
-}
-
 void cliparser::usage() const
 {
     std::cout << synopsis_ << "\n\n";
@@ -116,7 +107,7 @@ void cliparser::usage() const
                 pad += opt.flag_long.length() + opt.token.length() + desc_align_magic;
 
                 std::cout << string(pad, ' ') << opt.token << " is one of: "
-                          << values_to_str(opt.values);
+                          << utils::vector_to_string(opt.values);
             } else {
                 std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
             }
@@ -222,7 +213,7 @@ void cliparser::validate_arguments() const
     }
 }
 
-auto cliparser::check_value(const string_view &flag, const string_view &value, const choices &values)
+auto cliparser::check_value(const string_view &flag, const string_view &value, const vector<string> &values)
 {
 
     if (value.empty())
@@ -231,7 +222,7 @@ auto cliparser::check_value(const string_view &flag, const string_view &value, c
     if (!values.empty() && std::find(values.cbegin(), values.cend(), value) == values.cend()) {
         throw value_error(
             "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
-            "; valid options are: " + values_to_str(values)
+            "; valid options are: " + utils::vector_to_string(values)
         );
     }
 

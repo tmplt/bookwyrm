@@ -102,6 +102,35 @@ nonexacts_t::nonexacts_t(const std::unique_ptr<cliparser> &cli)
     journal   = cli->get("journal");
 }
 
+exacts_t::exacts_t(const std::map<string, int> &dict)
+{
+    auto get_value = [&dict](string &&key) -> int {
+        auto elem = dict.find(key);
+        return elem == dict.end() ? empty : elem->second;
+    };
+
+    year    = get_value("year");
+    edition = get_value("edition");
+    volume  = get_value("volume");
+    number  = get_value("number");
+    pages   = get_value("pages");
+}
+
+nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
+{
+    auto get_value = [&dict](string &&key) -> string {
+        const auto elem = dict.find(key);
+        return elem == dict.end() ? "" : elem->second;
+    };
+
+    title     = get_value("title");
+    serie     = get_value("serie");
+    publisher = get_value("publisher");
+    journal   = get_value("journal");
+
+    this->authors = authors;
+}
+
 /*
  * Returns true if all specified exact values are equal
  * and if all specified non-exact values passes the fuzzy ratio.

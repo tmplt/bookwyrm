@@ -52,3 +52,5 @@ namespace logger {
 std::shared_ptr<spdlog::logger> create(std::string &&name);
 
 }
+
+using logger_t = std::shared_ptr<spdlog::logger>;

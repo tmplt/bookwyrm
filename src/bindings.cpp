@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 namespace py = pybind11;
+using namespace py::literals;
 
+#include "utils.hpp"
 #include "storage.hpp"
 #include "item.hpp"
 using namespace bookwyrm;
@@ -45,20 +49,45 @@ PYBIND11_PLUGIN(pybookwyrm)
         .value("gt",    year_mod::gt);
 
     py::class_<exacts_t>(m, "exacts_t")
+        .def(py::init<const std::map<string, int>&>())
         .def_readwrite("year",    &exacts_t::year)
         .def_readwrite("edition", &exacts_t::edition)
         .def_readwrite("ext",     &exacts_t::ext)
         .def_readwrite("volume",  &exacts_t::volume)
         .def_readwrite("number",  &exacts_t::number)
         .def_readwrite("pages",   &exacts_t::pages)
-        .def_readwrite("lang",    &exacts_t::lang);
+        .def_readwrite("lang",    &exacts_t::lang)
+        .def("__repr__",
+            [] (const exacts_t &c) {
+                return fmt::format(
+                    "<bookwyrm.exacts_t with year '{}', "
+                    "edition '{}', ext '{}', volume '{}', "
+                    "number '{}', pages '{}', lang '{}'>",
+                    c.year, c.edition, c.ext, c.volume,
+                    c.number, c.pages, c.lang
+                );
+            }
+        );
+
 
     py::class_<nonexacts_t>(m, "nonexacts_t")
+        .def(py::init<const std::map<string, string>&, const vector<string>&>())
         .def_readwrite("authors",   &nonexacts_t::authors)
         .def_readwrite("title",     &nonexacts_t::title)
         .def_readwrite("serie",     &nonexacts_t::serie)
         .def_readwrite("publisher", &nonexacts_t::publisher)
-        .def_readwrite("journal",   &nonexacts_t::journal);
+        .def_readwrite("journal",   &nonexacts_t::journal)
+        .def("__repr__",
+            [] (const nonexacts_t &c) {
+                return fmt::format(
+                    "<bookwyrm.nonexacts_t with title '{}', "
+                    "serie '{}', publisher '{}', journal '{}', "
+                    "authors '{}'>",
+                    c.title, c.serie, c.publisher, c.journal,
+                    utils::vector_to_string(c.authors)
+                );
+            }
+        );
 
     py::class_<item>(m, "item")
         .def_readwrite("nonexacts", &item::nonexacts)
@@ -68,9 +97,6 @@ PYBIND11_PLUGIN(pybookwyrm)
                 return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
             }
         );
-
-    /* m.def("feed", &feed, "Feed passed books to the bookwyrm"); */
-    /* m.attr("empty") = empty; */
 
     return m.ptr();
 }
