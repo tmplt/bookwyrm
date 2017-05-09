@@ -1,0 +1,87 @@
+[
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -std=c++11 -o CMakeFiles/fmt.dir/posix.cc.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/posix.cc",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/posix.cc"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -std=c++11 -o CMakeFiles/fmt.dir/format.cc.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/format.cc",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/format.cc"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -std=c++11 -o CMakeFiles/fmt.dir/ostream.cc.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/ostream.cc",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/ostream.cc"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -std=c++11 -o CMakeFiles/fmt.dir/printf.cc.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/printf.cc",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt/fmt/printf.cc"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src",
+  "command": "/usr/sbin/cc  -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include  -g   -std=c++1z -o CMakeFiles/levenshtein.dir/levenshtein.c.o   -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/levenshtein.c",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/levenshtein.c"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -o CMakeFiles/fuzzywuzzy.dir/fuzzywuzzy.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/fuzzywuzzy.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/fuzzywuzzy.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -o CMakeFiles/fuzzywuzzy.dir/string_matcher.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/string_matcher.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/string_matcher.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -o CMakeFiles/fuzzywuzzy.dir/utils.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/utils.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/utils.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -o CMakeFiles/fuzzywuzzy.dir/wrapper.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/wrapper.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/src/wrapper.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/test",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -o CMakeFiles/main.dir/main.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/test/main.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/test/main.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/main.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/main.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/main.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/item.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/item.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/item.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/utils.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/utils.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/utils.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/components/logger.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/logger.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/logger.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/components/command_line.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/command_line.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/command_line.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++   -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2   -std=c++1z -pthread -o CMakeFiles/bookwyrm.dir/components/searcher.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/searcher.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/components/searcher.cpp"
+},
+{
+  "directory": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src",
+  "command": "/usr/sbin/c++  -Dpybookwyrm_EXPORTS -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/src -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/spdlog/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fmt -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/fuzzywuzzy/include -I/home/tmplt/.mnt/Rannoch/code/bookwyrm/lib/pybind11/include -I/usr/include/python3.6m   -Wall -Wextra -Werror -O3 -march=native -pedantic -pedantic-errors -g -DDEBUG -O0 -g2 -fPIC   -std=c++1z -std=c++14 -o CMakeFiles/pybookwyrm.dir/bindings.cpp.o -c /home/tmplt/.mnt/Rannoch/code/bookwyrm/src/bindings.cpp",
+  "file": "/home/tmplt/.mnt/Rannoch/code/bookwyrm/src/bindings.cpp"
+}
+]
