@@ -27,6 +27,10 @@
 
 namespace bookwyrm {
 
+using nonexact_dict_t = std::map<string, string>;
+using exact_dict_t = std::map<string, int>;
+using tuple_t = std::tuple<nonexact_dict_t, exact_dict_t>;
+
 /* Default value: "this value is empty". */
 enum { empty = -1 };
 
@@ -54,7 +58,8 @@ struct exacts_t {
      * whether or not a field is empty or not.
      */
     explicit exacts_t(const std::unique_ptr<cliparser> &cli);
-    /* explicit exacts_t(const py::dict d); ?*/
+    /* explicit exacts_t(const exact_dict_t &dict); */
+    explicit exacts_t(const std::map<string, int> &dict);
 
     year_mod ymod;
 
@@ -87,6 +92,7 @@ struct nonexacts_t {
      * fuzzy-matching.
      */
     explicit nonexacts_t(const std::unique_ptr<cliparser> &cli);
+    explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
 
     vector<string> authors;
     string title;

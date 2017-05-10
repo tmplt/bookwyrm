@@ -19,10 +19,10 @@
 #include <system_error>
 #include <cerrno>
 #include <experimental/filesystem>
-#include <spdlog/spdlog.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/cast.h>
+#include <pybind11/stl.h>
 #include <array>
 
 #include "components/searcher.hpp"
@@ -47,8 +47,6 @@ searcher::searcher(const item &wanted)
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
     sys_path.append(source_path.c_str());
 
-    auto logger = spdlog::get("main");
-
     /*
      * Find all Python modules and populate the
      * list of sources by loading them.
@@ -70,7 +68,7 @@ searcher::searcher(const item &wanted)
         }
 
         if (!utils::valid_file(p)) {
-            logger->warn("can't load module '{}': not a regular file or unreadable"
+            _logger->warn("can't load module '{}': not a regular file or unreadable"
                     "; ignoring...",
                     module_file);
             continue;
@@ -79,10 +77,10 @@ searcher::searcher(const item &wanted)
         module_file.resize(file_ext_pos);
 
         try {
-            logger->debug("loading module '{}'...", module_file);
+            _logger->debug("loading module '{}'...", module_file);
             sources_.emplace_back(py::module::import(module_file.c_str()));
         } catch (const py::error_already_set &err) {
-            logger->warn("{}; ignoring...", err.what());
+            _logger->warn("{}; ignoring...", err.what());
         }
     }
 
@@ -92,8 +90,20 @@ searcher::searcher(const item &wanted)
 
 void searcher::test_sources()
 {
-    for (const auto &m : sources_)
-        m.attr("test")();
+    for (const auto &m : sources_) {
+        try {
+            auto item_comps = m.attr("test")().cast<std::tuple<nonexacts_t, exacts_t>>();
+            items_.emplace_back(item_comps);
+        } catch (const py::cast_error &err) {
+            _logger->error("tuple cast from module '{}' failed: {}; ignoring...",
+                    m.attr("__name__").cast<string>(), err.what());
+            continue;
+        } catch (const py::error_already_set &err) {
+            _logger->error("module '{}' didn't return a tuple ({}); ignoring...",
+                    m.attr("__name__").cast<string>(), err.what());
+            continue;
+        }
+    }
 }
 
 /* ns bookwyrm */

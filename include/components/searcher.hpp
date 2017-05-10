@@ -18,7 +18,9 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
+#include <spdlog/spdlog.h>
 
+#include "components/logger.hpp"
 #include "common.hpp"
 #include "item.hpp"
 #include "errors.hpp"
@@ -35,6 +37,7 @@ public:
     void test_sources();
 
 private:
+    const logger_t _logger = spdlog::get("main");
     const item &wanted_;
     vector<item> items_;
     vector<pybind11::module> sources_;

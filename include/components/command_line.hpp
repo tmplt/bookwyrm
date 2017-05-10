@@ -39,7 +39,6 @@ class option;
 class option_group;
 using options = vector<option>;
 using groups  = vector<option_group>;
-using choices = vector<string>;
 
 /*
  * Holds all properties for an option.
@@ -59,10 +58,10 @@ struct option {
      * e.g. --log LEVEL, where LEVEL is one of:
      * error, warning, info, trace.
      */
-    const choices values;
+    const vector<string> values;
 
     explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "",
-            choices &&c = {})
+            vector<string> &&c = {})
         : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)),
         desc(forward<string>(desc)), token(forward<string>(token)),
         values(forward<decltype(c)>(c)) {}
@@ -123,11 +122,6 @@ public:
     vector<string> get_many(const string &&opt) const;
 
 private:
-    /*
-     * Return a string of all valid token values,
-     * e.g. "VAL1, VAL2, VAL3".
-     */
-    static auto values_to_str(const choices &values);
 
     /*
      * Is the flag valid? If so, is it given in its short
@@ -138,7 +132,7 @@ private:
     static auto is_long(const string_view &option, const string_view &opt_long);
 
     /* Is the given option value a valid one? If so, return it. Otherwise throw a value_error. */
-    static auto check_value(const string_view &flag, const string_view &value, const choices &values);
+    static auto check_value(const string_view &flag, const string_view &value, const vector<string> &values);
 
     /*
      * Parse a single argument with the next argument, which may be its value (or another flag).

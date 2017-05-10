@@ -17,11 +17,14 @@
 
 #pragma once
 
+#include <pybind11/pybind11.h>
+#include <tuple>
+
+#include "common.hpp"
 #include "storage.hpp"
 #include "components/command_line.hpp"
 
-using std::string;
-using std::vector;
+namespace py = pybind11;
 
 namespace bookwyrm {
 
@@ -29,8 +32,17 @@ class item {
 public:
     explicit item(const std::unique_ptr<cliparser> &cli)
         : nonexacts(cli), exacts(cli) {};
+    /* TODO: Move construct this */
+    explicit item(const std::tuple<nonexacts_t, exacts_t> &tuple)
+        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)) {};
 
     bool matches(const item &wanted);
+
+    friend std::ostream& operator<<(std::ostream &os, item const &i)
+    {
+        os << "test printout: " + i.nonexacts.serie;
+        return os;
+    }
 
     /*
      * These ought to be const, but since we're binding

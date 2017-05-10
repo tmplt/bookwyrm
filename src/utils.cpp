@@ -21,7 +21,9 @@
 
 #include "utils.hpp"
 
-std::error_code utils::validate_download_dir(const fs::path &path)
+namespace utils {
+
+std::error_code validate_download_dir(const fs::path &path)
 {
     if (!fs::exists(path))
         return {ENOENT, std::generic_category()};
@@ -38,3 +40,16 @@ std::error_code utils::validate_download_dir(const fs::path &path)
 
     return {};
 }
+
+string vector_to_string(const vector<string> &vec)
+{
+    string retstring = "";
+    for (const auto &e : vec)
+        retstring += e + (e != vec.back() ? ", " : "");
+
+    return retstring;
+}
+
+/* ns utils */
+}
+
