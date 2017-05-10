@@ -90,8 +90,8 @@ PYBIND11_PLUGIN(pybookwyrm)
         );
 
     py::class_<item>(m, "item")
-        .def_readwrite("nonexacts", &item::nonexacts)
-        .def_readwrite("exacts",    &item::exacts)
+        .def_readonly("nonexacts", &item::nonexacts)
+        .def_readonly("exacts",    &item::exacts)
         .def("__repr__",
             [](const item &i) {
                 return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";

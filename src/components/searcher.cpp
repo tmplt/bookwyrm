@@ -92,7 +92,7 @@ void searcher::test_sources()
 {
     for (const auto &m : sources_) {
         try {
-            auto item_comps = m.attr("test")().cast<std::tuple<nonexacts_t, exacts_t>>();
+            auto item_comps = m.attr("find")(wanted_).cast<std::tuple<nonexacts_t, exacts_t>>();
             items_.emplace_back(item_comps);
         } catch (const py::cast_error &err) {
             _logger->error("tuple cast from module '{}' failed: {}; ignoring...",

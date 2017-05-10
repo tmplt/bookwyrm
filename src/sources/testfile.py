@@ -1,8 +1,8 @@
 import pybookwyrm as bw
 
 
-def test():
-    print("hello world (from Python)")
+def find(wanted):
+    print(wanted)
 
     # Example data
     serie = "Temeraire"
