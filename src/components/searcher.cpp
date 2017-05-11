@@ -92,6 +92,10 @@ void searcher::test_sources()
 {
     for (const auto &m : sources_) {
         try {
+            /*
+             * Give the module a copy of the wanted item.
+             * We don't want it to change its fields.
+             */
             auto item_comps = m.attr("find")(wanted_).cast<std::tuple<nonexacts_t, exacts_t>>();
             items_.emplace_back(item_comps);
         } catch (const py::cast_error &err) {
