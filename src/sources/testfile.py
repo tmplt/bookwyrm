@@ -2,6 +2,7 @@ import pybookwyrm as bw
 
 
 def find(wanted):
+    wanted.nonexacts.title = "new title" # changes are module-local
     print(wanted)
 
     # Example data
