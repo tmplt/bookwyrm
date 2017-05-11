@@ -57,18 +57,20 @@ PYBIND11_PLUGIN(pybookwyrm)
         .def_readwrite("number",  &exacts_t::number)
         .def_readwrite("pages",   &exacts_t::pages)
         .def_readwrite("lang",    &exacts_t::lang)
-        .def("__repr__",
-            [] (const exacts_t &c) {
-                return fmt::format(
-                    "<bookwyrm.exacts_t with year '{}', "
-                    "edition '{}', ext '{}', volume '{}', "
-                    "number '{}', pages '{}', lang '{}'>",
-                    c.year, c.edition, c.ext, c.volume,
-                    c.number, c.pages, c.lang
-                );
-            }
-        );
-
+        .def("__repr__", [](const exacts_t &c) {
+            return fmt::format(
+                "<pybookwyrm.exacts_t with fields:\n"
+                "\tyear:      {}\n"
+                "\tedition:   {}\n"
+                "\tfile type: {}\n"
+                "\tvolume:    {}\n"
+                "\tnumber:    {}\n"
+                "\tpages:     {}\n"
+                "\tlanguage:  {}\n>",
+                c.year, c.edition, c.ext, c.volume,
+                c.number, c.pages, c.lang
+            );
+        });
 
     py::class_<nonexacts_t>(m, "nonexacts_t")
         .def(py::init<const std::map<string, string>&, const vector<string>&>())
@@ -77,26 +79,26 @@ PYBIND11_PLUGIN(pybookwyrm)
         .def_readwrite("serie",     &nonexacts_t::serie)
         .def_readwrite("publisher", &nonexacts_t::publisher)
         .def_readwrite("journal",   &nonexacts_t::journal)
-        .def("__repr__",
-            [] (const nonexacts_t &c) {
-                return fmt::format(
-                    "<bookwyrm.nonexacts_t with title '{}', "
-                    "serie '{}', publisher '{}', journal '{}', "
-                    "authors '{}'>",
-                    c.title, c.serie, c.publisher, c.journal,
-                    utils::vector_to_string(c.authors)
-                );
-            }
-        );
+        .def("__repr__", [](const nonexacts_t &c) {
+            return fmt::format(
+                "<pybookwyrm.nonexacts_t with fields:\n"
+                "\ttitle:     '{}'\n"
+                "\tserie:     '{}'\n"
+                "\tpublisher: '{}'\n"
+                "\tjournal:   '{}'\n"
+                "\tauthors:   '{}'\n>",
+                c.title, c.serie, c.publisher, c.journal,
+                utils::vector_to_string(c.authors)
+            );
+        });
 
     py::class_<item>(m, "item")
         .def_readonly("nonexacts", &item::nonexacts)
         .def_readonly("exacts",    &item::exacts)
-        .def("__repr__",
-            [](const item &i) {
-                return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
-            }
-        );
+        /* Some simple get_{non,}exacts? */
+        .def("__repr__", [](const item &i) {
+            return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
+        });
 
     return m.ptr();
 }
