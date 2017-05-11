@@ -22,7 +22,6 @@ namespace py = pybind11;
 using namespace py::literals;
 
 #include "utils.hpp"
-#include "storage.hpp"
 #include "item.hpp"
 using namespace bookwyrm;
 
