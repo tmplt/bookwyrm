@@ -107,9 +107,7 @@ int main(int argc, char *argv[])
         py::scoped_interpreter guard{};
 
         const bookwyrm::item wanted(cli);
-        bookwyrm::searcher s(wanted);
-        /* s.search(); */
-        s.test_sources();
+        bookwyrm::searcher(wanted).search();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));

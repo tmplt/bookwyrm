@@ -23,15 +23,8 @@ using namespace py::literals;
 
 #include "utils.hpp"
 #include "item.hpp"
+#include "components/searcher.hpp"
 using namespace bookwyrm;
-
-void feed(/*const item wanted*/)
-{
-    /*
-     * Some function like this will be used to
-     * get the items from the Python scripts.
-     */
-}
 
 /* Are these only deprecated in dean0x7d's branch? */
 #pragma GCC diagnostic push
@@ -97,6 +90,9 @@ PYBIND11_PLUGIN(pybookwyrm)
         .def("__repr__", [](const item &i) {
             return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
         });
+
+    py::class_<searcher>(m, "bookwyrm")
+        .def("feed", &searcher::append_item, py::return_value_policy::take_ownership);
 
     return m.ptr();
 }
