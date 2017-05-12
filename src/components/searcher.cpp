@@ -88,7 +88,7 @@ searcher::searcher(const item &wanted)
         throw program_error("couldn't find any sources, terminating...");
 }
 
-void searcher::test_sources()
+void searcher::search()
 {
     for (const auto &m : sources_) {
         try {
@@ -96,14 +96,9 @@ void searcher::test_sources()
              * Give the module a copy of the wanted item.
              * We don't want it to change its fields.
              */
-            auto item_comps = m.attr("find")(wanted_).cast<std::tuple<nonexacts_t, exacts_t>>();
-            items_.emplace_back(item_comps);
-        } catch (const py::cast_error &err) {
-            _logger->error("tuple cast from module '{}' failed: {}; ignoring...",
-                    m.attr("__name__").cast<string>(), err.what());
-            continue;
+            m.attr("find")(wanted_, this);
         } catch (const py::error_already_set &err) {
-            _logger->error("module '{}' didn't return a tuple ({}); ignoring...",
+            _logger->error("module '{}' did something wrong ({}); ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
             continue;
         }

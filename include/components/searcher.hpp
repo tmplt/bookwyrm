@@ -34,7 +34,14 @@ class searcher {
 public:
     explicit searcher(const item &wanted);
 
-    void test_sources();
+    void search();
+
+    void append_item(std::tuple<nonexacts_t, exacts_t> item_comps)
+    {
+        items_.emplace_back(item_comps);
+
+        /* update the menu here */
+    }
 
 private:
     const logger_t _logger = spdlog::get("main");
