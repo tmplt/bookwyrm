@@ -88,6 +88,12 @@ searcher::searcher(const item &wanted)
         throw program_error("couldn't find any sources, terminating...");
 }
 
+searcher::~searcher()
+{
+    for (auto &t : threads_)
+        t.join();
+}
+
 void searcher::search()
 {
     for (const auto &m : sources_) {
@@ -96,7 +102,7 @@ void searcher::search()
              * Give the module a copy of the wanted item.
              * We don't want it to change its fields.
              */
-            m.attr("find")(wanted_, this);
+            threads_.emplace_back(m.attr("find"), wanted_, this);
         } catch (const py::error_already_set &err) {
             _logger->error("module '{}' did something wrong ({}); ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
