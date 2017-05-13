@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 {
     using valid_opts = std::initializer_list<string>;
 
-    /* Future work: make main, excl, exact, misc and groups constexpr. */
     const auto main = command_line::option_group("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",    "Specify authors",   "AUTHOR")
         ("-t", "--title",     "Specify title",     "TITLE")
