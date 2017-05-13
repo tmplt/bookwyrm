@@ -28,11 +28,26 @@
 namespace bookwyrm {
 
 /*
+ * TODO: finish this sentence.
  * This class will handle everything between the
  */
 class searcher {
 public:
     explicit searcher(const item &wanted);
+
+    /*
+     * Explicitly delete the copy-constructor.
+     * Doing this allows us to run each python
+     * module in its own thread.
+     *
+     * This might be because threads_ is considered
+     * copy-constructible, and when passing this
+     * to the Python module, a copy is wanted instead
+     * of a reference.
+     */
+    searcher(const searcher&) = delete;
+
+    ~searcher();
 
     void search();
 
@@ -47,7 +62,9 @@ private:
     const logger_t _logger = spdlog::get("main");
     const item &wanted_;
     vector<item> items_;
+
     vector<pybind11::module> sources_;
+    vector<std::thread> threads_;
 };
 
 /* ns bookwyrm */
