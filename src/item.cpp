@@ -104,7 +104,7 @@ nonexacts_t::nonexacts_t(const std::unique_ptr<cliparser> &cli)
 exacts_t::exacts_t(const std::map<string, int> &dict)
 {
     auto get_value = [&dict](string &&key) -> int {
-        auto elem = dict.find(key);
+        const auto elem = dict.find(key);
         return elem == dict.end() ? empty : elem->second;
     };
 
