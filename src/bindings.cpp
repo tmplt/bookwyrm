@@ -26,12 +26,9 @@ using namespace py::literals;
 #include "components/searcher.hpp"
 using namespace bookwyrm;
 
-/* Are these only deprecated in dean0x7d's branch? */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-PYBIND11_PLUGIN(pybookwyrm)
+PYBIND11_MODULE(pybookwyrm, py::module &m)
 {
-    py::module m("pybookwyrm", "data structures used by bookwyrm");
+    m.attr("__doc__") = "bookwyrm python bindings";
 
     py::enum_<year_mod>(m, "year_mod")
         .value("equal", year_mod::equal)
@@ -93,7 +90,4 @@ PYBIND11_PLUGIN(pybookwyrm)
 
     py::class_<searcher>(m, "bookwyrm")
         .def("feed", &searcher::append_item, py::return_value_policy::take_ownership);
-
-    return m.ptr();
 }
-#pragma GCC diagnostic pop
