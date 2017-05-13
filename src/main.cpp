@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
     const auto misc = command_line::option_group("Miscellaneous")
         ("-h", "--help",      "Display this text and exit")
-        ("-v", "--version",   "Print version information")
+        ("-v", "--version",   "Print version information (" + build_info_short + ")")
         ("-D", "--debug",     "Set logging level to debug");
 
     const command_line::groups groups = {main, excl, exact, misc};

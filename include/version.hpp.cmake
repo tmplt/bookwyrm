@@ -40,4 +40,6 @@ constexpr auto print_build_info = []() {
               << std::endl;
 };
 
+const auto build_info_short = '\"' + string(PROG_VERSION) + '\"';
+
 // vim: ft=cpp
