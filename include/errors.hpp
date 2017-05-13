@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include <stdexcept>
-
 class cli_error : public std::runtime_error {
 public:
     explicit cli_error(const std::string &message, int code = 0)

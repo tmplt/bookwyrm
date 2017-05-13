@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>   // std::cout, std::endl
-#include <algorithm>  // std::max(), std::set_intersection()
-#include <iomanip>    // std::setw()
-#include <utility>    // std::make_unique<T>(), std::forward<T>()
+#include <iostream>  // std::cout, std::endl
+#include <algorithm> // std::max(), std::set_intersection()
+#include <iomanip>   // std::setw()
+#include <utility>   // std::make_unique<T>(), std::forward<T>()
 
 #include "components/command_line.hpp"
 #include "utils.hpp"

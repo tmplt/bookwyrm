@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
 #include <system_error>
 #include <cerrno>
+
 #include <experimental/filesystem>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>

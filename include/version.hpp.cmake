@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <iostream>  // std::cout, std::endl
+#include <iostream>
 
 #include "version.hpp"
 

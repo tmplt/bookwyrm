@@ -23,7 +23,6 @@
 #include "components/logger.hpp"
 #include "common.hpp"
 #include "item.hpp"
-#include "errors.hpp"
 
 namespace bookwyrm {
 

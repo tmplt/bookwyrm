@@ -17,8 +17,7 @@
 
 #pragma once
 
-#include <string>  // std::string
-#include <memory>  // std::shared_ptr
+#include <memory> // std::shared_ptr
 
 #include <spdlog/sinks/sink.h>
 #include <spdlog/details/log_msg.h>
