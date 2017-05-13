@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <utility>
-
 #include "common.hpp"
 
 namespace algorithm {

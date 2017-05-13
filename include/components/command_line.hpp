@@ -17,21 +17,12 @@
 
 #pragma once
 
-#include <map>                       // std::map
-#include <string>                    // std::string
-#include <vector>                    // std::vector
-#include <memory>                    // std:unique_ptr
-#include <utility>                   // std::forward
-#include <experimental/string_view>  // std::experimental::string_view
+#include <map>
+#include <memory>  // std:unique_ptr
+#include <utility> // std::forward
+using std::forward;
 
 #include "common.hpp"
-
-
-using std::string;
-using std::vector;
-using std::experimental::string_view;
-
-using std::forward;
 
 namespace command_line {
 

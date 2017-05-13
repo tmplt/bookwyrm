@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include <string>                    // std::string
-#include <experimental/string_view>  // std::experimental::string_view
-#include <vector>                    // std::vector
+#include <string>
+#include <vector>
+#include <experimental/string_view>
 
 #include "errors.hpp"
 

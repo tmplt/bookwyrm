@@ -20,7 +20,6 @@
 #include <exception>  // std::exception
 #include <spdlog/spdlog.h>
 #include <pybind11/embed.h>
-#include <experimental/filesystem>
 
 #include "item.hpp"
 #include "utils.hpp"
@@ -29,8 +28,6 @@
 #include "components/searcher.hpp"
 #include "version.hpp"
 #include "common.hpp"
-
-#include <iostream>
 
 namespace py = pybind11;
 namespace fs = std::experimental::filesystem;
