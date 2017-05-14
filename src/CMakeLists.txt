@@ -58,14 +58,6 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/incl
 
 # }}}
 
-if(ENABLE_IRC)
-  add_subdirectory(${PROJECT_SOURCE_DIR}/lib/libircppclient ${PROJECT_SOURCE_DIR}/lib/libircppclient)
-  set(APP_LIBRARIES ${APP_LIBRARIES} ${LIBIRCPPCLIENT_LIBRARIES})
-  set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${LIBIRCPPCLIENT_INCLUDE_DIRS})
-  #else()
-  #  list(REMOVE_ITEM SOURCES modules/??? utils/???)
-endif()
-
 # Create executable target {{{
 
 make_executable(${PROJECT_NAME}

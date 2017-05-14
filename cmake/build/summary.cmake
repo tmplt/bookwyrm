@@ -75,5 +75,3 @@ colored_option(STATUS " Verbose tracing      ${VERBOSE_TRACELOG}" VERBOSE_TRACEL
 colored_option(STATUS " Draw debug hints     ${DEBUG_HINTS}" DEBUG_HINTS "32;1" "37;2")
 colored_option(STATUS " Enable ccache        ${ENABLE_CCACHE}" ENABLE_CCACHE "32;1" "37;2")
 message(STATUS "--------------------------")
-colored_option(STATUS " Enable irc           ${ENABLE_IRC}" ENABLE_IRC "32;1" "37;2")
-message(STATUS "--------------------------")
