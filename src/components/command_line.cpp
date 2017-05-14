@@ -205,12 +205,10 @@ void cliparser::validate_arguments() const
     const bool ident_passed = std::find(passed_opts.cbegin(), passed_opts.cend(), "ident")
         != passed_opts.cend();
 
-    if (ident_passed) {
-        if (passed_opts.size() > 1)
-            throw argument_error("ident flag is exclusive and may not be passed with another flag");
-    } else if (!req_match && !passed_opts.empty()) {
-         throw argument_error("at least one main argument must be specified");
-    }
+    if (ident_passed && passed_opts.size() > 1)
+        throw argument_error("ident flag is exclusive and may not be passed with another flag");
+    else if (!req_match)
+        throw argument_error("at least one main argument must be specified");
 }
 
 auto cliparser::check_value(const string_view &flag, const string_view &value, const vector<string> &values)
