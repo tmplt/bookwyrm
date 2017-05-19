@@ -129,17 +129,17 @@ private:
      * Is the flag valid? If so, is it given in its short
      * or long form?
      */
-    static inline auto is(const string_view &option, string opt_short, string opt_long)
+    static inline bool is(const string_view &option, string opt_short, string opt_long)
     {
         return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
     }
 
-    static inline auto is_short(const string_view &option, const string_view &opt_short)
+    static inline bool is_short(const string_view &option, const string_view &opt_short)
     {
         return option.compare(0, opt_short.length(), opt_short) == 0;
     }
 
-    static inline auto is_long(const string_view &option, const string_view &opt_long)
+    static inline bool is_long(const string_view &option, const string_view &opt_long)
     {
         return option.compare(0, opt_long.length(), opt_long) == 0;
     }
