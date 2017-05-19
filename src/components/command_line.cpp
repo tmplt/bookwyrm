@@ -150,8 +150,8 @@ vector<string> cliparser::get_many(const string &&opt) const
         auto range = passed_opts_.equal_range(opt);
 
         /* Can't we just return {range.first, range.second} somehow? */
-        for (auto p = range.first; p != range.second; p++)
-            values.push_back(p->second);
+        for (auto &opt = range.first; opt != range.second; opt++)
+            values.push_back(opt->second);
     }
 
     return values;
