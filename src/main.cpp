@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));
         exit_code = EXIT_FAILURE;
-    } catch (const std::exception &err) {
-        /* Is the fs::filesystem_error print-out to verbose? */
+    } catch (const fs::filesystem_error &err) {
+        /* Is this too verbose? */
         logger->error(err.what() + string("."));
         exit_code = EXIT_FAILURE;
     }
