@@ -21,7 +21,6 @@
 #include <experimental/filesystem>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
-#include <pybind11/cast.h>
 #include <pybind11/stl.h>
 #include <array>
 
@@ -63,7 +62,10 @@ searcher::searcher(const item &wanted)
         auto file_ext_pos = module_file.rfind(".py");
 
         if (file_ext_pos == string::npos) {
-            /* It's not a Python module. */
+            /*
+             * It's not a Python module.
+             * (or at least doesn't contain ".py"
+             */
             continue;
         }
 
