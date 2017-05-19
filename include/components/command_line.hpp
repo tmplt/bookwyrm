@@ -102,12 +102,23 @@ public:
     void validate_arguments() const;
 
     /* Check if an option has been passed. */
-    bool has(const string &option) const;
-    bool has(size_t index) const;
+    inline bool has(const string &option) const
+    {
+        return passed_opts_.find(option) != passed_opts_.cend();
+    }
+
+    bool has(size_t index) const
+    {
+        return positional_args_.size() > index;
+    }
+
 
     /* Get the value for a given option. */
     string get(string opt) const;
-    string get(size_t index) const;
+    inline string get(size_t index) const
+    {
+        return has(index) ? positional_args_[index] : "";
+    }
 
     /* Get all values for a given option. (i.e. --author) */
     vector<string> get_many(const string &&opt) const;
@@ -118,9 +129,20 @@ private:
      * Is the flag valid? If so, is it given in its short
      * or long form?
      */
-    static auto is(const string_view &option, string opt_short, string opt_long);
-    static auto is_short(const string_view &option, const string_view &opt_short);
-    static auto is_long(const string_view &option, const string_view &opt_long);
+    static inline auto is(const string_view &option, string opt_short, string opt_long)
+    {
+        return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
+    }
+
+    static inline auto is_short(const string_view &option, const string_view &opt_short)
+    {
+        return option.compare(0, opt_short.length(), opt_short) == 0;
+    }
+
+    static inline auto is_long(const string_view &option, const string_view &opt_long)
+    {
+        return option.compare(0, opt_long.length(), opt_long) == 0;
+    }
 
     /* Is the given option value a valid one? If so, return it. Otherwise throw a value_error. */
     static auto check_value(const string_view &flag, const string_view &value, const vector<string> &values);

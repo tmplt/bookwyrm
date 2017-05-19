@@ -119,27 +119,12 @@ void cliparser::usage() const
     }
 }
 
-bool cliparser::has(const string &option) const
-{
-    return passed_opts_.find(option) != passed_opts_.cend();
-}
-
-bool cliparser::has(size_t index) const
-{
-    return positional_args_.size() > index;
-}
-
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
         return passed_opts_.find(opt)->second;
 
     return "";
-}
-
-string cliparser::get(size_t index) const
-{
-    return has(index) ? positional_args_[index] : "";
 }
 
 vector<string> cliparser::get_many(const string &&opt) const
@@ -155,21 +140,6 @@ vector<string> cliparser::get_many(const string &&opt) const
     }
 
     return values;
-}
-
-auto cliparser::is_short(const string_view &option, const string_view &opt_short)
-{
-    return option.compare(0, opt_short.length(), opt_short) == 0;
-}
-
-auto cliparser::is_long(const string_view &option, const string_view &opt_long)
-{
-    return option.compare(0, opt_long.length(), opt_long) == 0;
-}
-
-auto cliparser::is(const string_view &option, string opt_short, string opt_long)
-{
-    return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
 }
 
 void cliparser::process_arguments(const vector<string> &args)
