@@ -92,13 +92,13 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
+        const bookwyrm::item wanted(cli);
+
         /*
          * Start the Python interpreter and keep it alive until
          * program termination.
          */
         py::scoped_interpreter guard{};
-
-        const bookwyrm::item wanted(cli);
         bookwyrm::searcher(wanted).search();
 
     } catch (const cli_error &err) {
