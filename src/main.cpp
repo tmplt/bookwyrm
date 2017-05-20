@@ -94,7 +94,10 @@ int main(int argc, char *argv[])
 
         cli->validate_arguments();
         const auto err = utils::validate_download_dir(cli->get(0));
-        if (err) throw fs::filesystem_error("invalid download directory", err);
+        if (err) {
+            logger->error("invalid download directory: {}.", err.message());
+            return EXIT_FAILURE;
+        }
 
         /*
          * Start the Python interpreter and keep it alive until
@@ -107,10 +110,6 @@ int main(int argc, char *argv[])
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));
-        exit_code = EXIT_FAILURE;
-    } catch (const fs::filesystem_error &err) {
-        /* Is this too verbose? */
-        logger->error(err.what() + string("."));
         exit_code = EXIT_FAILURE;
     }
 
