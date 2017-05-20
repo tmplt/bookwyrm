@@ -67,6 +67,7 @@ exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
             }
 
             return {year_mod::equal, year};
+
         } catch (const value_error &err) {
             throw err;
         } catch (const std::exception &err) {

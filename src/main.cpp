@@ -15,22 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>    // explicitly-sized integral types
 #include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
-#include <exception>  // std::exception
-#include <spdlog/spdlog.h>
 #include <pybind11/embed.h>
 
 #include "item.hpp"
 #include "utils.hpp"
 #include "components/command_line.hpp"
-#include "components/logger.hpp"
 #include "components/searcher.hpp"
 #include "version.hpp"
-#include "common.hpp"
 
 namespace py = pybind11;
-namespace fs = std::experimental::filesystem;
 
 int main(int argc, char *argv[])
 {
@@ -61,7 +55,6 @@ int main(int argc, char *argv[])
         ("-D", "--debug",     "Set logging level to debug");
 
     const command_line::groups groups = {main, excl, exact, misc};
-    uint8_t exit_code = EXIT_SUCCESS;
 
     auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
@@ -110,10 +103,9 @@ int main(int argc, char *argv[])
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));
-        exit_code = EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
 
-    logger->debug("dropping all loggers and exiting with return value {}", exit_code);
-    spdlog::drop_all();
-    return exit_code;
+    logger->debug("terminating successfully...");
+    return EXIT_SUCCESS;
 }
