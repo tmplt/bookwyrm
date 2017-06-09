@@ -25,6 +25,7 @@
 #include <array>
 
 #include "components/searcher.hpp"
+#include "components/menu.hpp"
 #include "utils.hpp"
 
 namespace fs = std::experimental::filesystem;
@@ -94,6 +95,8 @@ searcher::~searcher()
 {
     for (auto &t : threads_)
         t.join();
+
+    menu(this->items_);
 }
 
 void searcher::search()
