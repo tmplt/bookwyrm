@@ -19,7 +19,8 @@
 
 #include <menu.h>
 #include <vector>
-using std::vector;
+using std::vector; // including common.hpp here breaks errors.hpp?
+#include <mutex>
 
 #include "item.hpp"
 
@@ -27,11 +28,20 @@ namespace bookwyrm {
 
 class menu {
 public:
-    menu(vector<item> items);
+    explicit menu() {};
+    void construct(const vector<item> &items);
     ~menu();
 
+    void display();
+
+    /* should be called after every searcher::append_item. */
+    void update();
+
 private:
-    vector<ITEM*> items_;
+    /* const vector<item> &items_; */
+    vector<ITEM*> menu_items_;
+    MENU *menu_;
+    std::mutex menu_mutex_;
 };
 
 // use an integer to save which item to highlight

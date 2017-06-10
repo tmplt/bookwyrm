@@ -19,8 +19,10 @@
 
 #include <pybind11/pybind11.h>
 #include <spdlog/spdlog.h>
+#include <mutex>
 
 #include "components/logger.hpp"
+#include "components/menu.hpp"
 #include "common.hpp"
 #include "item.hpp"
 
@@ -45,25 +47,34 @@ public:
      * of a reference.
      */
     searcher(const searcher&) = delete;
-
     ~searcher();
 
-    void search();
+    searcher& async_search();
+    void display_menu();
 
     void append_item(std::tuple<nonexacts_t, exacts_t> item_comps)
     {
-        items_.emplace_back(item_comps);
+        item item(item_comps);
+        /* if (!item.matches(wanted_)) */
+            /* return; */
+
+        std::lock_guard<std::mutex> guard(items_mutex_);
+        items_.push_back(item);
 
         /* update the menu here */
+        menu_.update();
     }
 
 private:
     const logger_t _logger = spdlog::get("main");
     const item &wanted_;
     vector<item> items_;
+    std::mutex items_mutex_;
 
     vector<pybind11::module> sources_;
     vector<std::thread> threads_;
+
+    menu menu_;
 };
 
 /* ns bookwyrm */

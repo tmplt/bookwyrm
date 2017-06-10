@@ -22,6 +22,7 @@
 #include "utils.hpp"
 #include "components/command_line.hpp"
 #include "components/searcher.hpp"
+#include "components/menu.hpp"
 #include "version.hpp"
 
 namespace py = pybind11;
@@ -99,7 +100,12 @@ int main(int argc, char *argv[])
          * program termination.
          */
         py::scoped_interpreter guard{};
-        bookwyrm::searcher(wanted).search();
+
+        /*
+         * Fire up the menu the moment all search threads
+         * have been created.
+         */
+        bookwyrm::searcher(wanted).async_search().display_menu();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));

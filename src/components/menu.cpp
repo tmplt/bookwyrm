@@ -34,8 +34,10 @@
 
 namespace bookwyrm {
 
-menu::menu(vector<item> items)
+void menu::construct(const vector<item> &items)
 {
+    std::lock_guard<std::mutex> guard(menu_mutex_);
+
     initscr();
     clear();
 
@@ -43,7 +45,7 @@ menu::menu(vector<item> items)
      * Don't echo the pressed characters back,
      * and let us read individual keys.
      */
-    echo(); cbreak();
+    noecho(); cbreak();
 
     /*
      * We also want to read special keys.
@@ -51,45 +53,63 @@ menu::menu(vector<item> items)
     keypad(stdscr, true);
 
     /* Hide the cursor. */
-    if (curs_set(0) == ERR) {
+    if (curs_set(0) == ERR)
         spdlog::get("main")->warn("curses: can't hide the cursor");
-    }
 
     /* Initialize the items. */
-    for (auto &item : items) {
-        items_.push_back(new_item(
-                item.nonexacts.title.c_str(),
-                item.nonexacts.title.c_str()
-        ));
+    for (const auto &item : items) {
+        menu_items_.push_back(
+            new_item(item.nonexacts.title.c_str(), "desc")
+        );
     }
-    items_.emplace_back(nullptr);
 
-    auto menu = new_menu(const_cast<ITEM**>(items_.data()));
-    post_menu(menu);
+    menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
+    mvprintw(LINES - 2, 0, "Press 'q' to quit");
+}
+
+menu::~menu()
+{
+    /* Deconstruct everything, and quick curses. */
+    unpost_menu(menu_);
+    for (auto &item : menu_items_) free_item(item);
+    free_menu(menu_);
+
+    endwin();
+}
+
+void menu::display()
+{
+    post_menu(menu_);
+
+    menu_mutex_.lock();
     refresh();
+    menu_mutex_.unlock();
 
     char c;
     while ((c = getch()) != 'q') {
         switch (c) {
             case 'j':
-                menu_driver(menu, REQ_DOWN_ITEM);
+                menu_driver(menu_, REQ_DOWN_ITEM);
                 break;
             case 'k':
-                menu_driver(menu, REQ_UP_ITEM);
+                menu_driver(menu_, REQ_UP_ITEM);
+                break;
+            case 'g':
+                menu_driver(menu_, REQ_FIRST_ITEM);
+                break;
+            case 'G':
+                menu_driver(menu_, REQ_LAST_ITEM);
+                break;
         }
     };
-
-    unpost_menu(menu);
-    for (auto &item : items_) free_item(item);
-    free_menu(menu);
 }
 
-menu::~menu()
+void menu::update()
 {
-    /* deconstruct all windows here, if any */
-    /* for (auto &item : items_) free_item(item); */
+    std::lock_guard<std::mutex> guard(menu_mutex_);
 
-    endwin();
+    mvprintw(0, 0, "update() has been called!");
+    refresh();
 }
 
 } /* ns bookwyrm */

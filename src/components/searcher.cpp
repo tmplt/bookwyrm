@@ -96,10 +96,10 @@ searcher::~searcher()
     for (auto &t : threads_)
         t.join();
 
-    menu(this->items_);
+    /* menu(this->items_).display(); */
 }
 
-void searcher::search()
+searcher& searcher::async_search()
 {
     for (const auto &m : sources_) {
         try {
@@ -114,6 +114,18 @@ void searcher::search()
             continue;
         }
     }
+
+    return *this;
+}
+
+void searcher::display_menu()
+{
+    /* std::lock_guard<std::mutex> guard(items_mutex_); */
+    items_mutex_.lock();
+    menu_.construct(this->items_);
+    items_mutex_.unlock();
+
+    menu_.display();
 }
 
 /* ns bookwyrm */

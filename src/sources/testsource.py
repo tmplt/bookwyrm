@@ -16,5 +16,3 @@ def find(wanted, bookwyrm):
 
         book = (nonexacts, exacts)
         bookwyrm.feed(book)
-
-    print(__name__, "done, returning nothing...")

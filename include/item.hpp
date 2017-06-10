@@ -121,6 +121,16 @@ public:
         return os;
     }
 
+    const char* menu_title() const
+    {
+        return nonexacts.title.c_str();
+    }
+
+    const char* menu_desc() const
+    {
+        return ("desc: " + nonexacts.title).c_str();
+    }
+
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;
