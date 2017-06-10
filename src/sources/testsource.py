@@ -1,4 +1,5 @@
 import pybookwyrm as bw
+import time
 
 
 def find(wanted, bookwyrm):
@@ -8,6 +9,7 @@ def find(wanted, bookwyrm):
 
     # Generate some dummy data
     for i in range(10):
+        time.sleep(0.1)
         nonexacts = bw.nonexacts_t(
             {'serie': 'serie' + str(i), 'title': 'title' + str(i)},
             ['Author A. ' + str(i), 'Author B.' + str(i)])

@@ -57,13 +57,9 @@ menu::menu(vector<item> &items)
     if (curs_set(0) == ERR)
         spdlog::get("main")->warn("curses: can't hide the cursor");
 
-    /* Initialize the items. */
-    for (const auto &item : items_) {
-        menu_items_.push_back(
-            new_item(item.nonexacts.title.c_str(), "desc")
-        );
-    }
+    menu_items_.emplace_back(new_item("test item", "desc"));
 
+    menu_items_.emplace_back(nullptr);
     menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
     mvprintw(LINES - 2, 0, "Press 'q' to quit");
 }
@@ -109,7 +105,22 @@ void menu::update()
 {
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
-    mvprintw(LINES - 1, 0, "update() has been called!");
+    unpost_menu(menu_);
+    for (auto &item : menu_items_) free_item(item);
+    menu_items_.clear();
+
+    for (const auto &item : items_) {
+        menu_items_.emplace_back(
+            new_item(item.nonexacts.title.c_str(), "desc")
+        );
+    }
+    menu_items_.emplace_back(nullptr);
+
+    /* menu_ = new_menu(const_cast<ITEM**>(menu_items_.data())); */
+    set_menu_items(menu_, const_cast<ITEM**>(menu_items_.data()));
+    post_menu(menu_);
+
+    mvprintw(LINES - 1, 0, "update() has been called! %d items now!", items_.size());
     refresh();
 }
 
