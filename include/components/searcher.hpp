@@ -60,8 +60,6 @@ public:
 
         std::lock_guard<std::mutex> guard(items_mutex_);
         items_.push_back(item);
-
-        /* update the menu here */
         menu_.update();
     }
 
@@ -74,7 +72,7 @@ private:
     vector<pybind11::module> sources_;
     vector<std::thread> threads_;
 
-    menu menu_;
+    menu menu_{items_};
 };
 
 /* ns bookwyrm */

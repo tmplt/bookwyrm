@@ -95,8 +95,6 @@ searcher::~searcher()
 {
     for (auto &t : threads_)
         t.join();
-
-    /* menu(this->items_).display(); */
 }
 
 searcher& searcher::async_search()
@@ -120,11 +118,6 @@ searcher& searcher::async_search()
 
 void searcher::display_menu()
 {
-    /* std::lock_guard<std::mutex> guard(items_mutex_); */
-    items_mutex_.lock();
-    menu_.construct(this->items_);
-    items_mutex_.unlock();
-
     menu_.display();
 }
 

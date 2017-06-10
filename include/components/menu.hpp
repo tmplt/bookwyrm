@@ -28,8 +28,7 @@ namespace bookwyrm {
 
 class menu {
 public:
-    explicit menu() {};
-    void construct(const vector<item> &items);
+    explicit menu(vector<item> &items);
     ~menu();
 
     void display();
@@ -42,6 +41,8 @@ private:
     vector<ITEM*> menu_items_;
     MENU *menu_;
     std::mutex menu_mutex_;
+
+    vector<item> &items_;
 };
 
 // use an integer to save which item to highlight

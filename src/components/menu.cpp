@@ -34,7 +34,8 @@
 
 namespace bookwyrm {
 
-void menu::construct(const vector<item> &items)
+menu::menu(vector<item> &items)
+    : items_(items)
 {
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
@@ -57,7 +58,7 @@ void menu::construct(const vector<item> &items)
         spdlog::get("main")->warn("curses: can't hide the cursor");
 
     /* Initialize the items. */
-    for (const auto &item : items) {
+    for (const auto &item : items_) {
         menu_items_.push_back(
             new_item(item.nonexacts.title.c_str(), "desc")
         );
@@ -108,7 +109,7 @@ void menu::update()
 {
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
-    mvprintw(0, 0, "update() has been called!");
+    mvprintw(LINES - 1, 0, "update() has been called!");
     refresh();
 }
 
