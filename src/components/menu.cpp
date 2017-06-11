@@ -62,7 +62,7 @@ menu::menu(vector<item> &items)
 
     menu_items_.emplace_back(nullptr);
     menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
-    mvprintw(LINES - 2, 0, "Press 'q' to quit");
+    mvprintw(LINES - 3, 0, "Press 'q' to quit");
 }
 
 menu::~menu()
@@ -105,11 +105,11 @@ void menu::display()
 void menu::update()
 {
     std::lock_guard<std::mutex> guard(menu_mutex_);
-    /* std::scoped_guard guard{menu_mutex_, items_mutex}; */
 
-    /* unpost_menu(menu_); */
-    /* for (auto &item : menu_items_) free_item(item); */
-    /* menu_items_.clear(); */
+    unpost_menu(menu_);
+    free_menu(menu_);
+    for (auto &item : menu_items_) free_item(item);
+    menu_items_.clear();
 
     for (const auto &item : items_) {
         menu_items_.emplace_back(
@@ -118,10 +118,13 @@ void menu::update()
     }
     menu_items_.emplace_back(nullptr);
 
-    set_menu_items(menu_, const_cast<ITEM**>(menu_items_.data()));
-    /* post_menu(menu_); */
+    /* auto ret = set_menu_items(menu_, const_cast<ITEM**>(menu_items_.data())); */
+    menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
+    post_menu(menu_);
 
-    mvprintw(LINES - 1, 0, "update() has been called! %d items now!", items_.size());
+    mvprintw(LINES - 2, 0, "update() has been called! %d items should be listed!"
+            " The curses menu itself contains %d items.", menu_items_.size() - 1, item_count(menu_));
+    /* mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK); */
     refresh();
 }
 
