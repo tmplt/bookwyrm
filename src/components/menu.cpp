@@ -57,12 +57,8 @@ menu::menu(vector<item> &items)
     if (curs_set(0) == ERR)
         spdlog::get("main")->warn("curses: can't hide the cursor");
 
-    menu_items_.emplace_back(new_item("test item", "desc"));
-    menu_items_.emplace_back(new_item("test item2", "desc"));
-
     menu_items_.emplace_back(nullptr);
-    menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
-    mvprintw(LINES - 3, 0, "Press 'q' to quit");
+    menu_ = new_menu(menu_items_.data());
 }
 
 menu::~menu()
@@ -104,6 +100,10 @@ void menu::display()
 
 void menu::update()
 {
+    /*
+     * TODO: modify the list of ITEM* instead of
+     * reconstructing the list every time.
+     */
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
     unpost_menu(menu_);
@@ -119,9 +119,10 @@ void menu::update()
     menu_items_.emplace_back(nullptr);
 
     /* auto ret = set_menu_items(menu_, const_cast<ITEM**>(menu_items_.data())); */
-    menu_ = new_menu(const_cast<ITEM**>(menu_items_.data()));
+    menu_ = new_menu(menu_items_.data());
     post_menu(menu_);
 
+    mvprintw(LINES - 3, 0, "press 'q' to quit.");
     mvprintw(LINES - 2, 0, "update() has been called! %d items should be listed!"
             " The curses menu itself contains %d items.", menu_items_.size() - 1, item_count(menu_));
     /* mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK); */
