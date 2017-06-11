@@ -31,18 +31,24 @@ public:
     explicit menu(vector<item> &items);
     ~menu();
 
+    /* Fires up the menu after necessary curses configuration. */
     void display();
 
-    /* should be called after every searcher::append_item. */
+    /* Updates the menu entries to match those in items_. */
     void update();
 
 private:
-    /* const vector<item> &items_; */
+    /*
+     * new_item-fications of the elements in items_.
+     * Used to generate the array used by menu_.
+     */
     vector<ITEM*> menu_items_;
+
     MENU *menu_;
     std::mutex menu_mutex_;
 
-    vector<item> &items_;
+    /* Reference from parent class. */
+    vector<item> const &items_;
 };
 
 // use an integer to save which item to highlight

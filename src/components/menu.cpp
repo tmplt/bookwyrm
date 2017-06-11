@@ -113,7 +113,7 @@ void menu::update()
 
     for (const auto &item : items_) {
         menu_items_.emplace_back(
-            new_item(item.nonexacts.title.c_str(), "desc")
+            new_item(item.menu_title(), item.menu_desc())
         );
     }
     menu_items_.emplace_back(nullptr);

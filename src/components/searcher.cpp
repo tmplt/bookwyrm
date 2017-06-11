@@ -93,6 +93,15 @@ searcher::searcher(const item &wanted)
 
 searcher::~searcher()
 {
+    /*
+     * Current behaviour is that the program cannot terminate unless
+     * all source threads has joined. We'll of course want do to this.
+     *
+     * It's not possible to end a std::thread in a smooth matter. We could
+     * instead have a control variable that the source scripts check every
+     * once in a while. When this is set upon quitting the curses UI, we'll
+     * have to let each script handle its own termination.
+     */
     for (auto &t : threads_)
         t.join();
 }
