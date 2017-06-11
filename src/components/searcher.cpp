@@ -113,12 +113,24 @@ searcher& searcher::async_search()
         }
     }
 
+    /* Convenience; only to chain member functions. */
     return *this;
 }
 
 void searcher::display_menu()
 {
     menu_.display();
+}
+
+void searcher::append_item(std::tuple<nonexacts_t, exacts_t> item_comps)
+{
+    item item(item_comps);
+    /* if (!item.matches(wanted_)) */
+        /* return; */
+
+    std::lock_guard<std::mutex> guard(items_mutex_);
+    items_.push_back(item);
+    menu_.update();
 }
 
 /* ns bookwyrm */

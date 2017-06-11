@@ -52,16 +52,7 @@ public:
     searcher& async_search();
     void display_menu();
 
-    void append_item(std::tuple<nonexacts_t, exacts_t> item_comps)
-    {
-        item item(item_comps);
-        /* if (!item.matches(wanted_)) */
-            /* return; */
-
-        std::lock_guard<std::mutex> guard(items_mutex_);
-        items_.push_back(item);
-        menu_.update();
-    }
+    void append_item(std::tuple<nonexacts_t, exacts_t> item_comps);
 
 private:
     const logger_t _logger = spdlog::get("main");
