@@ -27,12 +27,19 @@
  *   '<spacebar> to select an item (REQ_TOGGLE_ITEM).
  */
 
+#include <stdlib.h>
 #include <spdlog/spdlog.h>
 
 #include "components/menu.hpp"
 #include "components/logger.hpp"
 
 namespace bookwyrm {
+
+/*
+ * Later on, we'll want to check whether the menu can
+ * be posted at all, before starting the threads.
+ * Can this be done without curses?
+ */
 
 menu::menu(vector<item> &items)
     : items_(items)
@@ -57,15 +64,23 @@ menu::menu(vector<item> &items)
     if (curs_set(0) == ERR)
         spdlog::get("main")->warn("curses: can't hide the cursor");
 
-    menu_items_.emplace_back(nullptr);
-    menu_ = new_menu(menu_items_.data());
+    menu_items_ = (ITEM**)malloc(50 * sizeof(ITEM*));
+    menu_items_[0] = new_item("first item", "desc");
+    menu_items_[1] = NULL;
+    null_idx = 1;
+    menu_ = new_menu(menu_items_);
+
+    menu_opts_off(menu_, O_ONEVALUE);
+
+    mvprintw(LINES - 3, 0, "press 'q' to quit.");
 }
 
 menu::~menu()
 {
     /* Deconstruct everything, and quick curses. */
     unpost_menu(menu_);
-    for (auto &item : menu_items_) free_item(item);
+    for (int i = 0; i < null_idx; i++)
+        free_item(menu_items_[i]);
     free_menu(menu_);
 
     endwin();
@@ -94,6 +109,8 @@ void menu::display()
             case 'G':
                 menu_driver(menu_, REQ_LAST_ITEM);
                 break;
+            case ' ':
+                menu_driver(menu_, REQ_TOGGLE_ITEM);
         }
     }
 }
@@ -101,31 +118,25 @@ void menu::display()
 void menu::update()
 {
     /*
-     * TODO: modify the list of ITEM* instead of
-     * reconstructing the list every time.
+     * TODO: realloc() menu_items_ when needed.
+     * Split all this C stuff into a class of some sort.
      */
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
     unpost_menu(menu_);
-    free_menu(menu_);
-    for (auto &item : menu_items_) free_item(item);
-    menu_items_.clear();
 
-    for (const auto &item : items_) {
-        menu_items_.emplace_back(
-            new_item(item.menu_title(), item.menu_desc())
-        );
-    }
-    menu_items_.emplace_back(nullptr);
+    ITEM *current = current_item(menu_);
 
-    /* auto ret = set_menu_items(menu_, const_cast<ITEM**>(menu_items_.data())); */
-    menu_ = new_menu(menu_items_.data());
+    menu_items_[null_idx] = new_item("title", "desc");
+    menu_items_[null_idx + 1] = NULL;
+    null_idx++;
+
+    int ret = set_menu_items(menu_, menu_items_);
+    set_current_item(menu_, current);
+
     post_menu(menu_);
 
-    mvprintw(LINES - 3, 0, "press 'q' to quit.");
-    mvprintw(LINES - 2, 0, "update() has been called! %d items should be listed!"
-            " The curses menu itself contains %d items.", menu_items_.size() - 1, item_count(menu_));
-    /* mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK); */
+    mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK);
     refresh();
 }
 

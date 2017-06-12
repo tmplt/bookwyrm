@@ -38,19 +38,16 @@ public:
     void update();
 
 private:
-    /*
-     * new_item-fications of the elements in items_.
-     * Used to generate the array used by menu_.
-     */
-    vector<ITEM*> menu_items_;
+    /* new_item-fications of the elements in items_. */
+    ITEM **menu_items_;
+    int null_idx;
 
     MENU *menu_;
+    ITEM *current_;
     std::mutex menu_mutex_;
 
     /* Reference from parent class. */
     vector<item> const &items_;
 };
-
-// use an integer to save which item to highlight
 
 } /* ns bookwyrm */
