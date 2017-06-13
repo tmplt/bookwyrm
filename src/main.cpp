@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
          * Start the Python interpreter and keep it alive until
          * program termination.
          */
-        py::scoped_interpreter guard{};
+        py::scoped_interpreter interp;
 
         /*
          * Fire up the menu the moment all search threads

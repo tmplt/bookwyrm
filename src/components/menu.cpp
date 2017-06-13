@@ -29,9 +29,12 @@
 
 #include <cstdlib>
 #include <spdlog/spdlog.h>
+#include <pybind11/embed.h>
 
 #include "components/menu.hpp"
 #include "components/logger.hpp"
+
+namespace py = pybind11;
 
 namespace bookwyrm {
 
@@ -106,6 +109,13 @@ void menu::display()
     menu_mutex_.lock();
     refresh();
     menu_mutex_.unlock();
+
+    /*
+     * Let the source threads free.
+     * It's not very nice to have this here, though.
+     * Make sure to move this when able.
+     */
+    py::gil_scoped_release nogil;
 
     char c;
     while ((c = getch()) != 'q') {
