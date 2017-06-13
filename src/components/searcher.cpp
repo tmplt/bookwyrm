@@ -102,6 +102,8 @@ searcher::~searcher()
      * once in a while. When this is set upon quitting the curses UI, we'll
      * have to let each script handle its own termination.
      */
+    py::gil_scoped_release nogil;
+
     for (auto &t : threads_)
         t.join();
 }
@@ -110,11 +112,10 @@ searcher& searcher::async_search()
 {
     for (const auto &m : sources_) {
         try {
-            /*
-             * Give the module a copy of the wanted item.
-             * We don't want it to change its fields.
-             */
-            threads_.emplace_back(m.attr("find"), wanted_, this);
+            threads_.emplace_back([m, this]() {
+                py::gil_scoped_acquire gil;
+                m.attr("find")(this->wanted_, this);
+            });
         } catch (const py::error_already_set &err) {
             _logger->error("module '{}' did something wrong ({}); ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
