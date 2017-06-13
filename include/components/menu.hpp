@@ -45,7 +45,12 @@ public:
 
 private:
     ITEM **items_;
-    size_t null_idx_;
+    size_t null_idx_, capacity_;
+
+    bool is_full()
+    {
+        return null_idx_ == (capacity_ - 1);
+    }
 };
 
 class menu {

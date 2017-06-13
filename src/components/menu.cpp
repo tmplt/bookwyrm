@@ -27,7 +27,7 @@
  *   '<spacebar> to select an item (REQ_TOGGLE_ITEM).
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <spdlog/spdlog.h>
 
 #include "components/menu.hpp"
@@ -36,9 +36,10 @@
 namespace bookwyrm {
 
 item_array::item_array()
+    : capacity_(50)
 {
-    items_ = static_cast<ITEM**>(malloc(50 * sizeof(ITEM*)));
-    items_[0] = NULL;
+    items_ = static_cast<ITEM**>(std::malloc(capacity_ * sizeof(ITEM*)));
+    items_[0] = nullptr;
     null_idx_ = 0;
 }
 
@@ -52,8 +53,14 @@ item_array::~item_array()
 
 void item_array::append_new_item(const char *name, const char *desc)
 {
+    if (is_full()) {
+        // TODO: fix segfault on second execution.
+        items_ = static_cast<ITEM**>(std::realloc(items_, 2 * capacity_ * sizeof(ITEM*)));
+        capacity_ *= 2;
+    }
+
     items_[null_idx_] = new_item(name, desc);
-    items_[++null_idx_] = NULL;
+    items_[++null_idx_] = nullptr;
 }
 
 menu::menu(vector<item> &items)
@@ -130,13 +137,13 @@ void menu::update()
     ITEM *current = current_item(menu_);
     menu_items_.append_new_item("title", "desc");
 
-    int ret = set_menu_items(menu_, *menu_items_);
+    set_menu_items(menu_, *menu_items_);
     set_current_item(menu_, current);
 
     post_menu(menu_);
 
     mvprintw(LINES - 2, 0, "press 'q' to quit.");
-    mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK);
+    mvprintw(LINES - 1, 0, "the menu contins %d items", item_count(menu_));
     refresh();
 }
 
