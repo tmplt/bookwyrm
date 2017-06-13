@@ -35,11 +35,26 @@
 
 namespace bookwyrm {
 
-/*
- * Later on, we'll want to check whether the menu can
- * be posted at all, before starting the threads.
- * Can this be done without curses?
- */
+item_array::item_array()
+{
+    items_ = static_cast<ITEM**>(malloc(50 * sizeof(ITEM*)));
+    items_[0] = NULL;
+    null_idx_ = 0;
+}
+
+item_array::~item_array()
+{
+    for (size_t i = 0; i < null_idx_; i++)
+        free_item(items_[i]);
+
+    free(items_);
+}
+
+void item_array::append_new_item(const char *name, const char *desc)
+{
+    items_[null_idx_] = new_item(name, desc);
+    items_[++null_idx_] = NULL;
+}
 
 menu::menu(vector<item> &items)
     : items_(items)
@@ -64,23 +79,14 @@ menu::menu(vector<item> &items)
     if (curs_set(0) == ERR)
         spdlog::get("main")->warn("curses: can't hide the cursor");
 
-    menu_items_ = (ITEM**)malloc(50 * sizeof(ITEM*));
-    menu_items_[0] = new_item("first item", "desc");
-    menu_items_[1] = NULL;
-    null_idx = 1;
-    menu_ = new_menu(menu_items_);
-
+    menu_ = new_menu(*menu_items_);
     menu_opts_off(menu_, O_ONEVALUE);
-
-    mvprintw(LINES - 3, 0, "press 'q' to quit.");
 }
 
 menu::~menu()
 {
     /* Deconstruct everything, and quick curses. */
     unpost_menu(menu_);
-    for (int i = 0; i < null_idx; i++)
-        free_item(menu_items_[i]);
     free_menu(menu_);
 
     endwin();
@@ -117,25 +123,19 @@ void menu::display()
 
 void menu::update()
 {
-    /*
-     * TODO: realloc() menu_items_ when needed.
-     * Split all this C stuff into a class of some sort.
-     */
     std::lock_guard<std::mutex> guard(menu_mutex_);
 
     unpost_menu(menu_);
 
     ITEM *current = current_item(menu_);
+    menu_items_.append_new_item("title", "desc");
 
-    menu_items_[null_idx] = new_item("title", "desc");
-    menu_items_[null_idx + 1] = NULL;
-    null_idx++;
-
-    int ret = set_menu_items(menu_, menu_items_);
+    int ret = set_menu_items(menu_, *menu_items_);
     set_current_item(menu_, current);
 
     post_menu(menu_);
 
+    mvprintw(LINES - 2, 0, "press 'q' to quit.");
     mvprintw(LINES - 1, 0, "set_menu_items() yielded: %d (%d)", ret, ret == E_OK);
     refresh();
 }

@@ -26,6 +26,28 @@ using std::vector; // including common.hpp here breaks errors.hpp?
 
 namespace bookwyrm {
 
+/*
+ * A simple wrapper around a dymaic C-array with ITEM pointers.
+ * Initial capacity is 50. Capacity if multiplied with 2 when needed.
+ */
+class item_array {
+public:
+    explicit item_array();
+    ~item_array();
+
+    /* Append an ITEM* to the array, and push the null-terminator forward. */
+    void append_new_item(const char *name, const char *desc);
+
+    ITEM** operator*()
+    {
+        return items_;
+    }
+
+private:
+    ITEM **items_;
+    size_t null_idx_;
+};
+
 class menu {
 public:
     explicit menu(vector<item> &items);
@@ -39,8 +61,9 @@ public:
 
 private:
     /* new_item-fications of the elements in items_. */
-    ITEM **menu_items_;
-    int null_idx;
+    /* ITEM **menu_items_; */
+    /* int null_idx; */
+    item_array menu_items_;
 
     MENU *menu_;
     ITEM *current_;
