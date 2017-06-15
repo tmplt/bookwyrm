@@ -58,12 +58,6 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/in
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
 
 # }}}
-# Required dependency: pybind11 {{{
-
-find_package(Curses REQUIRED)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CURSES_INCLUDE_DIR})
-
-# }}}
 
 # Create executable target {{{
 
@@ -76,7 +70,7 @@ make_executable(${PROJECT_NAME}
       ${APP_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy pybind11::embed
-    stdc++fs menu curses)
+    stdc++fs termbox)
 
 # }}}
 # Export target details {{{
