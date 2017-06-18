@@ -51,3 +51,4 @@ public:
 
 DEFINE_CLI_ERROR(argument_error);
 DEFINE_CLI_ERROR(value_error);
+DEFINE_CLI_ERROR(component_error);

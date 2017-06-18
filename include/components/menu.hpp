@@ -27,7 +27,9 @@ namespace bookwyrm {
 
 class menu {
 public:
-    explicit menu(vector<item> &items);
+    explicit menu(vector<item> &items)
+        : items_(items), y_(0) {}
+
     ~menu();
 
     /* Fires up the menu. */
@@ -41,6 +43,18 @@ private:
 
     /* Reference from parent class. */
     vector<item> const &items_;
+
+    size_t item_count()
+    {
+        return items_.size();
+    }
+
+    /* For printing the items. */
+    int y_;  // current y
+    void print_item(const item &t);
+
+    // ncurses-esque functions
+    void mvprintw(int x, int y, string str);
 };
 
 } /* ns bookwyrm */

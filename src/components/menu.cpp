@@ -15,27 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fmt/format.h>
 #include <termbox.h>
 #include <spdlog/spdlog.h>
 #include <pybind11/embed.h>
 
+#include "errors.hpp"
 #include "components/menu.hpp"
 #include "components/logger.hpp"
 
 namespace py = pybind11;
 
 namespace bookwyrm {
-
-menu::menu(vector<item> &items)
-    : items_(items)
-{
-    std::lock_guard<std::mutex> guard(menu_mutex_);
-
-    int code = tb_init();
-    if (code < 0) {
-        spdlog::get("main")->error("termbox init failed with code: %d", code);
-    }
-}
 
 menu::~menu()
 {
@@ -44,10 +35,72 @@ menu::~menu()
 
 void menu::display()
 {
+    menu_mutex_.lock();
+
+    int code = tb_init();
+    if (code < 0) {
+        string err = "termbox init failed with code: " + code;
+        throw component_error(err.data());
+    }
+
+    tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
+    tb_clear();
+
+    menu_mutex_.unlock();
+
+    /*
+     * Let the source threads free.
+     * This doesn't feel like the best place to have this,
+     * but we do need to have a release in scope if we
+     * ever want the threads to run.
+     * TODO: find out if there is a better place for this.
+     */
+    py::gil_scoped_release nogil;
+
+    struct tb_event ev;
+    bool quit = false;
+    while (tb_poll_event(&ev) && !quit) {
+        if (ev.type == TB_EVENT_KEY) {
+            switch (ev.key) {
+                case TB_KEY_ESC:
+                    quit = true;
+                    break;
+            }
+            break;
+        }
+    }
 }
 
 void menu::update()
 {
+    tb_clear();
+    tb_select_output_mode(TB_OUTPUT_GRAYSCALE);
+
+    for (auto &item : items_) {
+        print_item(item);
+        y_++;
+    }
+
+    // print_scrollbar down here
+    mvprintw(0, tb_height() - 2, fmt::format("The menu contains {} items.", item_count()));
+
+    y_ = 0;
+    tb_present();
+}
+
+void menu::print_item(const item &t)
+{
+    int x = 0;
+    for (char ch : t.nonexacts.title) {
+        tb_change_cell(x++, y_, ch, 0, 0);
+    }
+}
+
+void menu::mvprintw(int x, int y, string str)
+{
+    for (char ch : str) {
+        tb_change_cell(x++, y, ch, 0, 0);
+    }
 }
 
 } /* ns bookwyrm */
