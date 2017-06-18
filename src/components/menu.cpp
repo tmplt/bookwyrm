@@ -74,7 +74,6 @@ void menu::display()
 void menu::update()
 {
     tb_clear();
-    tb_select_output_mode(TB_OUTPUT_GRAYSCALE);
 
     for (auto &item : items_) {
         print_item(item);
@@ -90,9 +89,11 @@ void menu::update()
 
 void menu::print_item(const item &t)
 {
+    int attrs = y_ == selected_item_ ? 0 | TB_REVERSE : 0;
+
     int x = 0;
     for (char ch : t.nonexacts.title) {
-        tb_change_cell(x++, y_, ch, 0, 0);
+        tb_change_cell(x++, y_, ch, attrs, 0);
     }
 }
 

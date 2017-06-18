@@ -28,7 +28,7 @@ namespace bookwyrm {
 class menu {
 public:
     explicit menu(vector<item> &items)
-        : items_(items), y_(0) {}
+        : items_(items), y_(0), selected_item_(0) {}
 
     ~menu();
 
@@ -49,8 +49,17 @@ private:
         return items_.size();
     }
 
+    /*                         */
     /* For printing the items. */
-    int y_;  // current y
+    /*                         */
+
+    /* Current y-coordinate on the terminal. */
+    int y_;
+
+    /* Index of the currently selected item. */
+    int selected_item_;
+
+    /* Prints an item on the current y-coordinate. */
     void print_item(const item &t);
 
     // ncurses-esque functions
