@@ -66,7 +66,6 @@ void menu::display()
                     quit = true;
                     break;
             }
-            break;
         }
     }
 }
