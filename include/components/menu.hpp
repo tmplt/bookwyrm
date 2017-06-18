@@ -18,6 +18,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 using std::vector; // including common.hpp here breaks errors.hpp?
 #include <mutex>
 
@@ -51,15 +52,22 @@ private:
         return items_.size();
     }
 
-    /*                         */
-    /* For printing the items. */
-    /*                         */
+    /*                              */
+    /* Data for printing the items. */
+    /*                              */
 
     /* Current y-coordinate on the terminal. */
     int y_;
 
     /* Index of the currently selected item. */
     int selected_item_;
+
+    /* Item indices marked for download. */
+    std::set<int> marked_items_;
+
+    /*                                   */
+    /* Functions for printing the items. */
+    /*                                   */
 
     /* Prints an item on the current y-coordinate. */
     void print_item(const item &t);
@@ -69,6 +77,9 @@ private:
 
     /* Move up and down the menu. */
     void move(direction dir);
+
+    /* Select (or unselect) the current item for download. */
+    void toggle_select();
 };
 
 } /* ns bookwyrm */

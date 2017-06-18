@@ -71,6 +71,9 @@ void menu::display()
                 case TB_KEY_ARROW_UP:
                     move(up);
                     break;
+                case TB_KEY_SPACE:
+                    toggle_select();
+                    break;
             }
         }
     }
@@ -94,10 +97,18 @@ void menu::update()
 
 void menu::print_item(const item &t)
 {
-    int attrs = y_ == selected_item_ ? 0 | TB_REVERSE : 0;
+    bool at_selected_item = (y_ == selected_item_);
+    bool at_marked_item = marked_items_.find(y_) != marked_items_.end();
+    int attrs = at_selected_item || at_marked_item ? 0 | TB_REVERSE : 0;
 
-    int x = 0;
+    int x = 1;
     for (char ch : t.nonexacts.title) {
+        if (at_selected_item) {
+            tb_change_cell(0, y_, '-', 0, 0);
+        } else if (at_marked_item) {
+            tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
+        }
+
         tb_change_cell(x++, y_, ch, attrs, 0);
     }
 }
@@ -123,6 +134,18 @@ void menu::move(direction dir)
             if (at_last_item) return;
             selected_item_++;
             break;
+    }
+
+    update();
+}
+
+void menu::toggle_select()
+{
+    if (marked_items_.find(selected_item_) != marked_items_.end()) {
+        /* It's already marked, so we unmark it.*/
+        marked_items_.erase(selected_item_);
+    } else {
+        marked_items_.insert(selected_item_);
     }
 
     update();
