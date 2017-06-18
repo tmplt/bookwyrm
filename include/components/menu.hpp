@@ -39,6 +39,8 @@ public:
     void update();
 
 private:
+    enum direction { up, down };
+
     std::mutex menu_mutex_;
 
     /* Reference from parent class. */
@@ -64,6 +66,9 @@ private:
 
     // ncurses-esque functions
     void mvprintw(int x, int y, string str);
+
+    /* Move up and down the menu. */
+    void move(direction dir);
 };
 
 } /* ns bookwyrm */

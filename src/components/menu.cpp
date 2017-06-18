@@ -65,6 +65,12 @@ void menu::display()
                 case TB_KEY_ESC:
                     quit = true;
                     break;
+                case TB_KEY_ARROW_DOWN:
+                    move(down);
+                    break;
+                case TB_KEY_ARROW_UP:
+                    move(up);
+                    break;
             }
         }
     }
@@ -101,6 +107,25 @@ void menu::mvprintw(int x, int y, string str)
     for (char ch : str) {
         tb_change_cell(x++, y, ch, 0, 0);
     }
+}
+
+void menu::move(direction dir)
+{
+    bool at_first_item = selected_item_ == 0,
+         at_last_item  = selected_item_ == static_cast<int>(item_count() - 1);
+
+    switch (dir) {
+        case up:
+            if (at_first_item) return;
+            selected_item_--;
+            break;
+        case down:
+            if (at_last_item) return;
+            selected_item_++;
+            break;
+    }
+
+    update();
 }
 
 } /* ns bookwyrm */
