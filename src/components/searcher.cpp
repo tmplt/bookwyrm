@@ -83,8 +83,6 @@ searcher::searcher(const item &wanted)
             _logger->debug("loading module '{}'...", module_file);
             sources_.emplace_back(py::module::import(module_file.c_str()));
         } catch (const py::error_already_set &err) {
-            // This is printed on on termbox, we might want to save these
-            // until the program closes down.
             _logger->warn("{}; ignoring...", err.what());
         }
     }
