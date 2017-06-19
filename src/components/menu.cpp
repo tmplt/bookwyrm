@@ -96,6 +96,12 @@ void menu::display()
                 case 'k':
                     move(up);
                     break;
+                case 'g':
+                    move(top);
+                    break;
+                case 'G':
+                    move(bot);
+                    break;
             }
         }
     }
@@ -169,6 +175,13 @@ void menu::move(move_direction dir)
             if (at_last_item) return;
             if (menu_at_bot()) scroll_offset_++;
             selected_item_++;
+            break;
+        case top:
+            scroll_offset_ = selected_item_ = 0;
+            break;
+        case bot:
+            selected_item_ = item_count() - 1;
+            scroll_offset_ = selected_item_ - menu_capacity() + 1;
             break;
     }
 

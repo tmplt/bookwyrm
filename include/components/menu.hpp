@@ -41,7 +41,7 @@ public:
     void update();
 
 private:
-    enum move_direction { up, down };
+    enum move_direction { top, up, down, bot };
 
     /* Current y-coordinate on the terminal. */
     int y_;
