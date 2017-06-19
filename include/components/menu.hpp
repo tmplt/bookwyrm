@@ -43,7 +43,7 @@ public:
 private:
     enum move_direction { top, up, down, bot };
 
-    /* Current y-coordinate on the terminal. */
+    /* Which line are we drawing currently? */
     int y_;
 
     /* Index of the currently selected item. */
