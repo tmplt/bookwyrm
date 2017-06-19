@@ -117,10 +117,11 @@ void menu::update()
         y_++;
     }
 
+    print_scrollbar();
+
     if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
     if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
 
-    // print_scrollbar down here
     mvprintw(0, tb_height() - 2, fmt::format("The menu contains {} items.", item_count()));
     mvprintw(5, tb_height() - 1, fmt::format("selected_item_ = {}, scroll_offset_ = {}",
                 selected_item_, scroll_offset_));
@@ -207,6 +208,39 @@ void menu::resize()
      */
     if (menu_at_bot()) selected_item_--;
     update();
+}
+
+void menu::print_scrollbar()
+{
+    /*
+     * This isn't something we can plug-and-play later,
+     * and it might not scale perfectly, but it gives us
+     * something to work from.
+     */
+
+    /* Nice runes. */
+    const uint32_t bg = 0x2592, // '▒'
+                   fg = 0x2588; // '█'
+
+    /*
+     * Find the height of the scrollbar.
+     * The more entries, the smaller is gets.
+     * (not less than 2, though)
+     */
+    const size_t height = std::max((tb_height() - 2) / item_count(), 3ul) - 1;
+
+    /* Find out where to print the bar. */
+    const size_t start = selected_item_ * (tb_height() - 4) / item_count() + 1;
+
+    /* First print the scrollbar's background. */
+    for (int y = 1; y <= tb_height() - 2; y++) {
+        tb_change_cell(tb_width() - 1, y, bg, 0, 0);
+    }
+
+    /* Then we print the bar. */
+    for (size_t y = start; y <= start + height; y++) {
+        tb_change_cell(tb_width() - 1, y, fg, 0, 0);
+    }
 }
 
 } /* ns bookwyrm */

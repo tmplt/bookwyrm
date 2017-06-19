@@ -117,6 +117,8 @@ private:
 
     /* A few things we need to do on a resize event. */
     void resize();
+
+    void print_scrollbar();
 };
 
 } /* ns bookwyrm */
