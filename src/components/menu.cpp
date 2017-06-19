@@ -66,7 +66,9 @@ void menu::display()
     struct tb_event ev;
     bool quit = false;
     while (tb_poll_event(&ev) && !quit) {
-        if (ev.type == TB_EVENT_KEY) {
+        if (ev.type == TB_EVENT_RESIZE) {
+            resize();
+        } else if (ev.type == TB_EVENT_KEY) {
             switch (ev.key) {
                 case TB_KEY_ESC:
                     quit = true;
@@ -166,6 +168,17 @@ void menu::toggle_select()
     else
         mark_item(selected_item_);
 
+    update();
+}
+
+void menu::resize()
+{
+    /*
+     * When the window is resized from the lower left/right
+     * corner, the currently selected item may escape the
+     * menu, so we lock it here.
+     */
+    if (menu_at_bot()) selected_item_--;
     update();
 }
 

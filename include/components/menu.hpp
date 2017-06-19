@@ -114,6 +114,9 @@ private:
     {
         marked_items_.erase(idx);
     }
+
+    /* A few things we need to do on a resize event. */
+    void resize();
 };
 
 } /* ns bookwyrm */
