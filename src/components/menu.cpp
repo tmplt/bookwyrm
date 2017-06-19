@@ -63,8 +63,13 @@ void menu::display()
      */
     py::gil_scoped_release nogil;
 
-    struct tb_event ev;
+    /*
+     * For some odd reason, we must press ESC twice
+     * to quit here.
+     * TODO: figure out why.
+     */
     bool quit = false;
+    struct tb_event ev;
     while (tb_poll_event(&ev) && !quit) {
         if (ev.type == TB_EVENT_RESIZE) {
             resize();
@@ -81,6 +86,15 @@ void menu::display()
                     break;
                 case TB_KEY_SPACE:
                     toggle_select();
+                    break;
+            }
+
+            switch (ev.ch) {
+                case 'j':
+                    move(down);
+                    break;
+                case 'k':
+                    move(up);
                     break;
             }
         }
