@@ -80,6 +80,21 @@ private:
 
     /* Select (or unselect) the current item for download. */
     void toggle_select();
+
+    bool is_marked(size_t idx)
+    {
+        return marked_items_.find(idx) != marked_items_.cend();
+    }
+
+    void mark_item(size_t idx)
+    {
+        marked_items_.insert(idx);
+    }
+
+    void unmark_item(size_t idx)
+    {
+        marked_items_.erase(idx);
+    }
 };
 
 } /* ns bookwyrm */

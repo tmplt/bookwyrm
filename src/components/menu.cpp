@@ -97,18 +97,23 @@ void menu::update()
 
 void menu::print_item(const item &t)
 {
-    bool at_selected_item = (y_ == selected_item_);
-    bool at_marked_item = marked_items_.find(y_) != marked_items_.end();
-    int attrs = at_selected_item || at_marked_item ? 0 | TB_REVERSE : 0;
+    bool on_selected_item = (y_ == selected_item_);
 
+    /*
+     * Imitate an Ncurses menu, denote the selected item with a '-'
+     * and by reversing fg and bg on the entry.
+     * Leave x = 1 to the indicator.
+     */
+    if (on_selected_item) {
+        tb_change_cell(0, y_, '-', 0, 0);
+    } else if (is_marked(y_)) {
+        tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
+    }
+
+    int attrs = on_selected_item || is_marked(y_) ? TB_REVERSE : 0;
     int x = 1;
-    for (char ch : t.nonexacts.title) {
-        if (at_selected_item) {
-            tb_change_cell(0, y_, '-', 0, 0);
-        } else if (at_marked_item) {
-            tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
-        }
 
+    for (char ch : t.nonexacts.title) {
         tb_change_cell(x++, y_, ch, attrs, 0);
     }
 }
@@ -141,11 +146,10 @@ void menu::move(direction dir)
 
 void menu::toggle_select()
 {
-    if (marked_items_.find(selected_item_) != marked_items_.end()) {
-        /* It's already marked, so we unmark it.*/
-        marked_items_.erase(selected_item_);
+    if (is_marked(selected_item_)) {
+        unmark_item(selected_item_);
     } else {
-        marked_items_.insert(selected_item_);
+        mark_item(selected_item_);
     }
 
     update();
