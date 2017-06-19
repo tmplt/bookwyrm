@@ -16,7 +16,7 @@
  */
 
 #include <fmt/format.h>
-#include <termbox.h>
+#include <iostream>
 #include <spdlog/spdlog.h>
 #include <pybind11/embed.h>
 
@@ -31,6 +31,12 @@ namespace bookwyrm {
 menu::~menu()
 {
     tb_shutdown();
+
+    std::cout << "selected items:\n";
+    for (auto idx : marked_items_)
+        std::cout << idx << ' ';
+
+    std::cout << '\n';
 }
 
 void menu::display()
@@ -83,13 +89,19 @@ void menu::update()
 {
     tb_clear();
 
-    for (auto &item : items_) {
-        print_item(item);
+    for (size_t i = scroll_offset_; i < item_count(); i++) {
+        if (y_ == menu_capacity()) break;
+        print_item(items_[i]);
         y_++;
     }
 
+    if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
+    if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
+
     // print_scrollbar down here
     mvprintw(0, tb_height() - 2, fmt::format("The menu contains {} items.", item_count()));
+    mvprintw(5, tb_height() - 1, fmt::format("selected_item_ = {}, scroll_offset_ = {}",
+                selected_item_, scroll_offset_));
 
     y_ = 0;
     tb_present();
@@ -97,7 +109,7 @@ void menu::update()
 
 void menu::print_item(const item &t)
 {
-    bool on_selected_item = (y_ == selected_item_);
+    bool on_selected_item = (y_ + scroll_offset_ == selected_item_);
 
     /*
      * Imitate an Ncurses menu, denote the selected item with a '-'
@@ -106,11 +118,12 @@ void menu::print_item(const item &t)
      */
     if (on_selected_item) {
         tb_change_cell(0, y_, '-', 0, 0);
-    } else if (is_marked(y_)) {
+    } else if (is_marked(y_ + scroll_offset_)) {
         tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
     }
 
-    uint16_t attrs = on_selected_item || is_marked(y_) ? TB_REVERSE : 0;
+    uint16_t attrs = (on_selected_item || is_marked(y_ + scroll_offset_))
+        ? TB_REVERSE : 0;
     int x = 1;
 
     for (uint32_t ch : t.nonexacts.title) {
@@ -133,10 +146,12 @@ void menu::move(move_direction dir)
     switch (dir) {
         case up:
             if (at_first_item) return;
+            if (menu_at_top()) scroll_offset_--;
             selected_item_--;
             break;
         case down:
             if (at_last_item) return;
+            if (menu_at_bot()) scroll_offset_++;
             selected_item_++;
             break;
     }
@@ -146,11 +161,10 @@ void menu::move(move_direction dir)
 
 void menu::toggle_select()
 {
-    if (is_marked(selected_item_)) {
+    if (is_marked(selected_item_))
         unmark_item(selected_item_);
-    } else {
+    else
         mark_item(selected_item_);
-    }
 
     update();
 }

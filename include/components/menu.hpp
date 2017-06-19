@@ -19,6 +19,7 @@
 
 #include <set>
 #include <mutex>
+#include <termbox.h>
 
 #include "common.hpp"
 #include "item.hpp"
@@ -28,7 +29,8 @@ namespace bookwyrm {
 class menu {
 public:
     explicit menu(vector<item> &items)
-        : y_(0), selected_item_(0), items_(items) {}
+        : y_(0), selected_item_(0), scroll_offset_(0),
+        items_(items) {}
 
     ~menu();
 
@@ -47,20 +49,48 @@ private:
     /* Index of the currently selected item. */
     int selected_item_;
 
+    /* How many lines have we scrolled? */
+    int scroll_offset_;
+
     std::mutex menu_mutex_;
     vector<item> const &items_;
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;
 
-    size_t item_count()
+    size_t item_count() const
     {
         return items_.size();
     }
 
-    bool is_marked(size_t idx)
+    bool is_marked(size_t idx) const
     {
         return marked_items_.find(idx) != marked_items_.cend();
+    }
+
+    /* How many entries can the menu print in the terminal? */
+    int menu_capacity() const
+    {
+        // -3 is arbitrary for now
+        return tb_height() - 3;
+    }
+
+    /*
+     * Is the currently selected item the last one in the
+     * menu "window"?
+     */
+    bool menu_at_bot() const
+    {
+        return selected_item_ == (menu_capacity() - 1 + scroll_offset_);
+    }
+
+    /*
+     * Is the currently selected item the first one in the
+     * menu "window"?
+     */
+    bool menu_at_top() const
+    {
+        return selected_item_ == scroll_offset_;
     }
 
     /* Prints an item on the current y-coordinate. */
