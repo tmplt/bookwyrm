@@ -110,17 +110,17 @@ void menu::print_item(const item &t)
         tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
     }
 
-    int attrs = on_selected_item || is_marked(y_) ? TB_REVERSE : 0;
+    uint16_t attrs = on_selected_item || is_marked(y_) ? TB_REVERSE : 0;
     int x = 1;
 
-    for (char ch : t.nonexacts.title) {
+    for (uint32_t ch : t.nonexacts.title) {
         tb_change_cell(x++, y_, ch, attrs, 0);
     }
 }
 
 void menu::mvprintw(int x, int y, string str)
 {
-    for (char ch : str) {
+    for (uint32_t ch : str) {
         tb_change_cell(x++, y, ch, 0, 0);
     }
 }
