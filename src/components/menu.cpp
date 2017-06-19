@@ -125,7 +125,7 @@ void menu::mvprintw(int x, int y, string str)
     }
 }
 
-void menu::move(direction dir)
+void menu::move(move_direction dir)
 {
     bool at_first_item = selected_item_ == 0,
          at_last_item  = selected_item_ == static_cast<int>(item_count() - 1);

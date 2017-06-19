@@ -17,11 +17,10 @@
 
 #pragma once
 
-#include <vector>
 #include <set>
-using std::vector; // including common.hpp here breaks errors.hpp?
 #include <mutex>
 
+#include "common.hpp"
 #include "item.hpp"
 
 namespace bookwyrm {
@@ -29,7 +28,7 @@ namespace bookwyrm {
 class menu {
 public:
     explicit menu(vector<item> &items)
-        : items_(items), y_(0), selected_item_(0) {}
+        : y_(0), selected_item_(0), items_(items) {}
 
     ~menu();
 
@@ -40,21 +39,7 @@ public:
     void update();
 
 private:
-    enum direction { up, down };
-
-    std::mutex menu_mutex_;
-
-    /* Reference from parent class. */
-    vector<item> const &items_;
-
-    size_t item_count()
-    {
-        return items_.size();
-    }
-
-    /*                              */
-    /* Data for printing the items. */
-    /*                              */
+    enum move_direction { up, down };
 
     /* Current y-coordinate on the terminal. */
     int y_;
@@ -62,29 +47,33 @@ private:
     /* Index of the currently selected item. */
     int selected_item_;
 
+    std::mutex menu_mutex_;
+    vector<item> const &items_;
+
     /* Item indices marked for download. */
     std::set<int> marked_items_;
 
-    /*                                   */
-    /* Functions for printing the items. */
-    /*                                   */
-
-    /* Prints an item on the current y-coordinate. */
-    void print_item(const item &t);
-
-    // ncurses-esque functions
-    void mvprintw(int x, int y, string str);
-
-    /* Move up and down the menu. */
-    void move(direction dir);
-
-    /* Select (or unselect) the current item for download. */
-    void toggle_select();
+    size_t item_count()
+    {
+        return items_.size();
+    }
 
     bool is_marked(size_t idx)
     {
         return marked_items_.find(idx) != marked_items_.cend();
     }
+
+    /* Prints an item on the current y-coordinate. */
+    void print_item(const item &t);
+
+    /* From Ncurses. */
+    void mvprintw(int x, int y, string str);
+
+    /* Move up and down the menu. */
+    void move(move_direction dir);
+
+    /* Select (or unselect) the current item for download. */
+    void toggle_select();
 
     void mark_item(size_t idx)
     {
