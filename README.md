@@ -45,8 +45,9 @@ How does it work thus far?
 - [x] `item` class and data structure
     - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy)!)
 - [x] embed Python interpreter with [pybind11](https://github.com/pybind/pybind11)
-- [ ] write a class that does the whole searching thing
+- [x] write a class that does the whole searching thing
 - [ ] write the menu (avoid ncurses, apparently it's a hell to work with)
+    - [x] write a simple menu
 - [ ] write scripts for sources (listed in descending priority)
     - [ ] Library Genesis
     - [ ] Sci-Hub
