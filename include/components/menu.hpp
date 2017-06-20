@@ -17,9 +17,14 @@
 
 #pragma once
 
+#include <termbox.h>
+
 #include <set>
 #include <mutex>
-#include <termbox.h>
+#include <array>
+#include <tuple>
+#include <utility>
+#include <variant>
 
 #include "common.hpp"
 #include "item.hpp"
@@ -28,11 +33,7 @@ namespace bookwyrm {
 
 class menu {
 public:
-    explicit menu(vector<item> &items)
-        : y_(0), padding_top_(1), padding_bot_(3),
-        selected_item_(0), scroll_offset_(0),
-        items_(items) {}
-
+    explicit menu(vector<item> &items);
     ~menu();
 
     /* Fires up the menu. */
@@ -44,11 +45,45 @@ public:
 private:
     enum move_direction { top, up, down, bot };
 
+    /* Store data about each column between updates. */
+    struct columns_t {
+
+        struct column_t {
+            using width_w_t = std::variant<int, double>;
+
+            /*
+             * width_w(wanted).
+             * How much space does the column want?
+             * Can be specified as an absolute value or
+             * as a multiplier, e.g. 0.30 for 30% of tb_width().
+             */
+            width_w_t width_w;
+
+            /* Changes whenever the window dimensions are changed. */
+            int width;
+            string title;
+        };
+
+        void operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
+        {
+            int i = 0;
+            for (auto &&pair : pairs) {
+                columns_[i].width_w = std::get<1>(pair);
+                columns_[i++].title = std::get<0>(pair);
+            }
+        }
+
+        auto begin() { return columns_.begin(); }
+        auto end()   { return columns_.end();   }
+
+        std::array<column_t, 7> columns_;
+    } columns_;
+
     /* Which line are we drawing currently? */
     int y_;
 
     /* How much space do we leave for bars? */
-    const int padding_top_, padding_bot_;
+    const int padding_top_, padding_bot_, padding_right_;
 
     /* Index of the currently selected item. */
     int selected_item_;
@@ -119,9 +154,11 @@ private:
     }
 
     /* A few things we need to do on a resize event. */
-    void resize();
+    void update_column_widths();
+    void on_resize();
 
     void print_scrollbar();
+    void print_header();
 };
 
 } /* ns bookwyrm */

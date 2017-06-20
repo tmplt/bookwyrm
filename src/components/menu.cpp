@@ -28,6 +28,31 @@ namespace py = pybind11;
 
 namespace bookwyrm {
 
+menu::menu(vector<item> &items)
+    : y_(0), padding_top_(1), padding_bot_(3), padding_right_(1),
+    selected_item_(0), scroll_offset_(0),
+    items_(items)
+{
+    /*
+     * These wanted widths works fine for now,
+     * but we might want some way to utilize whatever
+     * horizontal space is left.
+     */
+    columns_ = {
+        {"title",      .30  },
+        {"year",       4 + 2},
+        {"serie",      .20  },
+        {"authors",    .20  },
+        {"publishers", .15  },
+        {"format",     6 + 2},
+        {"pages",      6 + 2}
+        /*                 ↑
+         *      For some spacing between
+         *        title and seperator.
+         */
+    };
+}
+
 menu::~menu()
 {
     tb_shutdown();
@@ -43,11 +68,19 @@ void menu::display()
 {
     menu_mutex_.lock();
 
+    /*
+     * It would make more sense to have this in
+     * the construtor, but then we'd need to use a buffer
+     * for log messages printed when we import the Python
+     * modules.
+     */
     int code = tb_init();
     if (code < 0) {
         string err = "termbox init failed with code: " + code;
         throw component_error(err.data());
     }
+
+    update_column_widths();
 
     tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
     tb_clear();
@@ -72,7 +105,7 @@ void menu::display()
     struct tb_event ev;
     while (tb_poll_event(&ev) && !quit) {
         if (ev.type == TB_EVENT_RESIZE) {
-            resize();
+            on_resize();
         } else if (ev.type == TB_EVENT_KEY) {
             switch (ev.key) {
                 case TB_KEY_ESC:
@@ -113,6 +146,8 @@ void menu::display()
 void menu::update()
 {
     tb_clear();
+
+    print_header();
 
     y_ = padding_top_;
     for (size_t i = scroll_offset_; i < item_count(); i++) {
@@ -203,12 +238,32 @@ void menu::toggle_select()
     update();
 }
 
-void menu::resize()
+void menu::update_column_widths()
 {
+    const int width = tb_width() - 1 - padding_right_;
+
+    for (auto &column : columns_.columns_) {
+        try {
+            column.width = std::get<int>(column.width_w);
+        } catch (std::bad_variant_access&) {
+            column.width = width * std::get<double>(column.width_w);
+        }
+    }
+}
+
+void menu::on_resize()
+{
+    update_column_widths();
+
     /*
      * When the window is resized from the lower left/right
      * corner, the currently selected item may escape the
      * menu, so we lock it here.
+     *
+     * TODO: fix this for cases where the cursor has
+     * jumped more than one step down under.
+     * (check whether it's just below what's valid, and
+     * if so, move it to menu_bot).
      */
     if (menu_at_bot()) selected_item_--;
     update();
@@ -244,6 +299,18 @@ void menu::print_scrollbar()
     /* Then we print the bar. */
     for (size_t y = start; y <= start + height; y++) {
         tb_change_cell(tb_width() - 1, y, fg, 0, 0);
+    }
+}
+
+void menu::print_header()
+{
+    int x = 0;
+    for (auto &column : columns_) {
+        /* Center the title. */
+        mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title);
+
+        mvprintw(x + column.width, 0, "|");
+        x += column.width + 1;
     }
 }
 
