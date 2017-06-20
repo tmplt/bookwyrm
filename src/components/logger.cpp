@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>  // std::cout, std::cerr
-#include <utility>   // std::forward
+#include <iostream>
+#include <utility>
 
 #include <spdlog/details/log_msg.h>
 #include <spdlog/logger.h>

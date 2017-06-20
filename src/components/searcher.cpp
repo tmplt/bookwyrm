@@ -19,14 +19,12 @@
 #include <cerrno>
 
 #include <experimental/filesystem>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <pybind11/stl.h>
 #include <array>
 
 #include "components/searcher.hpp"
 #include "components/menu.hpp"
 #include "utils.hpp"
+#include "python.hpp"
 
 namespace fs = std::experimental::filesystem;
 namespace py = pybind11;
@@ -71,7 +69,7 @@ searcher::searcher(const item &wanted)
         }
 
         if (!utils::valid_file(p)) {
-            _logger->warn("can't load module '{}': not a regular file or unreadable"
+            logger_->warn("can't load module '{}': not a regular file or unreadable"
                     "; ignoring...",
                     module_file);
             continue;
@@ -80,10 +78,10 @@ searcher::searcher(const item &wanted)
         module_file.resize(file_ext_pos);
 
         try {
-            _logger->debug("loading module '{}'...", module_file);
+            logger_->debug("loading module '{}'...", module_file);
             sources_.emplace_back(py::module::import(module_file.c_str()));
         } catch (const py::error_already_set &err) {
-            _logger->warn("{}; ignoring...", err.what());
+            logger_->warn("{}; ignoring...", err.what());
         }
     }
 
@@ -117,7 +115,7 @@ searcher& searcher::async_search()
                 m.attr("find")(this->wanted_, this);
             });
         } catch (const py::error_already_set &err) {
-            _logger->error("module '{}' did something wrong ({}); ignoring...",
+            logger_->error("module '{}' did something wrong ({}); ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
             continue;
         }
@@ -132,7 +130,7 @@ void searcher::display_menu()
     menu_.display();
 }
 
-void searcher::append_item(std::tuple<nonexacts_t, exacts_t> item_comps)
+void searcher::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
 {
     item item(item_comps);
     /* if (!item.matches(wanted_)) */

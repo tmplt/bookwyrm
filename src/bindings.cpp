@@ -16,37 +16,35 @@
  */
 
 #include <fmt/format.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-namespace py = pybind11;
-using namespace py::literals;
 
+#include "python.hpp"
 #include "utils.hpp"
 #include "item.hpp"
 #include "components/searcher.hpp"
-using namespace bookwyrm;
+
+namespace bw = bookwyrm;
 
 PYBIND11_MODULE(pybookwyrm, py::module &m)
 {
     m.attr("__doc__") = "bookwyrm python bindings";
 
-    py::enum_<year_mod>(m, "year_mod")
-        .value("equal", year_mod::equal)
-        .value("eq_gt", year_mod::eq_gt)
-        .value("eq_lt", year_mod::eq_lt)
-        .value("lt",    year_mod::lt)
-        .value("gt",    year_mod::gt);
+    py::enum_<bw::year_mod>(m, "year_mod")
+        .value("equal", bw::year_mod::equal)
+        .value("eq_gt", bw::year_mod::eq_gt)
+        .value("eq_lt", bw::year_mod::eq_lt)
+        .value("lt",    bw::year_mod::lt)
+        .value("gt",    bw::year_mod::gt);
 
-    py::class_<exacts_t>(m, "exacts_t")
+    py::class_<bw::exacts_t>(m, "exacts_t")
         .def(py::init<const std::map<string, int>&>())
-        .def_readwrite("year",    &exacts_t::year)
-        .def_readwrite("edition", &exacts_t::edition)
-        .def_readwrite("ext",     &exacts_t::ext)
-        .def_readwrite("volume",  &exacts_t::volume)
-        .def_readwrite("number",  &exacts_t::number)
-        .def_readwrite("pages",   &exacts_t::pages)
-        .def_readwrite("lang",    &exacts_t::lang)
-        .def("__repr__", [](const exacts_t &c) {
+        .def_readwrite("year",    &bw::exacts_t::year)
+        .def_readwrite("edition", &bw::exacts_t::edition)
+        .def_readwrite("ext",     &bw::exacts_t::ext)
+        .def_readwrite("volume",  &bw::exacts_t::volume)
+        .def_readwrite("number",  &bw::exacts_t::number)
+        .def_readwrite("pages",   &bw::exacts_t::pages)
+        .def_readwrite("lang",    &bw::exacts_t::lang)
+        .def("__repr__", [](const bw::exacts_t &c) {
             return fmt::format(
                 "<pybookwyrm.exacts_t with fields:\n"
                 "\tyear:      {}\n"
@@ -61,14 +59,14 @@ PYBIND11_MODULE(pybookwyrm, py::module &m)
             );
         });
 
-    py::class_<nonexacts_t>(m, "nonexacts_t")
+    py::class_<bw::nonexacts_t>(m, "nonexacts_t")
         .def(py::init<const std::map<string, string>&, const vector<string>&>())
-        .def_readwrite("authors",   &nonexacts_t::authors)
-        .def_readwrite("title",     &nonexacts_t::title)
-        .def_readwrite("serie",     &nonexacts_t::serie)
-        .def_readwrite("publisher", &nonexacts_t::publisher)
-        .def_readwrite("journal",   &nonexacts_t::journal)
-        .def("__repr__", [](const nonexacts_t &c) {
+        .def_readwrite("authors",   &bw::nonexacts_t::authors)
+        .def_readwrite("title",     &bw::nonexacts_t::title)
+        .def_readwrite("serie",     &bw::nonexacts_t::serie)
+        .def_readwrite("publisher", &bw::nonexacts_t::publisher)
+        .def_readwrite("journal",   &bw::nonexacts_t::journal)
+        .def("__repr__", [](const bw::nonexacts_t &c) {
             return fmt::format(
                 "<pybookwyrm.nonexacts_t with fields:\n"
                 "\ttitle:     '{}'\n"
@@ -81,13 +79,13 @@ PYBIND11_MODULE(pybookwyrm, py::module &m)
             );
         });
 
-    py::class_<item>(m, "item")
-        .def_readonly("nonexacts", &item::nonexacts)
-        .def_readonly("exacts",    &item::exacts)
-        .def("__repr__", [](const item &i) {
+    py::class_<bw::item>(m, "item")
+        .def_readonly("nonexacts", &bw::item::nonexacts)
+        .def_readonly("exacts",    &bw::item::exacts)
+        .def("__repr__", [](const bw::item &i) {
             return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
         });
 
-    py::class_<searcher>(m, "bookwyrm")
-        .def("feed", &searcher::append_item, py::return_value_policy::take_ownership);
+    py::class_<bw::searcher>(m, "bookwyrm")
+        .def("feed", &bw::searcher::add_item, py::return_value_policy::take_ownership);
 }

@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
 #include <spdlog/spdlog.h>
 #include <mutex>
 
@@ -25,15 +24,23 @@
 #include "components/menu.hpp"
 #include "common.hpp"
 #include "item.hpp"
+#include "python.hpp"
 
 namespace bookwyrm {
 
 /*
- * TODO: finish this sentence.
- * This class will handle everything between the
+ * The more monolothic class of this program.
+ * This class handles everything from starting the
+ * Python threads to getting the selected items
+ * the user wants.
+ *
+ * TODO: this name doesn't make much sense any more.
+ * Find a better one.
  */
 class searcher {
 public:
+
+    /* Search for valid Python modules and store them. */
     explicit searcher(const item &wanted);
 
     /*
@@ -49,13 +56,17 @@ public:
     searcher(const searcher&) = delete;
     ~searcher();
 
+    /* Start a std::thread for each valid Python module found. */
     searcher& async_search();
+
+    /* Display the menu and let the user select which items to download. */
     void display_menu();
 
-    void append_item(std::tuple<nonexacts_t, exacts_t> item_comps);
+    /* Add a found item to items_ and update the menu. */
+    void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
 
 private:
-    const logger_t _logger = spdlog::get("main");
+    const logger_t logger_ = spdlog::get("main");
     const item &wanted_;
     vector<item> items_;
     std::mutex items_mutex_;

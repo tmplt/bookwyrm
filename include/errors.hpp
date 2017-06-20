@@ -1,7 +1,6 @@
 /*
  * A convenience header when we want to define
- * errors with a more specific name. For an example, see
- * command_line.hpp.
+ * errors with a more specific name.
  *
  * Copyright (C) 2017 Tmplt <tmplt@dragons.rocks>
  *

@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>    // EXIT_SUCCESS, EXIT_FAILURE
-#include <pybind11/embed.h>
+#include <cstdlib>
 
 #include "item.hpp"
 #include "utils.hpp"
@@ -24,6 +23,7 @@
 #include "components/searcher.hpp"
 #include "components/menu.hpp"
 #include "version.hpp"
+#include "python.hpp"
 
 namespace py = pybind11;
 

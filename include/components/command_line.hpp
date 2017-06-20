@@ -18,11 +18,12 @@
 #pragma once
 
 #include <map>
-#include <memory>  // std:unique_ptr
-#include <utility> // std::forward
-using std::forward;
+#include <memory>
+#include <utility>
 
 #include "common.hpp"
+
+using std::forward;
 
 namespace command_line {
 

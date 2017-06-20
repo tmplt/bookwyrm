@@ -18,11 +18,11 @@
 #include <fmt/format.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
-#include <pybind11/embed.h>
 
 #include "errors.hpp"
 #include "components/menu.hpp"
 #include "components/logger.hpp"
+#include "python.hpp"
 
 namespace py = pybind11;
 
