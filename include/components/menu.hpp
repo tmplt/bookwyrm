@@ -29,7 +29,8 @@ namespace bookwyrm {
 class menu {
 public:
     explicit menu(vector<item> &items)
-        : y_(0), selected_item_(0), scroll_offset_(0),
+        : y_(0), padding_top_(1), padding_bot_(3),
+        selected_item_(0), scroll_offset_(0),
         items_(items) {}
 
     ~menu();
@@ -45,6 +46,9 @@ private:
 
     /* Which line are we drawing currently? */
     int y_;
+
+    /* How much space do we leave for bars? */
+    const int padding_top_, padding_bot_;
 
     /* Index of the currently selected item. */
     int selected_item_;
@@ -71,8 +75,7 @@ private:
     /* How many entries can the menu print in the terminal? */
     int menu_capacity() const
     {
-        // -3 is arbitrary for now
-        return tb_height() - 3;
+        return tb_height() - padding_bot_ - padding_top_;
     }
 
     /*

@@ -114,8 +114,9 @@ void menu::update()
 {
     tb_clear();
 
+    y_ = padding_top_;
     for (size_t i = scroll_offset_; i < item_count(); i++) {
-        if (y_ == menu_capacity()) break;
+        if (y_ > menu_capacity()) break;
         print_item(items_[i]);
         y_++;
     }
@@ -126,17 +127,17 @@ void menu::update()
     if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
 
     mvprintw(0, tb_height() - 2, fmt::format("The menu contains {} items.", item_count()));
-    mvprintw(5, tb_height() - 1, fmt::format("selected_item_ = {}, scroll_offset_ = {}",
-                selected_item_, scroll_offset_));
+    mvprintw(5, tb_height() - 1, fmt::format(
+                "selected_item_ = {}, scroll_offset_ = {}, menu_capacity = {}",
+                selected_item_, scroll_offset_, menu_capacity()));
 
-    y_ = 0;
     tb_present();
 }
 
 void menu::print_item(const item &t)
 {
-    bool on_selected_item = (y_ + scroll_offset_ == selected_item_);
-    size_t offset_idx = y_ + scroll_offset_;
+    bool on_selected_item = (y_ + scroll_offset_ == selected_item_ + padding_top_);
+    size_t offset_idx = y_ + scroll_offset_ - padding_top_;
 
     /*
      * Imitate an Ncurses menu, denote the selected item with a '-'
@@ -228,15 +229,15 @@ void menu::print_scrollbar()
     /*
      * Find the height of the scrollbar.
      * The more entries, the smaller is gets.
-     * (not less than 2, though)
+     * (not less than 1, though)
      */
-    const size_t height = std::max((tb_height() - 2) / item_count(), 3ul) - 1;
+    const size_t height = std::max((menu_capacity()) / item_count(), 3ul) - 2;
 
     /* Find out where to print the bar. */
-    const size_t start = selected_item_ * (tb_height() - 4) / item_count() + 1;
+    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + 1;
 
     /* First print the scrollbar's background. */
-    for (int y = 1; y <= tb_height() - 2; y++) {
+    for (int y = 1; y <= menu_capacity(); y++) {
         tb_change_cell(tb_width() - 1, y, bg, 0, 0);
     }
 
