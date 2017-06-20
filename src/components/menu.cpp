@@ -87,6 +87,9 @@ void menu::display()
                 case TB_KEY_SPACE:
                     toggle_select();
                     break;
+                case TB_KEY_CTRL_L:
+                    update();
+                    break;
             }
 
             switch (ev.ch) {
