@@ -39,7 +39,7 @@ PYBIND11_MODULE(pybookwyrm, py::module &m)
         .def(py::init<const std::map<string, int>&>())
         .def_readwrite("year",    &bw::exacts_t::year)
         .def_readwrite("edition", &bw::exacts_t::edition)
-        .def_readwrite("ext",     &bw::exacts_t::ext)
+        .def_readwrite("format",  &bw::exacts_t::format)
         .def_readwrite("volume",  &bw::exacts_t::volume)
         .def_readwrite("number",  &bw::exacts_t::number)
         .def_readwrite("pages",   &bw::exacts_t::pages)
@@ -54,7 +54,7 @@ PYBIND11_MODULE(pybookwyrm, py::module &m)
                 "\tnumber:    {}\n"
                 "\tpages:     {}\n"
                 "\tlanguage:  {}\n>",
-                c.year, c.edition, c.ext, c.volume,
+                c.year, c.edition, c.format, c.volume,
                 c.number, c.pages, c.lang
             );
         });

@@ -58,16 +58,16 @@ struct exacts_t {
 
     int year,
         edition,
-        ext,   // unused for now
+        format, // unused for now
         volume,
         number,
-        pages, // missing flag
-        lang;  // unused for now
+        pages,  // missing flag
+        lang;   // unused for now
 
     constexpr static int size = 7;
 
     std::array<int, size> store = {
-        year, edition, ext,
+        year, edition, format,
         volume, number, pages
     };
 
