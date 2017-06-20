@@ -133,22 +133,22 @@ void menu::update()
 void menu::print_item(const item &t)
 {
     bool on_selected_item = (y_ + scroll_offset_ == selected_item_);
+    size_t offset_idx = y_ + scroll_offset_;
 
     /*
      * Imitate an Ncurses menu, denote the selected item with a '-'
      * and by reversing fg and bg on the entry.
-     * Leave x = 1 to the indicator.
+     * Leave x = 0 to the indicator.
      */
-    if (on_selected_item) {
+    if (on_selected_item)
         tb_change_cell(0, y_, '-', 0, 0);
-    } else if (is_marked(y_ + scroll_offset_)) {
+    else if (is_marked(offset_idx))
         tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
-    }
 
-    uint16_t attrs = (on_selected_item || is_marked(y_ + scroll_offset_))
+    uint16_t attrs = (on_selected_item || is_marked(offset_idx))
         ? TB_REVERSE : 0;
-    int x = 1;
 
+    int x = 1;
     for (uint32_t ch : t.nonexacts.title) {
         tb_change_cell(x++, y_, ch, attrs, 0);
     }
