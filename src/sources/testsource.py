@@ -7,14 +7,27 @@ def find(wanted, bookwyrm):
     # since the item is copied.
     wanted.nonexacts.title = "new title"
 
-    # Generate some dummy data
+    # Generate some dummy items
     for i in range(100):
         # time.sleep(0.1)
-        nonexacts = bw.nonexacts_t(
-            {'serie': 'serie' + str(i), 'title': 'title' + str(i)},
-            ['Author A. ' + str(i), 'Author B.' + str(i)])
+        nonexacts = bw.nonexacts_t({
+            'title': 'Some Title (' + str(i) + ')',
+            'serie': 'The Cool Serie' + str(i),
+            'publisher': 'Fuck Pearson',
+            'journal': 'No journal, no'
+            },
 
-        exacts = bw.exacts_t({'year': 2000 + i, 'pages': 500 + i})
+            ['Author A. ' + str(i), 'Author B.' + str(i)]
+        )
+
+        exacts = bw.exacts_t({
+            'year': 2000 + i,
+            'edition': i,
+            'volume': i,
+            'number': 30 + i,
+            'pages': 500 + i,
+            }
+        )
 
         book = (nonexacts, exacts)
         bookwyrm.feed(book)
