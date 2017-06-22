@@ -80,17 +80,14 @@ private:
         std::array<column_t, 7> columns_;
     } columns_;
 
-    /* Which line are we drawing currently? */
-    int y_;
-
     /* How much space do we leave for bars? */
     const int padding_top_, padding_bot_, padding_right_;
 
     /* Index of the currently selected item. */
-    int selected_item_;
+    size_t selected_item_;
 
     /* How many lines have we scrolled? */
-    int scroll_offset_;
+    size_t scroll_offset_;
 
     std::mutex menu_mutex_;
     vector<item> const &items_;
@@ -109,7 +106,7 @@ private:
     }
 
     /* How many entries can the menu print in the terminal? */
-    int menu_capacity() const
+    size_t menu_capacity() const
     {
         return tb_height() - padding_bot_ - padding_top_;
     }
@@ -132,8 +129,8 @@ private:
         return selected_item_ == scroll_offset_;
     }
 
-    /* Prints an item on the current y-coordinate. */
-    void print_item(const item &t);
+    /* Prints an item across the passed y-coordinate. */
+    void print_item(const item &t, const size_t y);
 
     /* From Ncurses. */
     void mvprintw(int x, int y, string str);

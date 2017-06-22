@@ -29,7 +29,7 @@ namespace py = pybind11;
 namespace bookwyrm {
 
 menu::menu(vector<item> &items)
-    : y_(0), padding_top_(1), padding_bot_(3), padding_right_(1),
+    : padding_top_(1), padding_bot_(3), padding_right_(1),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -155,16 +155,13 @@ void menu::update()
 {
     tb_clear();
 
-    print_header();
-
-    y_ = padding_top_;
-    for (size_t i = scroll_offset_; i < item_count(); i++) {
-        if (y_ > menu_capacity()) break;
-        print_item(items_[i]);
-        y_++;
+    for (size_t i = scroll_offset_, y = padding_top_; i < item_count() &&
+            y <= menu_capacity(); i++, y++) {
+        print_item(items_[i], y);
     }
 
     print_scrollbar();
+    print_header();
 
     if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
     if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
@@ -177,10 +174,10 @@ void menu::update()
     tb_present();
 }
 
-void menu::print_item(const item &t)
+void menu::print_item(const item &t, const size_t y)
 {
-    bool on_selected_item = (y_ + scroll_offset_ == selected_item_ + padding_top_);
-    size_t offset_idx = y_ + scroll_offset_ - padding_top_;
+    bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
+    size_t offset_idx = y + scroll_offset_ - padding_top_;
 
     /*
      * Imitate an Ncurses menu, denote the selected item with a '-'
@@ -188,16 +185,16 @@ void menu::print_item(const item &t)
      * Leave x = 0 to the indicator.
      */
     if (on_selected_item)
-        tb_change_cell(0, y_, '-', 0, 0);
+        tb_change_cell(0, y, '-', 0, 0);
     else if (is_marked(offset_idx))
-        tb_change_cell(0, y_, ' ', TB_REVERSE, 0);
+        tb_change_cell(0, y, ' ', TB_REVERSE, 0);
 
     uint16_t attrs = (on_selected_item || is_marked(offset_idx))
         ? TB_REVERSE : 0;
 
     int x = 1;
     for (uint32_t ch : t.nonexacts.title) {
-        tb_change_cell(x++, y_, ch, attrs, 0);
+        tb_change_cell(x++, y, ch, attrs, 0);
     }
 }
 
@@ -211,7 +208,7 @@ void menu::mvprintw(int x, int y, string str)
 void menu::move(move_direction dir)
 {
     bool at_first_item = selected_item_ == 0,
-         at_last_item  = selected_item_ == static_cast<int>(item_count() - 1);
+         at_last_item  = selected_item_ == (item_count() - 1);
 
     switch (dir) {
         case up:
@@ -300,7 +297,7 @@ void menu::print_scrollbar()
     const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + 1;
 
     /* First print the scrollbar's background. */
-    for (int y = 1; y <= menu_capacity(); y++) {
+    for (size_t y = 1; y <= menu_capacity(); y++) {
         tb_change_cell(tb_width() - 1, y, bg, 0, 0);
     }
 
