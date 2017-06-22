@@ -76,6 +76,7 @@ private:
         auto begin() { return columns_.begin(); }
         auto end()   { return columns_.end();   }
 
+    private:
         std::array<column_t, 7> columns_;
     } columns_;
 
@@ -152,6 +153,8 @@ private:
     {
         marked_items_.erase(idx);
     }
+
+    void init_tui();
 
     /* A few things we need to do on a resize event. */
     void update_column_widths();

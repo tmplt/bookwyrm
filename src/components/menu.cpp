@@ -64,16 +64,10 @@ menu::~menu()
     std::cout << '\n';
 }
 
-void menu::display()
+void menu::init_tui()
 {
-    menu_mutex_.lock();
+    std::lock_guard<std::mutex> guard(menu_mutex_);
 
-    /*
-     * It would make more sense to have this in
-     * the construtor, but then we'd need to use a buffer
-     * for log messages printed when we import the Python
-     * modules.
-     */
     int code = tb_init();
     if (code < 0) {
         string err = "termbox init failed with code: " + code;
@@ -84,8 +78,22 @@ void menu::display()
 
     tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
     tb_clear();
+}
 
-    menu_mutex_.unlock();
+void menu::display()
+{
+    /*
+     * It would make more sense to have this in
+     * the constructor, but then we'd need to use a buffer
+     * for log messages printed when we import the Python
+     * modules.
+     *
+     * While it also makes sense to have it here (the function
+     * is called display() after all), update_column_widths()
+     * must be called before update. The most logical way of doing
+     * that would be to call it in the constructor.
+     */
+    init_tui();
 
     /*
      * Let the source threads free.
@@ -242,7 +250,7 @@ void menu::update_column_widths()
 {
     const int width = tb_width() - 1 - padding_right_;
 
-    for (auto &column : columns_.columns_) {
+    for (auto &column : columns_) {
         try {
             column.width = std::get<int>(column.width_w);
         } catch (std::bad_variant_access&) {
