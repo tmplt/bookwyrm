@@ -60,7 +60,7 @@ private:
             width_w_t width_w;
 
             /* Changes whenever the window dimensions are changed. */
-            int width;
+            size_t width;
             string title;
         };
 
@@ -77,7 +77,7 @@ private:
         auto end()   { return columns_.end();   }
 
     private:
-        std::array<column_t, 7> columns_;
+        std::array<column_t, 6> columns_;
     } columns_;
 
     /* How much space do we leave for bars? */

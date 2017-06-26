@@ -39,17 +39,12 @@ menu::menu(vector<item> &items)
      * horizontal space is left.
      */
     columns_ = {
-        {"title",      .30  },
-        {"year",       4 + 2},
-        {"serie",      .20  },
-        {"authors",    .20  },
-        {"publishers", .15  },
-        {"format",     6 + 2},
-        {"pages",      6 + 2}
-        /*                 ↑
-         *      For some spacing between
-         *        title and seperator.
-         */
+        {"title",      .30},
+        {"year",       4  },
+        {"serie",      .15},
+        {"authors",    .20},
+        {"publisher",  .15},
+        {"format",     6  },
     };
 }
 
@@ -248,12 +243,11 @@ void menu::toggle_select()
 
 void menu::update_column_widths()
 {
-    const int width = tb_width() - 1 - padding_right_;
-
     for (auto &column : columns_) {
         try {
             column.width = std::get<int>(column.width_w);
         } catch (std::bad_variant_access&) {
+            const int width = tb_width() - 1 - padding_right_;
             column.width = width * std::get<double>(column.width_w);
         }
     }
@@ -312,13 +306,17 @@ void menu::print_scrollbar()
 
 void menu::print_header()
 {
-    int x = 0;
+    size_t x = 0;
     for (auto &column : columns_) {
+        if (column.width > tb_width() - 1 - padding_right_ - x)
+            break;
+
         /* Center the title. */
         mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title);
+        x += std::max(column.width, column.title.length()) + 1;
 
-        mvprintw(x + column.width, 0, "|");
-        x += column.width + 1;
+        mvprintw(x, 0, "|");
+        x += 2;
     }
 }
 
