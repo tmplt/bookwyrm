@@ -121,19 +121,25 @@ public:
         return os;
     }
 
-    const auto menu_title() const
+    const string& menu_order(int i) const
     {
-        return nonexacts.title.c_str();
-    }
-
-    const auto menu_desc() const
-    {
-        return "desc";
+        return menu_order_[i % menu_order_.size()]; // just in case
     }
 
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;
+
+private:
+    const std::vector<string> menu_order_ = {
+        nonexacts.title,
+        std::to_string(exacts.year),
+        nonexacts.serie,
+        "authors",
+        nonexacts.publisher,
+        "format",
+    };
+
 };
 
 /* ns bookwyrm */
