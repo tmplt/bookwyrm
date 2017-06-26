@@ -176,20 +176,23 @@ void menu::update()
 
 void menu::print_item(const item &t, const size_t y)
 {
-    bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
+    const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
     size_t offset_idx = y + scroll_offset_ - padding_top_;
+    const bool marked = is_marked(offset_idx);
 
     /*
      * Imitate an Ncurses menu, denote the selected item with a '-'
      * and by reversing fg and bg on the entry.
      * Leave x = 0 to the indicator.
      */
-    if (on_selected_item)
+    if (on_selected_item && marked)
+        tb_change_cell(0, y, '-', TB_REVERSE, 0);
+    else if (on_selected_item)
         tb_change_cell(0, y, '-', 0, 0);
-    else if (is_marked(offset_idx))
+    else if (marked)
         tb_change_cell(0, y, ' ', TB_REVERSE, 0);
 
-    uint16_t attrs = (on_selected_item || is_marked(offset_idx))
+    const uint16_t attrs = (on_selected_item || marked)
         ? TB_REVERSE : 0;
 
     int x = 1;
