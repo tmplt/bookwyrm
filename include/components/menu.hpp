@@ -131,9 +131,6 @@ private:
         return selected_item_ == scroll_offset_;
     }
 
-    /* From Ncurses. */
-    void mvprintw(int x, int y, const string str, const uint16_t attrs = 0);
-
     /*
      * Akin to Ncurses mvprintw(), but:
      * print a string starting from (x, y) along the x-axis. The space
@@ -143,7 +140,10 @@ private:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    int mvprintwl(size_t x, int y, const string str, size_t space, const uint16_t attrs = 0);
+    int mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
+
+    /* Same as above, but don't truncate. */
+    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /* Move up and down the menu. */
     void move(move_direction dir);
@@ -151,12 +151,12 @@ private:
     /* Select (or unselect) the current item for download. */
     void toggle_select();
 
-    void mark_item(size_t idx)
+    void mark_item(const size_t idx)
     {
         marked_items_.insert(idx);
     }
 
-    void unmark_item(size_t idx)
+    void unmark_item(const size_t idx)
     {
         marked_items_.erase(idx);
     }
@@ -169,7 +169,7 @@ private:
 
     void print_scrollbar();
     void print_header();
-    void print_column(size_t col_idx);
+    void print_column(const size_t col_idx);
 };
 
 } /* ns bookwyrm */

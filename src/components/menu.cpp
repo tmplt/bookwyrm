@@ -168,10 +168,10 @@ void menu::update()
     tb_present();
 }
 
-int menu::mvprintwl(size_t x, int y, const string str, size_t space, const uint16_t attrs)
+int menu::mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
 {
-    size_t limit = x + space;
-    for (uint32_t ch : str) {
+    const size_t limit = x + space;
+    for (const uint32_t &ch : str) {
         if (x == limit - 1 && str.length() > space) {
             tb_change_cell(x, y, '~', attrs, 0);
             return str.length() - space;
@@ -183,17 +183,17 @@ int menu::mvprintwl(size_t x, int y, const string str, size_t space, const uint1
     return 0;
 }
 
-void menu::mvprintw(int x, int y, const string str, const uint16_t attrs)
+void menu::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
 {
-    for (uint32_t ch : str) {
+    for (const uint32_t &ch : str) {
         tb_change_cell(x++, y, ch, attrs, 0);
     }
 }
 
 void menu::move(move_direction dir)
 {
-    bool at_first_item = selected_item_ == 0,
-         at_last_item  = selected_item_ == (item_count() - 1);
+    const bool at_first_item = selected_item_ == 0,
+               at_last_item  = selected_item_ == (item_count() - 1);
 
     switch (dir) {
         case up:
@@ -240,7 +240,7 @@ void menu::update_column_widths()
         }
 
         column.startx = x;
-        x += column.width + 3; // We want a 1 char border on both sides of the seperator.
+        x += column.width + 3; // We want a 1 char padding on both sides of the seperator.
     }
 }
 
@@ -315,14 +315,15 @@ void menu::print_header()
     }
 }
 
-void menu::print_column(size_t col_idx)
+void menu::print_column(const size_t col_idx)
 {
     const auto &c = columns_[col_idx];
 
     for (size_t i = scroll_offset_, y = padding_top_; i < item_count() &&
             y <= menu_capacity(); i++, y++) {
-        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
-        const bool marked = is_marked(y + scroll_offset_ - padding_top_);
+
+        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_),
+                   marked = is_marked(y + scroll_offset_ - padding_top_);
 
         /*
          * Print the indicator, indicating which item is
@@ -340,11 +341,15 @@ void menu::print_column(size_t col_idx)
 
         /* Print the string, check if it was truncated. */
         const auto &str = items_[i].menu_order(col_idx);
-        int truncd = mvprintwl(c.startx, y, str, c.width, attrs);
+        const int truncd = mvprintwl(c.startx, y, str, c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
          * This makes the whole line seem selected instead of only the strings.
+         *
+         * We start at the end of the string, just after the last character (or the '~'),
+         * and write until the end of the column, plus seperator and the padding on the right
+         * side of it (e.g. up to and including the first char in the next column.
          */
         for (auto x = c.startx + str.length() - truncd; x <= c.startx + c.width + 4; x++) {
             tb_change_cell(x, y, ' ', attrs, 0);

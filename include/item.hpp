@@ -131,6 +131,7 @@ public:
     misc_t misc;
 
 private:
+    // TODO: we're wasting space here, I think. Investigate.
     const std::vector<string> menu_order_ = {
         nonexacts.title,
         std::to_string(exacts.year),
