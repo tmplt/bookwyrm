@@ -60,7 +60,7 @@ private:
             width_w_t width_w;
 
             /* Changes whenever the window dimensions are changed. */
-            size_t width;
+            size_t width, startx;
             string title;
         };
 
@@ -73,6 +73,8 @@ private:
             }
         }
 
+        column_t& operator[](size_t i) { return columns_[i]; }
+        size_t size() { return columns_.size(); }
         auto begin() { return columns_.begin(); }
         auto end()   { return columns_.end();   }
 
@@ -129,11 +131,19 @@ private:
         return selected_item_ == scroll_offset_;
     }
 
-    /* Prints an item across the passed y-coordinate. */
-    void print_item(const item &t, const size_t y);
-
     /* From Ncurses. */
-    void mvprintw(int x, int y, string str);
+    void mvprintw(int x, int y, const string str, const uint16_t attrs = 0);
+
+    /*
+     * Akin to Ncurses mvprintw(), but:
+     * print a string starting from (x, y) along the x-axis. The space
+     * argument denotes how much of the string is printed. If the string
+     * doesn't fit, the string is truncated with '~'.
+     *
+     * Returns the count of truncated characters, counter from the end of
+     * the string.
+     */
+    int mvprintwl(size_t x, int y, const string str, size_t space, const uint16_t attrs = 0);
 
     /* Move up and down the menu. */
     void move(move_direction dir);
@@ -159,6 +169,7 @@ private:
 
     void print_scrollbar();
     void print_header();
+    void print_column(size_t col_idx);
 };
 
 } /* ns bookwyrm */

@@ -150,13 +150,12 @@ void menu::update()
 {
     tb_clear();
 
-    for (size_t i = scroll_offset_, y = padding_top_; i < item_count() &&
-            y <= menu_capacity(); i++, y++) {
-        print_item(items_[i], y);
-    }
-
     print_scrollbar();
     print_header();
+
+    for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
+        print_column(col_idx);
+    }
 
     if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
     if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
@@ -169,37 +168,25 @@ void menu::update()
     tb_present();
 }
 
-void menu::print_item(const item &t, const size_t y)
+int menu::mvprintwl(size_t x, int y, const string str, size_t space, const uint16_t attrs)
 {
-    const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
-    size_t offset_idx = y + scroll_offset_ - padding_top_;
-    const bool marked = is_marked(offset_idx);
+    size_t limit = x + space;
+    for (uint32_t ch : str) {
+        if (x == limit - 1 && str.length() > space) {
+            tb_change_cell(x, y, '~', attrs, 0);
+            return str.length() - space;
+        }
 
-    /*
-     * Imitate an Ncurses menu, denote the selected item with a '-'
-     * and by reversing fg and bg on the entry.
-     * Leave x = 0 to the indicator.
-     */
-    if (on_selected_item && marked)
-        tb_change_cell(0, y, '-', TB_REVERSE, 0);
-    else if (on_selected_item)
-        tb_change_cell(0, y, '-', 0, 0);
-    else if (marked)
-        tb_change_cell(0, y, ' ', TB_REVERSE, 0);
-
-    const uint16_t attrs = (on_selected_item || marked)
-        ? TB_REVERSE : 0;
-
-    int x = 1;
-    for (uint32_t ch : t.nonexacts.title) {
         tb_change_cell(x++, y, ch, attrs, 0);
     }
+
+    return 0;
 }
 
-void menu::mvprintw(int x, int y, string str)
+void menu::mvprintw(int x, int y, const string str, const uint16_t attrs)
 {
     for (uint32_t ch : str) {
-        tb_change_cell(x++, y, ch, 0, 0);
+        tb_change_cell(x++, y, ch, attrs, 0);
     }
 }
 
@@ -243,6 +230,7 @@ void menu::toggle_select()
 
 void menu::update_column_widths()
 {
+    size_t x = 1;
     for (auto &column : columns_) {
         try {
             column.width = std::get<int>(column.width_w);
@@ -250,6 +238,9 @@ void menu::update_column_widths()
             const int width = tb_width() - 1 - padding_right_;
             column.width = width * std::get<double>(column.width_w);
         }
+
+        column.startx = x;
+        x += column.width + 3; // We want a 1 char border on both sides of the seperator.
     }
 }
 
@@ -306,7 +297,11 @@ void menu::print_scrollbar()
 
 void menu::print_header()
 {
-    size_t x = 0;
+    /*
+     * You might think we should start at x = 0, but that
+     * screws up the alignment with the column strings.
+     */
+    size_t x = 1;
     for (auto &column : columns_) {
         if (column.width > tb_width() - 1 - padding_right_ - x)
             break;
@@ -317,6 +312,43 @@ void menu::print_header()
 
         mvprintw(x, 0, "|");
         x += 2;
+    }
+}
+
+void menu::print_column(size_t col_idx)
+{
+    const auto &c = columns_[col_idx];
+
+    for (size_t i = scroll_offset_, y = padding_top_; i < item_count() &&
+            y <= menu_capacity(); i++, y++) {
+        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_);
+        const bool marked = is_marked(y + scroll_offset_ - padding_top_);
+
+        /*
+         * Print the indicator, indicating which item is
+         * currently selected.
+         */
+        if (on_selected_item && marked)
+            tb_change_cell(0, y, '-', TB_REVERSE, 0);
+        else if (on_selected_item)
+            tb_change_cell(0, y, '-', 0, 0);
+        else if (marked)
+            tb_change_cell(0, y, ' ', TB_REVERSE, 0);
+
+        const uint16_t attrs = (on_selected_item || marked)
+            ? TB_REVERSE : 0;
+
+        /* Print the string, check if it was truncated. */
+        const auto &str = items_[i].menu_order(col_idx);
+        int truncd = mvprintwl(c.startx, y, str, c.width, attrs);
+
+        /*
+         * Fill the space between the two column strings with inverted spaces.
+         * This makes the whole line seem selected instead of only the strings.
+         */
+        for (auto x = c.startx + str.length() - truncd; x <= c.startx + c.width + 4; x++) {
+            tb_change_cell(x, y, ' ', attrs, 0);
+        }
     }
 }
 
