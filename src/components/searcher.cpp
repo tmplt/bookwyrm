@@ -27,7 +27,6 @@
 #include "python.hpp"
 
 namespace fs = std::experimental::filesystem;
-namespace py = pybind11;
 
 namespace bookwyrm {
 
