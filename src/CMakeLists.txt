@@ -25,7 +25,7 @@ set(SOURCE
     components/logger.cpp
     components/command_line.cpp
     components/searcher.cpp
-    components/menu.cpp
+    screens/multiselect-menu.cpp
 )
 
 # Required dependencies
@@ -93,6 +93,6 @@ configure_file(
 
 # Build Python bindings {{{
 
-pybind11_add_module(pybookwyrm bindings.cpp)
+pybind11_add_module(pybookwyrm bindings/python.cpp)
 
 # }}}
