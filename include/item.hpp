@@ -21,6 +21,7 @@
 #include <tuple>
 
 #include "common.hpp"
+#include "utils.hpp"
 #include "components/command_line.hpp"
 
 namespace bookwyrm {
@@ -136,9 +137,9 @@ private:
         nonexacts.title,
         std::to_string(exacts.year),
         nonexacts.serie,
-        "authors",
+        utils::vector_to_string(nonexacts.authors),
         nonexacts.publisher,
-        "format",
+        "format (TODO)",
     };
 
 };
