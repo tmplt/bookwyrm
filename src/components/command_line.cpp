@@ -183,7 +183,6 @@ void cliparser::validate_arguments() const
 
 auto cliparser::check_value(const string_view &flag, const string_view &value, const vector<string> &values)
 {
-
     if (value.empty())
         throw value_error("missing value for " + string(flag.data()));
 
