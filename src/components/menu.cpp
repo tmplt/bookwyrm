@@ -150,12 +150,17 @@ void menu::update()
 {
     tb_clear();
 
-    print_scrollbar();
-    print_header();
-
     for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
+        if (columns_[col_idx].width > tb_width() - 1 - columns_[col_idx].startx) {
+            /* We can't fit another column. */
+            break;
+        }
+
         print_column(col_idx);
     }
+
+    print_header();
+    print_scrollbar();
 
     if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
     if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
