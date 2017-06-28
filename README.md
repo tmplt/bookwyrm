@@ -56,8 +56,8 @@ How does it work thus far?
     - [ ] University libraries?
     - [ ] LibriVox (or would that be outside the scope of the project?)
 
-Here is an (outdated) video of the menu in action:
-[![asciicast](https://asciinema.org/a/wTiIdEBvd58x4hX9adk9rTaii.png)](https://asciinema.org/a/wTiIdEBvd58x4hX9adk9rTaii)
+Here is an video of the menu in action:
+[![asciicast](https://asciinema.org/a/vLc2A9okFnpLsQ0YKzVATReEt.png)](https://asciinema.org/a/vLc2A9okFnpLsQ0YKzVATReEt)
 
 Building
 ---
