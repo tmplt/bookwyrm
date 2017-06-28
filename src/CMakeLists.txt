@@ -25,7 +25,8 @@ set(SOURCE
     components/logger.cpp
     components/command_line.cpp
     components/searcher.cpp
-    screens/multiselect-menu.cpp
+    screens/base.cpp
+    screens/multiselect_menu.cpp
 )
 
 # Required dependencies

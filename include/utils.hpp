@@ -43,7 +43,7 @@ std::error_code validate_download_dir(const fs::path &path);
 string vector_to_string(const vector<string> &vec);
 
 /* Check if the given path is a file and can be read. */
-inline bool valid_file(const fs::path &path)
+inline bool readable_file(const fs::path &path)
 {
     return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
 }

@@ -38,4 +38,5 @@ const auto product(const vector<T1> &a, const vector<T2> &b)
     return products;
 }
 
+/* ns algorithm */
 }

@@ -20,11 +20,11 @@
 #include <spdlog/spdlog.h>
 #include <mutex>
 
-#include "components/logger.hpp"
-#include "components/menu.hpp"
 #include "common.hpp"
 #include "item.hpp"
 #include "python.hpp"
+#include "components/logger.hpp"
+#include "screens/multiselect_menu.hpp"
 
 namespace bookwyrm {
 
@@ -74,7 +74,7 @@ private:
     vector<pybind11::module> sources_;
     vector<std::thread> threads_;
 
-    menu menu_{items_};
+    multiselect_menu menu_{items_};
 };
 
 /* ns bookwyrm */

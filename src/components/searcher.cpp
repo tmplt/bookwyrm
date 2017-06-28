@@ -18,13 +18,12 @@
 #include <system_error>
 #include <cerrno>
 
-#include <experimental/filesystem>
 #include <array>
+#include <experimental/filesystem>
 
-#include "components/searcher.hpp"
-#include "components/menu.hpp"
 #include "utils.hpp"
 #include "python.hpp"
+#include "components/searcher.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -67,7 +66,7 @@ searcher::searcher(const item &wanted)
             continue;
         }
 
-        if (!utils::valid_file(p)) {
+        if (!utils::readable_file(p)) {
             logger_->warn("can't load module '{}': not a regular file or unreadable"
                     "; ignoring...",
                     module_file);
@@ -132,10 +131,11 @@ void searcher::display_menu()
 void searcher::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
 {
     item item(item_comps);
-    /* if (!item.matches(wanted_)) */
-        /* return; */
 
     std::lock_guard<std::mutex> guard(items_mutex_);
+    /* if (!item.matches(wanted_)) */
+    /*     return; */
+
     items_.push_back(item);
     menu_.update();
 }

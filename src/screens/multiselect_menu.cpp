@@ -20,16 +20,16 @@
 #include <spdlog/spdlog.h>
 
 #include "errors.hpp"
-#include "components/menu.hpp"
-#include "components/logger.hpp"
 #include "python.hpp"
+#include "components/logger.hpp"
+#include "screens/multiselect_menu.hpp"
 
 namespace py = pybind11;
 
 namespace bookwyrm {
 
-menu::menu(vector<item> &items)
-    : padding_top_(1), padding_bot_(3), padding_right_(1),
+multiselect_menu::multiselect_menu(vector<item> &items)
+    : screen_base(1, 3, 0, 1),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -46,36 +46,11 @@ menu::menu(vector<item> &items)
         {"publisher",  .15},
         {"format",     6  },
     };
-}
-
-menu::~menu()
-{
-    tb_shutdown();
-
-    std::cout << "selected items:\n";
-    for (auto idx : marked_items_)
-        std::cout << idx << ' ';
-
-    std::cout << '\n';
-}
-
-void menu::init_tui()
-{
-    std::lock_guard<std::mutex> guard(menu_mutex_);
-
-    int code = tb_init();
-    if (code < 0) {
-        string err = "termbox init failed with code: " + code;
-        throw component_error(err.data());
-    }
 
     update_column_widths();
-
-    tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
-    tb_clear();
 }
 
-void menu::display()
+void multiselect_menu::display()
 {
     /*
      * It would make more sense to have this in
@@ -146,7 +121,7 @@ void menu::display()
     }
 }
 
-void menu::update()
+void multiselect_menu::update()
 {
     tb_clear();
 
@@ -173,29 +148,7 @@ void menu::update()
     tb_present();
 }
 
-int menu::mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
-{
-    const size_t limit = x + space;
-    for (const uint32_t &ch : str) {
-        if (x == limit - 1 && str.length() > space) {
-            tb_change_cell(x, y, '~', attrs, 0);
-            return str.length() - space;
-        }
-
-        tb_change_cell(x++, y, ch, attrs, 0);
-    }
-
-    return 0;
-}
-
-void menu::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
-{
-    for (const uint32_t &ch : str) {
-        tb_change_cell(x++, y, ch, attrs, 0);
-    }
-}
-
-void menu::move(move_direction dir)
+void multiselect_menu::move(move_direction dir)
 {
     const bool at_first_item = selected_item_ == 0,
                at_last_item  = selected_item_ == (item_count() - 1);
@@ -223,7 +176,7 @@ void menu::move(move_direction dir)
     update();
 }
 
-void menu::toggle_select()
+void multiselect_menu::toggle_select()
 {
     if (is_marked(selected_item_))
         unmark_item(selected_item_);
@@ -233,7 +186,7 @@ void menu::toggle_select()
     update();
 }
 
-void menu::update_column_widths()
+void multiselect_menu::update_column_widths()
 {
     size_t x = 1;
     for (auto &column : columns_) {
@@ -249,7 +202,7 @@ void menu::update_column_widths()
     }
 }
 
-void menu::on_resize()
+void multiselect_menu::on_resize()
 {
     update_column_widths();
 
@@ -267,7 +220,7 @@ void menu::on_resize()
     update();
 }
 
-void menu::print_scrollbar()
+void multiselect_menu::print_scrollbar()
 {
     /*
      * This isn't something we can plug-and-play later,
@@ -300,7 +253,7 @@ void menu::print_scrollbar()
     }
 }
 
-void menu::print_header()
+void multiselect_menu::print_header()
 {
     /*
      * You might think we should start at x = 0, but that
@@ -320,7 +273,7 @@ void menu::print_header()
     }
 }
 
-void menu::print_column(const size_t col_idx)
+void multiselect_menu::print_column(const size_t col_idx)
 {
     const auto &c = columns_[col_idx];
 

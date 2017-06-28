@@ -19,11 +19,10 @@
 
 #include "item.hpp"
 #include "utils.hpp"
-#include "components/command_line.hpp"
-#include "components/searcher.hpp"
-#include "components/menu.hpp"
 #include "version.hpp"
 #include "python.hpp"
+#include "components/command_line.hpp"
+#include "components/searcher.hpp"
 
 namespace py = pybind11;
 

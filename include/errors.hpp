@@ -20,6 +20,9 @@
 
 #pragma once
 
+#include <stdexcept>
+#include <string>
+
 class cli_error : public std::runtime_error {
 public:
     explicit cli_error(const std::string &message, int code = 0)
@@ -27,12 +30,6 @@ public:
     virtual ~cli_error() {}
     int code{0};
 };
-
-#define DEFINE_CHILD_CLI_ERROR(error, parent) \
-    class error : public parent {         \
-        using parent::parent;             \
-    }
-#define DEFINE_CLI_ERROR(error) DEFINE_CHILD_CLI_ERROR(error, cli_error)
 
 class program_error : public std::runtime_error {
 public:
@@ -42,11 +39,11 @@ public:
     int code{0};
 };
 
-#define DEFINE_CHILD_PROG_ERROR(error, parent) \
+#define DEFINE_CHILD_CLI_ERROR(error, parent) \
     class error : public parent {         \
         using parent::parent;             \
     }
-#define DEFINE_PROG_ERROR(error) DEFINE_CHILD_PROG_ERROR(error, program_error)
+#define DEFINE_CLI_ERROR(error) DEFINE_CHILD_CLI_ERROR(error, cli_error)
 
 DEFINE_CLI_ERROR(argument_error);
 DEFINE_CLI_ERROR(value_error);

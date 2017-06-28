@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <termbox.h>
-
 #include <set>
 #include <mutex>
 #include <array>
@@ -26,20 +24,16 @@
 #include <utility>
 #include <variant>
 
-#include "common.hpp"
+#include "screens/base.hpp"
 #include "item.hpp"
 
 namespace bookwyrm {
 
-class menu {
+class multiselect_menu : public screen_base {
 public:
-    explicit menu(vector<item> &items);
-    ~menu();
+    explicit multiselect_menu(vector<item> &items);
 
-    /* Fires up the menu. */
     void display();
-
-    /* Updates the menu entries to match those in items_. */
     void update();
 
 private:
@@ -81,9 +75,6 @@ private:
     private:
         std::array<column_t, 6> columns_;
     } columns_;
-
-    /* How much space do we leave for bars? */
-    const int padding_top_, padding_bot_, padding_right_;
 
     /* Index of the currently selected item. */
     size_t selected_item_;
@@ -131,20 +122,6 @@ private:
         return selected_item_ == scroll_offset_;
     }
 
-    /*
-     * Akin to Ncurses mvprintw(), but:
-     * print a string starting from (x, y) along the x-axis. The space
-     * argument denotes how much of the string is printed. If the string
-     * doesn't fit, the string is truncated with '~'.
-     *
-     * Returns the count of truncated characters, counter from the end of
-     * the string.
-     */
-    int mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
-
-    /* Same as above, but don't truncate. */
-    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
-
     /* Move up and down the menu. */
     void move(move_direction dir);
 
@@ -161,9 +138,6 @@ private:
         marked_items_.erase(idx);
     }
 
-    void init_tui();
-
-    /* A few things we need to do on a resize event. */
     void update_column_widths();
     void on_resize();
 
