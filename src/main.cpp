@@ -29,8 +29,6 @@ namespace py = pybind11;
 
 int main(int argc, char *argv[])
 {
-    using valid_opts = std::initializer_list<string>;
-
     const auto main = command_line::option_group("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",    "Specify authors",   "AUTHOR")
         ("-t", "--title",     "Specify title",     "TITLE")
