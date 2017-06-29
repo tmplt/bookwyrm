@@ -25,6 +25,7 @@ set(SOURCE
     components/logger.cpp
     components/command_line.cpp
     components/searcher.cpp
+    components/menu.cpp
     screens/base.cpp
     screens/multiselect_menu.cpp
 )

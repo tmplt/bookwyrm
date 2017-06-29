@@ -30,12 +30,19 @@
 
 namespace bookwyrm {
 
+class multiselect_menu;
 class searcher;
+
+namespace menu {
+
+std::shared_ptr<multiselect_menu> create(searcher &s);
+
+/* ns menu */
+}
 
 class multiselect_menu : public screen_base, public std::enable_shared_from_this<multiselect_menu> {
 public:
     explicit multiselect_menu(vector<item> &items);
-    static std::shared_ptr<multiselect_menu> create(searcher &s);
 
     void display();
     void update();
