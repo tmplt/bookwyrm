@@ -13,10 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#
-# Create executable
-#
-
 set(SOURCE
     ${SOURCE}
     main.cpp
@@ -30,59 +26,22 @@ set(SOURCE
     screens/multiselect_menu.cpp
 )
 
-# Required dependencies
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED QUIET)
-
-set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Include-order matters; if there is a header clash, the project-local headers are used.
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
-# Required dependency: spdlog {{{
+# Required dependencies:
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED QUIET)
 
+set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/include)
-
-# }}}
-# Required dependency: fmtlib {{{
-
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
-
-# }}}
-# Required dependency: fmtlib {{{
-
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
-
-# }}}
-# Required dependency: pybind11 {{{
-
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
 
-# }}}
-
-# Create executable target {{{
-
-make_executable(${PROJECT_NAME}
-    SOURCES
-      ${SOURCE}
-    INCLUDE_DIRS
-      ${APP_INCLUDE_DIRS}
-    RAW_DEPENDS
-      ${APP_LIBRARIES})
-
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt fuzzywuzzy pybind11::embed
-    stdc++fs termbox)
-
-# }}}
-# Export target details {{{
-
-set(APP_BINARY ${PROJECT_SOURCE_DIR}/bin/${PROJECT_NAME} PARENT_SCOPE)
-set(APP_LIBRARIES ${APP_LIBRARIES} PARENT_SCOPE)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} PARENT_SCOPE)
-
-# }}}
-
+# Some pre-compile tasks:
 execute_process(COMMAND git describe --tags --dirty=-git
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   OUTPUT_VARIABLE PROG_VERSION
@@ -93,8 +52,21 @@ configure_file(
   ${CMAKE_SOURCE_DIR}/include/version.hpp
   ESCAPE_QUOTES @ONLY)
 
-# Build Python bindings {{{
+# Make the thing.
+make_executable(${PROJECT_NAME}
+    SOURCES
+      ${SOURCE}
+    INCLUDE_DIRS
+      ${APP_INCLUDE_DIRS}
+    RAW_DEPENDS
+      ${APP_LIBRARIES})
 
-pybind11_add_module(pybookwyrm bindings/python.cpp)
+target_link_libraries(${PROJECT_NAME}
+    Threads::Threads
+    fmt
+    fuzzywuzzy
+    pybind11::embed
+    stdc++fs
+    termbox)
 
-# }}}
+add_subdirectory(bindings)
