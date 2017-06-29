@@ -39,9 +39,10 @@ class multiselect_menu;
  */
 class searcher {
 public:
-
-    /* Search for valid script modules and store them. */
     explicit searcher(const item &wanted);
+
+    /* Find and load all source scripts, but don't start the threads. */
+    void load_sources();
 
     /*
      * Explicitly delete the copy-constructor.
@@ -53,7 +54,7 @@ public:
      * to the Python module, a copy is wanted instead
      * of a reference.
      */
-    searcher(const searcher&) = delete;
+    explicit searcher(const searcher&) = delete;
     ~searcher();
 
     /* Start a std::thread for each valid Python module found. */

@@ -101,8 +101,11 @@ int main(int argc, char *argv[])
          */
         py::scoped_interpreter interp;
 
-        /* Construct the searcer, and let the menu start the threads. */
+        /* Find and load all source scripts. */
         auto s = bookwyrm::searcher(wanted);
+        s.load_sources();
+
+        /* And start the threads during menu construction. */
         auto menu = bookwyrm::menu::create(s);
         menu->display();
 

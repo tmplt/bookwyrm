@@ -30,7 +30,9 @@ namespace fs = std::experimental::filesystem;
 namespace bookwyrm {
 
 searcher::searcher(const item &wanted)
-    : wanted_(wanted)
+    : wanted_(wanted) {}
+
+void searcher::load_sources()
 {
 #ifdef DEBUG
     /* Bookwyrm must be run from build/. */
