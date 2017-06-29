@@ -18,9 +18,9 @@
 #include <iostream>
 #include <utility>
 
-#include <spdlog/details/log_msg.h>
 #include <spdlog/logger.h>
 #include <spdlog/common.h>
+#include <spdlog/details/log_msg.h>
 
 #include "components/logger.hpp"
 

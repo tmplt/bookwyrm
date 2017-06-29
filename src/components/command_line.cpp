@@ -20,8 +20,8 @@
 #include <iomanip>
 #include <utility>
 
-#include "components/command_line.hpp"
 #include "utils.hpp"
+#include "components/command_line.hpp"
 
 enum {
     /*
