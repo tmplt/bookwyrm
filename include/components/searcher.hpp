@@ -59,10 +59,7 @@ public:
     /* Start a std::thread for each valid Python module found. */
     void async_search();
 
-    /*
-     * Add a found item to items_ and update the menu.
-     * set_menu() _must_ be called before this function.
-     */
+    /* Add a found item to items_ and update the menu. */
     void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
 
     vector<item>& results()
@@ -70,7 +67,7 @@ public:
         return items_;
     }
 
-    void set_menu(multiselect_menu *m)
+    void set_menu(std::shared_ptr<multiselect_menu> m)
     {
         menu_ = m;
     }
@@ -78,13 +75,21 @@ public:
 private:
     const logger_t logger_ = spdlog::get("main");
     const item &wanted_;
+
+    /* Somewhere to store our found items. */
     vector<item> items_;
+
+    /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;
 
+    /* The valid Python modules we have found. */
     vector<pybind11::module> sources_;
+
+    /* The same Python modules, but now running! */
     vector<std::thread> threads_;
 
-    multiselect_menu *menu_;
+    /* Which menu do we want to notify about updates? */
+    std::shared_ptr<multiselect_menu> menu_;
 };
 
 /* ns bookwyrm */

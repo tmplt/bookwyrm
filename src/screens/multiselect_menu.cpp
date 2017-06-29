@@ -25,10 +25,18 @@ namespace py = pybind11;
 
 namespace bookwyrm {
 
-multiselect_menu::multiselect_menu(searcher &s)
+std::shared_ptr<multiselect_menu> multiselect_menu::create(searcher &s)
+{
+    auto m = std::make_shared<multiselect_menu>(s.results());
+    s.set_menu(m);
+    s.async_search(); // Watch out, it's hot!
+    return m;
+}
+
+multiselect_menu::multiselect_menu(vector<item> &items)
     : screen_base(1, 3, 0, 1),
     selected_item_(0), scroll_offset_(0),
-    items_(s.results())
+    items_(items)
 {
     /*
      * These wanted widths works fine for now,
@@ -45,9 +53,6 @@ multiselect_menu::multiselect_menu(searcher &s)
     };
 
     update_column_widths();
-
-    s.set_menu(this);
-    s.async_search();
 }
 
 void multiselect_menu::display()

@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
 
         /* Construct the searcer, and let the menu start the threads. */
         auto s = bookwyrm::searcher(wanted);
-        bookwyrm::multiselect_menu(s).display();
+        auto menu = bookwyrm::multiselect_menu::create(s);
+        menu->display();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));
