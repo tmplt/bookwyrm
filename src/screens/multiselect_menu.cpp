@@ -53,19 +53,6 @@ multiselect_menu::multiselect_menu(vector<item> &items)
 void multiselect_menu::display()
 {
     /*
-     * It would make more sense to have this in
-     * the constructor, but then we'd need to use a buffer
-     * for log messages printed when we import the Python
-     * modules.
-     *
-     * While it also makes sense to have it here (the function
-     * is called display() after all), update_column_widths()
-     * must be called before update. The most logical way of doing
-     * that would be to call it in the constructor.
-     */
-    init_tui();
-
-    /*
      * Let the source threads free.
      * This doesn't feel like the best place to have this,
      * but we do need to have a release in scope if we

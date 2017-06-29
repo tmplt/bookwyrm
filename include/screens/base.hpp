@@ -37,8 +37,6 @@ protected:
     /* What should be done when the window resizes? */
     virtual void on_resize() = 0;
 
-    void init_tui();
-
     /*
      * Akin to Ncurses mvprintw(), but:
      * print a string starting from (x, y) along the x-axis. The space
@@ -59,6 +57,7 @@ protected:
 
 private:
     static bool termbox_started_;
+    void init_tui();
 };
 
 /* ns bookwyrm */
