@@ -17,8 +17,9 @@
 
 #pragma once
 
-#include <spdlog/spdlog.h>
 #include <mutex>
+#include <memory>
+#include <spdlog/spdlog.h>
 
 #include "common.hpp"
 #include "item.hpp"
@@ -28,19 +29,18 @@
 
 namespace bookwyrm {
 
+class multiselect_menu;
+
 /*
- * The more monolothic class of this program.
- * This class handles everything from starting the
- * Python threads to getting the selected items
- * the user wants.
- *
- * TODO: this name doesn't make much sense any more.
- * Find a better one.
+ * This class handles the threads running the source scirpts.
+ * Upon construction, all valid scripts are found and loaded.
+ * Upon async_search(), each script is run in a seperate thread.
+ * These threads will call add_item() during run_time.
  */
 class searcher {
 public:
 
-    /* Search for valid Python modules and store them. */
+    /* Search for valid script modules and store them. */
     explicit searcher(const item &wanted);
 
     /*
@@ -57,13 +57,23 @@ public:
     ~searcher();
 
     /* Start a std::thread for each valid Python module found. */
-    searcher& async_search();
+    void async_search();
 
-    /* Display the menu and let the user select which items to download. */
-    void display_menu();
-
-    /* Add a found item to items_ and update the menu. */
+    /*
+     * Add a found item to items_ and update the menu.
+     * set_menu() _must_ be called before this function.
+     */
     void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
+
+    vector<item>& results()
+    {
+        return items_;
+    }
+
+    void set_menu(multiselect_menu *m)
+    {
+        menu_ = m;
+    }
 
 private:
     const logger_t logger_ = spdlog::get("main");
@@ -74,7 +84,7 @@ private:
     vector<pybind11::module> sources_;
     vector<std::thread> threads_;
 
-    multiselect_menu menu_{items_};
+    multiselect_menu *menu_;
 };
 
 /* ns bookwyrm */

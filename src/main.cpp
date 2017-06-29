@@ -23,6 +23,7 @@
 #include "python.hpp"
 #include "components/command_line.hpp"
 #include "components/searcher.hpp"
+#include "screens/multiselect_menu.hpp"
 
 namespace py = pybind11;
 
@@ -100,11 +101,9 @@ int main(int argc, char *argv[])
          */
         py::scoped_interpreter interp;
 
-        /*
-         * Fire up the menu the moment all search threads
-         * have been created.
-         */
-        bookwyrm::searcher(wanted).async_search().display_menu();
+        /* Construct the searcer, and let the menu start the threads. */
+        auto s = bookwyrm::searcher(wanted);
+        bookwyrm::multiselect_menu(s).display();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));

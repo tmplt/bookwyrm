@@ -24,14 +24,17 @@
 #include <utility>
 #include <variant>
 
-#include "screens/base.hpp"
 #include "item.hpp"
+#include "screens/base.hpp"
+#include "components/searcher.hpp"
 
 namespace bookwyrm {
 
+class searcher;
+
 class multiselect_menu : public screen_base {
 public:
-    explicit multiselect_menu(vector<item> &items);
+    explicit multiselect_menu(searcher &s);
 
     void display();
     void update();

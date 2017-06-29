@@ -104,7 +104,7 @@ searcher::~searcher()
         t.join();
 }
 
-searcher& searcher::async_search()
+void searcher::async_search()
 {
     for (const auto &m : sources_) {
         try {
@@ -118,14 +118,6 @@ searcher& searcher::async_search()
             continue;
         }
     }
-
-    /* Convenience; only to chain member functions. */
-    return *this;
-}
-
-void searcher::display_menu()
-{
-    menu_.display();
 }
 
 void searcher::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
@@ -137,7 +129,7 @@ void searcher::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
     /*     return; */
 
     items_.push_back(item);
-    menu_.update();
+    menu_->update();
 }
 
 /* ns bookwyrm */

@@ -16,22 +16,19 @@
  */
 
 #include <fmt/format.h>
-#include <iostream>
-#include <spdlog/spdlog.h>
 
 #include "errors.hpp"
 #include "python.hpp"
-#include "components/logger.hpp"
 #include "screens/multiselect_menu.hpp"
 
 namespace py = pybind11;
 
 namespace bookwyrm {
 
-multiselect_menu::multiselect_menu(vector<item> &items)
+multiselect_menu::multiselect_menu(searcher &s)
     : screen_base(1, 3, 0, 1),
     selected_item_(0), scroll_offset_(0),
-    items_(items)
+    items_(s.results())
 {
     /*
      * These wanted widths works fine for now,
@@ -48,6 +45,9 @@ multiselect_menu::multiselect_menu(vector<item> &items)
     };
 
     update_column_widths();
+
+    s.set_menu(this);
+    s.async_search();
 }
 
 void multiselect_menu::display()
