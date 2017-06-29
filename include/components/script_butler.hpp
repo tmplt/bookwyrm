@@ -32,14 +32,14 @@ namespace bookwyrm {
 class multiselect_menu;
 
 /*
- * This class handles the threads running the source scirpts.
- * Upon construction, all valid scripts are found and loaded.
+ * This class handles the threads running the source scripts.
  * Upon async_search(), each script is run in a seperate thread.
- * These threads will call add_item() during run_time.
+ * These threads will call add_item() during run_time, and the
+ * set menu will be called to update().
  */
-class searcher {
+class script_butler {
 public:
-    explicit searcher(const item &wanted);
+    explicit script_butler(const item &wanted);
 
     /* Find and load all source scripts, but don't start the threads. */
     void load_sources();
@@ -54,8 +54,8 @@ public:
      * to the Python module, a copy is wanted instead
      * of a reference.
      */
-    explicit searcher(const searcher&) = delete;
-    ~searcher();
+    explicit script_butler(const script_butler&) = delete;
+    ~script_butler();
 
     /* Start a std::thread for each valid Python module found. */
     void async_search();

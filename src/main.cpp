@@ -22,7 +22,7 @@
 #include "version.hpp"
 #include "python.hpp"
 #include "components/command_line.hpp"
-#include "components/searcher.hpp"
+#include "components/script_butler.hpp"
 #include "screens/multiselect_menu.hpp"
 
 namespace py = pybind11;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         py::scoped_interpreter interp;
 
         /* Find and load all source scripts. */
-        auto s = bookwyrm::searcher(wanted);
+        auto s = bookwyrm::script_butler(wanted);
         s.load_sources();
 
         /* And start the threads during menu construction. */

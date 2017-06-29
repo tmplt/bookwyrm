@@ -20,7 +20,7 @@
 #include "python.hpp"
 #include "utils.hpp"
 #include "item.hpp"
-#include "components/searcher.hpp"
+#include "components/script_butler.hpp"
 
 namespace bw = bookwyrm;
 
@@ -86,6 +86,6 @@ PYBIND11_MODULE(pybookwyrm, py::module &m)
             return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
         });
 
-    py::class_<bw::searcher>(m, "bookwyrm")
-        .def("feed", &bw::searcher::add_item, py::return_value_policy::take_ownership);
+    py::class_<bw::script_butler>(m, "bookwyrm")
+        .def("feed", &bw::script_butler::add_item, py::return_value_policy::take_ownership);
 }

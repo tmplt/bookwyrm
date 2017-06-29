@@ -19,7 +19,7 @@
 
 namespace bookwyrm::menu {
 
-std::shared_ptr<multiselect_menu> create(searcher &s)
+std::shared_ptr<multiselect_menu> create(script_butler &s)
 {
     auto m = std::make_shared<multiselect_menu>(s.results());
     s.set_menu(m);

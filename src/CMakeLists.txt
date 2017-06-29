@@ -24,7 +24,7 @@ set(SOURCE
     utils.cpp
     components/logger.cpp
     components/command_line.cpp
-    components/searcher.cpp
+    components/script_butler.cpp
     components/menu.cpp
     screens/base.cpp
     screens/multiselect_menu.cpp

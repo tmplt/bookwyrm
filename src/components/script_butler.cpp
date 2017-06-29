@@ -23,16 +23,16 @@
 
 #include "utils.hpp"
 #include "python.hpp"
-#include "components/searcher.hpp"
+#include "components/script_butler.hpp"
 
 namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm {
 
-searcher::searcher(const item &wanted)
+script_butler::script_butler(const item &wanted)
     : wanted_(wanted) {}
 
-void searcher::load_sources()
+void script_butler::load_sources()
 {
 #ifdef DEBUG
     /* Bookwyrm must be run from build/. */
@@ -89,7 +89,7 @@ void searcher::load_sources()
         throw program_error("couldn't find any sources, terminating...");
 }
 
-searcher::~searcher()
+script_butler::~script_butler()
 {
     /*
      * Current behaviour is that the program cannot terminate unless
@@ -106,7 +106,7 @@ searcher::~searcher()
         t.join();
 }
 
-void searcher::async_search()
+void script_butler::async_search()
 {
     for (const auto &m : sources_) {
         try {
@@ -122,7 +122,7 @@ void searcher::async_search()
     }
 }
 
-void searcher::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
+void script_butler::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
 {
     item item(item_comps);
 

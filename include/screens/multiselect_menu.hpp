@@ -26,16 +26,16 @@
 
 #include "item.hpp"
 #include "screens/base.hpp"
-#include "components/searcher.hpp"
+#include "components/script_butler.hpp"
 
 namespace bookwyrm {
 
 class multiselect_menu;
-class searcher;
+class script_butler;
 
 namespace menu {
 
-std::shared_ptr<multiselect_menu> create(searcher &s);
+std::shared_ptr<multiselect_menu> create(script_butler &s);
 
 /* ns menu */
 }
