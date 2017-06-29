@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
         if (cli->has("debug"))
             logger->set_level(spdlog::level::debug);
 
-        logger->debug("the mighty eldwyrm hath been summoned!");
+        logger->debug("the mighty eldwurm hath been summoned!");
 
         if (cli->has("help")) {
             cli->usage();
@@ -101,12 +101,17 @@ int main(int argc, char *argv[])
          */
         py::scoped_interpreter interp;
 
-        /* Find and load all source scripts. */
-        auto s = bookwyrm::script_butler(wanted);
-        s.load_sources();
+        /*
+         * Find and load all source scripts.
+         * During runtime (after .async_search() has been called),
+         * the butler will match each found item with the wanted one.
+         * If it doesn't match, it is discarded.
+         */
+        auto butler = bookwyrm::script_butler(wanted);
+        butler.load_sources();
 
-        /* And start the threads during menu construction. */
-        auto menu = bookwyrm::menu::create(s);
+        /* Construct he menu, assign the butler, and start the source script threads. */
+        auto menu = bookwyrm::menu::create(butler);
         menu->display();
 
     } catch (const cli_error &err) {

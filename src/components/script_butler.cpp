@@ -35,13 +35,17 @@ script_butler::script_butler(const item &wanted)
 void script_butler::load_sources()
 {
 #ifdef DEBUG
-    /* Bookwyrm must be run from build/. */
+    /* Bookwyrm must be run from build/ in DEBUG mode. */
     const auto source_path = fs::canonical(fs::path("../src/sources"));
 #else
     const std::array<fs::path, 2> paths = {"/etc/bookwyrm/sources",
                                            "~/.config/bookwyrm/sources"};
 #endif
-    /* Append source_path to Python's sys.path. */
+
+    /*
+     * Append source_path to Python's sys.path,
+     * allowing them to be imported.
+     */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
     sys_path.append(source_path.c_str());
 
@@ -58,24 +62,25 @@ void script_butler::load_sources()
     string module_file;
     for (const fs::path &p : fs::directory_iterator(source_path)) {
         module_file = p.filename();
-        auto file_ext_pos = module_file.rfind(".py");
+        auto ext_pos = module_file.rfind(".py");
 
-        if (file_ext_pos == string::npos) {
+        if (ext_pos == string::npos) {
             /*
              * It's not a Python module.
-             * (or at least doesn't contain ".py"
+             * (or at least doesn't contain ".py")
+             *
+             * TODO: only load files _ending_ with ".py".
              */
             continue;
         }
 
         if (!utils::readable_file(p)) {
             logger_->warn("can't load module '{}': not a regular file or unreadable"
-                    "; ignoring...",
-                    module_file);
+                    "; ignoring...", module_file);
             continue;
         }
 
-        module_file.resize(file_ext_pos);
+        module_file.resize(ext_pos);
 
         try {
             logger_->debug("loading module '{}'...", module_file);
@@ -86,7 +91,7 @@ void script_butler::load_sources()
     }
 
     if (sources_.empty())
-        throw program_error("couldn't find any sources, terminating...");
+        throw program_error("couldn't find any valid source modules, terminating...");
 }
 
 script_butler::~script_butler()
@@ -99,6 +104,8 @@ script_butler::~script_butler()
      * instead have a control variable that the source scripts check every
      * once in a while. When this is set upon quitting the curses UI, we'll
      * have to let each script handle its own termination.
+     *
+     * Not joining the threads here doesn't make the OS very happy.
      */
     py::gil_scoped_release nogil;
 
@@ -111,6 +118,7 @@ void script_butler::async_search()
     for (const auto &m : sources_) {
         try {
             threads_.emplace_back([m, this]() {
+                /* Required whenever we need to run anything Python. */
                 py::gil_scoped_acquire gil;
                 m.attr("find")(this->wanted_, this);
             });

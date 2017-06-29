@@ -32,35 +32,36 @@ namespace bookwyrm {
 class multiselect_menu;
 
 /*
- * This class handles the threads running the source scripts.
- * Upon async_search(), each script is run in a seperate thread.
- * These threads will call add_item() during run_time, and the
- * set menu will be called to update().
+ * The bookwyrm's very own butler. First, the butler finds
+ * and loads all valid source scripts. When these scripts have all
+ * started running in seperate threads, the butler will match items
+ * fed to the bookwyrm with that is wanted. Only items matching
+ * what is wanted will be pushed back into the items_ vector, and
+ * thus presented to the user.
  */
 class script_butler {
 public:
     explicit script_butler(const item &wanted);
-
-    /* Find and load all source scripts, but don't start the threads. */
-    void load_sources();
 
     /*
      * Explicitly delete the copy-constructor.
      * Doing this allows us to run each python
      * module in its own thread.
      *
-     * This might be because threads_ is considered
-     * copy-constructible, and when passing this
-     * to the Python module, a copy is wanted instead
-     * of a reference.
+     * Why we have to do this might be because threads_ is considered
+     * copy-constructible, and when passing this to the Python module,
+     * a copy is wanted instead of a reference.
      */
     explicit script_butler(const script_butler&) = delete;
     ~script_butler();
 
+    /* Find and load all source scripts, but don't start the threads. */
+    void load_sources();
+
     /* Start a std::thread for each valid Python module found. */
     void async_search();
 
-    /* Add a found item to items_ and update the menu. */
+    /* Try to add a found item, and then update the set menu. */
     void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
 
     vector<item>& results()
