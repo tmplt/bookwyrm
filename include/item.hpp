@@ -66,6 +66,8 @@ struct exacts_t {
         pages,  // missing flag
         lang;   // unused for now
 
+    string year_str;
+
     constexpr static int size = 7;
 
     std::array<int, size> store = {
@@ -90,6 +92,7 @@ struct nonexacts_t {
     explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
 
     vector<string> authors;
+    string authors_str;
     string title;
     string serie;
     string publisher;
@@ -110,10 +113,11 @@ struct misc_t {
 class item {
 public:
     explicit item(const std::unique_ptr<cliparser> &cli)
-        : nonexacts(cli), exacts(cli) {};
+        : nonexacts(cli), exacts(cli) {}
+
     /* Construct an item from a pybind11::tuple. */
     explicit item(const std::tuple<nonexacts_t, exacts_t> &tuple)
-        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)) {};
+        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)) {}
 
     bool matches(const item &wanted);
 
@@ -123,28 +127,28 @@ public:
         return os;
     }
 
-    const string& menu_order(size_t idx) const
+    const string menu_order(size_t idx) const
     {
-        assert(idx < menu_order_.size());
-
-        return menu_order_[idx];
+        /*
+         * This isn't very good structure. I'd rather have a vector
+         * of string references (reference_wrapped) and just grab by index,
+         * but for some bloody reason those cannot be initialized with a
+         * brace-enclosed initializer list.
+         */
+        switch (idx) {
+            case 0:  return nonexacts.title;
+            case 1:  return exacts.year_str;
+            case 2:  return nonexacts.serie;
+            case 3:  return nonexacts.authors_str;
+            case 4:  return nonexacts.publisher;
+            case 5:  return "format (TODO)";
+            default: assert(false);
+        }
     }
 
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;
-
-private:
-    // TODO: we're wasting space here, I think. Investigate.
-    const std::vector<string> menu_order_ = {
-        nonexacts.title,
-        std::to_string(exacts.year),
-        nonexacts.serie,
-        utils::vector_to_string(nonexacts.authors),
-        nonexacts.publisher,
-        "format (TODO)",
-    };
-
 };
 
 /* ns bookwyrm */

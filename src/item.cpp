@@ -113,6 +113,8 @@ exacts_t::exacts_t(const std::map<string, int> &dict)
     volume  = get_value("volume");
     number  = get_value("number");
     pages   = get_value("pages");
+
+    year_str = std::to_string(year);
 }
 
 nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
@@ -128,6 +130,7 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
     journal   = get_value("journal");
 
     this->authors = authors;
+    authors_str = utils::vector_to_string(authors);
 }
 
 /*
