@@ -19,13 +19,13 @@
 
 namespace bookwyrm::menu {
 
-std::shared_ptr<multiselect_menu> create(script_butler &s)
+std::shared_ptr<multiselect_menu> create(script_butler &butler)
 {
-    auto m = std::make_shared<multiselect_menu>(s.results());
-    s.set_menu(m);
-    s.async_search(); // Watch out, it's hot!
-    return m;
+    auto menu = std::make_shared<multiselect_menu>(butler.results());
+    butler.set_menu(menu);
+    butler.async_search(); // Watch out, it's hot!
+    return menu;
 }
 
-/* ns menu */
+/* ns bookwyrm::menu */
 }
