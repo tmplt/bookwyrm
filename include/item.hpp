@@ -127,13 +127,13 @@ public:
         return os;
     }
 
-    const string menu_order(size_t idx) const
+    const string& menu_order(size_t idx) const
     {
         /*
          * This isn't very good structure. I'd rather have a vector
          * of string references (reference_wrapped) and just grab by index,
-         * but for some bloody reason those cannot be initialized with a
-         * brace-enclosed initializer list.
+         * but for some bloody reason the program crashes when the second
+         * source script feeds an item.
          */
         switch (idx) {
             case 0:  return nonexacts.title;
@@ -141,7 +141,7 @@ public:
             case 2:  return nonexacts.serie;
             case 3:  return nonexacts.authors_str;
             case 4:  return nonexacts.publisher;
-            case 5:  return "format (TODO)";
+            case 5:  return placeholder_format_str;
             default: assert(false);
         }
     }
@@ -149,6 +149,9 @@ public:
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;
+
+private:
+    const string placeholder_format_str = "format (TODO)";
 };
 
 /* ns bookwyrm */
