@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <array>
 #include <tuple>
 
@@ -122,9 +123,11 @@ public:
         return os;
     }
 
-    const string& menu_order(int i) const
+    const string& menu_order(size_t idx) const
     {
-        return menu_order_[i % menu_order_.size()]; // just in case
+        assert(idx < menu_order_.size());
+
+        return menu_order_[idx];
     }
 
     const nonexacts_t nonexacts;
