@@ -63,7 +63,7 @@ void multiselect_menu::display()
         if (ev.type == TB_EVENT_RESIZE) {
             on_resize();
         } else if (ev.type == TB_EVENT_KEY) {
-            /* Only allow termination when the terminal is too small. */
+            /* When the terminal is too small, only allow quitting. */
             if (!bookwyrm_fits()) {
                 if (ev.key == TB_KEY_ESC)
                     return;
