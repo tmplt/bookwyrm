@@ -134,6 +134,12 @@ public:
          * of string references (reference_wrapped) and just grab by index,
          * but for some bloody reason the program crashes when the second
          * source script feeds an item.
+         *
+         * I also tried doing the above with raw pointers, but that instead
+         * garbles the text when the second script returns its first item or
+         * when multiselect_menu::menu() is called.
+         *
+         * Whatever bug this is might be worth investigating.
          */
         switch (idx) {
             case 0:  return nonexacts.title;
