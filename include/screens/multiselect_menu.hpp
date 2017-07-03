@@ -149,6 +149,17 @@ private:
         marked_items_.erase(idx);
     }
 
+    /* Returns true if the bookwyrm fits in the current terminal window. */
+    bool bookwyrm_fits()
+    {
+        /*
+         * I planned to use the classical 80x24, but this menu is
+         * in its current form useable in terminals much smaller
+         * than that.
+         */
+        return get_width() >= 50 && get_height() >= 10;
+    }
+
     void update_column_widths();
     void on_resize();
 

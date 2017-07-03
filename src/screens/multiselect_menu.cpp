@@ -63,6 +63,14 @@ void multiselect_menu::display()
         if (ev.type == TB_EVENT_RESIZE) {
             on_resize();
         } else if (ev.type == TB_EVENT_KEY) {
+            /* Only allow termination when the terminal is too small. */
+            if (!bookwyrm_fits()) {
+                if (ev.key == TB_KEY_ESC)
+                    return;
+
+                continue;
+            }
+
             switch (ev.key) {
                 case TB_KEY_ESC:
                     return;
@@ -101,6 +109,12 @@ void multiselect_menu::display()
 void multiselect_menu::update()
 {
     clear();
+
+    if (!bookwyrm_fits()) {
+        mvprintw(0, 0, "The terminal is too small. I can't fit!");
+        refresh();
+        return;
+    }
 
     for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
         if (columns_[col_idx].width > get_width() - 1 - columns_[col_idx].startx) {
