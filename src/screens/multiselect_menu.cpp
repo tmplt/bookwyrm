@@ -58,21 +58,14 @@ void multiselect_menu::display()
      */
     py::gil_scoped_release nogil;
 
-    /*
-     * For some odd reason, we must press ESC twice
-     * to quit here.
-     * TODO: figure out why.
-     */
-    bool quit = false;
     struct tb_event ev;
-    while (tb_poll_event(&ev) && !quit) {
+    while (tb_poll_event(&ev)) {
         if (ev.type == TB_EVENT_RESIZE) {
             on_resize();
         } else if (ev.type == TB_EVENT_KEY) {
             switch (ev.key) {
                 case TB_KEY_ESC:
-                    quit = true;
-                    break;
+                    return;
                 case TB_KEY_ARROW_DOWN:
                     move(down);
                     break;
