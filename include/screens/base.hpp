@@ -46,10 +46,17 @@ protected:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    int mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
+    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
 
     /* Same as above, but don't truncate. */
     void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+
+    /*
+     * Print passed string starting from (x, y) along the x-axis.
+     * All other cells on the same line will be empty (' ') with
+     * attrs applied.
+     */
+    void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /* How much space do we leave for bars? */
     const int padding_top_, padding_bot_,

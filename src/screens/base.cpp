@@ -48,7 +48,7 @@ void screen_base::init_tui()
     termbox_started_ = true;
 }
 
-int screen_base::mvprintwl(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
+int screen_base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
 {
     const size_t limit = x + space;
     for (const uint32_t &ch : str) {
@@ -65,9 +65,19 @@ int screen_base::mvprintwl(size_t x, const int y, const string_view &str, const 
 
 void screen_base::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
 {
-    for (const uint32_t &ch : str) {
+    for (const uint32_t &ch : str)
         tb_change_cell(x++, y, ch, attrs, 0);
-    }
+}
+
+void screen_base::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
+{
+    for (int i = 0; i < x; i++)
+        tb_change_cell(i, y, ' ', attrs, 0);
+
+    mvprintw(x, y, str, attrs);
+
+    for (int i = x + str.length(); i < tb_width(); i++)
+        tb_change_cell(i, y, ' ', attrs, 0);
 }
 
 /* ns bookwyrm */

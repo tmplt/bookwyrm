@@ -114,13 +114,8 @@ void multiselect_menu::update()
     print_header();
     print_scrollbar();
 
-    if (menu_at_bot()) mvprintw(0, tb_height() - 1, "bot");
-    if (menu_at_top()) mvprintw(0, tb_height() - 1, "top");
-
-    mvprintw(0, tb_height() - 2, fmt::format("The menu contains {} items.", item_count()));
-    mvprintw(5, tb_height() - 1, fmt::format(
-                "selected_item_ = {}, scroll_offset_ = {}, menu_capacity = {}",
-                selected_item_, scroll_offset_, menu_capacity()));
+    mvprintw(0, tb_height() - 2, fmt::format("I was able to find {} items.", item_count()));
+    mvprintwl(0, tb_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
 
     tb_present();
 }
@@ -276,7 +271,7 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         /* Print the string, check if it was truncated. */
         const auto &str = items_[i].menu_order(col_idx);
-        const int truncd = mvprintwl(c.startx, y, str, c.width, attrs);
+        const int truncd = mvprintwlim(c.startx, y, str, c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
