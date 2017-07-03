@@ -40,6 +40,8 @@ void script_butler::load_sources()
 #else
     const std::array<fs::path, 2> paths = {"/etc/bookwyrm/sources",
                                            "~/.config/bookwyrm/sources"};
+
+    // TODO: follow <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>
 #endif
 
     /*
