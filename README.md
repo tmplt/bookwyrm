@@ -45,9 +45,10 @@ How does it work thus far?
 - [x] `item` class and data structure
     - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy)!)
 - [x] embed Python interpreter with [pybind11](https://github.com/pybind/pybind11)
-- [x] write a class that does the whole searching thing
+- [x] write a class that handles the plugin threads 
 - [ ] write the menu (avoid ncurses, apparently it's a hell to work with)
-    - [x] write a simple menu
+    - [x] write a simple menu in which we can select multiple entries
+    - [ ] write a menu containing item details that overlaps the main menu
 - [ ] write scripts for sources (listed in descending priority)
     - [ ] Library Genesis
     - [ ] Sci-Hub
@@ -66,11 +67,20 @@ so a recent compiler is required.
 CMake 3.0 or above is also required.
 
 At present, bookwyrm defaults to build in Debug-mode.
-If you wish to build a release executable, pass `-DCMAKE_BUILD_TYPE=Release` to `cmake`.
+(This because we haven't hit release yet, and because it doesn't compile in release yet.)
 
 Just clone the repo and:
 ```
 $ mkdir build && cd build
 $ cmake ..
 $ make
+```
+
+Running
+---
+The path for finding Python modules is hard-coded but relative,
+for for now:
+```
+$ cd build
+$ src/bookwyrm -a "Naomi Novik" ~/downloads
 ```
