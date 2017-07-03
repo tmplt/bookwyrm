@@ -23,6 +23,11 @@
 
 namespace bookwyrm {
 
+/*
+ * A base screen class holding most (if not all) of the
+ * implementation of functions using whatever library for
+ * printing the actual characters on screen.
+ */
 class screen_base {
 protected:
     explicit screen_base(int pad_top, int pad_bot, int pad_left, int pad_right);
@@ -36,6 +41,12 @@ protected:
 
     /* What should be done when the window resizes? */
     virtual void on_resize() = 0;
+
+    void clear()   { tb_clear();   }
+    void refresh() { tb_present(); }
+
+    int get_width()  { return tb_width(); }
+    int get_height() { return tb_height(); }
 
     /*
      * Akin to Ncurses mvprintw(), but:

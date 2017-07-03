@@ -100,10 +100,10 @@ void multiselect_menu::display()
 
 void multiselect_menu::update()
 {
-    tb_clear();
+    clear();
 
     for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
-        if (columns_[col_idx].width > tb_width() - 1 - columns_[col_idx].startx) {
+        if (columns_[col_idx].width > get_width() - 1 - columns_[col_idx].startx) {
             /* We can't fit another column. */
             break;
         }
@@ -114,10 +114,10 @@ void multiselect_menu::update()
     print_header();
     print_scrollbar();
 
-    mvprintw(0, tb_height() - 2, fmt::format("I was able to find {} items.", item_count()));
-    mvprintwl(0, tb_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
+    mvprintw(0, get_height() - 2, fmt::format("I was able to find {} items.", item_count()));
+    mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
 
-    tb_present();
+    refresh();
 }
 
 void multiselect_menu::move(move_direction dir)
@@ -165,7 +165,7 @@ void multiselect_menu::update_column_widths()
         try {
             column.width = std::get<int>(column.width_w);
         } catch (std::bad_variant_access&) {
-            const int width = tb_width() - 1 - padding_right_;
+            const int width = get_width() - 1 - padding_right_;
             column.width = width * std::get<double>(column.width_w);
         }
 
@@ -216,12 +216,12 @@ void multiselect_menu::print_scrollbar()
 
     /* First print the scrollbar's background. */
     for (size_t y = 1; y <= menu_capacity(); y++) {
-        tb_change_cell(tb_width() - 1, y, bg, 0, 0);
+        tb_change_cell(get_width() - 1, y, bg, 0, 0);
     }
 
     /* Then we print the bar. */
     for (size_t y = start; y <= start + height; y++) {
-        tb_change_cell(tb_width() - 1, y, fg, 0, 0);
+        tb_change_cell(get_width() - 1, y, fg, 0, 0);
     }
 }
 
@@ -233,7 +233,7 @@ void multiselect_menu::print_header()
      */
     size_t x = 1;
     for (auto &column : columns_) {
-        if (column.width > tb_width() - 1 - padding_right_ - x)
+        if (column.width > get_width() - 1 - padding_right_ - x)
             break;
 
         /* Center the title. */
