@@ -166,6 +166,9 @@ private:
     void print_scrollbar();
     void print_header();
     void print_column(const size_t col_idx);
+
+    void view_details();
+    void unview_details();
 };
 
 } /* ns bookwyrm */
