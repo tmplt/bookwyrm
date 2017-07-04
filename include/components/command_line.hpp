@@ -127,32 +127,11 @@ public:
 private:
 
     /*
-     * Is the flag valid? If so, is it given in its short
-     * or long form?
+     * Parse an argument with the next argument, which may be its value (or another flag).
+     * and emplace the valid ones into passed_opts_. Returns true if the next argument
+     * from the command line should be ignored.
      */
-    static inline bool is(const string_view &option, string opt_short, string opt_long)
-    {
-        return is_short(option, std::move(opt_short)) || is_long(option, std::move(opt_long));
-    }
-
-    static inline bool is_short(const string_view &option, const string_view &opt_short)
-    {
-        return option.compare(0, opt_short.length(), opt_short) == 0;
-    }
-
-    static inline bool is_long(const string_view &option, const string_view &opt_long)
-    {
-        return option.compare(0, opt_long.length(), opt_long) == 0;
-    }
-
-    /* Is the given option value a valid one? If so, return it. Otherwise throw a value_error. */
-    static auto check_value(const string_view &flag, const string_view &value, const vector<string> &values);
-
-    /*
-     * Parse a single argument with the next argument, which may be its value (or another flag).
-     * and emplace the valid ones into passed_opts_.
-     */
-    void parse(const string_view &input, const string_view &input_next);
+    bool parse_pair(const string_view &input, const string_view &input_next);
 
     /* Program synopsis. */
     const string synopsis_;
@@ -161,12 +140,6 @@ private:
     const groups valid_groups_;
     std::multimap<string, string> passed_opts_;
     vector<string> positional_args_;
-
-    /*
-     * Is the next argument associated with the previous one,
-     * or should the current argument be treated as another flag?
-     */
-    bool skipnext_ = false;
 };
 
 /* ns command_line */

@@ -144,11 +144,17 @@ vector<string> cliparser::get_many(const string &&opt) const
 
 void cliparser::process_arguments(const vector<string> &args)
 {
+    bool skip_next_arg = false;
     for (size_t i = 0; i < args.size(); i++) {
+        if (skip_next_arg) {
+            skip_next_arg = false;
+            continue;
+        }
+
         const string_view &arg = args[i];
         const string_view &next_arg = args.size() > i + 1 ? args[i + 1] : "";
 
-        parse(arg, next_arg);
+        skip_next_arg = parse_pair(arg, next_arg);
     }
 }
 
@@ -181,46 +187,54 @@ void cliparser::validate_arguments() const
         throw argument_error("at least one main argument must be specified");
 }
 
-auto cliparser::check_value(const string_view &flag, const string_view &value, const vector<string> &values)
+bool cliparser::parse_pair(const string_view &input, const string_view &input_next)
 {
-    if (value.empty())
-        throw value_error("missing value for " + string(flag.data()));
+    /*
+     * An option with a required value must of course have one, and
+     * if a list of valid values are associated with that option,
+     * we check that too.
+     */
+    const auto validate_opt_value = [](const string_view &flag, const string_view &value,
+            const vector<string> &valid_values) {
+        if (value.empty())
+            throw value_error("missing value for " + string(flag.data()));
 
-    if (!values.empty() && std::find(values.cbegin(), values.cend(), value) == values.cend()) {
-        throw value_error(
-            "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
-            "; valid options are: " + utils::vector_to_string(values)
-        );
-    }
+        if (!valid_values.empty() &&
+            std::find(valid_values.cbegin(), valid_values.cend(), value) == valid_values.cend()) {
+            throw value_error(
+                "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
+                "; valid options are: " + utils::vector_to_string(valid_values)
+            );
+        }
 
-    return value;
-}
+        return value;
+    };
 
-void cliparser::parse(const string_view &input, const string_view &input_next)
-{
-    if (skipnext_) {
-        /* The next input is a value, which we've already used. */
-        skipnext_ = false;
-        return;
-    }
+    /* An option must either match its long of short variant to exist. */
+    const auto opt_exists = [](const string_view &option, string opt_short, string opt_long) {
+        const bool is_short = option.compare(0, opt_short.length(), opt_short) == 0,
+                   is_long  = option.compare(0, opt_long.length(), opt_long) == 0;
+
+        return is_short || is_long;
+    };
 
     for (const auto &group : valid_groups_) {
         for (const auto &opt : group.options) {
-            if (is(input, opt.flag, opt.flag_long)) {
+            if (opt_exists(input, opt.flag, opt.flag_long)) {
                 if (opt.token.empty()) {
                     /* The option is only a flag. */
                     passed_opts_.emplace(opt.flag_long.substr(2), "");
-                } else {
-                    /*
-                     * The option should have an accompanied value.
-                     * And may be that it must be an element in opt.values.
-                     */
-                    const auto value = check_value(input, input_next, opt.values);
-                    skipnext_ = (value == input_next);
-                    passed_opts_.emplace(opt.flag_long.substr(2), value);
+                    return false;
                 }
 
-                return;
+                /*
+                 * The option should have an accompanied value.
+                 * Let's verify it with opt.values.
+                 */
+                const auto value = validate_opt_value(input, input_next, opt.values);
+                passed_opts_.emplace(opt.flag_long.substr(2), value);
+
+                return value == input_next;
             }
         }
     }
@@ -229,4 +243,5 @@ void cliparser::parse(const string_view &input, const string_view &input_next)
         throw argument_error("unrecognized option " + string(input.data()));
 
     positional_args_.emplace_back(input);
+    return false;
 }
