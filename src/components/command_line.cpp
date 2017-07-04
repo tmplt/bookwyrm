@@ -160,31 +160,40 @@ void cliparser::process_arguments(const vector<string> &args)
 
 void cliparser::validate_arguments() const
 {
+    /* Was --ident passed? */
+    const bool ident_passed = [&opts = passed_opts_] {
+        for (const auto &opt : opts) {
+            /* .first is the flag. */
+            if (opt.first == "ident") return true;
+        }
+
+        return false;
+    }();
+
+    /* Did we get at least one of the required main flags? */
+    const bool main_opt_passed = [&opts = passed_opts_, &main_opts = valid_groups_[main].options] {
+        /* Yeah, a bit of ineffective copying here, but hey, it works. */
+        vector<string> required_opts, passed_opts;
+
+        /* Since we only want to match against the long flags, we copy those. */
+        for (const auto &opt : opts)
+            passed_opts.emplace_back(opt.first);
+        for (const auto &opt : main_opts)
+            required_opts.emplace_back(opt.flag_long.substr(2));
+
+        return utils::any_intersection(passed_opts, required_opts);
+    }();
+
+    if (ident_passed && passed_opts_.size() > 1)
+        throw argument_error("ident flag is exclusive and may not be passed with another flag");
+    else if (!main_opt_passed)
+        throw argument_error("at least one main argument must be specified");
+
     if (!has(0))
         throw argument_error("you must specify a download path");
 
     if (positional_args_.size() > 1)
         throw argument_error("only one positional argument is allowed");
-
-    vector<string> passed_opts, required_opts;
-
-    for (const auto &opt : passed_opts_) {
-        /* We don't want the value, only the flag. */
-        passed_opts.emplace_back(opt.first);
-    }
-
-    for (const auto &opt : valid_groups_[main].options)
-        required_opts.emplace_back(opt.flag_long.substr(2));
-
-    /* Has any required arguments been passed? */
-    const bool req_match = utils::any_intersection(passed_opts, required_opts);
-    const bool ident_passed = std::find(passed_opts.cbegin(), passed_opts.cend(), "ident")
-        != passed_opts.cend();
-
-    if (ident_passed && passed_opts.size() > 1)
-        throw argument_error("ident flag is exclusive and may not be passed with another flag");
-    else if (!req_match)
-        throw argument_error("at least one main argument must be specified");
 }
 
 bool cliparser::parse_pair(const string_view &input, const string_view &input_next)
