@@ -69,6 +69,7 @@ public:
         return items_;
     }
 
+    /* Which menu do we update when a scripts feeds bookwyrm an item? */
     void set_menu(std::shared_ptr<multiselect_menu> m)
     {
         menu_ = m;

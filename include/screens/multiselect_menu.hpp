@@ -40,7 +40,7 @@ std::shared_ptr<multiselect_menu> create(script_butler &s);
 /* ns menu */
 }
 
-class multiselect_menu : public screen_base, public std::enable_shared_from_this<multiselect_menu> {
+class multiselect_menu : public screen_base {
 public:
     explicit multiselect_menu(vector<item> &items);
 
