@@ -72,9 +72,9 @@ private:
         }
 
         column_t& operator[](size_t i) { return columns_[i]; }
-        size_t size() { return columns_.size(); }
-        auto begin() { return columns_.begin(); }
-        auto end()   { return columns_.end();   }
+        size_t size() { return columns_.size();  }
+        auto begin()  { return columns_.begin(); }
+        auto end()    { return columns_.end();   }
 
     private:
         std::array<column_t, 6> columns_;
