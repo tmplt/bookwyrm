@@ -29,16 +29,16 @@ namespace py = pybind11;
 
 int main(int argc, char *argv[])
 {
-    const auto main = command_line::option_group("Main", "necessarily inclusive arguments; at least one required")
+    const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",    "Specify authors",   "AUTHOR")
         ("-t", "--title",     "Specify title",     "TITLE")
         ("-s", "--serie",     "Specify serie",     "SERIE")
         ("-p", "--publisher", "Specify publisher", "PUBLISHER");
 
-    const auto excl = command_line::option_group("Exclusive", "cannot be combined with any other arguments")
+    const auto excl = cligroup("Exclusive", "cannot be combined with any other arguments")
         ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
-    const auto exact = command_line::option_group("Exact", "all are optional")
+    const auto exact = cligroup("Exact", "all are optional")
         ("-y", "--year",      "Specify year of release. "
                               "A prefix modifier can be used to broaden the search. "
                               "Available prefixes are <, >, <=, >=.", "YEAR")
@@ -48,12 +48,12 @@ int main(int argc, char *argv[])
             valid_opts{"epub", "pdf", "djvu"})
         ("-i", "--isbn",      "Specify item ISBN", "ISBN");
 
-    const auto misc = command_line::option_group("Miscellaneous")
+    const auto misc = cligroup("Miscellaneous")
         ("-h", "--help",      "Display this text and exit")
         ("-v", "--version",   "Print version information (" + build_info_short + ")")
         ("-D", "--debug",     "Set logging level to debug");
 
-    const command_line::groups groups = {main, excl, exact, misc};
+    const cligroups groups = {main, excl, exact, misc};
 
     auto logger = logger::create("main");
     logger->set_pattern("%l: %v");

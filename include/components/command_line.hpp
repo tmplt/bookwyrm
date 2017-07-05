@@ -147,5 +147,5 @@ private:
 
 using cliparser = command_line::parser;
 using cligroup  = command_line::option_group;
-using clioption = command_line::option;
+using cligroups = command_line::groups;
 using valid_opts = std::initializer_list<string>;
