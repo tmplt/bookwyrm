@@ -109,7 +109,13 @@ int main(int argc, char *argv[])
         butler.load_sources();
 
         /* Construct he menu, assign the butler, and start the source script threads. */
-        auto menu = bookwyrm::menu::create(butler);
+        auto menu = [](bookwyrm::script_butler &butler) {
+            auto menu = std::make_shared<bookwyrm::multiselect_menu>(butler.results());
+            butler.set_menu(menu);
+            butler.async_search();
+            return menu;
+        }(butler);
+
         menu->display();
 
     } catch (const cli_error &err) {

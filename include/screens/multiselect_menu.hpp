@@ -33,13 +33,6 @@ namespace bookwyrm {
 class multiselect_menu;
 class script_butler;
 
-namespace menu {
-
-std::shared_ptr<multiselect_menu> create(script_butler &s);
-
-/* ns menu */
-}
-
 class multiselect_menu : public screen_base {
 public:
     explicit multiselect_menu(vector<item> &items);
