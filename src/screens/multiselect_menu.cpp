@@ -128,7 +128,7 @@ void multiselect_menu::update()
     print_header();
     print_scrollbar();
 
-    mvprintw(0, get_height() - 2, fmt::format("I was able to find {} items.", item_count()));
+    mvprintw(0, get_height() - 2, fmt::format("I have found {} items thus far.", item_count()));
     mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
 
     refresh();
