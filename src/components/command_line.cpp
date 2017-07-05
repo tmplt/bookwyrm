@@ -161,7 +161,7 @@ void cliparser::process_arguments(const vector<string> &args)
 void cliparser::validate_arguments() const
 {
     /* Was --ident passed? */
-    const bool ident_passed = [&opts = passed_opts_] {
+    const bool ident_passed = [opts = passed_opts_] {
         for (const auto &opt : opts) {
             /* .first is the flag. */
             if (opt.first == "ident") return true;
@@ -171,7 +171,7 @@ void cliparser::validate_arguments() const
     }();
 
     /* Did we get at least one of the required main flags? */
-    const bool main_opt_passed = [&opts = passed_opts_, &main_opts = valid_groups_[main].options] {
+    const bool main_opt_passed = [opts = passed_opts_, main_opts = valid_groups_[main].options] {
         /* Yeah, a bit of ineffective copying here, but hey, it works. */
         vector<string> required_opts, passed_opts;
 

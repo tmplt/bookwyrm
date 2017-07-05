@@ -119,10 +119,10 @@ void script_butler::async_search()
 {
     for (const auto &m : sources_) {
         try {
-            threads_.emplace_back([m, this]() {
+            threads_.emplace_back([&m, wanted = wanted_, this]() {
                 /* Required whenever we need to run anything Python. */
                 py::gil_scoped_acquire gil;
-                m.attr("find")(this->wanted_, this);
+                m.attr("find")(wanted, this);
             });
         } catch (const py::error_already_set &err) {
             logger_->error("module '{}' did something wrong ({}); ignoring...",
