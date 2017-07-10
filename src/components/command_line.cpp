@@ -192,7 +192,7 @@ void cliparser::validate_arguments() const
     if (!has(0))
         throw argument_error("you must specify a download path");
 
-    if (positional_args_.size() > 1)
+    if (has(1))
         throw argument_error("only one positional argument is allowed");
 }
 
