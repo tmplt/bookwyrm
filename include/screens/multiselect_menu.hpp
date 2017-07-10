@@ -57,6 +57,8 @@ private:
         struct column_t {
             using width_w_t = std::variant<int, double>;
 
+            string title;
+
             /*
              * width_w(wanted).
              * How much space does the column want?
@@ -67,9 +69,9 @@ private:
 
             /* Changes whenever the window dimensions are changed. */
             size_t width, startx;
-            string title;
         };
 
+        /* Initializing the array of columns. */
         void operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
         {
             int i = 0;
