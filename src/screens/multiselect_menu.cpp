@@ -267,20 +267,20 @@ void multiselect_menu::print_column(const size_t col_idx)
             y <= menu_capacity(); i++, y++) {
 
         const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_),
-                   marked = is_marked(y + scroll_offset_ - padding_top_);
+                   on_marked_item   = is_marked(y + scroll_offset_ - padding_top_);
 
         /*
          * Print the indicator, indicating which item is
          * currently selected.
          */
-        if (on_selected_item && marked)
+        if (on_selected_item && on_marked_item)
             tb_change_cell(0, y, '-', TB_REVERSE, 0);
         else if (on_selected_item)
             tb_change_cell(0, y, '-', 0, 0);
-        else if (marked)
+        else if (on_marked_item)
             tb_change_cell(0, y, ' ', TB_REVERSE, 0);
 
-        const uint16_t attrs = (on_selected_item || marked)
+        const uint16_t attrs = (on_selected_item || on_marked_item)
             ? TB_REVERSE : 0;
 
         /* Print the string, check if it was truncated. */
@@ -293,7 +293,7 @@ void multiselect_menu::print_column(const size_t col_idx)
          *
          * We start at the end of the string, just after the last character (or the '~'),
          * and write until the end of the column, plus seperator and the padding on the right
-         * side of it (e.g. up to and including the first char in the next column.
+         * side of it (e.g. up to and including the first char in the next column).
          */
         for (auto x = c.startx + str.length() - truncd; x <= c.startx + c.width + 4; x++) {
             tb_change_cell(x, y, ' ', attrs, 0);
