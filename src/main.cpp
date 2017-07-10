@@ -108,8 +108,7 @@ int main(int argc, char *argv[])
         auto butler = bookwyrm::script_butler(wanted);
         butler.load_sources();
 
-        /* Construct he menu, assign the butler, and start the source script threads. */
-        auto menu = bookwyrm::menu::create(butler);
+        auto menu = bookwyrm::menu::create_with(butler);
         menu->display();
 
     } catch (const cli_error &err) {

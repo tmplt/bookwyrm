@@ -35,7 +35,8 @@ class script_butler;
 
 namespace menu {
 
-std::shared_ptr<multiselect_menu> create(script_butler &s);
+/* Construct he menu, assign the butler, and start the source script threads. */
+std::shared_ptr<multiselect_menu> create_with(script_butler &s);
 
 /* ns menu */
 }
