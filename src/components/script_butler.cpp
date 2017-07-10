@@ -32,7 +32,7 @@ namespace bookwyrm {
 script_butler::script_butler(const item &wanted)
     : wanted_(wanted) {}
 
-void script_butler::load_sources()
+vector<pybind11::module> script_butler::load_sources()
 {
 #ifdef DEBUG
     /* Bookwyrm must be run from build/ in DEBUG mode. */
@@ -61,6 +61,7 @@ void script_butler::load_sources()
      * make sure that we don't clash with the many module
      * names in Python.
      */
+    vector<py::module> sources;
     for (const fs::path &p : fs::directory_iterator(source_path)) {
         if (p.extension() != ".py") continue;
 
@@ -73,14 +74,16 @@ void script_butler::load_sources()
         try {
             string module = p.stem();
             logger_->debug("loading module '{}'...", module);
-            sources_.emplace_back(py::module::import(module.c_str()));
+            sources.emplace_back(py::module::import(module.c_str()));
         } catch (const py::error_already_set &err) {
             logger_->warn("{}; ignoring...", err.what());
         }
     }
 
-    if (sources_.empty())
+    if (sources.empty())
         throw program_error("couldn't find any valid source modules, terminating...");
+
+    return sources;
 }
 
 script_butler::~script_butler()
@@ -102,9 +105,9 @@ script_butler::~script_butler()
         t.join();
 }
 
-void script_butler::async_search()
+void script_butler::async_search(vector<py::module> &sources)
 {
-    for (const auto &m : sources_) {
+    for (const auto &m : sources) {
         try {
             threads_.emplace_back([&m, wanted = wanted_, bw_instance = this]() {
                 /* Required whenever we need to run anything Python. */

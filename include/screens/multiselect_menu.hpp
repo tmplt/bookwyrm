@@ -36,7 +36,7 @@ class script_butler;
 namespace menu {
 
 /* Construct he menu, assign the butler, and start the source script threads. */
-std::shared_ptr<multiselect_menu> make_with(script_butler &s);
+std::shared_ptr<multiselect_menu> make_with(script_butler &s, vector<py::module> &sources);
 
 /* ns menu */
 }

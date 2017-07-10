@@ -19,11 +19,11 @@
 
 namespace bookwyrm::menu {
 
-std::shared_ptr<multiselect_menu> make_with(script_butler &butler)
+std::shared_ptr<multiselect_menu> make_with(script_butler &butler, vector<py::module> &sources)
 {
     auto menu = std::make_shared<multiselect_menu>(butler.results());
     butler.set_menu(menu);
-    butler.async_search(); // Watch out, it's hot!
+    butler.async_search(sources); // Watch out, it's hot!
     return menu;
 }
 

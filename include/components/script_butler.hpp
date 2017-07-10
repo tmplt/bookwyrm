@@ -55,11 +55,11 @@ public:
     explicit script_butler(const script_butler&) = delete;
     ~script_butler();
 
-    /* Find and load all source scripts, but don't start the threads. */
-    void load_sources();
+    /* Find and load all source scripts. */
+    vector<py::module> load_sources();
 
     /* Start a std::thread for each valid Python module found. */
-    void async_search();
+    void async_search(vector<py::module> &sources);
 
     /* Try to add a found item, and then update the set menu. */
     void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
@@ -84,9 +84,6 @@ private:
 
     /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;
-
-    /* The valid Python modules we have found. */
-    vector<pybind11::module> sources_;
 
     /* The same Python modules, but now running! */
     vector<std::thread> threads_;

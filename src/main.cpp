@@ -104,11 +104,13 @@ int main(int argc, char *argv[])
          * During runtime (after .async_search() has been called),
          * the butler will match each found item with the wanted one.
          * If it doesn't match, it is discarded.
+         *
+         * The returned vector must exist throughout program execution.
          */
         auto butler = bookwyrm::script_butler(wanted);
-        butler.load_sources();
+        auto sources = butler.load_sources();
 
-        auto menu = bookwyrm::menu::make_with(butler);
+        auto menu = bookwyrm::menu::make_with(butler, sources);
         menu->display();
 
     } catch (const cli_error &err) {
