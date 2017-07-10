@@ -61,32 +61,19 @@ void script_butler::load_sources()
      * make sure that we don't clash with the many module
      * names in Python.
      */
-    string module_file;
     for (const fs::path &p : fs::directory_iterator(source_path)) {
-        module_file = p.filename();
-        auto ext_pos = module_file.rfind(".py");
-
-        if (ext_pos == string::npos) {
-            /*
-             * It's not a Python module.
-             * (or at least doesn't contain ".py")
-             *
-             * TODO: only load files _ending_ with ".py".
-             */
-            continue;
-        }
+        if (p.extension() != ".py") continue;
 
         if (!utils::readable_file(p)) {
             logger_->warn("can't load module '{}': not a regular file or unreadable"
-                    "; ignoring...", module_file);
+                    "; ignoring...", p.string());
             continue;
         }
 
-        module_file.resize(ext_pos);
-
         try {
-            logger_->debug("loading module '{}'...", module_file);
-            sources_.emplace_back(py::module::import(module_file.c_str()));
+            string module = p.stem();
+            logger_->debug("loading module '{}'...", module);
+            sources_.emplace_back(py::module::import(module.c_str()));
         } catch (const py::error_already_set &err) {
             logger_->warn("{}; ignoring...", err.what());
         }
