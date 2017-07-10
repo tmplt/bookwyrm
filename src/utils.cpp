@@ -25,18 +25,22 @@ namespace utils {
 
 std::error_code validate_download_dir(const fs::path &path)
 {
+    const auto error = [](auto ec) -> std::error_code {
+        return {ec, std::generic_category()};
+    };
+
     if (!fs::exists(path))
-        return {ENOENT, std::generic_category()};
+        return error(ENOENT);
 
     if (fs::space(path).available == 0)
-        return {ENOSPC, std::generic_category()};
+        return error(ENOSPC);
 
     if (!fs::is_directory(path))
-        return {ENOTDIR, std::generic_category()};
+        return error(ENOTDIR);
 
     /* Can we write to the directory? */
     if (access(path.c_str(), W_OK) != 0)
-        return {EACCES, std::generic_category()};
+        return error(EACCES);
 
     return {};
 }
