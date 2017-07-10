@@ -30,6 +30,8 @@ screen_base::screen_base(int pad_top, int pad_bot, int pad_left, int pad_right)
 
 screen_base::~screen_base()
 {
+    // TODO: we might want to keep a window count if some
+    // other window class is based on this.
     if (termbox_started_) tb_shutdown();
 }
 
@@ -53,6 +55,7 @@ int screen_base::mvprintwlim(size_t x, const int y, const string_view &str, cons
     const size_t limit = x + space;
     for (const uint32_t &ch : str) {
         if (x == limit - 1 && str.length() > space) {
+            /* We can't fit the rest of the string. */
             tb_change_cell(x, y, '~', attrs, 0);
             return str.length() - space;
         }
