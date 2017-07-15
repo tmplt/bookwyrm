@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include "screens/base.hpp"
 
 namespace bookwyrm {
 
-bool screen_base::termbox_started_ = false;
+int screen_base::screen_count_ = 0;
 
 screen_base::screen_base(int pad_top, int pad_bot, int pad_left, int pad_right)
     : padding_top_(pad_top), padding_bot_(pad_bot),
@@ -30,14 +32,13 @@ screen_base::screen_base(int pad_top, int pad_bot, int pad_left, int pad_right)
 
 screen_base::~screen_base()
 {
-    // TODO: we might want to keep a window count if some
-    // other window class is based on this.
-    if (termbox_started_) tb_shutdown();
+    if (--screen_count_ == 0) tb_shutdown();
+    assert(screen_count_ >= 0); // just in case, for now
 }
 
 void screen_base::init_tui()
 {
-    if (termbox_started_) return;
+    if (screen_count_++) return;
 
     int code = tb_init();
     if (code < 0) {
@@ -47,7 +48,6 @@ void screen_base::init_tui()
 
     tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
     tb_clear();
-    termbox_started_ = true;
 }
 
 int screen_base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)

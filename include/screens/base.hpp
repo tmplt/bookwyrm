@@ -74,7 +74,7 @@ protected:
               padding_left_, padding_right_;
 
 private:
-    static bool termbox_started_;
+    static int screen_count_;
     void init_tui();
 };
 
