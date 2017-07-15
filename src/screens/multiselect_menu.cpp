@@ -20,13 +20,16 @@
 #include "errors.hpp"
 #include "python.hpp"
 #include "screens/multiselect_menu.hpp"
+#include "screens/item_details.hpp"
 
 namespace py = pybind11;
 
 namespace bookwyrm {
 
+constexpr static int default_padding_bot = 3;
+
 multiselect_menu::multiselect_menu(vector<item> &items)
-    : screen_base(1, 3, 0, 1),
+    : screen_base(1, default_padding_bot, 0, 1),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -100,6 +103,12 @@ void multiselect_menu::display()
                     break;
                 case 'G':
                     move(bot);
+                    break;
+                case 'l':
+                    view_details();
+                    break;
+                case 'h':
+                    unview_details();
                     break;
             }
         }
@@ -299,6 +308,31 @@ void multiselect_menu::print_column(const size_t col_idx)
             tb_change_cell(x, y, ' ', attrs, 0);
         }
     }
+}
+
+void multiselect_menu::view_details()
+{
+    /* const int details_height = menu_capacity() * 0.80; */
+    padding_bot_ = menu_capacity() * 0.80;
+
+    /*
+     * Will the detail menu hide the highlighted item?
+     * How much do we need to scroll if we don't want that to happen?
+     */
+    const int scroll = std::max(static_cast<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1), 0);
+    scroll_offset_ += scroll;
+
+
+    update();
+}
+
+void multiselect_menu::unview_details()
+{
+    padding_bot_ = default_padding_bot;
+
+    // we want to scroll_offset_ -= scroll (from view_details()) here
+
+    update();
 }
 
 } /* ns bookwyrm */

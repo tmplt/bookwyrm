@@ -38,7 +38,7 @@ screen_base::~screen_base()
 
 void screen_base::init_tui()
 {
-    if (screen_count_++) return;
+    if (screen_count_++ > 0) return;
 
     int code = tb_init();
     if (code < 0) {

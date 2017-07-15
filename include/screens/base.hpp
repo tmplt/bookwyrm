@@ -70,8 +70,8 @@ protected:
     void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /* How much space do we leave for bars? */
-    const int padding_top_, padding_bot_,
-              padding_left_, padding_right_;
+    int padding_top_, padding_bot_,
+        padding_left_, padding_right_;
 
 private:
     static int screen_count_;
