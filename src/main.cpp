@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
-
 #include "item.hpp"
 #include "utils.hpp"
 #include "version.hpp"
@@ -24,9 +22,6 @@
 #include "components/command_line.hpp"
 #include "components/script_butler.hpp"
 #include "components/screen_butler.hpp"
-#include "screens/multiselect_menu.hpp"
-
-namespace py = pybind11;
 
 int main(int argc, char *argv[])
 {
