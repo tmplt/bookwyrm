@@ -107,7 +107,7 @@ private:
 
     /*
      * Is the currently selected item the last one in the
-     * menu "window"?
+     * menu screen?
      */
     bool menu_at_bot() const
     {
@@ -116,7 +116,7 @@ private:
 
     /*
      * Is the currently selected item the first one in the
-     * menu "window"?
+     * menu screen?
      */
     bool menu_at_top() const
     {

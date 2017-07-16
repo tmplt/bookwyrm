@@ -35,6 +35,7 @@ std::shared_ptr<screen_butler> make_with(script_butler &butler, vector<py::modul
 screen_butler::screen_butler(vector<item> &items)
     : items_(items)
 {
+    /* Create the default screen and focus on it. */
     auto menu = std::make_shared<multiselect_menu>(items_);
     focused_ = menu;
     screens_.emplace_back(menu);
@@ -46,7 +47,6 @@ void screen_butler::update_screens()
         screen->update();
 }
 
-/* Display the TUI and let the user enter input. */
 void screen_butler::display()
 {
     /*

@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
         tui->display();
 
     } catch (const cli_error &err) {
-        logger->error(err.what() + string("; see --help"));
+        logger->error("{}; see --help", err.what());
         return EXIT_FAILURE;
     }
 
