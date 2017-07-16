@@ -24,7 +24,7 @@
 
 namespace bw = bookwyrm;
 
-PYBIND11_MODULE(pybookwyrm, py::module &m)
+PYBIND11_MODULE(pybookwyrm, m)
 {
     m.attr("__doc__") = "bookwyrm python bindings";
 
