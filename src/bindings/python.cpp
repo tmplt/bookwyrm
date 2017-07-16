@@ -86,6 +86,6 @@ PYBIND11_MODULE(pybookwyrm, m)
             return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
         });
 
-    py::class_<bw::script_butler>(m, "bookwyrm")
-        .def("feed", &bw::script_butler::add_item, py::return_value_policy::take_ownership);
+    py::class_<butler::script_butler>(m, "bookwyrm")
+        .def("feed", &butler::script_butler::add_item, py::return_value_policy::take_ownership);
 }

@@ -102,10 +102,10 @@ int main(int argc, char *argv[])
          * The returned vector must exist throughout program execution.
          */
         const bookwyrm::item wanted(cli);
-        auto butler = bookwyrm::script_butler(std::move(wanted));
+        auto butler = butler::script_butler(std::move(wanted));
         auto sources = butler.load_sources();
 
-        auto tui = bookwyrm::tui::make_with(butler, sources);
+        auto tui = tui::make_with(butler, sources);
         tui->display();
 
     } catch (const cli_error &err) {

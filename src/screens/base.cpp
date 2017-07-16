@@ -19,24 +19,24 @@
 
 #include "screens/base.hpp"
 
-namespace bookwyrm {
+namespace screen {
 
-int screen_base::screen_count_ = 0;
+int base::screen_count_ = 0;
 
-screen_base::screen_base(int pad_top, int pad_bot, int pad_left, int pad_right)
+base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
     : padding_top_(pad_top), padding_bot_(pad_bot),
     padding_left_(pad_left), padding_right_(pad_right)
 {
     init_tui();
 }
 
-screen_base::~screen_base()
+base::~base()
 {
     if (--screen_count_ == 0) tb_shutdown();
     assert(screen_count_ >= 0); // just in case, for now
 }
 
-void screen_base::init_tui()
+void base::init_tui()
 {
     if (screen_count_++ > 0) return;
 
@@ -50,7 +50,7 @@ void screen_base::init_tui()
     tb_clear();
 }
 
-int screen_base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
+int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
 {
     const size_t limit = x + space;
     for (const uint32_t &ch : str) {
@@ -66,13 +66,13 @@ int screen_base::mvprintwlim(size_t x, const int y, const string_view &str, cons
     return 0;
 }
 
-void screen_base::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
+void base::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
 {
     for (const uint32_t &ch : str)
         tb_change_cell(x++, y, ch, attrs, 0);
 }
 
-void screen_base::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
+void base::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
 {
     for (int i = 0; i < x; i++)
         tb_change_cell(i, y, ' ', attrs, 0);
@@ -83,5 +83,5 @@ void screen_base::mvprintwl(int x, const int y, const string_view &str, const ui
         tb_change_cell(i, y, ' ', attrs, 0);
 }
 
-/* ns bookwyrm */
+/* ns screen */
 }

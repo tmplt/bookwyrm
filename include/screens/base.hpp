@@ -21,14 +21,14 @@
 
 #include "common.hpp"
 
-namespace bookwyrm {
+namespace screen {
 
 /*
  * A base screen class holding most (if not all) of the
  * implementation of functions using whatever library for
  * printing the actual characters on screen.
  */
-class screen_base {
+class base {
 public:
     /* Paint the screen. */
     virtual void update() = 0;
@@ -51,8 +51,8 @@ public:
     }
 
 protected:
-    explicit screen_base(int pad_top, int pad_bot, int pad_left, int pad_right);
-    ~screen_base();
+    explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
+    ~base();
 
     static void clear()   { tb_clear();   }
     static void refresh() { tb_present(); }
@@ -90,5 +90,5 @@ private:
     static void init_tui();
 };
 
-/* ns bookwyrm */
+/* ns screen */
 }

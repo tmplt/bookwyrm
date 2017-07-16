@@ -22,14 +22,12 @@
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
-namespace py = pybind11;
-
-namespace bookwyrm {
+namespace screen {
 
 constexpr static int default_padding_bot = 3;
 
-multiselect_menu::multiselect_menu(vector<item> const &items)
-    : screen_base(1, default_padding_bot, 0, 1),
+multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
+    : base(1, default_padding_bot, 0, 1),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -306,4 +304,4 @@ void multiselect_menu::unview_details()
     update();
 }
 
-} /* ns bookwyrm */
+} /* ns screen */

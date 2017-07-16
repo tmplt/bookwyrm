@@ -27,7 +27,7 @@
 #include "components/logger.hpp"
 #include "components/screen_butler.hpp"
 
-namespace bookwyrm {
+namespace butler {
 
 class script_butler;
 class screen_butler;
@@ -42,7 +42,7 @@ class screen_butler;
  */
 class script_butler {
 public:
-    explicit script_butler(const item &&wanted);
+    explicit script_butler(const bookwyrm::item &&wanted);
 
     /*
      * Explicitly delete the copy-constructor.
@@ -63,9 +63,9 @@ public:
     void async_search(vector<py::module> &sources);
 
     /* Try to add a found item, and then update the set menu. */
-    void add_item(std::tuple<nonexacts_t, exacts_t> item_comps);
+    void add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps);
 
-    vector<item>& results()
+    vector<bookwyrm::item>& results()
     {
         return items_;
     }
@@ -78,10 +78,10 @@ public:
 
 private:
     const logger_t logger_ = spdlog::get("main");
-    const item wanted_;
+    const bookwyrm::item wanted_;
 
     /* Somewhere to store our found items. */
-    vector<item> items_;
+    vector<bookwyrm::item> items_;
 
     /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;
@@ -93,5 +93,5 @@ private:
     std::shared_ptr<screen_butler> screen_butler_;
 };
 
-/* ns bookwyrm */
+/* ns butler */
 }

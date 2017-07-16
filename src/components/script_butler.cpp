@@ -27,9 +27,9 @@
 
 namespace fs = std::experimental::filesystem;
 
-namespace bookwyrm {
+namespace butler {
 
-script_butler::script_butler(const item &&wanted)
+script_butler::script_butler(const bookwyrm::item &&wanted)
     : wanted_(wanted) {}
 
 vector<pybind11::module> script_butler::load_sources()
@@ -122,9 +122,9 @@ void script_butler::async_search(vector<py::module> &sources)
     }
 }
 
-void script_butler::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
+void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps)
 {
-    item item(item_comps);
+    bookwyrm::item item(item_comps);
 
     std::lock_guard<std::mutex> guard(items_mutex_);
     /* if (!item.matches(wanted_)) */
@@ -134,5 +134,5 @@ void script_butler::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
     screen_butler_->update_screens();
 }
 
-/* ns bookwyrm */
+/* ns butler */
 }

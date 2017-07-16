@@ -17,26 +17,15 @@
 
 #include "components/screen_butler.hpp"
 
-namespace bookwyrm {
 
-namespace tui {
 
-std::shared_ptr<screen_butler> make_with(script_butler &butler, vector<py::module> &sources)
-{
-    auto tui = std::make_shared<screen_butler>(butler.results());
-    butler.set_screens(tui);
-    butler.async_search(sources); // Watch out, it's hot!
-    return tui;
-}
+namespace butler {
 
-/* ns tui */
-}
-
-screen_butler::screen_butler(vector<item> &items)
+screen_butler::screen_butler(vector<bookwyrm::item> &items)
     : items_(items)
 {
     /* Create the default screen and focus on it. */
-    auto menu = std::make_shared<multiselect_menu>(items_);
+    auto menu = std::make_shared<screen::multiselect_menu>(items_);
     focused_ = menu;
     screens_.emplace_back(menu);
 }
@@ -65,7 +54,7 @@ void screen_butler::display()
                 screen->on_resize();
         } else if (ev.type == TB_EVENT_KEY) {
             /* When the terminal is too small, only allow quitting. */
-            if (!screen_base::bookwyrm_fits()) {
+            if (!screen::base::bookwyrm_fits()) {
                 if (ev.key == TB_KEY_ESC)
                     return;
 
@@ -84,5 +73,19 @@ void screen_butler::display()
     }
 }
 
-/* ns bookwyrm */
+/* ns butler */
 }
+
+namespace tui {
+
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources)
+{
+    auto tui = std::make_shared<butler::screen_butler>(butler.results());
+    butler.set_screens(tui);
+    butler.async_search(sources); // Watch out, it's hot!
+    return tui;
+}
+
+/* ns tui */
+}
+

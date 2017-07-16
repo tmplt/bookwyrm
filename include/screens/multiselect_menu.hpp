@@ -27,11 +27,11 @@
 #include "item.hpp"
 #include "screens/base.hpp"
 
-namespace bookwyrm {
+namespace screen {
 
-class multiselect_menu : public screen_base {
+class multiselect_menu : public base {
 public:
-    explicit multiselect_menu(vector<item> const &items);
+    explicit multiselect_menu(vector<bookwyrm::item> const &items);
 
     void update() override;
     void on_resize() override;
@@ -84,7 +84,7 @@ private:
     size_t scroll_offset_;
 
     std::mutex menu_mutex_;
-    vector<item> const &items_;
+    vector<bookwyrm::item> const &items_;
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;
@@ -150,4 +150,4 @@ private:
     void unview_details();
 };
 
-} /* ns bookwyrm */
+} /* ns screen */

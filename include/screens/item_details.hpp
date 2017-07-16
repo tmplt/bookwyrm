@@ -34,22 +34,22 @@
  * The user doesn't need to exit the detail screen to select another item.
  * Implementing this is a problem for the future, though.
  */
-namespace bookwyrm {
+namespace screen {
 
-class item_details : private screen_base {
+class item_details : private base {
 public:
-    explicit item_details(item &t, int pad_top)
-        : screen_base(pad_top, 3, 0, 0), item_(t) { }
+    explicit item_details(bookwyrm::item &t, int pad_top)
+        : base(pad_top, 3, 0, 0), item_(t) { }
 
     void display();
     void update();
     void on_resize();
 
 private:
-    const item &item_;
+    const bookwyrm::item &item_;
     /* void print_border(); */
 };
 
-/* ns bookwyrm */
+/* ns screen */
 }
 
