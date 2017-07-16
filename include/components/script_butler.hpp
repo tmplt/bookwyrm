@@ -42,7 +42,7 @@ class screen_butler;
  */
 class script_butler {
 public:
-    explicit script_butler(const item &wanted);
+    explicit script_butler(const item &&wanted);
 
     /*
      * Explicitly delete the copy-constructor.
@@ -78,7 +78,7 @@ public:
 
 private:
     const logger_t logger_ = spdlog::get("main");
-    const item &wanted_;
+    const item wanted_;
 
     /* Somewhere to store our found items. */
     vector<item> items_;

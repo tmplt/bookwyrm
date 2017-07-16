@@ -92,8 +92,6 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        const bookwyrm::item wanted(cli);
-
         /*
          * Start the Python interpreter and keep it alive until
          * program termination.
@@ -108,7 +106,8 @@ int main(int argc, char *argv[])
          *
          * The returned vector must exist throughout program execution.
          */
-        auto butler = bookwyrm::script_butler(wanted);
+        const bookwyrm::item wanted(cli);
+        auto butler = bookwyrm::script_butler(std::move(wanted));
         auto sources = butler.load_sources();
 
         auto tui = bookwyrm::tui::make_with(butler, sources);

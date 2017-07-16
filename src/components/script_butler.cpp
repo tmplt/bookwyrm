@@ -29,7 +29,7 @@ namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm {
 
-script_butler::script_butler(const item &wanted)
+script_butler::script_butler(const item &&wanted)
     : wanted_(wanted) {}
 
 vector<pybind11::module> script_butler::load_sources()
