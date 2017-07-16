@@ -27,17 +27,18 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g2")
 
-# Check compiler
-# TODO: update the required compiler versions.
+# Check compiler support
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4.0")
-    message_colored(FATAL_ERROR "Compiler not supported (Requires clang-3.4+ or gcc-5.1+)" 31)
-  else()
-    message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
-  endif()
+  message_colored(FATAL_ERROR "Clang isn't supported yet; see <https://bugs.archlinux.org/index.php?do=details&task_id=54276>" 31)
+
+  #if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4.0")
+  #  message_colored(FATAL_ERROR "Compiler not supported (Requires clang-3.4+ or gcc-5.1+)" 31)
+  #else()
+  #  message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
+  #endif()
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.1.0")
-    message_colored(FATAL_ERROR "Compiler not supported (Requires clang-3.4+ or gcc-5.1+)" 31)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.1.1")
+    message_colored(FATAL_ERROR "Compiler not supported (Requires gcc-7.1.1+)" 31)
   else()
     message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
   endif()
