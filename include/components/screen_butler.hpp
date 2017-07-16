@@ -38,8 +38,10 @@ std::shared_ptr<screen_butler> make_with(script_butler &butler, vector<py::modul
 
 class screen_butler {
 public:
-    /* We'll want to know the items when we create new screens. */
-    // TODO: make this a friend?
+    /*
+     * We'll want to know the items when we create new screens.
+     * WARN: this constructor should only be used in make_with() above.
+     */
     explicit screen_butler(vector<item> &items);
 
     /* Repaint all the screens that need updating. */

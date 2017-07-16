@@ -54,8 +54,8 @@ protected:
     explicit screen_base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~screen_base();
 
-    void clear()   { tb_clear();   }
-    void refresh() { tb_present(); }
+    static void clear()   { tb_clear();   }
+    static void refresh() { tb_present(); }
 
     static int get_width()  { return tb_width(); }
     static int get_height() { return tb_height(); }
@@ -69,17 +69,17 @@ protected:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
+    static int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
 
     /* Same as above, but don't truncate. */
-    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    static void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    static void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,
@@ -87,7 +87,7 @@ protected:
 
 private:
     static int screen_count_;
-    void init_tui();
+    static void init_tui();
 };
 
 /* ns bookwyrm */
