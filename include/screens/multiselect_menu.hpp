@@ -33,9 +33,9 @@ class multiselect_menu : public screen_base {
 public:
     explicit multiselect_menu(vector<item> const &items);
 
-    void update();
-    void on_resize();
-    void action(const uint16_t &key, const uint32_t &ch);
+    void update() override;
+    void on_resize() override;
+    void action(const uint16_t &key, const uint32_t &ch) override;
 
 private:
     /* Store data about each column between updates. */
