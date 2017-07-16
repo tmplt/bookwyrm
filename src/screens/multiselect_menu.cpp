@@ -28,7 +28,7 @@ namespace bookwyrm {
 
 constexpr static int default_padding_bot = 3;
 
-multiselect_menu::multiselect_menu(vector<item> &items)
+multiselect_menu::multiselect_menu(vector<item> const &items)
     : screen_base(1, default_padding_bot, 0, 1),
     selected_item_(0), scroll_offset_(0),
     items_(items)
@@ -50,68 +50,39 @@ multiselect_menu::multiselect_menu(vector<item> &items)
     update_column_widths();
 }
 
-void multiselect_menu::display()
+void multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
 {
-    /*
-     * Let the source threads free.
-     * This doesn't feel like the best place to have this,
-     * but we do need to have a release in scope if we
-     * ever want the threads to run.
-     * TODO: find out if there is a better place for this.
-     */
-    py::gil_scoped_release nogil;
+    switch (key) {
+        case TB_KEY_ARROW_DOWN:
+            move(down);
+            break;
+        case TB_KEY_ARROW_UP:
+            move(up);
+            break;
+        case TB_KEY_SPACE:
+            toggle_select();
+            break;
+    }
 
-    struct tb_event ev;
-    while (tb_poll_event(&ev)) {
-        if (ev.type == TB_EVENT_RESIZE) {
-            on_resize();
-        } else if (ev.type == TB_EVENT_KEY) {
-            /* When the terminal is too small, only allow quitting. */
-            if (!bookwyrm_fits()) {
-                if (ev.key == TB_KEY_ESC)
-                    return;
-
-                continue;
-            }
-
-            switch (ev.key) {
-                case TB_KEY_ESC:
-                    return;
-                case TB_KEY_ARROW_DOWN:
-                    move(down);
-                    break;
-                case TB_KEY_ARROW_UP:
-                    move(up);
-                    break;
-                case TB_KEY_SPACE:
-                    toggle_select();
-                    break;
-                case TB_KEY_CTRL_L:
-                    update();
-                    break;
-            }
-
-            switch (ev.ch) {
-                case 'j':
-                    move(down);
-                    break;
-                case 'k':
-                    move(up);
-                    break;
-                case 'g':
-                    move(top);
-                    break;
-                case 'G':
-                    move(bot);
-                    break;
-                case 'l':
-                    view_details();
-                    break;
-                case 'h':
-                    unview_details();
-                    break;
-            }
-        }
+    switch (ch) {
+        case 'j':
+            move(down);
+            break;
+        case 'k':
+            move(up);
+            break;
+        case 'g':
+            move(top);
+            break;
+        case 'G':
+            move(bot);
+            break;
+        case 'l':
+            view_details();
+            break;
+        case 'h':
+            unview_details();
+            break;
     }
 }
 

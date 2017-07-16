@@ -131,7 +131,7 @@ void script_butler::add_item(std::tuple<nonexacts_t, exacts_t> item_comps)
     /*     return; */
 
     items_.push_back(item);
-    menu_->update();
+    screen_butler_->update_screens();
 }
 
 /* ns bookwyrm */

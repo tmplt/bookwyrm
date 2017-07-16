@@ -29,24 +29,36 @@ namespace bookwyrm {
  * printing the actual characters on screen.
  */
 class screen_base {
-protected:
-    explicit screen_base(int pad_top, int pad_bot, int pad_left, int pad_right);
-    ~screen_base();
-
+public:
     /* Paint the screen. */
     virtual void update() = 0;
-
-    /* Display the menu, and let the user control it. */
-    virtual void display() = 0;
 
     /* What should be done when the window resizes? */
     virtual void on_resize() = 0;
 
+    /* Handle keybinds. TODO: rename? */
+    virtual void action(const uint16_t &key, const uint32_t &ch) = 0;
+
+    /* Returns true if the bookwyrm fits in the current terminal window. */
+    static bool bookwyrm_fits()
+    {
+        /*
+         * I planned to use the classical 80x24, but multiselect_menu is
+         * in its current form useable in terminals much smaller
+         * than that.
+         */
+        return get_width() >= 50 && get_height() >= 10;
+    }
+
+protected:
+    explicit screen_base(int pad_top, int pad_bot, int pad_left, int pad_right);
+    ~screen_base();
+
     void clear()   { tb_clear();   }
     void refresh() { tb_present(); }
 
-    int get_width()  { return tb_width(); }
-    int get_height() { return tb_height(); }
+    static int get_width()  { return tb_width(); }
+    static int get_height() { return tb_height(); }
 
     /*
      * Akin to Ncurses mvprintw(), but:

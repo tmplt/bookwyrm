@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <screens/multiselect_menu.hpp>
+#include <components/screen_butler.hpp>
 
-namespace bookwyrm::menu {
+namespace bookwyrm::tui {
 
-std::shared_ptr<multiselect_menu> make_with(script_butler &butler, vector<py::module> &sources)
+std::shared_ptr<screen_butler> make_with(script_butler &butler, vector<py::module> &sources)
 {
-    auto menu = std::make_shared<multiselect_menu>(butler.results());
-    butler.set_menu(menu);
+    auto tui = std::make_shared<screen_butler>(butler.results());
+    butler.set_screens(tui);
     butler.async_search(sources); // Watch out, it's hot!
-    return menu;
+    return tui;
 }
 
-/* ns bookwyrm::menu */
+/* ns bookwyrm::tui */
 }

@@ -23,6 +23,7 @@
 #include "python.hpp"
 #include "components/command_line.hpp"
 #include "components/script_butler.hpp"
+#include "components/screen_butler.hpp"
 #include "screens/multiselect_menu.hpp"
 
 namespace py = pybind11;
@@ -110,8 +111,8 @@ int main(int argc, char *argv[])
         auto butler = bookwyrm::script_butler(wanted);
         auto sources = butler.load_sources();
 
-        auto menu = bookwyrm::menu::make_with(butler, sources);
-        menu->display();
+        auto tui = bookwyrm::tui::make_with(butler, sources);
+        tui->display();
 
     } catch (const cli_error &err) {
         logger->error(err.what() + string("; see --help"));

@@ -25,11 +25,12 @@
 #include "item.hpp"
 #include "python.hpp"
 #include "components/logger.hpp"
-#include "screens/multiselect_menu.hpp"
+#include "components/screen_butler.hpp"
 
 namespace bookwyrm {
 
-class multiselect_menu;
+class script_butler;
+class screen_butler;
 
 /*
  * The bookwyrm's very own butler. First, the butler finds
@@ -70,9 +71,9 @@ public:
     }
 
     /* Which menu do we update when a scripts feeds bookwyrm an item? */
-    void set_menu(std::shared_ptr<multiselect_menu> m)
+    void set_screens(std::shared_ptr<screen_butler> sb)
     {
-        menu_ = m;
+        screen_butler_ = sb;
     }
 
 private:
@@ -88,8 +89,8 @@ private:
     /* The same Python modules, but now running! */
     vector<std::thread> threads_;
 
-    /* Which menu do we want to notify about updates? */
-    std::shared_ptr<multiselect_menu> menu_;
+    /* Which screens do we want to notify about updates? */
+    std::shared_ptr<screen_butler> screen_butler_;
 };
 
 /* ns bookwyrm */

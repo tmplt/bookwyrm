@@ -26,31 +26,18 @@
 
 #include "item.hpp"
 #include "screens/base.hpp"
-#include "components/script_butler.hpp"
 
 namespace bookwyrm {
 
-class multiselect_menu;
-class script_butler;
-
-namespace menu {
-
-/* Construct he menu, assign the butler, and start the source script threads. */
-std::shared_ptr<multiselect_menu> make_with(script_butler &s, vector<py::module> &sources);
-
-/* ns menu */
-}
-
-class multiselect_menu : private screen_base {
+class multiselect_menu : public screen_base {
 public:
-    explicit multiselect_menu(vector<item> &items);
+    explicit multiselect_menu(vector<item> const &items);
 
-    void display();
     void update();
+    void on_resize();
+    void action(const uint16_t &key, const uint32_t &ch);
 
 private:
-    enum move_direction { top, up, down, bot };
-
     /* Store data about each column between updates. */
     struct columns_t {
 
@@ -137,6 +124,7 @@ private:
     }
 
     /* Move up and down the menu. */
+    enum move_direction { top, up, down, bot };
     void move(move_direction dir);
 
     /* Select (or unselect) the current item for download. */
@@ -152,19 +140,7 @@ private:
         marked_items_.erase(idx);
     }
 
-    /* Returns true if the bookwyrm fits in the current terminal window. */
-    bool bookwyrm_fits()
-    {
-        /*
-         * I planned to use the classical 80x24, but this menu is
-         * in its current form useable in terminals much smaller
-         * than that.
-         */
-        return get_width() >= 50 && get_height() >= 10;
-    }
-
     void update_column_widths();
-    void on_resize();
 
     void print_scrollbar();
     void print_header();
