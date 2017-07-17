@@ -36,14 +36,13 @@
  */
 namespace screen {
 
-class item_details : private base {
+class item_details : public base {
 public:
-    explicit item_details(bookwyrm::item &t, int pad_top)
-        : base(pad_top, 3, 0, 0), item_(t) { }
+    explicit item_details(const bookwyrm::item &item, int padding_top);
 
-    void display();
-    void update();
-    void on_resize();
+    void action(const uint16_t &key, const uint32_t &ch) override;
+    void update() override;
+    void on_resize() override;
 
 private:
     const bookwyrm::item &item_;

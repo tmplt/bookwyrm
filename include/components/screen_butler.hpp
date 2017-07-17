@@ -23,6 +23,7 @@
 #include "components/script_butler.hpp"
 #include "screens/base.hpp"
 #include "screens/multiselect_menu.hpp"
+#include "screens/item_details.hpp"
 
 namespace butler {
 
@@ -31,15 +32,17 @@ class script_butler;
 /*
  * Another butler. This one handles whatever screens we want to show the user,
  * as well as which of them to update. User input post-cli is also handled here,
- * which is forwarded to the currently focused screen.
+ * which is forwarded to the currently focused screen unless it was used to
+ * manage screens.
  */
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
     explicit screen_butler(vector<bookwyrm::item> &items);
 
-    /* Update (redraw) all the screens that need updating. */
+    /* Update (redraw) and resize all the screens that need updating. */
     void update_screens();
+    void resize_screens();
 
     /*
      * Display the TUI and let the user enter input.
@@ -51,8 +54,29 @@ private:
     /* We'll want to know the items when we create new screens. */
     vector<bookwyrm::item> const &items_;
 
-    vector<std::shared_ptr<screen::base>> screens_;
+    std::shared_ptr<screen::multiselect_menu> index_;
+    std::shared_ptr<screen::item_details> details_;
     std::shared_ptr<screen::base> focused_;
+
+    std::set<std::shared_ptr<screen::base>> screens_;
+
+    /* Is a screen::item_details open? */
+    bool viewing_details_;
+
+    /* When we close the screen::item_details, how much does the index menu scroll back? */
+    int index_scrollback_ = -1;
+
+    /* Manage screens. Return true if an action was performed. */
+    bool meta_action(const uint16_t &key, const uint32_t &ch);
+
+    /*
+     * Open a screen::item_details for the currently selected item in the index menu.
+     * Returns true if the operation was successful (no detail screen is already open).
+     */
+    bool open_details();
+
+    /* And close it. Return true if the operation was successful. */
+    bool close_details();
 };
 
 /* ns butler */

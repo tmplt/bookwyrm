@@ -24,6 +24,7 @@ set(SOURCE
     components/screen_butler.cpp
     screens/base.cpp
     screens/multiselect_menu.cpp
+    screens/item_details.cpp
 )
 
 

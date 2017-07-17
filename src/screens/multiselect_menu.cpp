@@ -24,10 +24,8 @@
 
 namespace screen {
 
-constexpr static int default_padding_bot = 3;
-
 multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
-    : base(1, default_padding_bot, 0, 1),
+    : base(default_padding_top, default_padding_bot, 0, default_padding_left),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -74,12 +72,6 @@ void multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
             break;
         case 'G':
             move(bot);
-            break;
-        case 'l':
-            view_details();
-            break;
-        case 'h':
-            unview_details();
             break;
     }
 }
@@ -279,9 +271,9 @@ void multiselect_menu::print_column(const size_t col_idx)
     }
 }
 
-void multiselect_menu::view_details()
+const std::pair<int, int> multiselect_menu::compress()
 {
-    /* const int details_height = menu_capacity() * 0.80; */
+    const int details_height = menu_capacity() * 0.80;
     padding_bot_ = menu_capacity() * 0.80;
 
     /*
@@ -291,17 +283,13 @@ void multiselect_menu::view_details()
     const int scroll = std::max(static_cast<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1), 0);
     scroll_offset_ += scroll;
 
-
-    update();
+    return {scroll, details_height};
 }
 
-void multiselect_menu::unview_details()
+void multiselect_menu::decompress(int scroll)
 {
     padding_bot_ = default_padding_bot;
-
-    // we want to scroll_offset_ -= scroll (from view_details()) here
-
-    update();
+    scroll_offset_ -= scroll;
 }
 
 } /* ns screen */

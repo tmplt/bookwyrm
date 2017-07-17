@@ -37,6 +37,21 @@ public:
     void on_resize() override;
     void action(const uint16_t &key, const uint32_t &ch) override;
 
+    /*
+     * Make some space for a screen:item_details,
+     * and return how much we scrolled and how
+     * big the new screen will be.
+     */
+    const std::pair<int, int> compress();
+
+    /* Take back the space lent to screen::item_details */
+    void decompress(int scroll);
+
+    const bookwyrm::item& selected_item() const
+    {
+        return items_[selected_item_];
+    }
+
 private:
     /* Store data about each column between updates. */
     struct columns_t {
@@ -145,9 +160,6 @@ private:
     void print_scrollbar();
     void print_header();
     void print_column(const size_t col_idx);
-
-    void view_details();
-    void unview_details();
 };
 
 } /* ns screen */

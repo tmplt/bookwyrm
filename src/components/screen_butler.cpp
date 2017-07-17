@@ -17,23 +17,29 @@
 
 #include "components/screen_butler.hpp"
 
-
-
 namespace butler {
 
 screen_butler::screen_butler(vector<bookwyrm::item> &items)
-    : items_(items)
+    : items_(items), viewing_details_(false)
 {
-    /* Create the default screen and focus on it. */
-    auto menu = std::make_shared<screen::multiselect_menu>(items_);
-    focused_ = menu;
-    screens_.emplace_back(menu);
+    /* Create the default menu screen and focus on it. */
+    index_ = std::make_shared<screen::multiselect_menu>(items_);
+    focused_ = index_;
+    screens_.insert(index_);
 }
 
 void screen_butler::update_screens()
 {
+    if (!viewing_details_)
+        index_->update();
+
+    focused_->update();
+}
+
+void screen_butler::resize_screens()
+{
     for (auto &screen : screens_)
-        screen->update();
+        screen->on_resize();
 }
 
 void screen_butler::display()
@@ -50,8 +56,7 @@ void screen_butler::display()
     struct tb_event ev;
     while (tb_poll_event(&ev)) {
         if (ev.type == TB_EVENT_RESIZE) {
-            for (auto &screen : screens_)
-                screen->on_resize();
+            resize_screens();
         } else if (ev.type == TB_EVENT_KEY) {
             /* When the terminal is too small, only allow quitting. */
             if (!screen::base::bookwyrm_fits()) {
@@ -61,16 +66,70 @@ void screen_butler::display()
                 continue;
             }
 
-            switch (ev.key) {
-                case TB_KEY_ESC:
-                    return;
-                case TB_KEY_CTRL_L:
-                    focused_->update();
-            }
+            if (ev.key == TB_KEY_ESC)
+                return;
 
-            focused_->action(ev.key, ev.ch);
+            if (!meta_action(ev.key, ev.ch))
+                focused_->action(ev.key, ev.ch);
         }
     }
+}
+
+bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
+{
+    switch (ch) {
+        case 'l':
+            return open_details();
+        case 'h':
+            return close_details();
+    }
+
+    switch (key) {
+        case TB_KEY_CTRL_L:
+            update_screens();
+            return true;
+        case TB_KEY_ARROW_RIGHT:
+            return open_details();
+        case TB_KEY_ARROW_LEFT:
+            return close_details();
+    }
+
+    return false;
+}
+
+bool screen_butler::open_details()
+{
+    if (viewing_details_) return false;
+
+    /* How much space will the detail menu take up? */
+    int height;
+    std::tie(index_scrollback_, height) = index_->compress();
+
+    details_ = std::make_shared<screen::item_details>(index_->selected_item(), height);
+    focused_ = details_;
+    screens_.insert(details_);
+
+    update_screens();
+    viewing_details_ = true;
+
+    return true;
+}
+
+bool screen_butler::close_details()
+{
+    if (!viewing_details_) return false;
+
+    focused_ = index_;
+    screens_.erase(details_);
+
+    /* Give back the space the detail menu too up to the index menu. */
+    index_->decompress(index_scrollback_);
+    index_scrollback_ = -1;
+
+    update_screens();
+    viewing_details_ = false;
+
+    return true;
 }
 
 /* ns butler */
