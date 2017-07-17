@@ -280,7 +280,7 @@ const std::pair<int, int> multiselect_menu::compress()
      * Will the detail menu hide the highlighted item?
      * How much do we need to scroll if we don't want that to happen?
      */
-    const int scroll = std::max(static_cast<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1), 0);
+    const int scroll = std::max<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1, 0);
     scroll_offset_ += scroll;
 
     return {scroll, details_height};
