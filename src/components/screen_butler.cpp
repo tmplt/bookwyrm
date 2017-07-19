@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <termbox.h>
+
 #include "components/screen_butler.hpp"
 
 namespace butler {
@@ -30,16 +32,29 @@ screen_butler::screen_butler(vector<bookwyrm::item> &items)
 
 void screen_butler::update_screens()
 {
-    if (!viewing_details_)
-        index_->update();
+    tb_clear();
 
-    focused_->update();
+    if (!bookwyrm_fits()) {
+        int x = 0, y = 0;
+        for (const uint32_t &ch : "The terminal is too small. I can't fit!")
+            tb_change_cell(x++, y, ch, 0, 0);
+
+        tb_present();
+        return;
+    }
+
+    for (auto &screen : screens_)
+        screen->update();
+
+    tb_present();
 }
 
 void screen_butler::resize_screens()
 {
     for (auto &screen : screens_)
         screen->on_resize();
+
+    update_screens();
 }
 
 void screen_butler::display()
@@ -59,7 +74,7 @@ void screen_butler::display()
             resize_screens();
         } else if (ev.type == TB_EVENT_KEY) {
             /* When the terminal is too small, only allow quitting. */
-            if (!screen::base::bookwyrm_fits()) {
+            if (!bookwyrm_fits()) {
                 if (ev.key == TB_KEY_ESC)
                     return;
 
@@ -71,6 +86,8 @@ void screen_butler::display()
 
             if (!meta_action(ev.key, ev.ch))
                 focused_->action(ev.key, ev.ch);
+
+            update_screens();
         }
     }
 }
@@ -109,9 +126,7 @@ bool screen_butler::open_details()
     focused_ = details_;
     screens_.insert(details_);
 
-    update_screens();
     viewing_details_ = true;
-
     return true;
 }
 
@@ -126,9 +141,7 @@ bool screen_butler::close_details()
     index_->decompress(index_scrollback_);
     index_scrollback_ = -1;
 
-    update_screens();
     viewing_details_ = false;
-
     return true;
 }
 

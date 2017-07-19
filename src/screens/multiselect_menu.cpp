@@ -78,14 +78,6 @@ void multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
 
 void multiselect_menu::update()
 {
-    clear();
-
-    if (!bookwyrm_fits()) {
-        mvprintw(0, 0, "The terminal is too small. I can't fit!");
-        refresh();
-        return;
-    }
-
     for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
         if (columns_[col_idx].width > get_width() - 1 - columns_[col_idx].startx) {
             /* We can't fit another column. */
@@ -100,8 +92,6 @@ void multiselect_menu::update()
 
     mvprintw(0, get_height() - 2, fmt::format("I have found {} items thus far.", item_count()));
     mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
-
-    refresh();
 }
 
 void multiselect_menu::move(move_direction dir)
@@ -128,8 +118,6 @@ void multiselect_menu::move(move_direction dir)
             scroll_offset_ = selected_item_ - menu_capacity() + 1;
             break;
     }
-
-    update();
 }
 
 void multiselect_menu::toggle_select()
@@ -138,8 +126,6 @@ void multiselect_menu::toggle_select()
         unmark_item(selected_item_);
     else
         mark_item(selected_item_);
-
-    update();
 }
 
 void multiselect_menu::update_column_widths()
@@ -173,7 +159,6 @@ void multiselect_menu::on_resize()
      * if so, move it to menu_bot).
      */
     if (menu_at_bot()) selected_item_--;
-    update();
 }
 
 void multiselect_menu::print_scrollbar()

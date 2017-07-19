@@ -58,9 +58,6 @@ protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
 
-    static void clear()   { tb_clear();   }
-    static void refresh() { tb_present(); }
-
     static int get_width()  { return tb_width(); }
     static int get_height() { return tb_height(); }
 
