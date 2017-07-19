@@ -40,7 +40,7 @@ class item_details : public base {
 public:
     explicit item_details(const bookwyrm::item &item, int padding_top);
 
-    void action(const uint16_t &key, const uint32_t &ch) override;
+    bool action(const uint16_t &key, const uint32_t &ch) override;
     void update() override;
     void on_resize() override;
 

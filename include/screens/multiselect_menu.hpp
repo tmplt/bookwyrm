@@ -35,7 +35,7 @@ public:
 
     void update() override;
     void on_resize() override;
-    void action(const uint16_t &key, const uint32_t &ch) override;
+    bool action(const uint16_t &key, const uint32_t &ch) override;
 
     /*
      * Make some space for a screen:item_details,

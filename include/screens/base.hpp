@@ -40,19 +40,9 @@ public:
     /* What should be done when the window resizes? */
     virtual void on_resize() = 0;
 
-    /* Handle keybinds. TODO: rename? */
-    virtual void action(const uint16_t &key, const uint32_t &ch) = 0;
+    /* Manage the screen. Return true if an action was performed. */
+    virtual bool action(const uint16_t &key, const uint32_t &ch) = 0;
 
-    /* Returns true if the bookwyrm fits in the current terminal window. */
-    static bool bookwyrm_fits()
-    {
-        /*
-         * I planned to use the classical 80x24, but multiselect_menu is
-         * in its current form useable in terminals much smaller
-         * than that.
-         */
-        return get_width() >= 50 && get_height() >= 10;
-    }
 
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);

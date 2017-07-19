@@ -84,10 +84,8 @@ void screen_butler::display()
             if (ev.key == TB_KEY_ESC)
                 return;
 
-            if (!meta_action(ev.key, ev.ch))
-                focused_->action(ev.key, ev.ch);
-
-            update_screens();
+            if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
+                update_screens();
         }
     }
 }

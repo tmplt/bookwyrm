@@ -25,10 +25,12 @@ item_details::item_details(const bookwyrm::item &item, int padding_top)
 
 }
 
-void item_details::action(const uint16_t &key, const uint32_t &ch)
+bool item_details::action(const uint16_t &key, const uint32_t &ch)
 {
     (void)key;
     (void)ch;
+
+    return false;
 }
 
 void item_details::update()

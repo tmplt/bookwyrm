@@ -46,34 +46,36 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
     update_column_widths();
 }
 
-void multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
+bool multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
 {
     switch (key) {
         case TB_KEY_ARROW_DOWN:
             move(down);
-            break;
+            return true;
         case TB_KEY_ARROW_UP:
             move(up);
-            break;
+            return true;
         case TB_KEY_SPACE:
             toggle_select();
-            break;
+            return true;
     }
 
     switch (ch) {
         case 'j':
             move(down);
-            break;
+            return true;
         case 'k':
             move(up);
-            break;
+            return true;
         case 'g':
             move(top);
-            break;
+            return true;
         case 'G':
             move(bot);
-            break;
+            return true;
     }
+
+    return false;
 }
 
 void multiselect_menu::update()
