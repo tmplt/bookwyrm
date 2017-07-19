@@ -1,6 +1,6 @@
 What is this?
 ---
-bookwyrm is a cli-based program written in C++17 which, given some input data,
+bookwyrm is a TUI-based program written in C++17 which, given some input data,
 searches for matching books and academic papers on various sources.
 When done, all found items are (will be) presented in a menu ála mutt where you can select which items you want to download.
 

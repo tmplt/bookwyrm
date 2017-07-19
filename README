@@ -1,0 +1,33 @@
+bookwyrm is a TUI-based program written in C++17 which, given some input
+data, searches for matching ebooks and academic papers on various sources.
+When done, all found items are presenting in a mutt-like index menu, where
+you choose which items you want to download.
+
+An item can be viewed for details, which will be fetched from some
+database, such as the Open Library or WorldCat.
+
+For example, one might run bookwyrm as follows:
+
+    bookwyrm --author "Naomi Novik" --serie Temeraire --year >=2015
+
+
+Sources are written as scripts run asynchronously during run-time.
+Some scripts are available upstream, but you can also write your
+own into `~/.config/bookwyrm/sources/`. Currently, only Python
+scripts are supported, but LUA is being considered.
+
+Aside from a C++17-compliant compiler and CMake, bookwyrm also depends
+on a few libraries:
+    - fmt,        for a few print-outs and since spdlog depends on it;
+    - spdlog,     for warning/error reports to the user;
+    * pybind11,   for interfacing with Python, and
+    * fuzzywuzzy, for fuzzily matching found items with what's wanted.
+
+All libraries enumerated with a hyphen '-' are non-essential and may
+be subject to removal later in development.
+
+bookwyrm is still in the early development stage, so nothing is set in
+stone. If you have any insights, questions, or wish to contribute,
+contact me via email at <tmplt@dragons.rocks> or on nixers' IRC.
+
+bookwyrm is licensed under the GPLv3+.
