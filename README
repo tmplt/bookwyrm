@@ -20,6 +20,7 @@ Aside from a C++17-compliant compiler and CMake, bookwyrm also depends
 on a few libraries:
     - fmt,        for a few print-outs and since spdlog depends on it;
     - spdlog,     for warning/error reports to the user;
+    * termbox,    for the TUI;
     * pybind11,   for interfacing with Python, and
     * fuzzywuzzy, for fuzzily matching found items with what's wanted.
 
