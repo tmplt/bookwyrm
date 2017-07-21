@@ -41,6 +41,7 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/includ
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/termbox/src)
 
 # Some pre-compile tasks:
 execute_process(COMMAND git describe --tags --dirty=-git
@@ -68,6 +69,6 @@ target_link_libraries(${PROJECT_NAME}
     fuzzywuzzy
     pybind11::embed
     stdc++fs
-    termbox)
+    termbox_lib_static)
 
 add_subdirectory(bindings)
