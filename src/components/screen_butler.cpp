@@ -94,7 +94,7 @@ bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
 
     switch (key) {
         case TB_KEY_CTRL_L:
-            /* Update the screens, done display(). */
+            /* Update the screens, done in calling function. */
             return true;
         case TB_KEY_ARROW_RIGHT:
             return open_details();

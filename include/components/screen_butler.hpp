@@ -40,9 +40,8 @@ public:
     /* WARN: this constructor should only be used in make_with() above. */
     explicit screen_butler(vector<bookwyrm::item> &items);
 
-    /* Update (redraw) and resize all the screens that need updating. */
+    /* Update (redraw) all screens that need updating. */
     void update_screens();
-    void resize_screens();
 
     /*
      * Display the TUI and let the user enter input.
@@ -88,6 +87,8 @@ private:
 
     /* And close it. Return true if the operation was successful. */
     bool close_details();
+
+    void resize_screens();
 };
 
 /* ns butler */
