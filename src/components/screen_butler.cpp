@@ -36,15 +36,12 @@ void screen_butler::update_screens()
 
     if (!bookwyrm_fits()) {
         int x = 0, y = 0;
-        for (const uint32_t &ch : "The terminal is too small. I can't fit!")
+        for (const uint32_t &&ch : "The terminal is too small. I can't fit!")
             tb_change_cell(x++, y, ch, 0, 0);
-
-        tb_present();
-        return;
+    } else {
+        for (auto &screen : screens_)
+           screen->update();
     }
-
-    for (auto &screen : screens_)
-        screen->update();
 
     tb_present();
 }
@@ -73,16 +70,12 @@ void screen_butler::display()
         if (ev.type == TB_EVENT_RESIZE) {
             resize_screens();
         } else if (ev.type == TB_EVENT_KEY) {
-            /* When the terminal is too small, only allow quitting. */
-            if (!bookwyrm_fits()) {
-                if (ev.key == TB_KEY_ESC)
-                    return;
-
-                continue;
-            }
-
             if (ev.key == TB_KEY_ESC)
                 return;
+
+            /* When the terminal is too small, only allow quitting. */
+            if (!bookwyrm_fits())
+                continue;
 
             if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
                 update_screens();
@@ -101,7 +94,7 @@ bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
 
     switch (key) {
         case TB_KEY_CTRL_L:
-            update_screens();
+            /* Update the screens, done display(). */
             return true;
         case TB_KEY_ARROW_RIGHT:
             return open_details();
