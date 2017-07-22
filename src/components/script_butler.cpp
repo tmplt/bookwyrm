@@ -17,6 +17,7 @@
 
 #include <system_error>
 #include <cerrno>
+#include <cstdlib>
 
 #include <array>
 #include <experimental/filesystem>
@@ -34,22 +35,26 @@ script_butler::script_butler(const bookwyrm::item &&wanted)
 
 vector<pybind11::module> script_butler::load_sources()
 {
+    vector<fs::path> source_paths;
 #ifdef DEBUG
     /* Bookwyrm must be run from build/ in DEBUG mode. */
-    const auto source_path = fs::canonical(fs::path("../src/sources"));
+    source_paths = { fs::canonical(fs::path("../src/sources")) };
 #else
-    const std::array<fs::path, 2> paths = {"/etc/bookwyrm/sources",
-                                           "~/.config/bookwyrm/sources"};
-
-    // TODO: follow <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+    if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty())
+        source_paths.push_back(conf / "bookwyrm/sources");
+    else if (fs::path home = std::getenv("HOME"); !home.empty())
+        source_paths.push_back(home / ".config/bookwyrm/sources");
+    else
+        logger_->error("couldn't find any source script directories.");
 #endif
 
     /*
-     * Append source_path to Python's sys.path,
+     * Append the source paths to Python's sys.path,
      * allowing them to be imported.
      */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
-    sys_path.append(source_path.c_str());
+    for (auto &p : source_paths)
+        sys_path.append(p.string().c_str());
 
     /*
      * Find all Python modules and populate the
@@ -62,26 +67,28 @@ vector<pybind11::module> script_butler::load_sources()
      * names in Python.
      */
     vector<py::module> sources;
-    for (const fs::path &p : fs::directory_iterator(source_path)) {
-        if (p.extension() != ".py") continue;
+    for (const auto &source_path : source_paths) {
+        for (const fs::path &p : fs::directory_iterator(source_path)) {
+            if (p.extension() != ".py") continue;
 
-        if (!utils::readable_file(p)) {
-            logger_->warn("can't load module '{}': not a regular file or unreadable"
-                    "; ignoring...", p.string());
-            continue;
-        }
+            if (!utils::readable_file(p)) {
+                logger_->warn("can't load module '{}': not a regular file or unreadable"
+                        "; ignoring...", p.string());
+                continue;
+            }
 
-        try {
-            string module = p.stem();
-            logger_->debug("loading module '{}'...", module);
-            sources.emplace_back(py::module::import(module.c_str()));
-        } catch (const py::error_already_set &err) {
-            logger_->warn("{}; ignoring...", err.what());
+            try {
+                string module = p.stem();
+                logger_->debug("loading module '{}'...", module);
+                sources.emplace_back(py::module::import(module.c_str()));
+            } catch (const py::error_already_set &err) {
+                logger_->warn("{}; ignoring...", err.what());
+            }
         }
     }
 
     if (sources.empty())
-        throw program_error("couldn't find any valid source modules, terminating...");
+        throw program_error("couldn't find any valid source scripts, terminating...");
 
     return sources;
 }
