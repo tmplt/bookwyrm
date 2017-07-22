@@ -53,7 +53,7 @@ enum { /* magic padding numbers */
 cliparser::cli_type cliparser::make(const string &&progname, const groups &&groups)
 {
     return std::make_unique<cliparser>(
-        "Usage: " + progname + " option... download_path", std::forward<decltype(groups)>(groups)
+        "Usage: " + progname + " OPTION [OPTION]... PATH", std::forward<decltype(groups)>(groups)
     );
 }
 
