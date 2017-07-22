@@ -133,6 +133,9 @@ private:
      */
     bool parse_pair(const string_view &input, const string_view &input_next);
 
+    /* An option must either match its long of short variant to exist. */
+    static bool opt_exists(const string_view &option, string opt_short, string opt_long);
+
     /* Program synopsis. */
     const string synopsis_;
 

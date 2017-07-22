@@ -219,14 +219,6 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
         return value;
     };
 
-    /* An option must either match its long of short variant to exist. */
-    const auto opt_exists = [](const string_view &option, string opt_short, string opt_long) {
-        const bool is_short = option.compare(0, opt_short.length(), opt_short) == 0,
-                   is_long  = option.compare(0, opt_long.length(), opt_long) == 0;
-
-        return is_short || is_long;
-    };
-
     for (const auto &group : valid_groups_) {
         for (const auto &opt : group.options) {
             if (opt_exists(input, opt.flag, opt.flag_long)) {
@@ -253,4 +245,12 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
 
     positional_args_.emplace_back(input);
     return false;
+}
+
+bool cliparser::opt_exists(const string_view &option, string opt_short, string opt_long)
+{
+    const bool is_short = option.compare(0, opt_short.length(), opt_short) == 0,
+               is_long  = option.compare(0, opt_long.length(), opt_long) == 0;
+
+    return is_short || is_long;
 }
