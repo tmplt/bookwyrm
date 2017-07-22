@@ -66,9 +66,6 @@ bookwyrm uses some C++17 features such as `std::string_view` and `std::filesyste
 so a recent compiler is required.
 CMake 3.0 or above is also required.
 
-At present, bookwyrm defaults to build in Debug-mode.
-(This because we haven't hit release yet, and because it doesn't compile in release yet.)
-
 Just clone the repo and:
 ```
 $ mkdir build && cd build
@@ -78,7 +75,7 @@ $ make
 
 Running
 ---
-The path for finding Python modules is hard-coded but relative,
+When compiling in debug, the path for finding Python modules is a hard-coded relative,
 so for now:
 ```
 $ cd build
