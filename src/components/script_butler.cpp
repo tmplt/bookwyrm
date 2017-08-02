@@ -40,6 +40,7 @@ vector<pybind11::module> script_butler::load_sources()
     /* Bookwyrm must be run from build/ in DEBUG mode. */
     source_paths = { fs::canonical(fs::path("../src/sources")) };
 #else
+    /* TODO: look through /etc/bookwyrm/sources/ also. */
     if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty())
         source_paths.push_back(conf / "bookwyrm/sources");
     else if (fs::path home = std::getenv("HOME"); !home.empty())

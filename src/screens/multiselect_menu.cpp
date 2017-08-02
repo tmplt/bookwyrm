@@ -31,16 +31,18 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
 {
     /*
      * These wanted widths works fine for now,
-     * but we might want some way to utilize whatever
-     * horizontal space is left.
+     * but we are still not utilizing the full 100%
+     * of the width, which we should.
+     *
+     * TODO: Remedy this.
      */
     columns_ = {
-        {"title",      .30},
-        {"year",       4  },
-        {"serie",      .15},
-        {"authors",    .20},
-        {"publisher",  .15},
-        {"format",     6  },
+        {"title",     .30},
+        {"year",       4 },
+        {"serie",     .15},
+        {"authors",   .20},
+        {"publisher", .15},
+        {"format",     6 },
     };
 
     update_column_widths();
@@ -80,20 +82,17 @@ bool multiselect_menu::action(const uint16_t &key, const uint32_t &ch)
 
 void multiselect_menu::update()
 {
-    for (size_t col_idx = 0; col_idx < columns_.size(); col_idx++) {
-        if (columns_[col_idx].width > get_width() - 1 - columns_[col_idx].startx) {
-            /* We can't fit another column. */
-            break;
-        }
+    for (size_t idx = 0; idx < columns_.size(); idx++) {
+        /* Can we fit another column? */
+        const size_t allowed_width = get_width() - 1 - columns_[idx].startx;
+        if (columns_[idx].width > allowed_width) break;
 
-        print_column(col_idx);
+        print_column(idx);
     }
 
     print_header();
     print_scrollbar();
-
-    mvprintw(0, get_height() - 2, fmt::format("I have found {} items thus far.", item_count()));
-    mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
+    print_footer();
 }
 
 void multiselect_menu::move(move_direction dir)
@@ -137,6 +136,7 @@ void multiselect_menu::update_column_widths()
         try {
             column.width = std::get<int>(column.width_w);
         } catch (std::bad_variant_access&) {
+            /* It's a ratio, so multiply it with the full width. */
             const int width = get_width() - 1 - padding_right_;
             column.width = width * std::get<double>(column.width_w);
         }
@@ -165,12 +165,6 @@ void multiselect_menu::on_resize()
 
 void multiselect_menu::print_scrollbar()
 {
-    /*
-     * This isn't something we can plug-and-play later,
-     * and it might not scale perfectly, but it gives us
-     * something to work from.
-     */
-
     /* Nice runes. */
     const uint32_t bg = 0x2592, // '▒'
                    fg = 0x2588; // '█'
@@ -178,22 +172,21 @@ void multiselect_menu::print_scrollbar()
     /*
      * Find the height of the scrollbar.
      * The more entries, the smaller is gets.
-     * (not less than 1, though)
+     * (not less than 3 - 2 = 1, though)
      */
-    const size_t height = std::max((menu_capacity()) / item_count(), 3ul) - 2;
+    const size_t height = std::max<size_t>(menu_capacity() / item_count(), 3) - 2;
 
     /* Find out where to print the bar. */
-    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + 1;
+    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + padding_top_;
 
     /* First print the scrollbar's background. */
-    for (size_t y = 1; y <= menu_capacity(); y++) {
+    for (size_t y = padding_top_; y <= menu_capacity(); y++) {
         tb_change_cell(get_width() - 1, y, bg, 0, 0);
     }
 
     /* Then we print the bar. */
-    for (size_t y = start; y <= start + height; y++) {
+    for (size_t y = start; y <= start + height; y++)
         tb_change_cell(get_width() - 1, y, fg, 0, 0);
-    }
 }
 
 void multiselect_menu::print_header()
@@ -204,16 +197,25 @@ void multiselect_menu::print_header()
      */
     size_t x = 1;
     for (auto &column : columns_) {
-        if (column.width > get_width() - 1 - padding_right_ - x)
-            break;
-
         /* Center the title. */
         mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title);
-        x += std::max(column.width, column.title.length()) + 1;
+        x += std::max(column.width, column.title.length());
 
-        mvprintw(x, 0, "|");
-        x += 2;
+        /* Padding between the title and the seperator to the left.. */
+        x++;
+
+        /* Print the seperator. */
+        mvprintw(x++, 0, "|");
+
+        /* ..and to the right. */
+        x++;
     }
+}
+
+void multiselect_menu::print_footer()
+{
+    mvprintw(0, get_height() - 2, fmt::format("I have found {} items thus far.", item_count()));
+    mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
 }
 
 void multiselect_menu::print_column(const size_t col_idx)
@@ -242,7 +244,7 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         /* Print the string, check if it was truncated. */
         const auto &str = items_[i].menu_order(col_idx);
-        const int truncd = mvprintwlim(c.startx, y, str, c.width, attrs);
+        const int trunc_len = mvprintwlim(c.startx, y, str, c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
@@ -250,11 +252,12 @@ void multiselect_menu::print_column(const size_t col_idx)
          *
          * We start at the end of the string, just after the last character (or the '~'),
          * and write until the end of the column, plus seperator and the padding on the right
-         * side of it (e.g. up to and including the first char in the next column).
+         * side of it (e.g. up to and including the first char in the next column, hence the magic).
          */
-        for (auto x = c.startx + str.length() - truncd; x <= c.startx + c.width + 4; x++) {
+        const auto string_end = c.startx + str.length() - trunc_len,
+                   next_start = c.startx + c.width + 2;
+        for (auto x = string_end; x <= next_start; x++)
             tb_change_cell(x, y, ' ', attrs, 0);
-        }
     }
 }
 

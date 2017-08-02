@@ -127,6 +127,7 @@ public:
         return os;
     }
 
+    /* TODO: improve this ugly thing. */
     const string& menu_order(size_t idx) const
     {
         /*

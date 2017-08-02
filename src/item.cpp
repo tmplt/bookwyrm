@@ -75,8 +75,8 @@ exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
         }
     }();
 
-    auto parse_number = [&cli](string &&opt) -> int {
-        auto value_str = cli->get(opt);
+    const auto parse_number = [&cli](string &&opt) -> int {
+        const auto value_str = cli->get(opt);
         if (value_str.empty()) return empty;
 
         try {
@@ -103,7 +103,7 @@ nonexacts_t::nonexacts_t(const std::unique_ptr<cliparser> &cli)
 
 exacts_t::exacts_t(const std::map<string, int> &dict)
 {
-    auto get_value = [&dict](string &&key) -> int {
+    const auto get_value = [&dict](string &&key) -> int {
         const auto elem = dict.find(key);
         return elem == dict.end() ? empty : elem->second;
     };
@@ -119,7 +119,7 @@ exacts_t::exacts_t(const std::map<string, int> &dict)
 
 nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
 {
-    auto get_value = [&dict](string &&key) -> string {
+    const auto get_value = [&dict](string &&key) -> string {
         const auto elem = dict.find(key);
         return elem == dict.end() ? "" : elem->second;
     };
