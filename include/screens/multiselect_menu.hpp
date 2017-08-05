@@ -37,6 +37,11 @@ public:
     void on_resize() override;
     bool action(const uint16_t &key, const uint32_t &ch) override;
 
+    string footer_info() override
+    {
+        return fmt::format("I've found {} items thus far.", item_count());
+    }
+
     /*
      * Make some space for a screen:item_details,
      * and return how much we scrolled and how
@@ -165,7 +170,6 @@ private:
 
     void print_scrollbar();
     void print_header();
-    void print_footer();
     void print_column(const size_t col_idx);
 };
 

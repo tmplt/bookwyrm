@@ -43,7 +43,14 @@ void screen_butler::update_screens()
            screen->update();
     }
 
+    print_footer();
     tb_present();
+}
+
+void screen_butler::print_footer()
+{
+    mvprintw(0, tb_height() - 2, focused_->footer_info());
+    mvprintwl(0, tb_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
 }
 
 void screen_butler::resize_screens()
@@ -134,6 +141,23 @@ bool screen_butler::close_details()
 
     viewing_details_ = false;
     return true;
+}
+
+void screen_butler::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
+{
+    for (const uint32_t &ch : str)
+        tb_change_cell(x++, y, ch, attrs, 0);
+}
+
+void screen_butler::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
+{
+    for (int i = 0; i < x; i++)
+        tb_change_cell(i, y, ' ', attrs, 0);
+
+    mvprintw(x, y, str, attrs);
+
+    for (int i = x + str.length(); i < tb_width() - 1; i++)
+        tb_change_cell(i, y, ' ', attrs, 0);
 }
 
 /* ns butler */

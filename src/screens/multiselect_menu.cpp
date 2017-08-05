@@ -210,12 +210,6 @@ void multiselect_menu::print_header()
     }
 }
 
-void multiselect_menu::print_footer()
-{
-    mvprintw(0, get_height() - 2, fmt::format("I have found {} items thus far.", item_count()));
-    mvprintwl(0, get_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
-}
-
 void multiselect_menu::print_column(const size_t col_idx)
 {
     const auto &c = columns_[col_idx];

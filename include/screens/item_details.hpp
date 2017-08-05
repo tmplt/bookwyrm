@@ -44,6 +44,11 @@ public:
     void update() override;
     void on_resize() override;
 
+    string footer_info() override
+    {
+        return "TODO";
+    }
+
 private:
     const bookwyrm::item &item_;
     /* void print_border(); */

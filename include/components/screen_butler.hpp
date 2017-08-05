@@ -42,6 +42,7 @@ public:
 
     /* Update (redraw) all screens that need updating. */
     void update_screens();
+    void print_footer();
 
     /*
      * Display the TUI and let the user enter input.
@@ -89,6 +90,10 @@ private:
     bool close_details();
 
     void resize_screens();
+
+    // copied from screens/base, for now
+    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 };
 
 /* ns butler */
