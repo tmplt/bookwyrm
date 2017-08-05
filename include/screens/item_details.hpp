@@ -20,8 +20,6 @@
 #include "item.hpp"
 #include "screens/base.hpp"
 
-// namespace this to bookwyrm::screens and then have it as bookwyrm::screens::details?
-
 /*
  * Interface-wise, this will be like opening an email for reading in mutt.
  * A thread will be spawned to fetch more info about the item from some database,
@@ -44,9 +42,14 @@ public:
     void update() override;
     void on_resize() override;
 
-    string footer_info() override
+    string footer_info() const override
     {
         return "TODO";
+    }
+
+    string footer_controls() override
+    {
+        return "[ESC]Quit [h]Close details";
     }
 
 private:

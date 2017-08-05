@@ -37,9 +37,14 @@ public:
     void on_resize() override;
     bool action(const uint16_t &key, const uint32_t &ch) override;
 
-    string footer_info() override
+    string footer_info() const override
     {
         return fmt::format("I've found {} items thus far.", item_count());
+    }
+
+    string footer_controls() override
+    {
+        return "[ESC]Quit [j/k]Navigation [SPACE]Toggle select";
     }
 
     /*

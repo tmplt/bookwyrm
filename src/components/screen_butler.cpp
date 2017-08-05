@@ -35,9 +35,7 @@ void screen_butler::update_screens()
     tb_clear();
 
     if (!bookwyrm_fits()) {
-        int x = 0, y = 0;
-        for (const uint32_t &&ch : "The terminal is too small. I can't fit!")
-            tb_change_cell(x++, y, ch, 0, 0);
+        mvprintw(0, 0, "The terminal is too small. I can't fit!");
     } else {
         for (auto &screen : screens_)
            screen->update();
@@ -50,7 +48,7 @@ void screen_butler::update_screens()
 void screen_butler::print_footer()
 {
     mvprintw(0, tb_height() - 2, focused_->footer_info());
-    mvprintwl(0, tb_height() - 1, "[ESC]Quit [j/k]Navigation [SPACE]Toggle select", TB_REVERSE | TB_BOLD);
+    mvprintwl(0, tb_height() - 1, focused_->footer_controls(), TB_REVERSE | TB_BOLD);
 }
 
 void screen_butler::resize_screens()

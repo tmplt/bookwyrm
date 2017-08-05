@@ -44,7 +44,10 @@ public:
     virtual bool action(const uint16_t &key, const uint32_t &ch) = 0;
 
     /* When this screen is focused, what should we print in the footer? */
-    virtual string footer_info() = 0;
+    virtual string footer_info() const = 0;
+
+    /* How do we control the screen? */
+    virtual string footer_controls() = 0;
 
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);

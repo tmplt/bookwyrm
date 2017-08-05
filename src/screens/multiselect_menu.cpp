@@ -37,12 +37,12 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
      * TODO: Remedy this.
      */
     columns_ = {
-        {"title",     .30},
-        {"year",       4 },
-        {"serie",     .15},
-        {"authors",   .20},
-        {"publisher", .15},
-        {"format",     6 },
+        {"Title",     .30},
+        {"Year",       4 },
+        {"Serie",     .15},
+        {"Authors",   .20},
+        {"Publisher", .15},
+        {"Format",     6 },
     };
 
     update_column_widths();
