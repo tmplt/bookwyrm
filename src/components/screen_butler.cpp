@@ -49,7 +49,7 @@ void screen_butler::update_screens()
 void screen_butler::print_footer()
 {
     mvprintw(0, tb_height() - 2, focused_->footer_info());
-    mvprintwl(0, tb_height() - 1, focused_->footer_controls(), TB_REVERSE | TB_BOLD);
+    mvprintwl(0, tb_height() - 1, "[ESC]Quit " + focused_->footer_controls(), TB_REVERSE | TB_BOLD);
 }
 
 void screen_butler::resize_screens()

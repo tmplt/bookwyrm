@@ -49,7 +49,7 @@ public:
 
     string footer_controls() override
     {
-        return "[ESC]Quit [h]Close details";
+        return "[h]Close details";
     }
 
 private:

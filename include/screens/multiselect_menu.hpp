@@ -44,7 +44,7 @@ public:
 
     string footer_controls() override
     {
-        return "[ESC]Quit [j/k]Navigation [SPACE]Toggle select";
+        return "[j/k]Navigation [SPACE]Toggle select";
     }
 
     /*
