@@ -25,7 +25,7 @@
 namespace screen {
 
 multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
-    : base(default_padding_top, default_padding_bot, 0, default_padding_left),
+    : base(default_padding_top, default_padding_bot, default_padding_left, 0),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {

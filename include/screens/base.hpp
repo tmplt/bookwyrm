@@ -24,7 +24,7 @@
 namespace screen {
 
 constexpr static int default_padding_top  = 1,
-                     default_padding_left = 1,
+                     default_padding_left = 0,
                      default_padding_bot  = 3;
 
 /*
