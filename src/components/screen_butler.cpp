@@ -39,9 +39,10 @@ void screen_butler::update_screens()
     } else {
         for (auto &screen : screens_)
            screen->update();
+
+        print_footer();
     }
 
-    print_footer();
     tb_present();
 }
 
