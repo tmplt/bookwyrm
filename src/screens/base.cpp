@@ -36,6 +36,14 @@ base::~base()
     assert(screen_count_ >= 0); // just in case, for now
 }
 
+void base::change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg, const uint16_t bg)
+{
+    assert(x >= padding_left_ && x < get_width() - padding_right_);
+    assert(y <= get_height() - padding_bot_ - 1 && y >= padding_top_);
+
+    tb_change_cell(x, y, ch, fg, bg);
+}
+
 void base::init_tui()
 {
     if (screen_count_++ > 0) return;
@@ -56,11 +64,11 @@ int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_
     for (const uint32_t &ch : str) {
         if (x == limit - 1 && str.length() > space) {
             /* We can't fit the rest of the string. */
-            tb_change_cell(x, y, '~', attrs, 0);
+            change_cell(x, y, '~', attrs);
             return str.length() - space;
         }
 
-        tb_change_cell(x++, y, ch, attrs, 0);
+        change_cell(x++, y, ch, attrs);
     }
 
     return 0;
@@ -69,18 +77,18 @@ int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_
 void base::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
 {
     for (const uint32_t &ch : str)
-        tb_change_cell(x++, y, ch, attrs, 0);
+        change_cell(x++, y, ch, attrs);
 }
 
 void base::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
 {
     for (int i = 0; i < x; i++)
-        tb_change_cell(i, y, ' ', attrs, 0);
+        change_cell(i, y, ' ', attrs);
 
     mvprintw(x, y, str, attrs);
 
-    for (int i = x + str.length(); i < tb_width(); i++)
-        tb_change_cell(i, y, ' ', attrs, 0);
+    for (int i = x + str.length(); i < get_width() - 1; i++)
+        change_cell(i, y, ' ', attrs);
 }
 
 /* ns screen */

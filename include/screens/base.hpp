@@ -23,7 +23,7 @@
 
 namespace screen {
 
-constexpr static int default_padding_top  = 1,
+constexpr static int default_padding_top  = 0,
                      default_padding_left = 0,
                      default_padding_bot  = 3;
 
@@ -52,6 +52,12 @@ protected:
     static int get_height() { return tb_height(); }
 
     /*
+     * After asserting that the screen owns the cell,
+     * change it with the given parameters.
+     */
+    void change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg = 0, const uint16_t bg = 0);
+
+    /*
      * Akin to Ncurses mvprintw(), but:
      * print a string starting from (x, y) along the x-axis. The space
      * argument denotes how much of the string is printed. If the string
@@ -60,17 +66,17 @@ protected:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    static int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
+    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
 
     /* Same as above, but don't truncate. */
-    static void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,

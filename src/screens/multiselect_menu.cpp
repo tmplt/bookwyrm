@@ -92,7 +92,6 @@ void multiselect_menu::update()
 
     print_header();
     print_scrollbar();
-    print_footer();
 }
 
 void multiselect_menu::move(move_direction dir)
@@ -177,16 +176,15 @@ void multiselect_menu::print_scrollbar()
     const size_t height = std::max<size_t>(menu_capacity() / item_count(), 3) - 2;
 
     /* Find out where to print the bar. */
-    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + padding_top_;
+    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + virtual_padding_top();
 
     /* First print the scrollbar's background. */
-    for (size_t y = padding_top_; y <= menu_capacity(); y++) {
-        tb_change_cell(get_width() - 1, y, bg, 0, 0);
-    }
+    for (size_t y = virtual_padding_top(); y <= menu_capacity(); y++)
+        change_cell(get_width() - 1, y, bg, 0, 0);
 
     /* Then we print the bar. */
     for (size_t y = start; y <= start + height; y++)
-        tb_change_cell(get_width() - 1, y, fg, 0, 0);
+        change_cell(get_width() - 1, y, fg, 0, 0);
 }
 
 void multiselect_menu::print_header()
@@ -222,22 +220,22 @@ void multiselect_menu::print_column(const size_t col_idx)
 {
     const auto &c = columns_[col_idx];
 
-    for (size_t i = scroll_offset_, y = padding_top_; i < item_count() &&
+    for (size_t i = scroll_offset_, y = virtual_padding_top(); i < item_count() &&
             y <= menu_capacity(); i++, y++) {
 
-        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + padding_top_),
-                   on_marked_item   = is_marked(y + scroll_offset_ - padding_top_);
+        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + virtual_padding_top()),
+                   on_marked_item   = is_marked(y + scroll_offset_ - virtual_padding_top());
 
         /*
          * Print the indicator, indicating which item is
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            tb_change_cell(0, y, '-', TB_REVERSE, 0);
+            change_cell(0, y, '-', TB_REVERSE, 0);
         else if (on_selected_item)
-            tb_change_cell(0, y, '-', 0, 0);
+            change_cell(0, y, '-', 0, 0);
         else if (on_marked_item)
-            tb_change_cell(0, y, ' ', TB_REVERSE, 0);
+            change_cell(0, y, ' ', TB_REVERSE, 0);
 
         const uint16_t attrs = (on_selected_item || on_marked_item)
             ? TB_REVERSE : 0;
@@ -257,7 +255,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         const auto string_end = c.startx + str.length() - trunc_len,
                    next_start = c.startx + c.width + 2;
         for (auto x = string_end; x <= next_start; x++)
-            tb_change_cell(x, y, ' ', attrs, 0);
+            change_cell(x, y, ' ', attrs, 0);
     }
 }
 

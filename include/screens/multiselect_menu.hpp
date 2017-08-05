@@ -117,7 +117,7 @@ private:
     /* How many entries can the menu print in the terminal? */
     size_t menu_capacity() const
     {
-        return tb_height() - padding_bot_ - padding_top_;
+        return get_height() - padding_bot_ - virtual_padding_top();
     }
 
     /*
@@ -153,6 +153,12 @@ private:
     void unmark_item(const size_t idx)
     {
         marked_items_.erase(idx);
+    }
+
+    /* Because only the header should be printed on the first line. */
+    int virtual_padding_top() const
+    {
+        return padding_top_ + 1;
     }
 
     void update_column_widths();
