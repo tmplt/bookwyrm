@@ -155,7 +155,7 @@ void screen_butler::mvprintwl(int x, const int y, const string_view &str, const 
 
     mvprintw(x, y, str, attrs);
 
-    for (int i = x + str.length(); i < tb_width() - 1; i++)
+    for (int i = x + str.length(); i < tb_width(); i++)
         tb_change_cell(i, y, ' ', attrs, 0);
 }
 
