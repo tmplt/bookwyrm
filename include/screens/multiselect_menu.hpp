@@ -93,7 +93,7 @@ private:
             }
         }
 
-        column_t& operator[](size_t i) { return columns_[i]; }
+        column_t& operator[](const size_t i) { return columns_[i]; }
         size_t size() { return columns_.size();  }
         auto begin()  { return columns_.begin(); }
         auto end()    { return columns_.end();   }
@@ -119,7 +119,7 @@ private:
         return items_.size();
     }
 
-    bool is_marked(size_t idx) const
+    bool is_marked(const size_t idx) const
     {
         return marked_items_.find(idx) != marked_items_.cend();
     }

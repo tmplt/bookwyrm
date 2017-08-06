@@ -84,7 +84,8 @@ void multiselect_menu::update()
 {
     for (size_t idx = 0; idx < columns_.size(); idx++) {
         /* Can we fit another column? */
-        const size_t allowed_width = get_width() - 1 - columns_[idx].startx;
+        const size_t allowed_width = get_width() - 1 - padding_right_
+                                   - columns_[idx].startx - 2;
         if (columns_[idx].width > allowed_width) break;
 
         print_column(idx);
@@ -195,6 +196,11 @@ void multiselect_menu::print_header()
      */
     size_t x = 1;
     for (auto &column : columns_) {
+        /* Can we fit the next header? */
+        const size_t allowed_width = get_width() - 1 - padding_right_
+                                   - column.startx - 2;
+        if (column.width > allowed_width) break;
+
         /* Center the title. */
         mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title);
         x += std::max(column.width, column.title.length());
@@ -225,14 +231,15 @@ void multiselect_menu::print_column(const size_t col_idx)
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            change_cell(0, y, '-', TB_REVERSE, 0);
+            change_cell(padding_left_, y, '-', TB_REVERSE);
         else if (on_selected_item)
-            change_cell(0, y, '-', 0, 0);
+            change_cell(padding_left_, y, '-');
         else if (on_marked_item)
-            change_cell(0, y, ' ', TB_REVERSE, 0);
+            change_cell(padding_left_, y, ' ', TB_REVERSE);
 
-        const uint16_t attrs = (on_selected_item || on_marked_item)
-            ? TB_REVERSE : 0;
+        const uint16_t attrs = (on_selected_item || on_marked_item) ? TB_REVERSE : 0;
+
+        change_cell(c.startx - 1, y, ' ', attrs);
 
         /* Print the string, check if it was truncated. */
         const auto &str = items_[i].menu_order(col_idx);
@@ -248,8 +255,8 @@ void multiselect_menu::print_column(const size_t col_idx)
          */
         const auto string_end = c.startx + str.length() - trunc_len,
                    next_start = c.startx + c.width + 2;
-        for (auto x = string_end; x <= next_start; x++)
-            change_cell(x, y, ' ', attrs, 0);
+        for (auto x = string_end; x < next_start; x++)
+            change_cell(x, y, ' ', attrs);
     }
 }
 

@@ -33,7 +33,7 @@ base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
 base::~base()
 {
     if (--screen_count_ == 0) tb_shutdown();
-    assert(screen_count_ >= 0); // just in case, for now
+    assert(screen_count_ >= 0);
 }
 
 void base::change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg, const uint16_t bg)
