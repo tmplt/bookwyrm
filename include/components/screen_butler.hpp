@@ -91,8 +91,14 @@ private:
 
     void resize_screens();
 
-    /* Non-asserting copies from screen::base, for now. */
+    /* Non-asserting copy from screen::base. */
     static void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+
+    /*
+     * Print passed string starting from (x, y) along the x-axis.
+     * All other cells on the same line will be empty (' ') with
+     * attrs applied.
+     */
     static void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
 };
 

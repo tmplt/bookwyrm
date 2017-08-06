@@ -80,16 +80,5 @@ void base::mvprintw(int x, const int y, const string_view &str, const uint16_t a
         change_cell(x++, y, ch, attrs);
 }
 
-void base::mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs)
-{
-    for (int i = 0; i < x; i++)
-        change_cell(i, y, ' ', attrs);
-
-    mvprintw(x, y, str, attrs);
-
-    for (int i = x + str.length(); i < get_width() - 1; i++)
-        change_cell(i, y, ' ', attrs);
-}
-
 /* ns screen */
 }
