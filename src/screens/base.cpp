@@ -38,8 +38,10 @@ base::~base()
 
 void base::change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg, const uint16_t bg)
 {
-    assert(x >= padding_left_ && x < get_width() - padding_right_);
-    assert(y <= get_height() - padding_bot_ - 1 && y >= padding_top_);
+    const bool valid_x = x >= padding_left_ && x < get_width() - padding_right_,
+               valid_y = y <= get_height() - padding_bot_ - 1 && y >= padding_top_;
+    if (!valid_x || !valid_y)
+        return;
 
     tb_change_cell(x, y, ch, fg, bg);
 }
