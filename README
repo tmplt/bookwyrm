@@ -1,10 +1,11 @@
 bookwyrm is a TUI-based program written in C++17 which, given some input
 data, searches for matching ebooks and academic papers on various sources.
-When done, all found items are presenting in a mutt-like index menu, where
-you choose which items you want to download.
+When done, all found items are presented in a mutt-like index menu, where
+you can choose which items you want to download.
 
 An item can be viewed for details, which will be fetched from some
-database, such as the Open Library or WorldCat.
+database (unless the source itself holds enough data), such as the Open
+Library or WorldCat.
 
 For example, one might run bookwyrm as follows:
 
@@ -29,6 +30,7 @@ be subject to removal later in development.
 
 bookwyrm is still in the early development stage, so nothing is set in
 stone. If you have any insights, questions, or wish to contribute,
-contact me via email at <tmplt@dragons.rocks> or on nixers' IRC.
+contact me via email at <tmplt@dragons.rocks> or on nixers' IRC under
+the nick tmplt.
 
 bookwyrm is licensed under the GPLv3+.
