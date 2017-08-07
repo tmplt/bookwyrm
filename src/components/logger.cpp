@@ -28,10 +28,13 @@ namespace spdlog::custom {
 
 void split_sink::log(const details::log_msg &msg)
 {
-    if (msg.level <= spdlog::level::warn)
-        std::cout << msg.formatted.str();
+    const auto &str = msg.formatted.str();
+    auto &out = msg.level <= spdlog::level::warn ? std::cout : std::cerr;
+
+    if (tui_up_)
+        buffer_.emplace_back(out, str);
     else
-        std::cerr << msg.formatted.str();
+        out << str;
 }
 
 void split_sink::flush()
@@ -40,12 +43,18 @@ void split_sink::flush()
     std::cerr << std::flush;
 }
 
+split_sink::~split_sink()
+{
+    for (auto &pair : buffer_)
+        pair.first.get() << pair.second;
+}
+
 /* ns spdlog::custom */
 }
 
-std::shared_ptr<spdlog::logger> logger::create(std::string &&name)
+std::shared_ptr<spdlog::logger> logger::create(std::string &&name, bool &tui_up)
 {
-    auto sink = std::make_shared<spdlog::custom::split_sink>();
+    auto sink = std::make_shared<spdlog::custom::split_sink>(tui_up);
     auto logger = std::make_shared<spdlog::logger>(std::forward<std::string>(name),
             std::move(sink));
 

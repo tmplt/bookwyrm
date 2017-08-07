@@ -116,17 +116,17 @@ script_butler::~script_butler()
 void script_butler::async_search(vector<py::module> &sources)
 {
     for (const auto &m : sources) {
-        try {
-            threads_.emplace_back([&m, wanted = wanted_, bw_instance = this]() {
-                /* Required whenever we need to run anything Python. */
-                py::gil_scoped_acquire gil;
+        threads_.emplace_back([&m, wanted = wanted_, bw_instance = this]() {
+            /* Required whenever we need to run anything Python. */
+            py::gil_scoped_acquire gil;
+
+            try {
                 m.attr("find")(wanted, bw_instance);
-            });
-        } catch (const py::error_already_set &err) {
-            logger_->error("module '{}' did something wrong ({}); ignoring...",
+            } catch (const py::error_already_set &err) {
+                bw_instance->logger_->error("module '{}' did something wrong ({}); ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
-            continue;
-        }
+            }
+        });
     }
 }
 

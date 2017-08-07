@@ -18,14 +18,15 @@
 #pragma once
 
 #include <memory>
+#include <ostream>
 
 #include <spdlog/sinks/sink.h>
 #include <spdlog/details/log_msg.h>
 #include <spdlog/logger.h>
 
-namespace spdlog::custom {
+#include "common.hpp"
 
-/* namespace custom { */
+namespace spdlog::custom {
 
 /*
  * A sink which prints level::err and above to stdcerr.
@@ -35,8 +36,19 @@ namespace spdlog::custom {
  * NOTE: if thread safety is needed, protect with a mutex.
  */
 class split_sink : public spdlog::sinks::sink {
+public:
+    split_sink(bool &tui_up)
+        : tui_up_(tui_up) {}
+    ~split_sink();
+
     void log(const details::log_msg &msg) override;
     void flush();
+
+private:
+    /* If the TUI is up, we store logs here until program termination. */
+    using buffer_pair = std::pair<std::reference_wrapper<std::ostream>, string>;
+    vector<buffer_pair> buffer_;
+    bool &tui_up_;
 };
 
 /* ns spdlog::custom */
@@ -45,7 +57,7 @@ class split_sink : public spdlog::sinks::sink {
 namespace logger {
 
 /* Create the logger. */
-std::shared_ptr<spdlog::logger> create(std::string &&name);
+std::shared_ptr<spdlog::logger> create(std::string &&name, bool &tui_up);
 
 }
 

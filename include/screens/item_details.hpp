@@ -23,13 +23,13 @@
 /*
  * Interface-wise, this will be like opening an email for reading in mutt.
  * A thread will be spawned to fetch more info about the item from some database,
- * and the bookwyrm will print that info in this (overlapping) window in a pretty way.
+ * and the bookwyrm will print that info in this window in a pretty way.
  *
  * The user should still be able to check another item's details while this thread is running.
  * Item details will be kept in the actual item. So a passed item will be modified, otherwise,
  * if the user goes back to an item, we'll need to fetch the data again.
  *
- * The user doesn't need to exit the detail screen to select another item.
+ * The user doesn't need to exit the detail screen to select another item for details.
  * Implementing this is a problem for the future, though.
  */
 namespace screen {

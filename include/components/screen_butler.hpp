@@ -38,7 +38,8 @@ class script_butler;
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items);
+    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up);
+    ~screen_butler();
 
     /* Update (redraw) all screens that need updating. */
     void update_screens();
@@ -53,6 +54,8 @@ public:
 private:
     /* We'll want to know the items when we create new screens. */
     vector<bookwyrm::item> const &items_;
+
+    bool &tui_up_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
     std::shared_ptr<screen::item_details> details_;
@@ -111,7 +114,7 @@ namespace tui {
  * Yes, a factory. But we need it to "link" the two butlers together.
  * (The script_butler tells the screen_butler when to update all screens.)
  */
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources);
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up);
 
 /* ns tui */
 }
