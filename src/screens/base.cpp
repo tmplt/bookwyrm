@@ -56,6 +56,7 @@ void base::init_tui()
         throw component_error(err.data());
     }
 
+    tb_select_output_mode(TB_OUTPUT_NORMAL);
     tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
     tb_clear();
 }
