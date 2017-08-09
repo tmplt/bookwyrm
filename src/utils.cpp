@@ -54,6 +54,11 @@ string vector_to_string(const vector<string> &vec)
     return retstring;
 }
 
+bool readable_file(const fs::path &path)
+{
+    return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
+}
+
 /* ns utils */
 }
 

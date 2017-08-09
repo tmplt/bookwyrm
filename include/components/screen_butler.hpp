@@ -70,15 +70,7 @@ private:
     int index_scrollback_ = -1;
 
     /* Returns true if the bookwyrm fits in the current terminal window. */
-    static bool bookwyrm_fits()
-    {
-        /*
-         * I planned to use the classical 80x24, but multiselect_menu is
-         * in its current form useable in terminals much smaller
-         * than that.
-         */
-        return tb_width() >= 50 && tb_height() >= 10;
-    }
+    static bool bookwyrm_fits();
 
     /* Manage screens. Return true if an action was performed. */
     bool meta_action(const uint16_t &key, const uint32_t &ch);

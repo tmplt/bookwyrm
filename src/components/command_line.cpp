@@ -119,6 +119,16 @@ void cliparser::usage() const
     }
 }
 
+bool cliparser::has(const string &option) const
+{
+    return passed_opts_.find(option) != passed_opts_.cend();
+}
+
+bool cliparser::has(size_t index) const
+{
+    return positional_args_.size() > index;
+}
+
 string cliparser::get(string opt) const
 {
     if (has(std::forward<string>(opt)))
@@ -126,6 +136,12 @@ string cliparser::get(string opt) const
 
     return "";
 }
+
+string cliparser::get(size_t index) const
+{
+    return has(index) ? positional_args_[index] : "";
+}
+
 
 vector<string> cliparser::get_many(const string &&opt) const
 {

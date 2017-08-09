@@ -133,10 +133,6 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
     authors_str = utils::vector_to_string(authors);
 }
 
-/*
- * Returns true if all specified exact values are equal
- * and if all specified non-exact values passes the fuzzy ratio.
- */
 bool item::matches(const item &wanted)
 {
     /* Return false if any exact value doesn't match what's wanted. */

@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
         if (cli->has("debug"))
             logger->set_level(spdlog::level::debug);
 
-        logger->debug("the mighty eldwurm hath been summoned!");
+        logger->debug("the mighty eldwyrm hath been summoned!");
 
         if (cli->has("help")) {
             cli->usage();

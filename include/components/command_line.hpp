@@ -102,24 +102,13 @@ public:
      */
     void validate_arguments() const;
 
-    /* Check if an option has been passed. */
-    inline bool has(const string &option) const
-    {
-        return passed_opts_.find(option) != passed_opts_.cend();
-    }
+    /* Check if an option/positional argument has been passed. */
+    bool has(const string &option) const;
+    bool has(size_t index) const;
 
-    bool has(size_t index) const
-    {
-        return positional_args_.size() > index;
-    }
-
-
-    /* Get the value for a given option. */
+    /* Get the value for a given option/positional argument. */
     string get(string opt) const;
-    inline string get(size_t index) const
-    {
-        return has(index) ? positional_args_[index] : "";
-    }
+    string get(size_t index) const;
 
     /* Get all values for a given option. (i.e. --author) */
     vector<string> get_many(const string &&opt) const;

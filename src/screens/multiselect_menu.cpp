@@ -24,6 +24,15 @@
 
 namespace screen {
 
+void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
+{
+    int i = 0;
+    for (auto &&pair : pairs) {
+        columns_[i].width_w = std::get<1>(pair);
+        columns_[i++].title = std::get<0>(pair);
+    }
+}
+
 multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
     : base(default_padding_top, default_padding_bot, default_padding_left, 0),
     selected_item_(0), scroll_offset_(0),
@@ -95,6 +104,36 @@ void multiselect_menu::update()
     print_scrollbar();
 }
 
+string multiselect_menu::footer_info() const
+{
+    return fmt::format("I've found {} items thus far.", item_count());
+}
+
+string multiselect_menu::footer_controls() const
+{
+    return "[j/k]Navigation [SPACE]Toggle select";
+}
+
+bool multiselect_menu::is_marked(const size_t idx) const
+{
+    return marked_items_.find(idx) != marked_items_.cend();
+}
+
+size_t multiselect_menu::menu_capacity() const
+{
+    return get_height() - padding_bot_ - virtual_padding_top();
+}
+
+bool multiselect_menu::menu_at_bot() const
+{
+    return selected_item_ == (menu_capacity() - 1 + scroll_offset_);
+}
+
+bool multiselect_menu::menu_at_top() const
+{
+    return selected_item_ == scroll_offset_;
+}
+
 void multiselect_menu::move(move_direction dir)
 {
     const bool at_first_item = selected_item_ == 0,
@@ -119,6 +158,21 @@ void multiselect_menu::move(move_direction dir)
             scroll_offset_ = selected_item_ - menu_capacity() + 1;
             break;
     }
+}
+
+void multiselect_menu::mark_item(const size_t idx)
+{
+    marked_items_.insert(idx);
+}
+
+void multiselect_menu::unmark_item(const size_t idx)
+{
+    marked_items_.erase(idx);
+}
+
+int multiselect_menu::virtual_padding_top() const
+{
+    return padding_top_ + 1;
 }
 
 void multiselect_menu::toggle_select()

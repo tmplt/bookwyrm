@@ -36,16 +36,8 @@ public:
     void update() override;
     void on_resize() override;
     bool action(const uint16_t &key, const uint32_t &ch) override;
-
-    string footer_info() const override
-    {
-        return fmt::format("I've found {} items thus far.", item_count());
-    }
-
-    string footer_controls() override
-    {
-        return "[j/k]Navigation [SPACE]Toggle select";
-    }
+    string footer_info() const override;
+    string footer_controls() const override;
 
     /*
      * Make some space for a screen:item_details,
@@ -63,7 +55,6 @@ public:
     }
 
 private:
-    /* Store data about each column between updates. */
     struct columns_t {
 
         struct column_t {
@@ -83,15 +74,8 @@ private:
             size_t width, startx;
         };
 
-        /* Initializing the array of columns. */
-        void operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
-        {
-            int i = 0;
-            for (auto &&pair : pairs) {
-                columns_[i].width_w = std::get<1>(pair);
-                columns_[i++].title = std::get<0>(pair);
-            }
-        }
+        /* Called upon menu construction. */
+        void operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs);
 
         column_t& operator[](const size_t i) { return columns_[i]; }
         size_t size() { return columns_.size();  }
@@ -100,7 +84,10 @@ private:
 
     private:
         std::array<column_t, 6> columns_;
-    } columns_;
+    };
+
+    /* Store data about each column between updates. */
+    columns_t columns_;
 
     /* Index of the currently selected item. */
     size_t selected_item_;
@@ -119,34 +106,22 @@ private:
         return items_.size();
     }
 
-    bool is_marked(const size_t idx) const
-    {
-        return marked_items_.find(idx) != marked_items_.cend();
-    }
+    bool is_marked(const size_t idx) const;
 
     /* How many entries can the menu print in the terminal? */
-    size_t menu_capacity() const
-    {
-        return get_height() - padding_bot_ - virtual_padding_top();
-    }
+    size_t menu_capacity() const;
 
     /*
      * Is the currently selected item the last one in the
      * menu screen?
      */
-    bool menu_at_bot() const
-    {
-        return selected_item_ == (menu_capacity() - 1 + scroll_offset_);
-    }
+    bool menu_at_bot() const;
 
     /*
      * Is the currently selected item the first one in the
      * menu screen?
      */
-    bool menu_at_top() const
-    {
-        return selected_item_ == scroll_offset_;
-    }
+    bool menu_at_top() const;
 
     /* Move up and down the menu. */
     enum move_direction { top, up, down, bot };
@@ -155,21 +130,11 @@ private:
     /* Select (or unselect) the current item for download. */
     void toggle_select();
 
-    void mark_item(const size_t idx)
-    {
-        marked_items_.insert(idx);
-    }
-
-    void unmark_item(const size_t idx)
-    {
-        marked_items_.erase(idx);
-    }
+    void mark_item(const size_t idx);
+    void unmark_item(const size_t idx);
 
     /* Because only the header should be printed on the first line. */
-    int virtual_padding_top() const
-    {
-        return padding_top_ + 1;
-    }
+    int virtual_padding_top() const;
 
     void update_column_widths();
 

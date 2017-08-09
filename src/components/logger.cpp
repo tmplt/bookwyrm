@@ -60,4 +60,3 @@ std::shared_ptr<spdlog::logger> logger::create(std::string &&name, bool &tui_up)
 
     return logger;
 }
-

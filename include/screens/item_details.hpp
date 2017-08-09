@@ -47,7 +47,7 @@ public:
         return "TODO";
     }
 
-    string footer_controls() override
+    string footer_controls() const override
     {
         return "[h]Close details";
     }

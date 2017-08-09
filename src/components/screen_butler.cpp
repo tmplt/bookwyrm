@@ -100,6 +100,16 @@ void screen_butler::display()
     }
 }
 
+bool screen_butler::bookwyrm_fits()
+{
+    /*
+     * I planned to use the classical 80x24, but multiselect_menu is
+     * in its current form useable in terminals much smaller
+     * than that.
+     */
+    return tb_width() >= 50 && tb_height() >= 10;
+}
+
 bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
 {
     switch (ch) {

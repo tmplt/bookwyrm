@@ -48,7 +48,7 @@ private:
     /* If the TUI is up, we store logs here until program termination. */
     using buffer_pair = std::pair<std::reference_wrapper<std::ostream>, string>;
     vector<buffer_pair> buffer_;
-    bool &tui_up_;
+    const bool &tui_up_;
 };
 
 /* ns spdlog::custom */

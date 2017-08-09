@@ -109,7 +109,6 @@ struct misc_t {
     vector<string> mirrors;
 };
 
-
 class item {
 public:
     explicit item(const std::unique_ptr<cliparser> &cli)
@@ -119,6 +118,10 @@ public:
     explicit item(const std::tuple<nonexacts_t, exacts_t> &tuple)
         : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)) {}
 
+    /*
+     * Returns true if all specified exact values are equal
+     * and if all specified non-exact values passes the fuzzy ratio.
+     */
     bool matches(const item &wanted);
 
     friend std::ostream& operator<<(std::ostream &os, item const &i)
@@ -127,7 +130,12 @@ public:
         return os;
     }
 
-    /* TODO: improve this ugly thing. */
+    /*
+     * TODO: improve this ugly thing.
+     * Or better yet: remove it.
+     * screen::multiselect_menu's related functions shouldn't be
+     * spread out to other classes.
+     */
     const string& menu_order(size_t idx) const
     {
         /*
