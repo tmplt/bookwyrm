@@ -235,11 +235,11 @@ void multiselect_menu::print_scrollbar()
 
     /* First print the scrollbar's background. */
     for (size_t y = virtual_padding_top(); y <= menu_capacity(); y++)
-        change_cell(get_width() - 1, y, bg, 0, 0);
+        change_cell(get_width() - 1, y, bg);
 
     /* Then we print the bar. */
     for (size_t y = start; y <= start + height; y++)
-        change_cell(get_width() - 1, y, fg, 0, 0);
+        change_cell(get_width() - 1, y, fg);
 }
 
 void multiselect_menu::print_header()
@@ -256,7 +256,7 @@ void multiselect_menu::print_header()
         if (column.width > allowed_width) break;
 
         /* Center the title. */
-        mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title);
+        mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue | attribute::bold);
         x += std::max(column.width, column.title.length());
 
         /* Padding between the title and the seperator to the left.. */
@@ -285,13 +285,13 @@ void multiselect_menu::print_column(const size_t col_idx)
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            change_cell(padding_left_, y, '-', TB_REVERSE);
+            change_cell(padding_left_, y, '-', attribute::reverse);
         else if (on_selected_item)
             change_cell(padding_left_, y, '-');
         else if (on_marked_item)
-            change_cell(padding_left_, y, ' ', TB_REVERSE);
+            change_cell(padding_left_, y, ' ', attribute::reverse);
 
-        const uint16_t attrs = (on_selected_item || on_marked_item) ? TB_REVERSE : 0;
+        const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
         change_cell(c.startx - 1, y, ' ', attrs);
 

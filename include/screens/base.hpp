@@ -20,6 +20,7 @@
 #include <termbox.h>
 
 #include "common.hpp"
+#include "colours.hpp"
 
 namespace screen {
 
@@ -60,7 +61,11 @@ protected:
      * After asserting that the screen owns the cell,
      * change it with the given parameters.
      */
-    void change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg = 0, const uint16_t bg = 0);
+    void change_cell(const int x, const int y, const uint32_t ch, const colour fg = colour::white);
+    void change_cell(const int x, const int y, const uint32_t ch, const attribute attr)
+    {
+        change_cell(x, y, ch, colour::white | attr);
+    }
 
     /*
      * Akin to Ncurses mvprintw(), but:
@@ -71,10 +76,18 @@ protected:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs = 0);
+    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs = colour::white);
+    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const attribute attr)
+    {
+        return mvprintwlim(x, y, str, space, colour::white | attr);
+    }
 
     /* Same as above, but don't truncate. */
-    void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    void mvprintw(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    void mvprintw(int x, const int y, const string_view &str, const attribute attr)
+    {
+        mvprintw(x, y, str, colour::white | attr);
+    }
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,

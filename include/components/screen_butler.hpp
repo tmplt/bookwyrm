@@ -20,6 +20,7 @@
 #include "common.hpp"
 #include "item.hpp"
 #include "python.hpp"
+#include "colours.hpp"
 #include "components/script_butler.hpp"
 #include "screens/base.hpp"
 #include "screens/multiselect_menu.hpp"
@@ -87,14 +88,18 @@ private:
     void resize_screens();
 
     /* Non-asserting copy from screen::base. */
-    static void mvprintw(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    static void mvprintw(int x, const int y, const string_view &str, const colour attrs = colour::white);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void mvprintwl(int x, const int y, const string_view &str, const uint16_t attrs = 0);
+    static void mvprintwl(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    static void mvprintwl(int x, const int y, const string_view &str, const attribute attr)
+    {
+        mvprintwl(x, y, str, colour::white | attr);
+    }
 };
 
 /* ns butler */

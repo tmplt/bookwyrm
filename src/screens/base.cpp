@@ -36,14 +36,14 @@ base::~base()
     assert(screen_count_ >= 0);
 }
 
-void base::change_cell(const int x, const int y, const uint32_t ch, const uint16_t fg, const uint16_t bg)
+void base::change_cell(const int x, const int y, const uint32_t ch, const colour fg)
 {
     const bool valid_x = x >= padding_left_ && x < get_width() - padding_right_,
                valid_y = y <= get_height() - padding_bot_ - 1 && y >= padding_top_;
     if (!valid_x || !valid_y)
         return;
 
-    tb_change_cell(x, y, ch, fg, bg);
+    tb_change_cell(x, y, ch, static_cast<colour_t>(fg), 0);
 }
 
 void base::init_tui()
@@ -61,7 +61,7 @@ void base::init_tui()
     tb_clear();
 }
 
-int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const uint16_t attrs)
+int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
 {
     const size_t limit = x + space;
     for (const uint32_t &ch : str) {
@@ -77,7 +77,7 @@ int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_
     return 0;
 }
 
-void base::mvprintw(int x, const int y, const string_view &str, const uint16_t attrs)
+void base::mvprintw(int x, const int y, const string_view &str, const colour attrs)
 {
     for (const uint32_t &ch : str)
         change_cell(x++, y, ch, attrs);
