@@ -285,9 +285,9 @@ void multiselect_menu::print_column(const size_t col_idx)
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            change_cell(padding_left_, y, '-', attribute::reverse);
+            change_cell(padding_left_, y, selected_char_, attribute::reverse);
         else if (on_selected_item)
-            change_cell(padding_left_, y, '-');
+            change_cell(padding_left_, y, selected_char_);
         else if (on_marked_item)
             change_cell(padding_left_, y, ' ', attribute::reverse);
 

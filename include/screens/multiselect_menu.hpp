@@ -141,6 +141,8 @@ private:
     void print_scrollbar();
     void print_header();
     void print_column(const size_t col_idx);
+
+    static constexpr uint32_t selected_char_ = '-';
 };
 
 } /* ns screen */
