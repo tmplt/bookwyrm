@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <ostream>
+#include <mutex>
 
 #include <spdlog/sinks/sink.h>
 #include <spdlog/details/log_msg.h>
@@ -37,8 +38,8 @@ namespace spdlog::custom {
  */
 class split_sink : public spdlog::sinks::sink {
 public:
-    split_sink(bool &tui_up)
-        : tui_up_(tui_up) {}
+    split_sink(bool &store_in_buffer)
+        : store_in_buffer_(store_in_buffer) {}
     ~split_sink();
 
     void log(const details::log_msg &msg) override;
@@ -46,9 +47,10 @@ public:
 
 private:
     /* If the TUI is up, we store logs here until program termination. */
-    using buffer_pair = std::pair<std::reference_wrapper<std::ostream>, string>;
+    using buffer_pair = std::pair<std::reference_wrapper<std::ostream>, const string>;
     vector<buffer_pair> buffer_;
-    const bool &tui_up_;
+    const bool &store_in_buffer_;
+    std::mutex write_mutex_;
 };
 
 /* ns spdlog::custom */

@@ -31,7 +31,9 @@ void split_sink::log(const details::log_msg &msg)
     const auto &str = msg.formatted.str();
     auto &out = msg.level <= spdlog::level::warn ? std::cout : std::cerr;
 
-    if (tui_up_)
+    std::lock_guard<std::mutex> guard(write_mutex_);
+
+    if (store_in_buffer_)
         buffer_.emplace_back(out, str);
     else
         out << str;
