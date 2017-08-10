@@ -293,11 +293,17 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
-        change_cell(c.startx - 1, y, ' ', attrs);
+        const std::array<std::reference_wrapper<const string>, 6> strings = {
+            items_[i].nonexacts.title,
+            items_[i].exacts.year_str,
+            items_[i].nonexacts.serie,
+            items_[i].nonexacts.authors_str,
+            items_[i].nonexacts.publisher,
+            items_[i].placeholder_format_str
+        };
 
         /* Print the string, check if it was truncated. */
-        const auto &str = items_[i].menu_order(col_idx);
-        const int trunc_len = mvprintwlim(c.startx, y, str, c.width, attrs);
+        const int trunc_len = mvprintwlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
@@ -307,9 +313,9 @@ void multiselect_menu::print_column(const size_t col_idx)
          * and write until the end of the column, plus seperator and the padding on the right
          * side of it (e.g. up to and including the first char in the next column, hence the magic).
          */
-        const auto string_end = c.startx + str.length() - trunc_len,
+        const auto string_end = c.startx + strings[col_idx].get().length() - trunc_len,
                    next_start = c.startx + c.width + 2;
-        for (auto x = string_end; x < next_start; x++)
+        for (auto x = string_end; x <= next_start; x++)
             change_cell(x, y, ' ', attrs);
     }
 }

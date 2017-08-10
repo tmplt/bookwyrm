@@ -130,43 +130,10 @@ public:
         return os;
     }
 
-    /*
-     * TODO: improve this ugly thing.
-     * Or better yet: remove it.
-     * screen::multiselect_menu's related functions shouldn't be
-     * spread out to other classes.
-     */
-    const string& menu_order(size_t idx) const
-    {
-        /*
-         * This isn't very good structure. I'd rather have a vector
-         * of string references (reference_wrapped) and just grab by index,
-         * but for some bloody reason the program crashes when the second
-         * source script feeds an item.
-         *
-         * I also tried doing the above with raw pointers, but that instead
-         * garbles the text when the second script returns its first item or
-         * when multiselect_menu::menu() is called.
-         *
-         * Whatever bug this is might be worth investigating.
-         */
-        switch (idx) {
-            case 0:  return nonexacts.title;
-            case 1:  return exacts.year_str;
-            case 2:  return nonexacts.serie;
-            case 3:  return nonexacts.authors_str;
-            case 4:  return nonexacts.publisher;
-            case 5:  return placeholder_format_str;
-            default: assert(false);
-        }
-    }
-
+    const string placeholder_format_str = "fmt";
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;
-
-private:
-    const string placeholder_format_str = "format (TODO)";
 };
 
 /* ns bookwyrm */
