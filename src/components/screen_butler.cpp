@@ -83,12 +83,12 @@ void screen_butler::display()
      */
     py::gil_scoped_release nogil;
 
-    struct tb_event ev;
-    while (tb_poll_event(&ev)) {
-        if (ev.type == TB_EVENT_RESIZE) {
+    struct keys::event ev;
+    while (keys::poll_event(ev)) {
+        if (ev.type == type::resize) {
             resize_screens();
-        } else if (ev.type == TB_EVENT_KEY) {
-            if (ev.key == TB_KEY_ESC)
+        } else if (ev.type == type::key_press) {
+            if (ev.key == key::escape)
                 return;
 
             /* When the terminal is too small, only allow quitting. */
@@ -111,7 +111,7 @@ bool screen_butler::bookwyrm_fits()
     return tb_width() >= 50 && tb_height() >= 10;
 }
 
-bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
+bool screen_butler::meta_action(const key &key, const uint32_t &ch)
 {
     switch (ch) {
         case 'l':
@@ -121,16 +121,16 @@ bool screen_butler::meta_action(const uint16_t &key, const uint32_t &ch)
     }
 
     switch (key) {
-        case TB_KEY_CTRL_L:
+        case key::ctrl_l:
             /* Update the screens, done in calling function. */
             return true;
-        case TB_KEY_ARROW_RIGHT:
+        case key::arrow_right:
             return open_details();
-        case TB_KEY_ARROW_LEFT:
+        case key::arrow_left:
             return close_details();
+        default:
+            return false;
     }
-
-    return false;
 }
 
 bool screen_butler::open_details()

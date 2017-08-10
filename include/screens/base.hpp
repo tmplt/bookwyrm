@@ -21,6 +21,7 @@
 
 #include "common.hpp"
 #include "colours.hpp"
+#include "keys.hpp"
 
 namespace screen {
 
@@ -42,7 +43,7 @@ public:
     virtual void on_resize() = 0;
 
     /* Manage the screen. Return true if an action was performed. */
-    virtual bool action(const uint16_t &key, const uint32_t &ch) = 0;
+    virtual bool action(const key &key, const uint32_t &ch) = 0;
 
     /* When this screen is focused, what should we print in the footer? */
     virtual string footer_info() const = 0;

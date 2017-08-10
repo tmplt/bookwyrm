@@ -35,7 +35,7 @@ public:
 
     void update() override;
     void on_resize() override;
-    bool action(const uint16_t &key, const uint32_t &ch) override;
+    bool action(const key &key, const uint32_t &ch) override;
     string footer_info() const override;
     string footer_controls() const override;
 

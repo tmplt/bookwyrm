@@ -18,6 +18,7 @@ set(SOURCE
     main.cpp
     item.cpp
     utils.cpp
+    keys.cpp
     components/logger.cpp
     components/command_line.cpp
     components/script_butler.cpp

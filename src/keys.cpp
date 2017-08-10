@@ -15,33 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "screens/item_details.hpp"
+#include <utility>
 
-namespace screen {
+#include "keys.hpp"
 
-item_details::item_details(const bookwyrm::item &item, int padding_top)
-    : base(padding_top, default_padding_bot, 0, 0), item_(item)
+static tb_event tb_ev;
+
+namespace keys {
+
+bool poll_event(event &ev)
 {
+    if (!tb_poll_event(&tb_ev))
+        return false;
 
+    ev.type = type(std::move(tb_ev.type));
+    ev.key  = key(std::move(tb_ev.key));
+    ev.ch   = std::move(tb_ev.ch);
+
+    ev.w    = std::move(tb_ev.w);
+    ev.h    = std::move(tb_ev.h);
+    ev.x    = std::move(tb_ev.x);
+    ev.y    = std::move(tb_ev.y);
+
+    return true;
 }
 
-bool item_details::action(const key &key, const uint32_t &ch)
-{
-    (void)key;
-    (void)ch;
-
-    return false;
-}
-
-void item_details::update()
-{
-
-}
-
-void item_details::on_resize()
-{
-
-}
-
-/* ns screen */
+/* ns keys */
 }
