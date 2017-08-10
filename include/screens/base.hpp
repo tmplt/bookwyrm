@@ -62,10 +62,10 @@ protected:
      * After asserting that the screen owns the cell,
      * change it with the given parameters.
      */
-    void change_cell(const int x, const int y, const uint32_t ch, const colour fg = colour::white);
+    void change_cell(const int x, const int y, const uint32_t ch, const colour fg = colour::none, const colour bg = colour::none);
     void change_cell(const int x, const int y, const uint32_t ch, const attribute attr)
     {
-        change_cell(x, y, ch, colour::white | attr);
+        change_cell(x, y, ch, colour::none | attr);
     }
 
     /*

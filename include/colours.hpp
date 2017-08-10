@@ -29,7 +29,8 @@ enum class colour : uint16_t {
     blue    = TB_BLUE,
     magenta = TB_MAGENTA,
     cyan    = TB_CYAN,
-    white   = TB_WHITE
+    white   = TB_WHITE,
+    none    = 0
 };
 
 enum class attribute : uint16_t {

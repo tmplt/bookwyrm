@@ -196,4 +196,3 @@ std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, 
 
 /* ns tui */
 }
-
