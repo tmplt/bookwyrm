@@ -40,6 +40,7 @@ void base::change_cell(const int x, const int y, const uint32_t ch, const colour
 {
     const bool valid_x = x >= padding_left_ && x < get_width() - padding_right_,
                valid_y = y <= get_height() - padding_bot_ - 1 && y >= padding_top_;
+
     if (!valid_x || !valid_y)
         return;
 

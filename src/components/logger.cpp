@@ -47,8 +47,8 @@ void split_sink::flush()
 
 split_sink::~split_sink()
 {
-    for (auto &pair : buffer_)
-        pair.first.get() << pair.second;
+    for (auto& [out, msg] : buffer_)
+        out.get() << msg;
 }
 
 /* ns spdlog::custom */
