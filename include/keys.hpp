@@ -75,11 +75,11 @@ struct event {
     int32_t y;
 };
 
-inline __key translate(tb_event &ev)
-{
-    return __key(ev.key);
-}
-
+/*
+ * Abstraction of termbox's tb_poll_event.
+ * Updates the passed keys::event struct with the data given
+ * by tb_event_poll.
+ */
 bool poll_event(event &ev);
 
 /* ns keys */
