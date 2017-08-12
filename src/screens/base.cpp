@@ -36,10 +36,23 @@ base::~base()
     assert(screen_count_ >= 0);
 }
 
-void base::change_cell(const int x, const int y, const uint32_t ch, const colour fg, const colour bg)
+int base::get_width() const
 {
-    const bool valid_x = x >= padding_left_ && x < get_width() - padding_right_,
-               valid_y = y <= get_height() - padding_bot_ - 1 && y >= padding_top_;
+    return tb_width() - padding_left_ - padding_right_;
+}
+
+int base::get_height() const
+{
+    return tb_height() - padding_top_ - padding_bot_;
+}
+
+void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const colour bg)
+{
+    x += padding_left_;
+    y += padding_top_;
+
+    const bool valid_x = x >= padding_left_ && x <= tb_width() - padding_right_ - 1,
+               valid_y = y >= padding_top_ && y <= tb_height() - padding_bot_ - 1;
 
     if (!valid_x || !valid_y)
         return;

@@ -19,8 +19,8 @@
 
 namespace screen {
 
-item_details::item_details(const bookwyrm::item &item, int height)
-    : base(get_height() - height, default_padding_bot, 0, 0), item_(item)
+item_details::item_details(const bookwyrm::item &item, int padding_top)
+    : base(padding_top, default_padding_bot, 0, 0), item_(item)
 {
 
 }
@@ -46,18 +46,18 @@ void item_details::on_resize()
 
 string item_details::footer_info() const
 {
-    return fmt::format("DEBUG: padding top: {}", padding_top_);
+    return fmt::format("DEBUG: padding top: {}, height: {}", padding_top_, get_height());
 }
 
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
-        for (int x = padding_left_; x <= get_width(); x++)
+        for (int x = 0; x <= get_width(); x++)
             change_cell(x, y, ascii::em_dash);
     };
 
-    print_line(padding_top_);
-    print_line(get_height() - padding_bot_ - 1);
+    print_line(0);
+    print_line(get_height() - 1);
 }
 
 void item_details::print_text()
@@ -65,8 +65,8 @@ void item_details::print_text()
     const string output = "Test output";
 
     /* Find the center of the screen. */
-    const int x = (get_width() - padding_left_ - padding_right_) / 2 - output.length() / 2,
-              y = (get_height() - padding_bot_ - 1) - (get_height() - padding_top_) / 2;
+    const int x = get_width() / 2 - output.length() / 2,
+              y = get_height() / 2;
 
     mvprintw(x, y, output, colour::blue | attribute::bold | attribute::underline);
 }

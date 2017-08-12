@@ -38,7 +38,7 @@ namespace screen {
 
 class item_details : public base {
 public:
-    explicit item_details(const bookwyrm::item &item, int height);
+    explicit item_details(const bookwyrm::item &item, int padding_top);
 
     bool action(const key &key, const uint32_t &ch) override;
     void update() override;

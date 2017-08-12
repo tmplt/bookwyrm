@@ -25,7 +25,7 @@ namespace utils {
 
 std::error_code validate_download_dir(const fs::path &path)
 {
-    const auto error = [](auto ec) -> std::error_code {
+    constexpr auto error = [](auto ec) -> std::error_code {
         return {ec, std::generic_category()};
     };
 

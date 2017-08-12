@@ -95,7 +95,7 @@ void multiselect_menu::update()
 {
     for (size_t idx = 0; idx < columns_.size(); idx++) {
         /* Can we fit another column? */
-        const size_t allowed_width = get_width() - 1 - padding_right_
+        const size_t allowed_width = get_width() - 1 + padding_left_
                                    - columns_[idx].startx - 2;
         if (columns_[idx].width > allowed_width) break;
 
@@ -123,7 +123,7 @@ bool multiselect_menu::is_marked(const size_t idx) const
 
 size_t multiselect_menu::menu_capacity() const
 {
-    return get_height() - padding_bot_ - virtual_padding_top();
+    return get_height() - 1;
 }
 
 bool multiselect_menu::menu_at_bot() const
@@ -172,11 +172,6 @@ void multiselect_menu::unmark_item(const size_t idx)
     marked_items_.erase(idx);
 }
 
-int multiselect_menu::virtual_padding_top() const
-{
-    return padding_top_ + 1;
-}
-
 void multiselect_menu::toggle_select()
 {
     if (is_marked(selected_item_))
@@ -193,7 +188,7 @@ void multiselect_menu::update_column_widths()
             column.width = std::get<int>(column.width_w);
         } catch (std::bad_variant_access&) {
             /* It's a ratio, so multiply it with the full width. */
-            const int width = get_width() - 1 - padding_right_;
+            const int width = get_width() - 1 + padding_left_;
             column.width = width * std::get<double>(column.width_w);
         }
 
@@ -229,10 +224,10 @@ void multiselect_menu::print_scrollbar()
     const size_t height = std::max<size_t>(menu_capacity() / item_count(), 3) - 2;
 
     /* Find out where to print the bar. */
-    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + virtual_padding_top();
+    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + 1;
 
     /* First print the scrollbar's background. */
-    for (size_t y = virtual_padding_top(); y <= menu_capacity(); y++)
+    for (size_t y = 1; y <= menu_capacity(); y++)
         change_cell(get_width() - 1, y, ascii::scrollbar_bg);
 
     /* Then we print the bar. */
@@ -249,7 +244,7 @@ void multiselect_menu::print_header()
     size_t x = 1;
     for (auto &column : columns_) {
         /* Can we fit the next header? */
-        const size_t allowed_width = get_width() - 1 - padding_right_
+        const size_t allowed_width = get_width() - 1 + padding_left_
                                    - column.startx - 2;
         if (column.width > allowed_width) break;
 
@@ -272,22 +267,22 @@ void multiselect_menu::print_column(const size_t col_idx)
 {
     const auto &c = columns_[col_idx];
 
-    for (size_t i = scroll_offset_, y = virtual_padding_top(); i < item_count() &&
+    for (size_t i = scroll_offset_, y = 1; i < item_count() &&
             y <= menu_capacity(); i++, y++) {
 
-        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + virtual_padding_top()),
-                   on_marked_item   = is_marked(y + scroll_offset_ - virtual_padding_top());
+        const bool on_selected_item = (y + scroll_offset_ == selected_item_ + 1),
+                   on_marked_item   = is_marked(y + scroll_offset_ - 1);
 
         /*
          * Print the indicator, indicating which item is
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            change_cell(padding_left_, y, ascii::double_right_angle_bracket, attribute::reverse);
+            change_cell(0, y, ascii::double_right_angle_bracket, attribute::reverse);
         else if (on_selected_item)
-            change_cell(padding_left_, y, ascii::double_right_angle_bracket);
+            change_cell(0, y, ascii::double_right_angle_bracket);
         else if (on_marked_item)
-            change_cell(padding_left_, y, ' ', attribute::reverse);
+            change_cell(0, y, ' ', attribute::reverse);
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 

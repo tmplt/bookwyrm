@@ -133,9 +133,6 @@ private:
     void mark_item(const size_t idx);
     void unmark_item(const size_t idx);
 
-    /* Because only the header should be printed on the first line. */
-    int virtual_padding_top() const;
-
     void update_column_widths();
 
     void print_scrollbar();

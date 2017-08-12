@@ -141,7 +141,7 @@ bool screen_butler::open_details()
     int height;
     std::tie(index_scrollback_, height) = index_->compress();
 
-    details_ = std::make_shared<screen::item_details>(index_->selected_item(), height);
+    details_ = std::make_shared<screen::item_details>(index_->selected_item(), tb_height() - height - 1);
     focused_ = details_;
     screens_.insert(details_);
 
