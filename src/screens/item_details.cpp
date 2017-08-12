@@ -53,7 +53,7 @@ void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
         for (int x = padding_left_; x <= get_width(); x++)
-            change_cell(x, y, 0x2014); // em dash
+            change_cell(x, y, ascii::em_dash);
     };
 
     print_line(padding_top_);

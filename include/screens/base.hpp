@@ -22,6 +22,7 @@
 #include "common.hpp"
 #include "colours.hpp"
 #include "keys.hpp"
+#include "ascii.hpp"
 
 namespace screen {
 
@@ -63,9 +64,20 @@ protected:
      * change it with the given parameters.
      */
     void change_cell(const int x, const int y, const uint32_t ch, const colour fg = colour::none, const colour bg = colour::none);
+
     void change_cell(const int x, const int y, const uint32_t ch, const attribute attr)
     {
         change_cell(x, y, ch, colour::none | attr);
+    }
+
+    void change_cell(const int x, const int y, const ascii ch, const attribute attr)
+    {
+        change_cell(x, y, static_cast<ascii_t>(ch), colour::none | attr);
+    }
+
+    void change_cell(const int x, const int y, const ascii ch)
+    {
+        change_cell(x, y, static_cast<ascii_t>(ch));
     }
 
     /*

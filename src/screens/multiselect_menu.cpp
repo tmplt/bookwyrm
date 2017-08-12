@@ -221,10 +221,6 @@ void multiselect_menu::on_resize()
 
 void multiselect_menu::print_scrollbar()
 {
-    /* Nice runes. */
-    const uint32_t bg = 0x2592, // '▒'
-                   fg = 0x2588; // '█'
-
     /*
      * Find the height of the scrollbar.
      * The more entries, the smaller is gets.
@@ -237,11 +233,11 @@ void multiselect_menu::print_scrollbar()
 
     /* First print the scrollbar's background. */
     for (size_t y = virtual_padding_top(); y <= menu_capacity(); y++)
-        change_cell(get_width() - 1, y, bg);
+        change_cell(get_width() - 1, y, ascii::scrollbar_bg);
 
     /* Then we print the bar. */
     for (size_t y = start; y <= start + height; y++)
-        change_cell(get_width() - 1, y, fg);
+        change_cell(get_width() - 1, y, ascii::scrollbar_fg);
 }
 
 void multiselect_menu::print_header()
@@ -287,9 +283,9 @@ void multiselect_menu::print_column(const size_t col_idx)
          * currently selected.
          */
         if (on_selected_item && on_marked_item)
-            change_cell(padding_left_, y, selected_char_, attribute::reverse);
+            change_cell(padding_left_, y, ascii::double_right_angle_bracket, attribute::reverse);
         else if (on_selected_item)
-            change_cell(padding_left_, y, selected_char_);
+            change_cell(padding_left_, y, ascii::double_right_angle_bracket);
         else if (on_marked_item)
             change_cell(padding_left_, y, ' ', attribute::reverse);
 
