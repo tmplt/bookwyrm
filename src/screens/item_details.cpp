@@ -19,8 +19,8 @@
 
 namespace screen {
 
-item_details::item_details(const bookwyrm::item &item, int padding_top)
-    : base(padding_top, default_padding_bot, 0, 0), item_(item)
+item_details::item_details(const bookwyrm::item &item, int height)
+    : base(get_height() - height, default_padding_bot, 0, 0), item_(item)
 {
 
 }

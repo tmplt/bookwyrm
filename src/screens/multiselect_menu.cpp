@@ -325,7 +325,7 @@ void multiselect_menu::print_column(const size_t col_idx)
 const std::pair<int, int> multiselect_menu::compress()
 {
     const int details_height = menu_capacity() * 0.80;
-    padding_bot_ = menu_capacity() * 0.80;
+    padding_bot_ = details_height;
 
     /*
      * Will the detail menu hide the highlighted item?
