@@ -142,7 +142,7 @@ private:
     void print_header();
     void print_column(const size_t col_idx);
 
-    static constexpr uint32_t selected_char_ = '-';
+    static constexpr uint32_t selected_char_ = 0xBB; // »
 };
 
 } /* ns screen */
