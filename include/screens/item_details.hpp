@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <fmt/format.h>
+
 #include "item.hpp"
 #include "screens/base.hpp"
 
@@ -41,11 +43,7 @@ public:
     bool action(const key &key, const uint32_t &ch) override;
     void update() override;
     void on_resize() override;
-
-    string footer_info() const override
-    {
-        return "TODO";
-    }
+    string footer_info() const override;
 
     string footer_controls() const override
     {
@@ -54,7 +52,8 @@ public:
 
 private:
     const bookwyrm::item &item_;
-    /* void print_border(); */
+    void print_borders();
+    void print_text();
 };
 
 /* ns screen */
