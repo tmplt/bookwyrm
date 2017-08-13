@@ -54,6 +54,8 @@ enum class __key : uint16_t {
     tab    = TB_KEY_TAB,
     enter  = TB_KEY_ENTER,
     ctrl_l = TB_KEY_CTRL_L,
+    ctrl_d = TB_KEY_CTRL_D,
+    ctrl_u = TB_KEY_CTRL_U,
     space  = TB_KEY_SPACE
 };
 

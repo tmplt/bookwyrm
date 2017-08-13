@@ -69,6 +69,14 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
         case key::space:
             toggle_select();
             return true;
+        case key::ctrl_d:
+            for (int i = 0; i < get_height() / 2; i++)
+                move(down);
+            return true;
+        case key::ctrl_u:
+            for (int i = 0; i < get_height() / 2; i++)
+                move(up);
+            return true;
         default:
             break;
     }
@@ -85,6 +93,14 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
             return true;
         case 'G':
             move(bot);
+            return true;
+        case 'd':
+            for (int i = 0; i < get_height() / 2; i++)
+                move(down);
+            return true;
+        case 'u':
+            for (int i = 0; i < get_height() / 2; i++)
+                move(up);
             return true;
     }
 
