@@ -46,7 +46,7 @@ void screen_butler::update_screens()
     tb_clear();
 
     if (!bookwyrm_fits()) {
-        mvprintw(0, 0, "The terminal is too small. I can't fit!");
+        mvprintw(0, 0, "The terminal is too small. I don't fit!");
     } else {
         for (auto &screen : screens_)
            screen->update();
