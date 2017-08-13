@@ -41,7 +41,7 @@ void item_details::update()
 
 void item_details::on_resize()
 {
-    update();
+
 }
 
 string item_details::footer_info() const

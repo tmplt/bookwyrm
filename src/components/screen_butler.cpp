@@ -86,6 +86,7 @@ void screen_butler::display()
     struct keys::event ev;
     while (keys::poll_event(ev)) {
         if (ev.type == type::resize) {
+            close_details();
             resize_screens();
         } else if (ev.type == type::key_press) {
             if (ev.key == key::escape)
