@@ -341,7 +341,7 @@ const std::pair<int, int> multiselect_menu::compress()
     const int scroll = std::max<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1, 0);
     scroll_offset_ += scroll;
 
-    return {scroll, details_height};
+    return {scroll, details_height - 1};
 }
 
 void multiselect_menu::decompress(int scroll)
