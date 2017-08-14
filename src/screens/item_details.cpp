@@ -52,7 +52,7 @@ string item_details::footer_info() const
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
-        for (int x = 0; x <= get_width(); x++)
+        for (int x = 0; x < get_width(); x++)
             change_cell(x, y, ascii::em_dash);
     };
 

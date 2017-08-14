@@ -129,7 +129,7 @@ string multiselect_menu::footer_info() const
 
 string multiselect_menu::footer_controls() const
 {
-    return "[j/k]Navigation [SPACE]Toggle select";
+    return "[j/k d/u]Navigation [SPACE]Toggle select";
 }
 
 bool multiselect_menu::is_marked(const size_t idx) const
