@@ -77,20 +77,20 @@ void base::init_tui()
 
 int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
 {
-    const size_t limit = x + space;
+    const size_t limit = x + space - 1;
     for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
-        if (x == limit - 1 && str.length() > space) {
+        if (x == limit && str.length() > space) {
             /* We can't fit the rest of the string. */
 
             /* Don't print the substring's trailing whitespace. */
-            int i = 0;
+            int whitespace = 0;
             while (std::isspace(*(--ch))) {
                 x--;
-                i--;
+                whitespace++;
             }
 
             change_cell(x, y, '~', attrs);
-            return str.length() - space - i;
+            return str.length() - space + whitespace;
         }
 
         change_cell(x++, y, *ch, attrs);
