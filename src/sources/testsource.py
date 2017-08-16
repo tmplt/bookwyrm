@@ -9,7 +9,9 @@ def find(wanted, bookwyrm):
 
     # Generate some dummy items
     for i in range(100):
-        # time.sleep(0.1)
+        if bookwyrm.terminating():
+            return
+
         nonexacts = bw.nonexacts_t({
             'title': 'Some Title (' + str(i) + ')',
             'serie': 'The Cool Serie' + str(i),

@@ -19,6 +19,7 @@
 
 #include <mutex>
 #include <memory>
+#include <atomic>
 #include <spdlog/spdlog.h>
 
 #include "common.hpp"
@@ -65,6 +66,11 @@ public:
     /* Try to add a found item, and then update the set menu. */
     void add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps);
 
+    bool is_destructing()
+    {
+        return destructing_.load();
+    }
+
     vector<bookwyrm::item>& results()
     {
         return items_;
@@ -79,6 +85,8 @@ public:
 private:
     const logger_t logger_ = spdlog::get("main");
     const bookwyrm::item wanted_;
+
+    std::atomic<bool> destructing_ = false;
 
     /* Somewhere to store our found items. */
     vector<bookwyrm::item> items_;

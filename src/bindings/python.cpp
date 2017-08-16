@@ -87,5 +87,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         });
 
     py::class_<butler::script_butler>(m, "bookwyrm")
-        .def("feed", &butler::script_butler::add_item, py::return_value_policy::take_ownership);
+        .def("feed", &butler::script_butler::add_item, py::return_value_policy::take_ownership)
+        .def("terminating", &butler::script_butler::is_destructing);
 }

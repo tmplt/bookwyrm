@@ -97,16 +97,12 @@ vector<pybind11::module> script_butler::load_sources()
 script_butler::~script_butler()
 {
     /*
-     * Current behaviour is that the program cannot terminate unless
-     * all source threads has joined. We'll of course want do to this.
-     *
-     * It's not possible to end a std::thread in a smooth matter. We could
-     * instead have a control variable that the source scripts check every
-     * once in a while. When this is set upon quitting the curses UI, we'll
-     * have to let each script handle its own termination.
-     *
-     * Not joining the threads here doesn't make the OS very happy.
+     * If we want to terminate the program, we need to join the threads.
+     * And if we want to join the threads, the Python scripts must stop (e.g. return).
+     * Since C++ offers no way to terminate an std::thread before it's done, we
+     * signal the Python scripts that they should return here.
      */
+    destructing_ = true;
     py::gil_scoped_release nogil;
 
     for (auto &t : threads_)

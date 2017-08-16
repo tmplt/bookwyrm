@@ -75,6 +75,12 @@ void base::init_tui()
     tb_clear();
 }
 
+/*
+ * This implementation first prints out as much as it cans and then backtracks,
+ * wasting oh-so-precious CPU-cycles.
+ *
+ * TODO: rewrite this to only print as much as it has to.
+ */
 int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
 {
     const size_t limit = x + space - 1;

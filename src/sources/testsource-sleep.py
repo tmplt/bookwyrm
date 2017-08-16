@@ -9,9 +9,14 @@ def find(wanted, bookwyrm):
 
     # Generate some dummy data
     for i in range(10):
+
+        if bookwyrm.terminating():
+            return
+
         time.sleep(0.2)
+
         nonexacts = bw.nonexacts_t(
-            {'serie': 'serie' + str(i), 'title': '2title' + str(i)},
+            {'serie': 'serie' + str(i), 'title': wanted.nonexacts.title + str(i)},
             ['Author A. ' + str(i), 'Author B.' + str(i)])
 
         exacts = bw.exacts_t({'year': 2000 + i, 'pages': 500 + i})
