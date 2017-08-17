@@ -69,7 +69,9 @@ void item_details::print_details()
         {"Authors",   item_.nonexacts.authors_str},
         {"Year",      item_.exacts.year_str},
         {"Publisher", item_.nonexacts.publisher},
-        {"Format",    item_.exacts.format_str}
+        {"Format",    item_.exacts.format}
+        // include filesize here
+        // and print it red if the item is gigabytes large
     };
 
     /* Find the longest string... */
@@ -108,7 +110,11 @@ void item_details::print_desc(int &y, string str)
                 if (word != words.cend() - 1) {
                     /* We haven't printed the whole description yet. */
 
-                    /* Make sure the dots are printed in the screen. */
+                    /*
+                     * Make sure the dots are printed in the screen.
+                     * Subtracts an additional 1 to overwrite the space
+                     * from the last word.
+                     */
                     mvprintw(word_fits("...") ? --x : x - 4, y, "...");
                 }
 

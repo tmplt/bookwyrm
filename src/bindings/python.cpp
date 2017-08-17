@@ -43,7 +43,7 @@ PYBIND11_MODULE(pybookwyrm, m)
         .def_readwrite("volume",  &bw::exacts_t::volume)
         .def_readwrite("number",  &bw::exacts_t::number)
         .def_readwrite("pages",   &bw::exacts_t::pages)
-        .def_readwrite("lang",    &bw::exacts_t::lang)
+        /* .def_readwrite("lang",    &bw::exacts_t::lang) */
         .def("__repr__", [](const bw::exacts_t &c) {
             return fmt::format(
                 "<pybookwyrm.exacts_t with fields:\n"
@@ -52,10 +52,10 @@ PYBIND11_MODULE(pybookwyrm, m)
                 "\tfile type: {}\n"
                 "\tvolume:    {}\n"
                 "\tnumber:    {}\n"
-                "\tpages:     {}\n"
-                "\tlanguage:  {}\n>",
+                "\tpages:     {}\n",
+                /* "\tlanguage:  {}\n>", */
                 c.year, c.edition, c.format, c.volume,
-                c.number, c.pages, c.lang
+                c.number, c.pages //, c.lang
             );
         });
 

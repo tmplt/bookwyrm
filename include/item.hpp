@@ -57,23 +57,20 @@ struct exacts_t {
     explicit exacts_t(const std::map<string, int> &dict);
 
     year_mod ymod;
-
-    int year,
-        edition,
-        format, // unused for now
-        volume,
-        number,
-        pages,  // missing flag
-        lang;   // unused for now
-
+    int year;
     string year_str;
-    const string format_str = "fmt";
 
-    constexpr static int size = 7;
+    int edition,
+        volume, /* no associated flag */
+        number, /* no associated flag */
+        pages;  /* no associated flag */
 
+    string format = "fmt";
+
+    constexpr static int size = 6;
     std::array<int, size> store = {
-        year, edition, format,
-        volume, number, pages
+        year, edition, volume,
+        number, pages
     };
 
     int operator[](int i) const
