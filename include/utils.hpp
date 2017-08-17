@@ -41,9 +41,12 @@ inline bool any_intersection(const Set &a, const Set &b)
 std::error_code validate_download_dir(const fs::path &path);
 
 string vector_to_string(const vector<string> &vec);
+vector<string> split_string(const string &str);
 
 /* Check if the given path is a file and can be read. */
 bool readable_file(const fs::path &path);
+
+string lipsum(int repeats);
 
 /* ns utils */
 }

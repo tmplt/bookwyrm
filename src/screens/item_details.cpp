@@ -36,7 +36,7 @@ bool item_details::action(const key &key, const uint32_t &ch)
 void item_details::update()
 {
     print_borders();
-    print_text();
+    print_details();
 }
 
 void item_details::on_resize()
@@ -60,15 +60,68 @@ void item_details::print_borders()
     print_line(get_height() - 1);
 }
 
-void item_details::print_text()
+void item_details::print_details()
 {
-    const string output = "Test output";
+    using pair = std::pair<string, std::reference_wrapper<const string>>;
+    const vector<pair> v = {
+        {"Title",     item_.nonexacts.title},
+        {"Serie",     item_.nonexacts.serie},
+        {"Authors",   item_.nonexacts.authors_str},
+        {"Year",      item_.exacts.year_str},
+        {"Publisher", item_.nonexacts.publisher},
+        {"Format",    item_.exacts.format_str}
+    };
 
-    /* Find the center of the screen. */
-    const int x = get_width() / 2 - output.length() / 2,
-              y = get_height() / 2;
+    /* Find the longest string... */
+    size_t len = 0;
+    for (const auto &p : v)
+        len = std::max(p.first.length(), len);
 
-    mvprintw(x, y, output, colour::blue | attribute::bold | attribute::underline);
+    /*
+     * ... which we use to distance field title and field value.
+     * (A magic 4 added to x to emulate a tab).
+     */
+    int y = 1;
+    for (const auto &p : v) {
+        mvprintw(0, y, p.first + ':', attribute::bold);
+        mvprintw(len + 4, y++, p.second.get());
+    }
+
+    mvprintw(0, ++y, "Description:", attribute::bold);
+    print_desc(++y, utils::lipsum(20));
+}
+
+void item_details::print_desc(int &y, string str)
+{
+    int x = 0;
+    const auto words = utils::split_string(str);
+
+    auto word_fits = [this, &x](const string &str) -> bool {
+        return static_cast<size_t>(get_width()) - x > str.length();
+    };
+
+    for (auto word = words.cbegin(); word != words.cend(); ++word) {
+        if (!word_fits(*word)) {
+            if (y + 1 == get_height() - 1) {
+                /* No more lines to draw on; can't fit any more. */
+
+                if (word != words.cend() - 1) {
+                    /* We haven't printed the whole description yet. */
+
+                    /* Make sure the dots are printed in the screen. */
+                    mvprintw(word_fits("...") ? --x : x - 4, y, "...");
+                }
+
+                return;
+            }
+
+            ++y;
+            x = 0;
+        }
+
+        mvprintw(x, y, *word + ' ');
+        x += (*word).length() + 1;
+    }
 }
 
 /* ns screen */

@@ -67,6 +67,7 @@ struct exacts_t {
         lang;   // unused for now
 
     string year_str;
+    const string format_str = "fmt";
 
     constexpr static int size = 7;
 
@@ -130,7 +131,6 @@ public:
         return os;
     }
 
-    const string placeholder_format_str = "fmt";
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     misc_t misc;

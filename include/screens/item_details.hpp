@@ -52,8 +52,12 @@ public:
 
 private:
     const bookwyrm::item &item_;
+
     void print_borders();
-    void print_text();
+    void print_details();
+
+    /* Print the item's description from line y and downward. */
+    void print_desc(int &y, string str);
 };
 
 /* ns screen */
