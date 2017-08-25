@@ -119,7 +119,8 @@ void multiselect_menu::update()
     }
 
     print_header();
-    print_scrollbar();
+    if (item_count() > 0)
+        print_scrollbar();
 }
 
 string multiselect_menu::footer_info() const

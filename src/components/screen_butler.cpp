@@ -74,6 +74,8 @@ void screen_butler::resize_screens()
 
 void screen_butler::display()
 {
+    update_screens();
+
     /*
      * Let the source threads free.
      * This doesn't feel like the best place to have this,
