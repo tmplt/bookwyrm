@@ -57,13 +57,13 @@ struct exacts_t {
     explicit exacts_t(const std::map<string, int> &dict);
 
     year_mod ymod;
-    int year;
-    string year_str;
+    int year = empty;
+    string year_str = "";
 
-    int edition,
-        volume, /* no associated flag */
-        number, /* no associated flag */
-        pages;  /* no associated flag */
+    int edition = empty,
+        volume  = empty,  /* no associated flag */
+        number  = empty,  /* no associated flag */
+        pages   = empty;  /* no associated flag */
 
     string format = "fmt";
 
