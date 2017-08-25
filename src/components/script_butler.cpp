@@ -119,7 +119,7 @@ void script_butler::async_search(vector<py::module> &sources)
             try {
                 m.attr("find")(wanted, bw_instance);
             } catch (const py::error_already_set &err) {
-                bw_instance->logger_->error("module '{}' did something wrong ({}); ignoring...",
+                bw_instance->logger_->error("module '{}' did something wrong:\n{}\n; ignoring...",
                     m.attr("__name__").cast<string>(), err.what());
             }
         });
@@ -129,10 +129,10 @@ void script_butler::async_search(vector<py::module> &sources)
 void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps)
 {
     bookwyrm::item item(item_comps);
+    if (!item.matches(wanted_))
+        return;
 
     std::lock_guard<std::mutex> guard(items_mutex_);
-    /* if (!item.matches(wanted_)) */
-    /*     return; */
 
     items_.push_back(item);
     screen_butler_->update_screens();

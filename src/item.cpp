@@ -133,11 +133,11 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
     authors_str = utils::vector_to_string(authors);
 }
 
-bool item::matches(const item &wanted)
+bool item::matches(const item &wanted) const
 {
     /* Return false if any exact value doesn't match what's wanted. */
     for (int i = 0; i <= wanted.exacts.size; i++) {
-        if (wanted.exacts[i] && wanted.exacts[i] != this->exacts[i])
+        if (wanted.exacts[i] != empty && wanted.exacts[i] != this->exacts[i])
             return false;
     }
 
@@ -154,7 +154,7 @@ bool item::matches(const item &wanted)
                                              wanted.nonexacts.serie,
                                              wanted.nonexacts.publisher};
 
-    for (size_t i = 0; i <= in_result.size(); i++) {
+    for (size_t i = 0; i < in_result.size(); i++) {
         if (!requested[i].empty()) {
             /*
              * partial: useful for course literature that can have some

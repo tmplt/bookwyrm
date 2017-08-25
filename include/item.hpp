@@ -120,7 +120,7 @@ public:
      * Returns true if all specified exact values are equal
      * and if all specified non-exact values passes the fuzzy ratio.
      */
-    bool matches(const item &wanted);
+    bool matches(const item &wanted) const;
 
     friend std::ostream& operator<<(std::ostream &os, item const &i)
     {
