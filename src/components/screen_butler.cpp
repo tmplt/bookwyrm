@@ -83,13 +83,7 @@ void screen_butler::display()
 {
     update_screens();
 
-    /*
-     * Let the source threads free.
-     * This doesn't feel like the best place to have this,
-     * but we do need to have a release in scope if we
-     * ever want the threads to run.
-     * TODO: find out if there is a better place for this.
-     */
+    /* Let the source threads free. */
     py::gil_scoped_release nogil;
 
     struct keys::event ev;
