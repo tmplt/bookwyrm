@@ -59,7 +59,14 @@ void screen_butler::update_screens()
 
 void screen_butler::print_footer()
 {
+    const auto print_right_align = [this](int y, string &&s) {
+        mvprintw(tb_width() - s.length(), y, s);
+    };
+
     mvprintw(0, tb_height() - 2, focused_->footer_info());
+    if (int perc = focused_->scrollperc(); perc > -1)
+        print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
+
     mvprintwl(0, tb_height() - 1, "[ESC]Quit " + focused_->footer_controls(),
             attribute::reverse | attribute::bold);
 }

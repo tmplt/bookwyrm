@@ -44,6 +44,7 @@ public:
     void update() override;
     void on_resize() override;
     string footer_info() const override;
+    int scrollperc() const override;
 
     string footer_controls() const override
     {

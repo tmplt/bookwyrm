@@ -119,8 +119,6 @@ void multiselect_menu::update()
     }
 
     print_header();
-    if (item_count() > 0)
-        print_scrollbar();
 }
 
 string multiselect_menu::footer_info() const
@@ -131,6 +129,15 @@ string multiselect_menu::footer_info() const
 string multiselect_menu::footer_controls() const
 {
     return "[j/k d/u]Navigation [SPACE]Toggle select";
+}
+
+int multiselect_menu::scrollperc() const
+{
+    if (item_count() <= menu_capacity())
+        return -1;
+
+    const double frac = static_cast<double>(menu_capacity() + scroll_offset_) / item_count();
+    return utils::percent_round(frac);
 }
 
 bool multiselect_menu::is_marked(const size_t idx) const
@@ -229,27 +236,6 @@ void multiselect_menu::on_resize()
      * if so, move it to menu_bot).
      */
     if (menu_at_bot()) selected_item_--;
-}
-
-void multiselect_menu::print_scrollbar()
-{
-    /*
-     * Find the height of the scrollbar.
-     * The more entries, the smaller is gets.
-     * (not less than 3 - 2 = 1, though)
-     */
-    const size_t height = std::max<size_t>(menu_capacity() / item_count(), 3) - 2;
-
-    /* Find out where to print the bar. */
-    const size_t start = selected_item_ * (menu_capacity() - 1) / item_count() + 1;
-
-    /* First print the scrollbar's background. */
-    for (size_t y = 1; y <= menu_capacity(); y++)
-        change_cell(get_width() - 1, y, ascii::scrollbar_bg);
-
-    /* Then we print the bar. */
-    for (size_t y = start; y <= start + height; y++)
-        change_cell(get_width() - 1, y, ascii::scrollbar_fg);
 }
 
 void multiselect_menu::print_header()

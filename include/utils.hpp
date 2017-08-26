@@ -48,5 +48,11 @@ bool readable_file(const fs::path &path);
 
 string lipsum(int repeats);
 
+/*
+ * Return a rounded percentage in the range [0,100]
+ * from a domain of [0.0,1.0]
+ */
+int percent_round(double d);
+
 /* ns utils */
 }

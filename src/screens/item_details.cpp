@@ -49,6 +49,12 @@ string item_details::footer_info() const
     return fmt::format("DEBUG: padding top: {}, height: {}", padding_top_, get_height());
 }
 
+int item_details::scrollperc() const
+{
+    /* stub */
+    return 42;
+}
+
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {

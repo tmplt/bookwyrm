@@ -38,6 +38,7 @@ public:
     bool action(const key &key, const uint32_t &ch) override;
     string footer_info() const override;
     string footer_controls() const override;
+    int scrollperc() const override;
 
     /*
      * Make some space for a screen:item_details,
@@ -135,7 +136,6 @@ private:
 
     void update_column_widths();
 
-    void print_scrollbar();
     void print_header();
     void print_column(const size_t col_idx);
 

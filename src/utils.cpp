@@ -18,6 +18,7 @@
  */
 
 #include <cerrno>
+#include <cmath>
 
 #include "utils.hpp"
 
@@ -92,6 +93,11 @@ string lipsum(int repeats)
         ret += str + (i == repeats - 1 ? "" : " ");
 
     return ret;
+}
+
+int percent_round(double d)
+{
+    return std::round<int>(100 * d);
 }
 
 /* ns utils */

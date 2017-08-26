@@ -52,6 +52,12 @@ public:
     /* How do we control the screen? */
     virtual string footer_controls() const = 0;
 
+    /*
+     * How many percent have we scrolled?
+     * Returns -1 if we can't scroll yet
+     */
+    virtual int scrollperc() const = 0;
+
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
