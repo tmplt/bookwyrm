@@ -34,8 +34,6 @@ namespace spdlog::custom {
  * A sink which prints level::err and above to stdcerr.
  * All other levels are considered not-errors, so they are
  * printed to stdout, alike the inherited sink.
- *
- * NOTE: if thread safety is needed, protect with a mutex.
  */
 class bookwyrm_sink : public spdlog::sinks::sink {
 public:
