@@ -22,9 +22,11 @@
 #include "python.hpp"
 #include "colours.hpp"
 #include "components/script_butler.hpp"
+#include "components/logger.hpp"
 #include "screens/base.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
+#include "screens/log.hpp"
 
 namespace butler {
 
@@ -39,7 +41,7 @@ class script_butler;
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up);
+    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up, logger_t logger);
     ~screen_butler();
 
     /* Update (redraw) all screens that need updating. */
@@ -59,10 +61,10 @@ private:
     bool &tui_up_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
+    std::shared_ptr<screen::log> log_;
+
     std::shared_ptr<screen::item_details> details_;
     std::shared_ptr<screen::base> focused_;
-
-    std::set<std::shared_ptr<screen::base>> screens_;
 
     /* Is a screen::item_details open? */
     bool viewing_details_;
@@ -84,6 +86,8 @@ private:
 
     /* And close it. Return true if the operation was successful. */
     bool close_details();
+
+    bool toggle_log();
 
     void resize_screens();
 
@@ -111,7 +115,7 @@ namespace tui {
  * Yes, a factory. But we need it to "link" the two butlers together.
  * (The script_butler tells the screen_butler when to update all screens.)
  */
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up);
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up, logger_t &logger);
 
 /* ns tui */
 }

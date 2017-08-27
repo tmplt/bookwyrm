@@ -26,6 +26,7 @@ set(SOURCE
     screens/base.cpp
     screens/multiselect_menu.cpp
     screens/item_details.cpp
+    screens/log.cpp
 )
 
 

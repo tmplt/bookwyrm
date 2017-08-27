@@ -135,6 +135,8 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
 
 bool item::matches(const item &wanted) const
 {
+    // write some functional::zip() function here
+
     /* Return false if any exact value doesn't match what's wanted. */
     for (int i = 0; i <= wanted.exacts.size; i++) {
         if (wanted.exacts[i] != empty && wanted.exacts[i] != this->exacts[i])

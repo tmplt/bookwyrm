@@ -83,7 +83,7 @@ public:
     }
 
 private:
-    const logger_t logger_ = spdlog::get("main");
+    const std::shared_ptr<spdlog::logger> logger_ = spdlog::get("main");
     const bookwyrm::item wanted_;
 
     std::atomic<bool> destructing_ = false;

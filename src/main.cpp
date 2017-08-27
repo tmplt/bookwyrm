@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         auto butler = butler::script_butler(std::move(wanted));
         auto sources = butler.load_sources();
 
-        auto tui = tui::make_with(butler, sources, tui_up);
+        auto tui = tui::make_with(butler, sources, tui_up, logger);
         tui->display();
 
     } catch (const cli_error &err) {

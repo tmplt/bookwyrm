@@ -21,7 +21,7 @@
 
 namespace butler {
 
-screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up)
+screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up, logger_t logger)
     : items_(items), tui_up_(tui_up), viewing_details_(false)
 {
     /*
@@ -30,10 +30,13 @@ screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up)
      */
     tui_up_ = true;
 
-    /* Create the default menu screen and focus on it. */
+    /* Create the log screen. */
+    log_ = std::make_shared<screen::log>();
+    logger->set_log_screen(log_);
+
+    /* And create the default menu screen and focus on it. */
     index_ = std::make_shared<screen::multiselect_menu>(items_);
     focused_ = index_;
-    screens_.insert(index_);
 }
 
 screen_butler::~screen_butler()
@@ -47,9 +50,14 @@ void screen_butler::update_screens()
 
     if (!bookwyrm_fits()) {
         mvprintw(0, 0, "The terminal is too small. I don't fit!");
+    } else if (focused_ == log_) {
+        log_->update();
+        print_footer();
     } else {
-        for (auto &screen : screens_)
-           screen->update();
+        index_->update();
+
+        if (viewing_details_)
+            details_->update();
 
         print_footer();
     }
@@ -67,14 +75,16 @@ void screen_butler::print_footer()
     if (int perc = focused_->scrollperc(); perc > -1)
         print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
 
-    mvprintwl(0, tb_height() - 1, "[ESC]Quit " + focused_->footer_controls(),
+    mvprintwl(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->footer_controls(),
             attribute::reverse | attribute::bold);
 }
 
 void screen_butler::resize_screens()
 {
-    for (auto &screen : screens_)
-        screen->on_resize();
+    index_->on_resize();
+    log_->on_resize();
+
+    /* Resizing item_details not yet supported. */
 
     update_screens();
 }
@@ -132,6 +142,8 @@ bool screen_butler::meta_action(const key &key, const uint32_t &ch)
             return open_details();
         case key::arrow_left:
             return close_details();
+        case key::tab:
+            return toggle_log();
         default:
             return false;
     }
@@ -147,7 +159,6 @@ bool screen_butler::open_details()
 
     details_ = std::make_shared<screen::item_details>(index_->selected_item(), tb_height() - height - 1);
     focused_ = details_;
-    screens_.insert(details_);
 
     viewing_details_ = true;
     return true;
@@ -158,13 +169,22 @@ bool screen_butler::close_details()
     if (!viewing_details_) return false;
 
     focused_ = index_;
-    screens_.erase(details_);
 
     /* Give back the space the detail menu too up to the index menu. */
     index_->decompress(index_scrollback_);
     index_scrollback_ = -1;
 
     viewing_details_ = false;
+    return true;
+}
+
+bool screen_butler::toggle_log()
+{
+    if (focused_ != log_)
+        focused_ = log_;
+    else
+        focused_ = index_;
+
     return true;
 }
 
@@ -190,9 +210,9 @@ void screen_butler::mvprintwl(int x, const int y, const string_view &str, const 
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up)
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up, logger_t &logger)
 {
-    auto tui = std::make_shared<butler::screen_butler>(butler.results(), tui_up);
+    auto tui = std::make_shared<butler::screen_butler>(butler.results(), tui_up, logger);
     butler.set_screens(tui);
     butler.async_search(sources); // Watch out, it's hot!
     return tui;

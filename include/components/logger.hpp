@@ -26,6 +26,7 @@
 #include <spdlog/logger.h>
 
 #include "common.hpp"
+#include "screens/log.hpp"
 
 namespace spdlog::custom {
 
@@ -36,21 +37,23 @@ namespace spdlog::custom {
  *
  * NOTE: if thread safety is needed, protect with a mutex.
  */
-class split_sink : public spdlog::sinks::sink {
+class bookwyrm_sink : public spdlog::sinks::sink {
 public:
-    split_sink(bool &store_in_buffer)
-        : store_in_buffer_(store_in_buffer) {}
-    ~split_sink();
+    bookwyrm_sink(bool &store_in_buffer)
+        : log_to_screen_(store_in_buffer) {}
 
     void log(const details::log_msg &msg) override;
     void flush();
 
+    void set_log_screen(std::shared_ptr<screen::log> screen)
+    {
+        log_screen_ = screen;
+    }
+
 private:
-    /* If the TUI is up, we store logs here until program termination. */
-    using buffer_pair = std::pair<std::reference_wrapper<std::ostream>, const string>;
-    vector<buffer_pair> buffer_;
-    const bool &store_in_buffer_;
+    const bool &log_to_screen_;
     std::mutex write_mutex_;
+    std::shared_ptr<screen::log> log_screen_;
 };
 
 /* ns spdlog::custom */
@@ -58,9 +61,27 @@ private:
 
 namespace logger {
 
+class bookwyrm_logger : public spdlog::logger {
+public:
+    explicit bookwyrm_logger(string name, std::shared_ptr<spdlog::custom::bookwyrm_sink> sink)
+        : spdlog::logger(name, sink), sink_(sink)
+    {
+
+    }
+
+    void set_log_screen(std::shared_ptr<screen::log> screen)
+    {
+        sink_->set_log_screen(screen);
+    }
+
+private:
+    std::shared_ptr<spdlog::custom::bookwyrm_sink> sink_;
+
+};
+
 /* Create the logger. */
-std::shared_ptr<spdlog::logger> create(std::string &&name, bool &tui_up);
+std::shared_ptr<bookwyrm_logger> create(std::string &&name, bool &tui_up);
 
 }
 
-using logger_t = std::shared_ptr<spdlog::logger>;
+using logger_t = std::shared_ptr<logger::bookwyrm_logger>;

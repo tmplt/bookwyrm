@@ -26,38 +26,32 @@
 
 namespace spdlog::custom {
 
-void split_sink::log(const details::log_msg &msg)
+void bookwyrm_sink::log(const details::log_msg &msg)
 {
     const auto &str = msg.formatted.str();
     auto &out = msg.level <= spdlog::level::warn ? std::cout : std::cerr;
 
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (store_in_buffer_)
-        buffer_.emplace_back(out, str);
+    if (log_to_screen_)
+        log_screen_->log_entry(msg.level, str);
     else
         out << str;
 }
 
-void split_sink::flush()
+void bookwyrm_sink::flush()
 {
     std::cout << std::flush;
     std::cerr << std::flush;
 }
 
-split_sink::~split_sink()
-{
-    for (auto& [out, msg] : buffer_)
-        out.get() << msg;
-}
-
 /* ns spdlog::custom */
 }
 
-std::shared_ptr<spdlog::logger> logger::create(std::string &&name, bool &tui_up)
+std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name, bool &tui_up)
 {
-    auto sink = std::make_shared<spdlog::custom::split_sink>(tui_up);
-    auto logger = std::make_shared<spdlog::logger>(std::forward<std::string>(name),
+    auto sink = std::make_shared<spdlog::custom::bookwyrm_sink>(tui_up);
+    auto logger = std::make_shared<logger::bookwyrm_logger>(std::forward<std::string>(name),
             std::move(sink));
 
     return logger;
