@@ -56,5 +56,18 @@ int log::scrollperc() const
     return 42;
 }
 
+void log::log_entry(spdlog::level::level_enum level, string entry)
+{
+    /*
+     * We might get some error from Python here, which contain a few newlines.
+     * Log entries are a single line, so we strip the line breaks here.
+     *
+     * Note: what about \r?
+     */
+    entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+
+    entries_.emplace_back(level, entry);
+}
+
 /* ns screen */
 }

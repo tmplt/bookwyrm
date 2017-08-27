@@ -38,10 +38,7 @@ public:
         return "[j/k d/u]Navigation [SPACE]attach/detach";
     }
 
-    void log_entry(spdlog::level::level_enum level, string entry)
-    {
-        entries_.emplace_back(level, entry);
-    }
+    void log_entry(spdlog::level::level_enum level, string entry);
 
 private:
     vector<std::pair<spdlog::level::level_enum, string>> entries_;
