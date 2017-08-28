@@ -21,7 +21,7 @@
 
 namespace butler {
 
-screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up, logger_t logger)
+screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up)
     : items_(items), tui_up_(tui_up), viewing_details_(false)
 {
     /*
@@ -32,7 +32,6 @@ screen_butler::screen_butler(vector<bookwyrm::item> &items, bool &tui_up, logger
 
     /* Create the log screen. */
     log_ = std::make_shared<screen::log>();
-    logger->set_log_screen(log_);
 
     /* And create the default menu screen and focus on it. */
     index_ = std::make_shared<screen::multiselect_menu>(items_);
@@ -212,8 +211,9 @@ namespace tui {
 
 std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up, logger_t &logger)
 {
-    auto tui = std::make_shared<butler::screen_butler>(butler.results(), tui_up, logger);
+    auto tui = std::make_shared<butler::screen_butler>(butler.results(), tui_up);
     butler.set_screens(tui);
+    logger->set_screen_butler(tui);
     butler.async_search(sources); // Watch out, it's hot!
     return tui;
 }

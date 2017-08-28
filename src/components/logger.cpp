@@ -24,9 +24,9 @@
 
 #include "components/logger.hpp"
 
-namespace spdlog::custom {
+namespace logger {
 
-void bookwyrm_sink::log(const details::log_msg &msg)
+void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     const auto &str = msg.formatted.str();
     auto &out = msg.level <= spdlog::level::warn ? std::cout : std::cerr;
@@ -34,7 +34,7 @@ void bookwyrm_sink::log(const details::log_msg &msg)
     std::lock_guard<std::mutex> guard(write_mutex_);
 
     if (log_to_screen_)
-        log_screen_->log_entry(msg.level, str);
+        screen_butler_->log_entry(msg.level, str);
     else
         out << str;
 }
@@ -45,12 +45,12 @@ void bookwyrm_sink::flush()
     std::cerr << std::flush;
 }
 
-/* ns spdlog::custom */
+/* ns logger */
 }
 
 std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name, bool &tui_up)
 {
-    auto sink = std::make_shared<spdlog::custom::bookwyrm_sink>(tui_up);
+    auto sink = std::make_shared<logger::bookwyrm_sink>(tui_up);
     auto logger = std::make_shared<logger::bookwyrm_logger>(std::forward<std::string>(name),
             std::move(sink));
 

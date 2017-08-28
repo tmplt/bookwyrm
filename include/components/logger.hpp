@@ -26,55 +26,50 @@
 #include <spdlog/logger.h>
 
 #include "common.hpp"
-#include "screens/log.hpp"
+#include "components/screen_butler.hpp"
 
-namespace spdlog::custom {
+/* Circular dependency guard. */
+namespace butler { class screen_butler; }
+
+namespace logger {
 
 /*
- * A sink which prints level::err and above to stdcerr.
- * All other levels are considered not-errors, so they are
- * printed to stdout, alike the inherited sink.
+ * A sink which, if the TUI isn't up yet, prints the msg to
+ * either stdout or stdcerr (depending on the log level),
+ * and otherwise sends the msg to the screen butler to be
+ * printed in the log screen.
  */
 class bookwyrm_sink : public spdlog::sinks::sink {
 public:
     bookwyrm_sink(bool &store_in_buffer)
         : log_to_screen_(store_in_buffer) {}
 
-    void log(const details::log_msg &msg) override;
+    void log(const spdlog::details::log_msg &msg) override;
     void flush();
 
-    void set_log_screen(std::shared_ptr<screen::log> screen)
+    void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
-        log_screen_ = screen;
+        screen_butler_ = butler;
     }
 
 private:
     const bool &log_to_screen_;
     std::mutex write_mutex_;
-    std::shared_ptr<screen::log> log_screen_;
+    std::shared_ptr<butler::screen_butler> screen_butler_;
 };
-
-/* ns spdlog::custom */
-}
-
-namespace logger {
 
 class bookwyrm_logger : public spdlog::logger {
 public:
-    explicit bookwyrm_logger(string name, std::shared_ptr<spdlog::custom::bookwyrm_sink> sink)
-        : spdlog::logger(name, sink), sink_(sink)
-    {
+    explicit bookwyrm_logger(string name, std::shared_ptr<bookwyrm_sink> sink)
+        : spdlog::logger(name, sink), sink_(sink) {}
 
-    }
-
-    void set_log_screen(std::shared_ptr<screen::log> screen)
+    void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
-        sink_->set_log_screen(screen);
+        sink_->set_screen_butler(butler);
     }
 
 private:
-    std::shared_ptr<spdlog::custom::bookwyrm_sink> sink_;
-
+    std::shared_ptr<bookwyrm_sink> sink_;
 };
 
 /* Create the logger. */

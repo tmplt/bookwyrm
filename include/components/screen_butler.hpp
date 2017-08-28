@@ -28,8 +28,13 @@
 #include "screens/item_details.hpp"
 #include "screens/log.hpp"
 
+/* Circular dependency guard. */
+namespace logger { class bookwyrm_logger; }
+using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
+
 namespace butler {
 
+/* Circular dependency guard. */
 class script_butler;
 
 /*
@@ -41,18 +46,29 @@ class script_butler;
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up, logger_t logger);
+    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up);
     ~screen_butler();
 
     /* Update (redraw) all screens that need updating. */
     void update_screens();
-    void print_footer();
+
+    /* Send a log entry to the log screen. */
+    void log_entry(spdlog::level::level_enum level, string entry)
+    {
+        log_->log_entry(level, entry);
+
+        if (focused_ == log_)
+            update_screens();
+    }
 
     /*
      * Display the TUI and let the user enter input.
      * The input is forwarded to the appropriate screen.
      */
     void display();
+
+    /* Draw the context sensitive footer. */
+    void print_footer();
 
 private:
     /* We'll want to know the items when we create new screens. */
@@ -111,10 +127,6 @@ private:
 
 namespace tui {
 
-/*
- * Yes, a factory. But we need it to "link" the two butlers together.
- * (The script_butler tells the screen_butler when to update all screens.)
- */
 std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up, logger_t &logger);
 
 /* ns tui */

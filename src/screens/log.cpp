@@ -37,6 +37,7 @@ bool log::action(const key &key, const uint32_t &ch)
 void log::update()
 {
     /* stub */
+    mvprintw(10, 10, fmt::format("I have {} log entries!", entries_.size()));
 }
 
 void log::on_resize()
