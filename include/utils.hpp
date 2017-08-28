@@ -46,6 +46,7 @@ vector<string> split_string(const string &str);
 /* Check if the given path is a file and can be read. */
 bool readable_file(const fs::path &path);
 
+/* Generate a Lorem Ipsum string. */
 string lipsum(int repeats);
 
 /*

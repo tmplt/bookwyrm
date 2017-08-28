@@ -23,6 +23,7 @@
 #include "utils.hpp"
 #include "common.hpp"
 #include "algorithm.hpp"
+#include "functional.hpp"
 
 static constexpr int fuzzy_min = 75;
 
@@ -135,11 +136,9 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
 
 bool item::matches(const item &wanted) const
 {
-    // write some functional::zip() function here
-
     /* Return false if any exact value doesn't match what's wanted. */
-    for (int i = 0; i <= wanted.exacts.size; i++) {
-        if (wanted.exacts[i] != empty && wanted.exacts[i] != this->exacts[i])
+    for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {
+        if (req != empty && req != got)
             return false;
     }
 
@@ -148,7 +147,6 @@ bool item::matches(const item &wanted) const
             !utils::any_intersection(wanted.misc.isbns, this->misc.isbns))
         return false;
 
-    /* NOTE: are we copying the strings here? */
     const std::array<string, 3> in_result = {this->nonexacts.title,
                                              this->nonexacts.serie,
                                              this->nonexacts.publisher},
@@ -156,27 +154,27 @@ bool item::matches(const item &wanted) const
                                              wanted.nonexacts.serie,
                                              wanted.nonexacts.publisher};
 
-    for (size_t i = 0; i < in_result.size(); i++) {
-        if (!requested[i].empty()) {
+    for (const auto& [req, got] : func::zip(requested, in_result)) {
+        if (!req.empty()) {
             /*
              * partial: useful for course literature that can have some
              * crazy long titles. Also useful for publishers, because
              * some entries may not use the full name.
              */
-            if (fuzz::partial_ratio(in_result[i], requested[i]) < fuzzy_min)
+            if (fuzz::partial_ratio(got, req) < fuzzy_min)
                 return false;
         }
     }
 
     if (!wanted.nonexacts.authors.empty()) {
         int max_ratio = 0;
-        for (const auto &comb : algorithm::product(this->nonexacts.authors,
-                    wanted.nonexacts.authors)) {
+        for (const auto& [req, got] : algorithm::product(wanted.nonexacts.authors,
+                    this->nonexacts.authors)) {
             /*
              * From some quick testing, it feels like token_set_ratio
              * works best here.
              */
-            int ratio = fuzz::token_set_ratio(comb.first, comb.second);
+            int ratio = fuzz::token_set_ratio(req, got);
             max_ratio = std::max(ratio, max_ratio);
 
             if (max_ratio >= fuzzy_min)
