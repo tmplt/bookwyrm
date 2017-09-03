@@ -77,10 +77,11 @@ private:
     bool &tui_up_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
+    std::shared_ptr<screen::item_details> details_;
     std::shared_ptr<screen::log> log_;
 
-    std::shared_ptr<screen::item_details> details_;
-    std::shared_ptr<screen::base> focused_;
+    std::shared_ptr<screen::base> focused_, last_;
+
 
     /* Is a screen::item_details open? */
     bool viewing_details_;

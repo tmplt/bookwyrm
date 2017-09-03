@@ -179,10 +179,13 @@ bool screen_butler::close_details()
 
 bool screen_butler::toggle_log()
 {
-    if (focused_ != log_)
+    if (focused_ != log_) {
+        last_ = focused_;
         focused_ = log_;
-    else
-        focused_ = index_;
+    } else {
+        assert(last_ != nullptr);
+        focused_ = last_;
+    }
 
     return true;
 }
