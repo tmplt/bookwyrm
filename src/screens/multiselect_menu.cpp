@@ -128,7 +128,7 @@ string multiselect_menu::footer_info() const
 
 string multiselect_menu::footer_controls() const
 {
-    return "[j/k d/u]Navigation [SPACE]Toggle select";
+    return "[j/k d/u]Navigation [SPACE]Toggle select [l]Open details";
 }
 
 int multiselect_menu::scrollperc() const
