@@ -16,6 +16,7 @@
  */
 
 #include "screens/log.hpp"
+#include "utils.hpp"
 
 namespace screen {
 
@@ -36,8 +37,46 @@ bool log::action(const key &key, const uint32_t &ch)
 
 void log::update()
 {
-    /* stub */
-    mvprintw(10, 10, fmt::format("I have {} log entries!", entries_.size()));
+    int y = 0;
+    for (auto &entry : entries_) {
+        print_entry(y, entry);
+        y++;
+    }
+}
+
+void log::print_entry(int &y, entry_t &entry)
+{
+    int x = 0;
+
+    const auto [lvl, rest] = utils::split_at_first(entry.second, ":");
+    mvprintw(x, y, lvl, to_colour(entry.first));
+    x += lvl.length() + 1; // for a space after the ':'.
+
+    for (const auto &word : utils::split_string(rest)) {
+        if (word.length() + 1 > get_width() - 1 - x) {
+            ++y;
+            x = lvl.length() + 1;
+        }
+
+        mvprintw(x, y, word + " ");
+        x += word.length() + 1;
+    }
+}
+
+colour log::to_colour(spdlog::level::level_enum e)
+{
+    using level = spdlog::level::level_enum;
+
+    switch (e) {
+        case level::debug:
+            return colour::blue;
+        case level::warn:
+            return colour::yellow;
+        case level::err: case level::critical:
+            return colour::red;
+        default:
+            return colour::none;
+    }
 }
 
 void log::on_resize()
@@ -65,7 +104,7 @@ void log::log_entry(spdlog::level::level_enum level, string entry)
      *
      * Note: what about \r?
      */
-    entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+    std::replace(entry.begin(), entry.end(), '\n', ' ');
 
     entries_.emplace_back(level, entry);
 }

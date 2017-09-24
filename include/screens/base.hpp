@@ -62,8 +62,8 @@ protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
 
-    int get_width() const;
-    int get_height() const;
+    size_t get_width() const;
+    size_t get_height() const;
 
     /*
      * After asserting that the screen owns the cell,

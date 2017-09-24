@@ -78,6 +78,14 @@ vector<string> split_string(const string &str)
     return tokens;
 }
 
+std::pair<string, string> split_at_first(const string &str, string &&sep)
+{
+    string left  = str.substr(0, str.find_first_of(sep) + 1),
+           right = str.substr(str.find_first_of(sep) + 1);
+
+    return {left, right};
+}
+
 bool readable_file(const fs::path &path)
 {
     return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;

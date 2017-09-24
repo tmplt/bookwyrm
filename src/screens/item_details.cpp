@@ -58,7 +58,7 @@ int item_details::scrollperc() const
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
-        for (int x = 0; x < get_width(); x++)
+        for (size_t x = 0; x < get_width(); x++)
             change_cell(x, y, ascii::em_dash);
     };
 
@@ -110,7 +110,7 @@ void item_details::print_desc(int &y, string str)
 
     for (auto word = words.cbegin(); word != words.cend(); ++word) {
         if (!word_fits(*word)) {
-            if (y + 1 == get_height() - 1) {
+            if (y + 1u == get_height() - 1) {
                 /* No more lines to draw on; can't fit any more. */
 
                 if (word != words.cend() - 1) {

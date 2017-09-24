@@ -70,11 +70,11 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
             toggle_select();
             return true;
         case key::ctrl_d:
-            for (int i = 0; i < get_height() / 2; i++)
+            for (size_t i = 0; i < get_height() / 2; i++)
                 move(down);
             return true;
         case key::ctrl_u:
-            for (int i = 0; i < get_height() / 2; i++)
+            for (size_t i = 0; i < get_height() / 2; i++)
                 move(up);
             return true;
         default:
@@ -95,11 +95,11 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
             move(bot);
             return true;
         case 'd':
-            for (int i = 0; i < get_height() / 2; i++)
+            for (size_t i = 0; i < get_height() / 2; i++)
                 move(down);
             return true;
         case 'u':
-            for (int i = 0; i < get_height() / 2; i++)
+            for (size_t i = 0; i < get_height() / 2; i++)
                 move(up);
             return true;
     }

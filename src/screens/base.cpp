@@ -36,12 +36,12 @@ base::~base()
     assert(screen_count_ >= 0);
 }
 
-int base::get_width() const
+size_t base::get_width() const
 {
     return tb_width() - padding_left_ - padding_right_;
 }
 
-int base::get_height() const
+size_t base::get_height() const
 {
     return tb_height() - padding_top_ - padding_bot_;
 }
