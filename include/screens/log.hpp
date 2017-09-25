@@ -45,7 +45,7 @@ private:
     vector<entry_t> entries_;
 
     void print_entry(int &y, entry_t &entry);
-    colour to_colour(spdlog::level::level_enum e);
+    static colour to_colour(spdlog::level::level_enum e);
 };
 
 /* ns screen */

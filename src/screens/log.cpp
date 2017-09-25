@@ -50,15 +50,15 @@ void log::print_entry(int &y, entry_t &entry)
 
     const auto [lvl, rest] = utils::split_at_first(entry.second, ":");
     mvprintw(x, y, lvl, to_colour(entry.first));
-    x += lvl.length() + 1; // for a space after the ':'.
+    x += lvl.length();
 
     for (const auto &word : utils::split_string(rest)) {
         if (word.length() + 1 > get_width() - 1 - x) {
             ++y;
-            x = lvl.length() + 1;
+            x = lvl.length();
         }
 
-        mvprintw(x, y, word + " ");
+        mvprintw(x, y, " " + word);
         x += word.length() + 1;
     }
 }
