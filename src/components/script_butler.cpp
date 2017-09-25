@@ -30,8 +30,8 @@ namespace fs = std::experimental::filesystem;
 
 namespace butler {
 
-script_butler::script_butler(const bookwyrm::item &&wanted)
-    : wanted_(wanted) {}
+script_butler::script_butler(const bookwyrm::item &&wanted, logger_t logger)
+    : logger_(logger), wanted_(wanted) {}
 
 vector<pybind11::module> script_butler::load_sources()
 {
@@ -136,6 +136,11 @@ void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_
 
     items_.push_back(item);
     screen_butler_->update_screens();
+}
+
+void script_butler::log_entry(spdlog::level::level_enum lvl, string msg)
+{
+    logger_->log(lvl, msg);
 }
 
 /* ns butler */

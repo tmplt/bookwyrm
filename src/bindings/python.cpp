@@ -17,6 +17,8 @@
 
 #include <fmt/format.h>
 
+#include <spdlog/common.h>
+
 #include "python.hpp"
 #include "utils.hpp"
 #include "item.hpp"
@@ -34,6 +36,12 @@ PYBIND11_MODULE(pybookwyrm, m)
         .value("eq_lt", bw::year_mod::eq_lt)
         .value("lt",    bw::year_mod::lt)
         .value("gt",    bw::year_mod::gt);
+
+    py::enum_<spdlog::level::level_enum>(m, "loglevel")
+        .value("debug", spdlog::level::debug)
+        .value("info",  spdlog::level::info)
+        .value("warn",  spdlog::level::warn)
+        .value("error", spdlog::level::err);
 
     py::class_<bw::exacts_t>(m, "exacts_t")
         .def(py::init<const std::map<string, int>&>())
@@ -87,6 +95,7 @@ PYBIND11_MODULE(pybookwyrm, m)
         });
 
     py::class_<butler::script_butler>(m, "bookwyrm")
-        .def("feed", &butler::script_butler::add_item)
-        .def("terminating", &butler::script_butler::is_destructing);
+        .def("feed",        &butler::script_butler::add_item)
+        .def("terminating", &butler::script_butler::is_destructing)
+        .def("log",         &butler::script_butler::log_entry);
 }

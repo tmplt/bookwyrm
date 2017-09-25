@@ -28,6 +28,14 @@
 #include "components/logger.hpp"
 #include "components/screen_butler.hpp"
 
+namespace logger {
+
+class bookwyrm_logger;
+
+}
+
+using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
+
 namespace butler {
 
 class script_butler;
@@ -43,7 +51,7 @@ class screen_butler;
  */
 class script_butler {
 public:
-    explicit script_butler(const bookwyrm::item &&wanted);
+    explicit script_butler(const bookwyrm::item &&wanted, logger_t logger);
 
     /*
      * Explicitly delete the copy-constructor.
@@ -66,6 +74,8 @@ public:
     /* Try to add a found item, and then update the set menu. */
     void add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps);
 
+    void log_entry(spdlog::level::level_enum lvl, string msg);
+
     bool is_destructing()
     {
         return destructing_.load();
@@ -83,7 +93,7 @@ public:
     }
 
 private:
-    const std::shared_ptr<spdlog::logger> logger_ = spdlog::get("main");
+    logger_t logger_;
     const bookwyrm::item wanted_;
 
     std::atomic<bool> destructing_ = false;
