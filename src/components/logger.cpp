@@ -28,21 +28,34 @@ namespace logger {
 
 void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
-    const auto &str = msg.formatted.str();
-    auto &out = msg.level <= spdlog::level::warn ? std::cout : std::cerr;
-
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (log_to_screen_)
-        screen_butler_->log_entry(msg.level, str);
+    if (const auto &fmt = msg.formatted.str(); log_to_screen_)
+        screen_butler_->log_entry(msg.level, fmt);
     else
-        out << str;
+        buffer_.emplace_back(msg.level, fmt);
+}
+
+bookwyrm_sink::~bookwyrm_sink()
+{
+    for (const auto& [lvl, msg] : buffer_)
+        (lvl <= spdlog::level::warn ? std::cout : std::cerr) << msg;
 }
 
 void bookwyrm_sink::flush()
 {
     std::cout << std::flush;
     std::cerr << std::flush;
+}
+
+void bookwyrm_sink::flush_buffer_to_screen()
+{
+    assert(screen_butler_ != nullptr);
+
+    for (const auto& [lvl, msg] : buffer_)
+        screen_butler_->log_entry(lvl, msg);
+
+    buffer_.clear();
 }
 
 /* ns logger */

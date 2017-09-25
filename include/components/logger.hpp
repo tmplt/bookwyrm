@@ -44,15 +44,24 @@ public:
     bookwyrm_sink(bool &store_in_buffer)
         : log_to_screen_(store_in_buffer) {}
 
+    /* If we can't create any screens, flush buffer to stdout, stdcerr instead. */
+    ~bookwyrm_sink();
+
     void log(const spdlog::details::log_msg &msg) override;
     void flush();
 
     void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
         screen_butler_ = butler;
+        flush_buffer_to_screen();
     }
 
 private:
+    void flush_buffer_to_screen();
+
+    using buffer_pair = std::pair<spdlog::level::level_enum, const string>;
+    vector<buffer_pair> buffer_;
+
     const bool &log_to_screen_;
     std::mutex write_mutex_;
     std::shared_ptr<butler::screen_butler> screen_butler_;
