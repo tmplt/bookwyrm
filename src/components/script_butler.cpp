@@ -73,7 +73,7 @@ vector<pybind11::module> script_butler::load_sources()
             if (p.extension() != ".py") continue;
 
             if (!utils::readable_file(p)) {
-                logger_->warn("can't load module '{}': not a regular file or unreadable"
+                logger_->error("can't load module '{}': not a regular file or unreadable"
                         "; ignoring...", p.string());
                 continue;
             }
@@ -83,7 +83,7 @@ vector<pybind11::module> script_butler::load_sources()
                 logger_->debug("loading module '{}'...", module);
                 sources.emplace_back(py::module::import(module.c_str()));
             } catch (const py::error_already_set &err) {
-                logger_->warn("{}; ignoring...", err.what());
+                logger_->error("{}; ignoring...", err.what());
             }
         }
     }
