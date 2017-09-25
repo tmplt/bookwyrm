@@ -46,9 +46,9 @@ How does it work thus far?
     - [x] fuzzy matching for nonexact data (finish [the library](https://github.com/Tmplt/fuzzywuzzy)!)
 - [x] embed Python interpreter with [pybind11](https://github.com/pybind/pybind11)
 - [x] write a class that handles the plugin threads 
-- [ ] write the menu (avoid ncurses, apparently it's a hell to work with)
+- [x] write the menu (avoid ncurses, apparently it's a hell to work with)
     - [x] write a simple menu in which we can select multiple entries
-    - [ ] write a menu containing item details that overlaps the main menu
+    - [x] write a menu containing item details that overlaps the main menu
 - [ ] write scripts for sources (listed in descending priority)
     - [ ] Library Genesis
     - [ ] Sci-Hub
