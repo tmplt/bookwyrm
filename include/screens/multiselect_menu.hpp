@@ -55,6 +55,11 @@ public:
         return items_[selected_item_];
     }
 
+    size_t item_count() const
+    {
+        return items_.size();
+    }
+
 private:
     struct columns_t {
 
@@ -101,11 +106,6 @@ private:
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;
-
-    size_t item_count() const
-    {
-        return items_.size();
-    }
 
     bool is_marked(const size_t idx) const;
 

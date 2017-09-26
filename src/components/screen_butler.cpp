@@ -150,7 +150,7 @@ bool screen_butler::meta_action(const key &key, const uint32_t &ch)
 
 bool screen_butler::open_details()
 {
-    if (viewing_details_) return false;
+    if (viewing_details_ || index_->item_count() == 0) return false;
 
     /* How much space will the detail menu take up? */
     int height;
