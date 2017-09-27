@@ -30,10 +30,12 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (const auto &fmt = msg.formatted.str(); log_to_screen_)
-        screen_butler_->log_entry(msg.level, fmt);
-    else
+    if (const auto &fmt = msg.formatted.str(); log_to_screen_) {
+        const auto screen = screen_butler_.lock();
+        screen->log_entry(msg.level, fmt);
+    } else {
         buffer_.emplace_back(msg.level, fmt);
+    }
 }
 
 bookwyrm_sink::~bookwyrm_sink()
@@ -50,10 +52,9 @@ void bookwyrm_sink::flush()
 
 void bookwyrm_sink::flush_buffer_to_screen()
 {
-    assert(screen_butler_ != nullptr);
-
+    auto screen = screen_butler_.lock();
     for (const auto& [lvl, msg] : buffer_)
-        screen_butler_->log_entry(lvl, msg);
+        screen->log_entry(lvl, msg);
 
     buffer_.clear();
 }

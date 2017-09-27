@@ -104,7 +104,7 @@ void screen_butler::display()
             if (ev.key == key::escape)
                 return;
 
-            /* When the terminal is too small, only allow quitting. */
+            /* When the terminal is too small, only allow quitting and window resizing. */
             if (!bookwyrm_fits())
                 continue;
 

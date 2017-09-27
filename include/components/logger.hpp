@@ -64,7 +64,9 @@ private:
 
     const bool &log_to_screen_;
     std::mutex write_mutex_;
-    std::shared_ptr<butler::screen_butler> screen_butler_;
+
+    /* Non-owning so we don't need to destory this to set tui_up = false. */
+    std::weak_ptr<butler::screen_butler> screen_butler_;
 };
 
 class bookwyrm_logger : public spdlog::logger {
