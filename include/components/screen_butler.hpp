@@ -46,8 +46,7 @@ class script_butler;
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items, bool &tui_up);
-    ~screen_butler();
+    explicit screen_butler(vector<bookwyrm::item> &items);
 
     /* Update (redraw) all screens that need updating. */
     void update_screens();
@@ -73,8 +72,6 @@ public:
 private:
     /* We'll want to know the items when we create new screens. */
     vector<bookwyrm::item> const &items_;
-
-    bool &tui_up_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
     std::shared_ptr<screen::item_details> details_;
@@ -128,7 +125,7 @@ private:
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, bool &tui_up, logger_t &logger);
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, logger_t &logger);
 
 /* ns tui */
 }

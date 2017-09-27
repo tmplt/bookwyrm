@@ -41,9 +41,6 @@ namespace logger {
  */
 class bookwyrm_sink : public spdlog::sinks::sink {
 public:
-    bookwyrm_sink(bool &store_in_buffer)
-        : log_to_screen_(store_in_buffer) {}
-
     /* If we can't create any screens, flush buffer to stdout, stdcerr instead. */
     ~bookwyrm_sink();
 
@@ -61,8 +58,6 @@ private:
 
     using buffer_pair = std::pair<spdlog::level::level_enum, const string>;
     vector<buffer_pair> buffer_;
-
-    const bool &log_to_screen_;
     std::mutex write_mutex_;
 
     /* Non-owning so we don't need to destory this to set tui_up = false. */
@@ -84,7 +79,7 @@ private:
 };
 
 /* Create the logger. */
-std::shared_ptr<bookwyrm_logger> create(std::string &&name, bool &tui_up);
+std::shared_ptr<bookwyrm_logger> create(std::string &&name);
 
 }
 

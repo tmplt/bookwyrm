@@ -29,9 +29,9 @@ namespace logger {
 void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
+    const auto screen = screen_butler_.lock();
 
-    if (const auto &fmt = msg.formatted.str(); log_to_screen_) {
-        const auto screen = screen_butler_.lock();
+    if (const auto &fmt = msg.formatted.str(); !screen_butler_.expired()) {
         screen->log_entry(msg.level, fmt);
     } else {
         buffer_.emplace_back(msg.level, fmt);
@@ -52,7 +52,8 @@ void bookwyrm_sink::flush()
 
 void bookwyrm_sink::flush_buffer_to_screen()
 {
-    auto screen = screen_butler_.lock();
+    const auto screen = screen_butler_.lock();
+
     for (const auto& [lvl, msg] : buffer_)
         screen->log_entry(lvl, msg);
 
@@ -62,9 +63,9 @@ void bookwyrm_sink::flush_buffer_to_screen()
 /* ns logger */
 }
 
-std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name, bool &tui_up)
+std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name)
 {
-    auto sink = std::make_shared<logger::bookwyrm_sink>(tui_up);
+    auto sink = std::make_shared<logger::bookwyrm_sink>();
     auto logger = std::make_shared<logger::bookwyrm_logger>(std::forward<std::string>(name),
             std::move(sink));
 

@@ -51,8 +51,7 @@ int main(int argc, char *argv[])
 
     const cligroups groups = {main, excl, exact, misc};
 
-    bool tui_up = false;
-    auto logger = logger::create("main", tui_up);
+    auto logger = logger::create("main");
     logger->set_pattern("%l: %v");
     logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
         auto butler = butler::script_butler(std::move(wanted), logger);
         auto sources = butler.load_sources();
 
-        auto tui = tui::make_with(butler, sources, tui_up, logger);
+        auto tui = tui::make_with(butler, sources, logger);
         tui->display();
 
     } catch (const cli_error &err) {
