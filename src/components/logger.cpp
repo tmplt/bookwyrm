@@ -29,10 +29,12 @@ namespace logger {
 void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
-    const auto screen = screen_butler_.lock();
 
     if (const auto &fmt = msg.formatted.str(); !screen_butler_.expired()) {
-        screen->log_entry(msg.level, fmt);
+        if (const auto screen = screen_butler_.lock())
+            screen->log_entry(msg.level, fmt);
+
+        /* Is there anything we should do if the above fails? */
     } else {
         buffer_.emplace_back(msg.level, fmt);
     }
