@@ -87,9 +87,9 @@ public:
     }
 
     /* Which menu do we update when a scripts feeds bookwyrm an item? */
-    void set_screens(std::shared_ptr<screen_butler> sb)
+    void set_screen_butler(std::shared_ptr<screen_butler> screen)
     {
-        screen_butler_ = sb;
+        screen_butler_ = screen;
     }
 
 private:

@@ -130,7 +130,7 @@ private:
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, logger_t &logger);
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &sources, logger_t &logger);
 
 /* ns tui */
 }

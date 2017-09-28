@@ -34,23 +34,20 @@ namespace butler { class screen_butler; }
 namespace logger {
 
 /*
- * A sink which, if the TUI isn't up yet, prints the msg to
- * either stdout or stdcerr (depending on the log level),
- * and otherwise sends the msg to the screen butler to be
- * printed in the log screen.
+ * A sink which stores all logs in a buffer. Can be flushed to a screen butler
+ * on command. If buffer_ is non-empty on object destruction, buffer content is
+ * written to std{out,err}.
  */
 class bookwyrm_sink : public spdlog::sinks::sink {
 public:
-    /* If we can't create any screens, flush buffer to stdout, stdcerr instead. */
     ~bookwyrm_sink();
 
     void log(const spdlog::details::log_msg &msg) override;
-    void flush();
+    void flush() override;
 
     void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
         screen_butler_ = butler;
-        flush_to_screen();
     }
 
     /* Flush all unseen logs (content of buffer_) to the log screen. */
@@ -61,7 +58,6 @@ private:
     vector<buffer_pair> buffer_;
     std::mutex write_mutex_;
 
-    /* Non-owning so we don't need to destory this to set tui_up = false. */
     std::weak_ptr<butler::screen_butler> screen_butler_;
 };
 

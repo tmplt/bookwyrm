@@ -40,8 +40,8 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 
 bookwyrm_sink::~bookwyrm_sink()
 {
-    for (const auto& [lvl, msg] : buffer_)
-        (lvl <= spdlog::level::warn ? std::cout : std::cerr) << msg;
+    for (const auto& [lvl, fmt] : buffer_)
+        (lvl <= spdlog::level::warn ? std::cout : std::cerr) << fmt;
 }
 
 void bookwyrm_sink::flush()
@@ -54,8 +54,8 @@ void bookwyrm_sink::flush_to_screen()
 {
     const auto screen = screen_butler_.lock();
 
-    for (const auto& [lvl, msg] : buffer_)
-        screen->log_entry(lvl, msg);
+    for (const auto& [lvl, fmt] : buffer_)
+        screen->log_entry(lvl, fmt);
 
     buffer_.clear();
 }
@@ -65,7 +65,7 @@ void bookwyrm_sink::flush_to_screen()
 
 std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name)
 {
-    auto sink = std::make_shared<logger::bookwyrm_sink>();
+    auto sink = std::make_unique<logger::bookwyrm_sink>();
     auto logger = std::make_shared<logger::bookwyrm_logger>(std::forward<std::string>(name),
             std::move(sink));
 
