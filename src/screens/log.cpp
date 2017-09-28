@@ -49,7 +49,7 @@ void log::print_entry(int &y, entry_t &entry)
     int x = 0;
 
     const auto [lvl, rest] = utils::split_at_first(entry.second, ":");
-    mvprintw(x, y, lvl, to_colour(entry.first));
+    mvprintw(x, y, lvl, utils::to_colour(entry.first));
     x += lvl.length();
 
     for (const auto &word : utils::split_string(rest)) {
@@ -60,22 +60,6 @@ void log::print_entry(int &y, entry_t &entry)
 
         mvprintw(x, y, " " + word);
         x += word.length() + 1;
-    }
-}
-
-colour log::to_colour(spdlog::level::level_enum e)
-{
-    using level = spdlog::level::level_enum;
-
-    switch (e) {
-        case level::debug:
-            return colour::blue;
-        case level::warn:
-            return colour::yellow;
-        case level::err: case level::critical:
-            return colour::red;
-        default:
-            return colour::none;
     }
 }
 

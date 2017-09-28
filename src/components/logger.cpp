@@ -30,12 +30,16 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (const auto &fmt = msg.formatted.str(); screen_butler_.expired())
+    if (const auto &fmt = msg.formatted.str(); screen_butler_.expired()) {
         buffer_.emplace_back(msg.level, fmt);
-    else if (const auto screen = screen_butler_.lock(); screen->log_focused())
+    } else if (const auto screen = screen_butler_.lock(); screen->log_focused()) {
         screen->log_entry(msg.level, fmt);
-    else
+    } else {
         buffer_.emplace_back(msg.level, fmt);
+
+        /* If user is in the index view, get a notice about new logs. */
+        screen->update_screens();
+    }
 }
 
 bookwyrm_sink::~bookwyrm_sink()
@@ -58,6 +62,18 @@ void bookwyrm_sink::flush_to_screen()
         screen->log_entry(lvl, fmt);
 
     buffer_.clear();
+}
+
+spdlog::level::level_enum bookwyrm_sink::worst_unread() const
+{
+    spdlog::level::level_enum worst = spdlog::level::trace;
+
+    for (const auto& [lvl, unused] : buffer_) {
+        (void)unused;
+        worst = (lvl > worst ? lvl : worst);
+    }
+
+    return worst;
 }
 
 /* ns logger */

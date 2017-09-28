@@ -38,7 +38,7 @@ void screen_butler::update_screens()
 
     if (!bookwyrm_fits()) {
         mvprintw(0, 0, "The terminal is too small. I don't fit!");
-    } else if (focused_ == log_) {
+    } else if (log_focused()) {
         log_->update();
         print_footer();
     } else {
@@ -55,16 +55,26 @@ void screen_butler::update_screens()
 
 void screen_butler::print_footer()
 {
-    const auto print_right_align = [this](int y, string &&s) {
-        mvprintw(tb_width() - s.length(), y, s);
+    const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
+        mvprintw(tb_width() - str.length(), y, str, attrs);
     };
 
+    /* Screen info bar. */
     mvprintw(0, tb_height() - 2, focused_->footer_info());
+
+    /* Scroll percentage, if any. */
     if (int perc = focused_->scrollperc(); perc > -1)
         print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
 
+    /* Screen controls info bar. */
     mvprintwl(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->footer_controls(),
             attribute::reverse | attribute::bold);
+
+    /* Any unseen logs? */
+    if (logger_->has_unread_logs()) {
+        print_right_align(tb_height() - 1, " You have unread logs! ",
+                utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
+    }
 }
 
 void screen_butler::resize_screens()

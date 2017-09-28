@@ -53,6 +53,13 @@ public:
     /* Flush all unseen logs (content of buffer_) to the log screen. */
     void flush_to_screen();
 
+    bool has_unread_logs() const
+    {
+        return !buffer_.empty();
+    }
+
+    spdlog::level::level_enum worst_unread() const;
+
 private:
     using buffer_pair = std::pair<spdlog::level::level_enum, const string>;
     vector<buffer_pair> buffer_;
@@ -74,6 +81,16 @@ public:
     void flush_to_screen()
     {
         sink_->flush_to_screen();
+    }
+
+    bool has_unread_logs() const
+    {
+        return sink_->has_unread_logs();
+    }
+
+    spdlog::level::level_enum worst_unread() const
+    {
+        return sink_->worst_unread();
     }
 
 private:

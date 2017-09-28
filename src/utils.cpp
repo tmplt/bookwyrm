@@ -108,5 +108,21 @@ int percent_round(double d)
     return std::round<int>(100 * d);
 }
 
+colour to_colour(spdlog::level::level_enum e)
+{
+    using level = spdlog::level::level_enum;
+
+    switch (e) {
+        case level::debug:
+            return colour::blue;
+        case level::warn:
+            return colour::yellow;
+        case level::err: case level::critical:
+            return colour::red;
+        default:
+            return colour::none;
+    }
+}
+
 /* ns utils */
 }

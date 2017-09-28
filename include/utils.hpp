@@ -24,7 +24,10 @@
 #include <system_error>
 #include <experimental/filesystem>
 
+#include <spdlog/common.h>
+
 #include "common.hpp"
+#include "colours.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -55,6 +58,9 @@ string lipsum(int repeats);
  * from a domain of [0.0,1.0]
  */
 int percent_round(double d);
+
+/* Translates a level enum to a matching colour. */
+colour to_colour(spdlog::level::level_enum e);
 
 /* ns utils */
 }
