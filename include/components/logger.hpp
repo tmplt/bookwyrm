@@ -50,12 +50,13 @@ public:
     void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
         screen_butler_ = butler;
-        flush_buffer_to_screen();
+        flush_to_screen();
     }
 
-private:
-    void flush_buffer_to_screen();
+    /* Flush all unseen logs (content of buffer_) to the log screen. */
+    void flush_to_screen();
 
+private:
     using buffer_pair = std::pair<spdlog::level::level_enum, const string>;
     vector<buffer_pair> buffer_;
     std::mutex write_mutex_;
@@ -72,6 +73,11 @@ public:
     void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
     {
         sink_->set_screen_butler(butler);
+    }
+
+    void flush_to_screen()
+    {
+        sink_->flush_to_screen();
     }
 
 private:

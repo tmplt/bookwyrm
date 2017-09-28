@@ -21,8 +21,8 @@
 
 namespace butler {
 
-screen_butler::screen_butler(vector<bookwyrm::item> &items)
-    : items_(items), viewing_details_(false)
+screen_butler::screen_butler(vector<bookwyrm::item> &items, logger_t logger)
+    : items_(items), logger_(logger), viewing_details_(false)
 {
     /* Create the log screen. */
     log_ = std::make_shared<screen::log>();
@@ -171,6 +171,8 @@ bool screen_butler::toggle_log()
     if (focused_ != log_) {
         last_ = focused_;
         focused_ = log_;
+
+        logger_->flush_to_screen();
     } else {
         assert(last_ != nullptr);
         focused_ = last_;
@@ -203,7 +205,7 @@ namespace tui {
 
 std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &butler, vector<py::module> &sources, logger_t &logger)
 {
-    auto tui = std::make_shared<butler::screen_butler>(butler.results());
+    auto tui = std::make_shared<butler::screen_butler>(butler.results(), logger);
     butler.set_screens(tui);
     logger->set_screen_butler(tui);
     butler.async_search(sources); // Watch out, it's hot!

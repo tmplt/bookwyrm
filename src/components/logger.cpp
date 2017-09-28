@@ -30,14 +30,12 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (const auto &fmt = msg.formatted.str(); !screen_butler_.expired()) {
-        if (const auto screen = screen_butler_.lock())
-            screen->log_entry(msg.level, fmt);
-
-        /* Is there anything we should do if the above fails? */
-    } else {
+    if (const auto &fmt = msg.formatted.str(); screen_butler_.expired())
         buffer_.emplace_back(msg.level, fmt);
-    }
+    else if (const auto screen = screen_butler_.lock(); screen->log_focused())
+        screen->log_entry(msg.level, fmt);
+    else
+        buffer_.emplace_back(msg.level, fmt);
 }
 
 bookwyrm_sink::~bookwyrm_sink()
@@ -52,7 +50,7 @@ void bookwyrm_sink::flush()
     std::cerr << std::flush;
 }
 
-void bookwyrm_sink::flush_buffer_to_screen()
+void bookwyrm_sink::flush_to_screen()
 {
     const auto screen = screen_butler_.lock();
 

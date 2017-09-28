@@ -46,7 +46,7 @@ class script_butler;
 class screen_butler {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items);
+    explicit screen_butler(vector<bookwyrm::item> &items, logger_t logger);
 
     /* Update (redraw) all screens that need updating. */
     void update_screens();
@@ -55,9 +55,7 @@ public:
     void log_entry(spdlog::level::level_enum level, string entry)
     {
         log_->log_entry(level, entry);
-
-        if (focused_ == log_)
-            update_screens();
+        update_screens();
     }
 
     /*
@@ -69,9 +67,16 @@ public:
     /* Draw the context sensitive footer. */
     void print_footer();
 
+    bool log_focused() const
+    {
+        return focused_ == log_;
+    }
+
 private:
     /* We'll want to know the items when we create new screens. */
     vector<bookwyrm::item> const &items_;
+
+    logger_t logger_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
     std::shared_ptr<screen::item_details> details_;
