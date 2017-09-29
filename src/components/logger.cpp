@@ -66,14 +66,12 @@ void bookwyrm_sink::flush_to_screen()
 
 spdlog::level::level_enum bookwyrm_sink::worst_unread() const
 {
-    spdlog::level::level_enum worst = spdlog::level::trace;
+    const auto worst = std::max_element(cbegin(buffer_), cend(buffer_),
+        [] (const buffer_pair &a, const buffer_pair &b) {
+            return a.first < b.first;
+        });
 
-    for (const auto& [lvl, unused] : buffer_) {
-        (void)unused;
-        worst = (lvl > worst ? lvl : worst);
-    }
-
-    return worst;
+    return worst->first;
 }
 
 /* ns logger */
