@@ -52,7 +52,7 @@ public:
     void update_screens();
 
     /* Send a log entry to the log screen. */
-    void log_entry(spdlog::level::level_enum level, string entry)
+    void log_entry(spdlog::level::level_enum level, const string entry)
     {
         log_->log_entry(level, entry);
         update_screens();

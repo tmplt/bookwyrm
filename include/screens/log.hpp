@@ -41,10 +41,19 @@ public:
     void log_entry(spdlog::level::level_enum level, string entry);
 
 private:
-    using entry_t = std::pair<spdlog::level::level_enum, string>;
+    using entry_t = std::pair<spdlog::level::level_enum, const string>;
     vector<entry_t> entries_;
+    using entry_tp = decltype(entries_.cbegin());
 
-    void print_entry(int &y, entry_t &entry);
+    size_t entry_offset_ = 0;
+
+    void print_entry(int &y, const entry_tp entry);
+
+    /*
+     * Returns the amount of entries in entries_ (starting at the last entry)
+     * that can fit on screen.
+     */
+    size_t capacity() const;
 };
 
 /* ns screen */

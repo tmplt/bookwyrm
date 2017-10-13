@@ -37,19 +37,25 @@ bool log::action(const key &key, const uint32_t &ch)
 
 void log::update()
 {
+    /*
+     * Starting the counting from the latest entry,
+     * how many entries back can we fit on screen?
+     */
+    auto entry = entries_.cend() - capacity();
+
     int y = 0;
-    for (auto &entry : entries_) {
-        print_entry(y, entry);
+    while (entry != entries_.cend()) {
+        print_entry(y, entry++);
         y++;
     }
 }
 
-void log::print_entry(int &y, entry_t &entry)
+void log::print_entry(int &y, const entry_tp entry)
 {
     int x = 0;
 
-    const auto [lvl, rest] = utils::split_at_first(entry.second, ":");
-    mvprintw(x, y, lvl, utils::to_colour(entry.first));
+    const auto [lvl, rest] = utils::split_at_first(entry->second, ":");
+    mvprintw(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
     for (const auto &word : utils::split_string(rest)) {
@@ -71,7 +77,8 @@ void log::on_resize()
 string log::footer_info() const
 {
     /* stub */
-    return fmt::format("You're in the log now. Entries: {}", entries_.size());
+    return fmt::format("You're in the log now. Entries: {}, Capacity: {}",
+            entries_.size(), capacity());
 }
 
 int log::scrollperc() const
@@ -91,6 +98,27 @@ void log::log_entry(spdlog::level::level_enum level, string entry)
     std::replace(entry.begin(), entry.end(), '\n', ' ');
 
     entries_.emplace_back(level, entry);
+}
+
+size_t log::capacity() const
+{
+    auto remain = get_height();
+    int capacity = 0;
+    auto entry = entries_.cbegin() + entry_offset_;
+
+    const auto entry_height = [this] (const auto e) -> int {
+        /* return std::max<size_t>(e->second.size() / get_width(), 1); */
+        // lazy string eval?
+        (void)e;
+        return 1;
+    };
+
+    while (entry++ != entries_.cend() && remain > 0) {
+        remain -= entry_height(entry);
+        capacity++;
+    }
+
+    return capacity;
 }
 
 /* ns screen */
