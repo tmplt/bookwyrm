@@ -59,6 +59,11 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
 
 bool multiselect_menu::action(const key &key, const uint32_t &ch)
 {
+    const auto move_halfpage = [this] (move_direction dir) {
+        for (size_t i = 0; i < get_height() / 2; i++)
+            move(dir);
+    };
+
     switch (key) {
         case key::arrow_down:
             move(down);
@@ -70,12 +75,10 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
             toggle_select();
             return true;
         case key::ctrl_d:
-            for (size_t i = 0; i < get_height() / 2; i++)
-                move(down);
+            move_halfpage(down);
             return true;
         case key::ctrl_u:
-            for (size_t i = 0; i < get_height() / 2; i++)
-                move(up);
+            move_halfpage(up);
             return true;
         default:
             break;
@@ -95,12 +98,10 @@ bool multiselect_menu::action(const key &key, const uint32_t &ch)
             move(bot);
             return true;
         case 'd':
-            for (size_t i = 0; i < get_height() / 2; i++)
-                move(down);
+            move_halfpage(down);
             return true;
         case 'u':
-            for (size_t i = 0; i < get_height() / 2; i++)
-                move(up);
+            move_halfpage(up);
             return true;
     }
 
