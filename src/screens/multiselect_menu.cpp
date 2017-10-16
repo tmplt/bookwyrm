@@ -135,7 +135,7 @@ string multiselect_menu::footer_controls() const
 int multiselect_menu::scrollperc() const
 {
     if (item_count() <= menu_capacity())
-        return -1;
+        return scroll::not_applicable;
 
     const double frac = static_cast<double>(menu_capacity() + scroll_offset_) / item_count();
     return utils::percent_round(frac);
