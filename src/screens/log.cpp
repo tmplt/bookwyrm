@@ -54,14 +54,36 @@ void log::print_entry(int &y, const entry_tp entry)
 {
     int x = 0;
 
-    const auto [lvl, rest] = utils::split_at_first(entry->second, ":");
+    /*
+     * First up, split the log level from the message, and print the
+     * level in a fitting colour.
+     */
+    const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
     mvprintw(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
-    for (const auto &word : utils::split_string(rest)) {
-        if (word.length() + 1 > get_width() - 1 - x) {
-            ++y;
-            x = lvl.length();
+    /*
+     * Next up, the actual message. If the whole message doesn't fit on one line
+     * we want to split it across multiple lines. But course, if one word is longer
+     * than the line itself (e.g. a long path), we'll just split it where the line ends.
+     */
+    for (auto word : utils::split_string(msg)) {
+        if (auto remain = get_width() - 1 - x; word.length() + 1 > remain) {
+            /* The word doesn't fit on the rest of the line. */
+
+            /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
+            if (word.length() > get_width() / 3) {
+                while (word.length() > remain) {
+                    mvprintw(x, y++, " " + word.substr(0, remain));
+                    word = word.substr(remain);
+                    x = lvl.length();
+                    remain = get_width() - 1 - x;
+                }
+            } else {
+                /* Move on to the next line, with a neat indention. */
+                ++y;
+                x = lvl.length();  // we probably want a unified length. Longest?
+            }
         }
 
         mvprintw(x, y, " " + word);
