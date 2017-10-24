@@ -77,13 +77,12 @@ void log::print_entry(int &y, const entry_t entry)
                 while (word.length() > remain) {
                     mvprintw(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);
-                    x = lvl.length();
-                    remain = get_width() - 1 - x;
+                    x = 0;
+                    remain = get_width() - 1;
                 }
             } else {
-                /* Move on to the next line, with a neat indention. */
                 ++y;
-                x = lvl.length();  // we probably want a unified length. Longest?
+                x = 0;
             }
         }
 
