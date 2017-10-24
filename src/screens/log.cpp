@@ -104,8 +104,7 @@ string log::footer_info() const
 
 int log::scrollperc() const
 {
-    /* stub */
-    return 42;
+    return 100;
 }
 
 void log::log_entry(spdlog::level::level_enum level, string entry)
