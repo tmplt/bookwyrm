@@ -28,8 +28,14 @@ log::log()
 
 bool log::action(const key &key, const uint32_t &ch)
 {
-    /* stub */
-    (void)key;
+    switch(key) {
+        case key::space:
+            toggle_attach();
+            return true;
+        default:
+            break;
+    }
+
     (void)ch;
 
     return false;
@@ -41,7 +47,8 @@ void log::update()
      * Starting the counting from the latest entry,
      * how many entries back can we fit on screen?
      */
-    auto entry = entries_.cend() - capacity();
+    const auto start_entry = detached_at_.value_or(entries_.cend());
+    auto entry = start_entry - capacity(start_entry);
 
     int y = 0;
     while (entry != entries_.cend()) {
@@ -98,8 +105,8 @@ void log::on_resize()
 string log::footer_info() const
 {
     /* stub */
-    return fmt::format("You're in the log now. Entries: {}, Capacity: {}",
-            entries_.size(), capacity());
+    return fmt::format("You're in the log now. Entries: {}, Attached: {}",
+            entries_.size(), !detached_at_.has_value());
 }
 
 int log::scrollperc() const
@@ -107,7 +114,7 @@ int log::scrollperc() const
     return 100;
 }
 
-void log::log_entry(spdlog::level::level_enum level, string entry)
+void log::log_entry(spdlog::level::level_enum level, string msg)
 {
     /*
      * We might get some error from Python here, which contain a few newlines.
@@ -115,16 +122,27 @@ void log::log_entry(spdlog::level::level_enum level, string entry)
      *
      * Note: what about \r?
      */
-    std::replace(entry.begin(), entry.end(), '\n', ' ');
+    std::replace(msg.begin(), msg.end(), '\n', ' ');
 
-    entries_.emplace_back(level, entry);
+    /*
+     * The entries_ container will after a while need to resize,
+     * this invalidates any pointers to an element within (detached_at_).
+     * So we must update that pointer here, if we indeed are detached.
+     */
+    if (detached_at_.has_value()) {
+        const entry_tp entry = detached_at_.value();
+        entries_.emplace_back(level, msg);
+        detached_at_ = std::find(entries_.cbegin(), entries_.cend(), *entry);
+    } else {
+        entries_.emplace_back(level, msg);
+    }
 }
 
-size_t log::capacity() const
+size_t log::capacity(entry_tp entry) const
 {
     size_t remain = get_height();
     int capacity = 0;
-    auto entry = entries_.cend() - 1;
+    entry--;  // We want to point at something that exists.
 
     const auto entry_height = [this, line_width=get_width()] (const auto e) -> size_t {
         return std::max<size_t>(std::ceil(e->second.length() / line_width), 1);
@@ -137,6 +155,14 @@ size_t log::capacity() const
     }
 
     return capacity;
+}
+
+void log::toggle_attach()
+{
+    if (detached_at_.has_value())
+        detached_at_.reset();
+    else
+        detached_at_ = entries_.cend();
 }
 
 /* ns screen */
