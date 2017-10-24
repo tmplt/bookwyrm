@@ -108,6 +108,11 @@ int percent_round(double d)
     return std::round<int>(100 * d);
 }
 
+int ratio(double a, double b)
+{
+    return percent_round(a / b);
+}
+
 colour to_colour(spdlog::level::level_enum e)
 {
     using level = spdlog::level::level_enum;

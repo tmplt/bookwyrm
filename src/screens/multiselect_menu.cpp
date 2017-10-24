@@ -137,8 +137,7 @@ int multiselect_menu::scrollperc() const
     if (item_count() <= menu_capacity())
         return scroll::not_applicable;
 
-    const double frac = static_cast<double>(menu_capacity() + scroll_offset_) / item_count();
-    return utils::percent_round(frac);
+    return utils::ratio(menu_capacity() + scroll_offset_, item_count());
 }
 
 bool multiselect_menu::is_marked(const size_t idx) const

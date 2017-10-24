@@ -59,6 +59,9 @@ string lipsum(int repeats);
  */
 int percent_round(double d);
 
+/* Returns the ratio of a into b in percentage. */
+int ratio(double a, double b);
+
 /* Translates a level enum to a matching colour. */
 colour to_colour(spdlog::level::level_enum e);
 

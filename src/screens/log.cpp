@@ -114,9 +114,7 @@ int log::scrollperc() const
     if (!detached_at_.has_value())
         return 100;
 
-    const double frac = static_cast<double>(std::distance(entries_.cbegin(), *detached_at_))
-                      / entries_.size();
-    return utils::percent_round(frac);
+    return utils::ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
 }
 
 void log::log_entry(spdlog::level::level_enum level, string msg)
