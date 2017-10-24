@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include <spdlog/details/log_msg.h>
 
 #include "screens/base.hpp"
@@ -38,12 +40,14 @@ public:
         return "[j/k d/u]Navigation [SPACE]attach/detach";
     }
 
-    void log_entry(spdlog::level::level_enum level, string entry);
+    void log_entry(spdlog::level::level_enum level, string msg);
 
 private:
     using entry_t = std::pair<spdlog::level::level_enum, const string>;
     vector<entry_t> entries_;
     using entry_tp = decltype(entries_.cbegin());
+
+    std::optional<entry_tp> detached_at_;
 
     void print_entry(int &y, const entry_tp entry);
 
@@ -51,7 +55,10 @@ private:
      * Returns the amount of entries in entries_ (starting at the last entry)
      * that can fit on screen.
      */
-    size_t capacity() const;
+    size_t capacity(entry_tp entry) const;
+
+    /* Toggle whether we are attached to the bottom of the log or not. */
+    void toggle_attach();
 };
 
 /* ns screen */
