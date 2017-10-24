@@ -116,6 +116,8 @@ protected:
     int padding_top_, padding_bot_,
         padding_left_, padding_right_;
 
+    enum move_direction { top, up, down, bot };
+
 private:
     static int screen_count_;
     static void init_tui();

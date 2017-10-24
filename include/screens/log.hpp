@@ -59,6 +59,8 @@ private:
 
     /* Toggle whether we are attached to the bottom of the log or not. */
     void toggle_attach();
+
+    void move(move_direction dir);
 };
 
 /* ns screen */

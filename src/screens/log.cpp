@@ -28,15 +28,51 @@ log::log()
 
 bool log::action(const key &key, const uint32_t &ch)
 {
-    switch(key) {
+    const auto move_halfpage = [this] (move_direction dir) {
+        for (size_t i = 0; i < get_height() / 2; i++)
+            move(dir);
+    };
+
+    switch (key) {
+        case key::arrow_down:
+            move(down);
+            return true;
+        case key::arrow_up:
+            move(up);
+            return true;
         case key::space:
             toggle_attach();
+            return true;
+        case key::ctrl_d:
+            move_halfpage(down);
+            return true;
+        case key::ctrl_u:
+            move_halfpage(up);
             return true;
         default:
             break;
     }
 
-    (void)ch;
+    switch (ch) {
+        case 'j':
+            move(down);
+            return true;
+        case 'k':
+            move(up);
+            return true;
+        case 'g':
+            move(top);
+            return true;
+        case 'G':
+            move(bot);
+            return true;
+        case 'd':
+            move_halfpage(down);
+            return true;
+        case 'u':
+            move_halfpage(up);
+            return true;
+    }
 
     return false;
 }
@@ -166,6 +202,32 @@ void log::toggle_attach()
         detached_at_.reset();
     else
         detached_at_ = entries_.cend();
+}
+
+void log::move(move_direction dir)
+{
+    if (!detached_at_.has_value())
+        return;
+
+    const bool at_first_entry = *detached_at_ == entries_.cbegin() + 1,
+               at_last_entry  = *detached_at_ == entries_.cend() - 1;
+
+    switch (dir) {
+        case up:
+            if (at_first_entry) return;
+            (*detached_at_)--;
+            break;
+        case down:
+            if (at_last_entry) return;
+            (*detached_at_)++;
+            break;
+        case top:
+            detached_at_ = entries_.cbegin() + 1;
+            break;
+        case bot:
+            detached_at_ = entries_.cend() - 1;
+            break;
+    }
 }
 
 /* ns screen */

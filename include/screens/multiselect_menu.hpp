@@ -125,7 +125,6 @@ private:
     bool menu_at_top() const;
 
     /* Move up and down the menu. */
-    enum move_direction { top, up, down, bot };
     void move(move_direction dir);
 
     /* Select (or unselect) the current item for download. */
