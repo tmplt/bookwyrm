@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
     const auto misc = cligroup("Miscellaneous")
         ("-h", "--help",      "Display this text and exit")
-        ("-v", "--version",   "Print version information (" + build_info_short + ")")
+        ("-v", "--version",   "Print version information (" + build_info_short + ") and exit")
         ("-D", "--debug",     "Set logging level to debug");
 
     const cligroups groups = {main, excl, exact, misc};

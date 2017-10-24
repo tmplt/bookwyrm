@@ -124,20 +124,18 @@ void log::log_entry(spdlog::level::level_enum level, string entry)
 
 size_t log::capacity() const
 {
-    auto remain = get_height();
+    size_t remain = get_height();
     int capacity = 0;
-    auto entry = entries_.cbegin() + entry_offset_;
+    auto entry = entries_.cend() - 1;
 
-    const auto entry_height = [this] (const auto e) -> int {
-        /* return std::max<size_t>(e->second.size() / get_width(), 1); */
-        // lazy string eval?
-        (void)e;
-        return 1;
+    const auto entry_height = [this, line_width=get_width()] (const auto e) -> size_t {
+        return std::max<size_t>(std::ceil(e->second.length() / line_width), 1);
     };
 
-    while (entry++ != entries_.cend() && remain > 0) {
-        remain -= entry_height(entry);
-        capacity++;
+    while (entry != entries_.cbegin() && remain > 0) {
+        remain -= entry_height(entry--);
+        if (remain > 0)
+            capacity++;
     }
 
     return capacity;

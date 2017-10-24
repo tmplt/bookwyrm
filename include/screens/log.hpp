@@ -44,8 +44,6 @@ private:
     using entry_t = std::pair<spdlog::level::level_enum, const string>;
     vector<entry_t> entries_;
 
-    size_t entry_offset_ = 0;
-
     void print_entry(int &y, const entry_t entry);
 
     /*
