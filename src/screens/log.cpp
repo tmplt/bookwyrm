@@ -45,13 +45,12 @@ void log::update()
 
     int y = 0;
     while (entry != entries_.cend()) {
-        print_entry(y, *entry);
-        entry++;
+        print_entry(y, entry++);
         y++;
     }
 }
 
-void log::print_entry(int &y, const entry_t entry)
+void log::print_entry(int &y, const entry_tp entry)
 {
     int x = 0;
 
@@ -59,8 +58,8 @@ void log::print_entry(int &y, const entry_t entry)
      * First up, split the log level from the message, and print the
      * level in a fitting colour.
      */
-    const auto [lvl, msg] = utils::split_at_first(entry.second, ":");
-    mvprintw(x, y, lvl, utils::to_colour(entry.first));
+    const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
+    mvprintw(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
     /*

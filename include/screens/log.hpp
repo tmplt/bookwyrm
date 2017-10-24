@@ -43,8 +43,9 @@ public:
 private:
     using entry_t = std::pair<spdlog::level::level_enum, const string>;
     vector<entry_t> entries_;
+    using entry_tp = decltype(entries_.cbegin());
 
-    void print_entry(int &y, const entry_t entry);
+    void print_entry(int &y, const entry_tp entry);
 
     /*
      * Returns the amount of entries in entries_ (starting at the last entry)
