@@ -169,9 +169,9 @@ void log::log_entry(spdlog::level::level_enum level, string msg)
      * So we must update that pointer here, if we indeed are detached.
      */
     if (detached_at_.has_value()) {
-        const entry_tp entry = detached_at_.value();
+        const auto dist = std::distance(entries_.cbegin(), detached_at_.value());
         entries_.emplace_back(level, msg);
-        detached_at_ = std::find(entries_.cbegin(), entries_.cend(), *entry);
+        detached_at_ = entries_.cbegin() + dist;
     } else {
         entries_.emplace_back(level, msg);
     }
