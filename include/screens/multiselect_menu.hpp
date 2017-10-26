@@ -33,13 +33,13 @@ class multiselect_menu : public base {
 public:
     explicit multiselect_menu(vector<bookwyrm::item> const &items);
 
-    void update() override;
+    void paint() override;
     void on_resize() override;
     void toggle_action() override;
     void move(move_direction dir) override;
     string footer_info() const override;
-    string footer_controls() const override;
-    int scrollperc() const override;
+    string controls_legacy() const override;
+    int scrollpercent() const override;
 
     /*
      * Make some space for a screen:item_details,

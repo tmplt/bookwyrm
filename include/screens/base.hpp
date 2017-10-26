@@ -45,11 +45,10 @@ public:
 
     enum move_direction { top, up, down, bot };
 
-    /* Paint the screen. */
-    virtual void update() = 0;
+    virtual void paint() = 0;
 
     /* What should be done when the window resizes? */
-    virtual void on_resize() = 0;
+    virtual void on_resize() { };
 
     /* Manage the screen. Return true if an action was performed. */
     virtual bool action(const key &key, const uint32_t &ch);
@@ -64,13 +63,13 @@ public:
     virtual string footer_info() const = 0;
 
     /* How do we control the screen? */
-    virtual string footer_controls() const = 0;
+    virtual string controls_legacy() const = 0;
 
     /*
      * How many percent have we scrolled?
      * Returns -1 if we can't scroll yet
      */
-    virtual int scrollperc() const = 0;
+    virtual int scrollpercent() const = 0;
 
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
@@ -109,17 +108,17 @@ protected:
      * Returns the count of truncated characters, counter from the end of
      * the string.
      */
-    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs = colour::white);
-    int mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const attribute attr)
+    int wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs = colour::white);
+    int wprintlim(size_t x, const int y, const string_view &str, const size_t space, const attribute attr)
     {
-        return mvprintwlim(x, y, str, space, colour::white | attr);
+        return wprintlim(x, y, str, space, colour::white | attr);
     }
 
     /* Same as above, but don't truncate. */
-    void mvprintw(int x, const int y, const string_view &str, const colour attrs = colour::white);
-    void mvprintw(int x, const int y, const string_view &str, const attribute attr)
+    void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    void wprint(int x, const int y, const string_view &str, const attribute attr)
     {
-        mvprintw(x, y, str, colour::white | attr);
+        wprint(x, y, str, colour::white | attr);
     }
 
     /* How much space do we leave for bars? */

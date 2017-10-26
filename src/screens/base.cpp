@@ -83,7 +83,7 @@ void base::init_tui()
  *
  * TODO: rewrite this to only print as much as it has to.
  */
-int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
+int base::wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
 {
     const size_t limit = x + space - 1;
     for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
@@ -107,7 +107,7 @@ int base::mvprintwlim(size_t x, const int y, const string_view &str, const size_
     return 0;
 }
 
-void base::mvprintw(int x, const int y, const string_view &str, const colour attrs)
+void base::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
     for (const uint32_t &ch : str)
         change_cell(x++, y, ch, attrs);

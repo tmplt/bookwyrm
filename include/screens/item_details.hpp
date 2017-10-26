@@ -41,12 +41,11 @@ public:
     explicit item_details(const bookwyrm::item &item, int padding_top);
 
     bool action(const key &key, const uint32_t &ch) override;
-    void update() override;
-    void on_resize() override;
+    void paint() override;
     string footer_info() const override;
-    int scrollperc() const override;
+    int scrollpercent() const override;
 
-    string footer_controls() const override
+    string controls_legacy() const override
     {
         return "[h]Close details";
     }

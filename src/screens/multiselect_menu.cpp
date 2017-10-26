@@ -57,7 +57,7 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
     update_column_widths();
 }
 
-void multiselect_menu::update()
+void multiselect_menu::paint()
 {
     for (size_t idx = 0; idx < columns_.size(); idx++) {
         /* Can we fit another column? */
@@ -76,12 +76,12 @@ string multiselect_menu::footer_info() const
     return fmt::format("I've found {} items thus far.", item_count());
 }
 
-string multiselect_menu::footer_controls() const
+string multiselect_menu::controls_legacy() const
 {
     return "[j/k d/u]Navigation [SPACE]Toggle select [l]Open details";
 }
 
-int multiselect_menu::scrollperc() const
+int multiselect_menu::scrollpercent() const
 {
     if (item_count() <= menu_capacity())
         return scroll::not_applicable;
@@ -203,14 +203,14 @@ void multiselect_menu::print_header()
         if (column.width > allowed_width) break;
 
         /* Center the title. */
-        mvprintw(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue | attribute::bold);
+        wprint(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue | attribute::bold);
         x += std::max(column.width, column.title.length());
 
         /* Padding between the title and the seperator to the left.. */
         x++;
 
         /* Print the seperator. */
-        mvprintw(x++, 0, "|");
+        wprint(x++, 0, "|");
 
         /* ..and to the right. */
         x++;
@@ -250,7 +250,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         }};
 
         /* Print the string, check if it was truncated. */
-        const int trunc_len = mvprintwlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
+        const int trunc_len = wprintlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.

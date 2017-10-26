@@ -33,15 +33,10 @@ bool item_details::action(const key &key, const uint32_t &ch)
     return false;
 }
 
-void item_details::update()
+void item_details::paint()
 {
     print_borders();
     print_details();
-}
-
-void item_details::on_resize()
-{
-
 }
 
 string item_details::footer_info() const
@@ -49,7 +44,7 @@ string item_details::footer_info() const
     return fmt::format("DEBUG: padding top: {}, height: {}", padding_top_, get_height());
 }
 
-int item_details::scrollperc() const
+int item_details::scrollpercent() const
 {
     /* stub */
     return 42;
@@ -91,11 +86,11 @@ void item_details::print_details()
      */
     int y = 1;
     for (const auto &p : v) {
-        mvprintw(0, y, p.first + ':', attribute::bold);
-        mvprintw(len + 4, y++, p.second.get());
+        wprint(0, y, p.first + ':', attribute::bold);
+        wprint(len + 4, y++, p.second.get());
     }
 
-    mvprintw(0, ++y, "Description:", attribute::bold);
+    wprint(0, ++y, "Description:", attribute::bold);
     print_desc(++y, utils::lipsum(20));
 }
 
@@ -121,7 +116,7 @@ void item_details::print_desc(int &y, string str)
                      * Subtracts an additional 1 to overwrite the space
                      * from the last word.
                      */
-                    mvprintw(word_fits("...") ? --x : x - 4, y, "...");
+                    wprint(word_fits("...") ? --x : x - 4, y, "...");
                 }
 
                 return;
@@ -131,7 +126,7 @@ void item_details::print_desc(int &y, string str)
             x = 0;
         }
 
-        mvprintw(x, y, *word + ' ');
+        wprint(x, y, *word + ' ');
         x += (*word).length() + 1;
     }
 }

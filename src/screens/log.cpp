@@ -26,7 +26,7 @@ log::log()
 
 }
 
-void log::update()
+void log::paint()
 {
     /*
      * Starting the counting from the latest entry,
@@ -51,7 +51,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * level in a fitting colour.
      */
     const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
-    mvprintw(x, y, lvl, utils::to_colour(entry->first));
+    wprint(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
     /*
@@ -66,7 +66,7 @@ void log::print_entry(int &y, const entry_tp entry)
             /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
             if (word.length() > get_width() / 3) {
                 while (word.length() > remain) {
-                    mvprintw(x, y++, " " + word.substr(0, remain));
+                    wprint(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);
                     x = 0;
                     remain = get_width() - 1;
@@ -77,14 +77,9 @@ void log::print_entry(int &y, const entry_tp entry)
             }
         }
 
-        mvprintw(x, y, " " + word);
+        wprint(x, y, " " + word);
         x += word.length() + 1;
     }
-}
-
-void log::on_resize()
-{
-    /* stub */
 }
 
 string log::footer_info() const
@@ -94,7 +89,7 @@ string log::footer_info() const
             entries_.size(), !detached_at_.has_value());
 }
 
-int log::scrollperc() const
+int log::scrollpercent() const
 {
     if (!detached_at_.has_value())
         return 100;

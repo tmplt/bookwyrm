@@ -39,13 +39,13 @@ void screen_butler::update_screens()
     if (!bookwyrm_fits()) {
         mvprintw(0, 0, "The terminal is too small. I don't fit!");
     } else if (log_focused()) {
-        log_->update();
+        log_->paint();
         print_footer();
     } else {
-        index_->update();
+        index_->paint();
 
         if (viewing_details_)
-            details_->update();
+            details_->paint();
 
         print_footer();
     }
@@ -63,11 +63,11 @@ void screen_butler::print_footer()
     mvprintw(0, tb_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
-    if (int perc = focused_->scrollperc(); perc > -1)
+    if (int perc = focused_->scrollpercent(); perc > -1)
         print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    mvprintwl(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->footer_controls(),
+    mvprintwl(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */

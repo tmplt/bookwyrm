@@ -29,14 +29,13 @@ class log : public base {
 public:
     explicit log();
 
-    void update() override;
-    void on_resize() override;
+    void paint() override;
     void toggle_action() override;
     void move(move_direction dir) override;
     string footer_info() const override;
-    int scrollperc() const override;
+    int scrollpercent() const override;
 
-    string footer_controls() const override
+    string controls_legacy() const override
     {
         return "[j/k d/u]Navigation [SPACE]attach/detach";
     }
