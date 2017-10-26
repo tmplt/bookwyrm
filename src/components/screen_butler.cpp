@@ -32,13 +32,13 @@ screen_butler::screen_butler(vector<bookwyrm::item> &items, logger_t logger)
     focused_ = index_;
 }
 
-void screen_butler::update_screens()
+void screen_butler::repaint_screens()
 {
     tb_clear();
 
     if (!bookwyrm_fits()) {
-        mvprintw(0, 0, "The terminal is too small. I don't fit!");
-    } else if (log_focused()) {
+        wprint(0, 0, "The terminal is too small. I don't fit!");
+    } else if (is_log_focused()) {
         log_->paint();
         print_footer();
     } else {
@@ -56,18 +56,18 @@ void screen_butler::update_screens()
 void screen_butler::print_footer()
 {
     const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
-        this->mvprintw(tb_width() - str.length(), y, str, attrs);
+        this->wprint(tb_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
-    mvprintw(0, tb_height() - 2, focused_->footer_info());
+    wprint(0, tb_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
         print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    mvprintwl(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    wprintcont(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
@@ -84,12 +84,12 @@ void screen_butler::resize_screens()
 
     /* Resizing item_details not yet supported. */
 
-    update_screens();
+    repaint_screens();
 }
 
 void screen_butler::display()
 {
-    update_screens();
+    repaint_screens();
 
     /* Let the source threads free. */
     py::gil_scoped_release nogil;
@@ -108,7 +108,7 @@ void screen_butler::display()
                 continue;
 
             if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
-                update_screens();
+                repaint_screens();
         }
     }
 }
@@ -134,7 +134,7 @@ bool screen_butler::meta_action(const key &key, const uint32_t &ch)
 
     switch (key) {
         case key::ctrl_l:
-            /* Update the screens, done in calling function. */
+            /* Repaint the screens, done in calling function. */
             return true;
         case key::arrow_right:
             return open_details();
@@ -184,25 +184,24 @@ bool screen_butler::toggle_log()
 
         logger_->flush_to_screen();
     } else {
-        assert(last_ != nullptr);
         focused_ = last_;
     }
 
     return true;
 }
 
-void screen_butler::mvprintw(int x, const int y, const string_view &str, const colour attrs)
+void screen_butler::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
     for (const uint32_t &ch : str)
         tb_change_cell(x++, y, ch, static_cast<colour_t>(attrs), 0);
 }
 
-void screen_butler::mvprintwl(int x, const int y, const string_view &str, const colour attrs)
+void screen_butler::wprintcont(int x, const int y, const string_view &str, const colour attrs)
 {
     for (int i = 0; i < x; i++)
         tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
 
-    mvprintw(x, y, str, attrs);
+    wprint(x, y, str, attrs);
 
     for (int i = x + str.length(); i < tb_width(); i++)
         tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);

@@ -48,14 +48,14 @@ public:
     /* WARN: this constructor should only be used in make_with() above. */
     explicit screen_butler(vector<bookwyrm::item> &items, logger_t logger);
 
-    /* Update (redraw) all screens that need updating. */
-    void update_screens();
+    /* Repaint all screens that need updating. */
+    void repaint_screens();
 
     /* Send a log entry to the log screen. */
     void log_entry(spdlog::level::level_enum level, const string entry)
     {
         log_->log_entry(level, entry);
-        update_screens();
+        repaint_screens();
     }
 
     /*
@@ -67,15 +67,16 @@ public:
     /* Draw the context sensitive footer. */
     void print_footer();
 
-    bool log_focused() const
+    bool is_log_focused() const
     {
         return focused_ == log_;
     }
 
 private:
-    /* We'll want to know the items when we create new screens. */
+    /* Forwarded to the multiselect menu. */
     vector<bookwyrm::item> const &items_;
 
+    /* Used to flush stored logs to the log screen. */
     logger_t logger_;
 
     std::shared_ptr<screen::multiselect_menu> index_;
@@ -84,14 +85,13 @@ private:
 
     std::shared_ptr<screen::base> focused_, last_;
 
-
     /* Is a screen::item_details open? */
     bool viewing_details_;
 
     /* When we close the screen::item_details, how much does the index menu scroll back? */
     int index_scrollback_ = -1;
 
-    /* Returns true if the bookwyrm fits in the current terminal window. */
+    /* Returns false if bookwyrm doesn't fit in the terminal window. */
     static bool bookwyrm_fits();
 
     /* Manage screens. Return true if an action was performed. */
@@ -110,18 +110,18 @@ private:
 
     void resize_screens();
 
-    /* Non-asserting copy from screen::base. */
-    static void mvprintw(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    /* copy from screen::base. */
+    static void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void mvprintwl(int x, const int y, const string_view &str, const colour attrs = colour::white);
-    static void mvprintwl(int x, const int y, const string_view &str, const attribute attr)
+    static void wprintcont(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    static void wprintcont(int x, const int y, const string_view &str, const attribute attr)
     {
-        mvprintwl(x, y, str, colour::white | attr);
+        wprintcont(x, y, str, colour::white | attr);
     }
 };
 

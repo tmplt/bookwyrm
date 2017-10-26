@@ -135,7 +135,7 @@ void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_
     std::lock_guard<std::mutex> guard(items_mutex_);
 
     items_.push_back(item);
-    screen_butler_->update_screens();
+    screen_butler_->repaint_screens();
 }
 
 void script_butler::log_entry(spdlog::level::level_enum lvl, string msg)

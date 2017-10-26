@@ -32,13 +32,13 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 
     if (const auto &fmt = msg.formatted.str(); screen_butler_.expired()) {
         buffer_.emplace_back(msg.level, fmt);
-    } else if (const auto screen = screen_butler_.lock(); screen->log_focused()) {
+    } else if (const auto screen = screen_butler_.lock(); screen->is_log_focused()) {
         screen->log_entry(msg.level, fmt);
     } else {
         buffer_.emplace_back(msg.level, fmt);
 
         /* If user is in the index view, get a notice about new logs. */
-        screen->update_screens();
+        screen->repaint_screens();
     }
 }
 
