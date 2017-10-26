@@ -76,7 +76,7 @@ public:
 
     void log_entry(spdlog::level::level_enum lvl, string msg);
 
-    bool is_destructing()
+    bool is_destructing() const
     {
         return destructing_.load();
     }
