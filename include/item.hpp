@@ -68,10 +68,9 @@ struct exacts_t {
     string format = "fmt";
 
     constexpr static int size = 6;
-    std::array<int, size> store = {
-        year, edition, volume,
-        number, pages
-    };
+    std::array<int, size> store = {{
+        year, edition, volume, number, pages
+    }};
 
     int operator[](int i) const
     {

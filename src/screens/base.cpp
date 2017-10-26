@@ -17,6 +17,8 @@
 
 #include <cassert>
 
+#include <fmt/format.h>
+
 #include "screens/base.hpp"
 
 namespace screen {
@@ -66,7 +68,7 @@ void base::init_tui()
 
     int code = tb_init();
     if (code < 0) {
-        string err = "termbox init failed with code: " + code;
+        string err = fmt::format("termbox init failed with code: {}", code);
         throw component_error(err.data());
     }
 

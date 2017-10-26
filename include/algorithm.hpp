@@ -25,7 +25,7 @@ namespace algorithm {
  * Generates the cartesian product between two vectors.
  */
 template <class T1, class T2>
-const auto product(const vector<T1> &a, const vector<T2> &b)
+auto product(const vector<T1> &a, const vector<T2> &b)
 {
     /* NOTE: are we copying the references or the full strings here? */
     vector<std::pair<T1, T2>> products;

@@ -27,8 +27,8 @@ using std::forward;
 
 namespace command_line {
 
-class option;
-class option_group;
+struct option;
+struct option_group;
 using options = vector<option>;
 using groups  = vector<option_group>;
 
