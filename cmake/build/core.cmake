@@ -27,35 +27,27 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g2")
 
-# Check compiler support
+# Check compiler
+# TODO: update the required compiler versions.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-  message_colored(FATAL_ERROR "Clang isn't supported yet; see <https://bugs.archlinux.org/index.php?do=details&task_id=54276>" 31)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0.0")
+    message_colored(FATAL_ERROR "Compiler not supported (Requires clang-5.0.0+ or gcc-5.1+)" 31)
+  else()
+    message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-nested-anon-types")  # Used by pybind11
 
-  #if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4.0")
-  #  message_colored(FATAL_ERROR "Compiler not supported (Requires clang-3.4+ or gcc-5.1+)" 31)
-  #else()
-  #  message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
-  #endif()
+    message_colored(STATUS "Linking against libc++ because of LLVM bug <https://bugs.llvm.org/show_bug.cgi?id=33222>" 33)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++ -lc++abi")
+  endif()
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.1.1")
-    message_colored(FATAL_ERROR "Compiler not supported (Requires gcc-7.1.1+)" 31)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.1.0")
+    message_colored(FATAL_ERROR "Compiler not supported (Requires clang-3.4+ or gcc-5.1+)" 31)
   else()
     message_colored(STATUS "Using supported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}" 32)
   endif()
 else()
   message_colored(WARNING "Using unsupported compiler ${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION} !" 31)
-endif()
-
-# Set compiler and linker flags for preferred C++ library
-if(CXXLIB_CLANG)
-  message_colored(STATUS "Linking against libc++" 32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++ -lc++abi")
-elseif(CXXLIB_GCC)
-  message_colored(STATUS "Linking against libstdc++" 32)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++")
-else()
-  message_colored(STATUS "No preferred c++lib specified... linking against system default" 33)
 endif()
 
 if(ENABLE_CCACHE)

@@ -183,7 +183,7 @@ size_t log::capacity(entry_tp entry) const
     int capacity = 0;
     entry--;  // We want to point at something that exists.
 
-    const auto entry_height = [this, line_width=get_width()] (const auto e) -> size_t {
+    const auto entry_height = [line_width=get_width()] (const auto e) -> size_t {
         return std::max<size_t>(std::ceil(e->second.length() / line_width), 1);
     };
 

@@ -289,14 +289,14 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
-        const std::array<std::reference_wrapper<const string>, 6> strings = {
+        const std::array<std::reference_wrapper<const string>, 6> strings = {{
             items_[i].nonexacts.title,
             items_[i].exacts.year_str,
             items_[i].nonexacts.serie,
             items_[i].nonexacts.authors_str,
             items_[i].nonexacts.publisher,
             items_[i].exacts.format
-        };
+        }};
 
         /* Print the string, check if it was truncated. */
         const int trunc_len = mvprintwlim(c.startx, y, strings[col_idx].get(), c.width, attrs);

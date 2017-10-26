@@ -147,12 +147,16 @@ bool item::matches(const item &wanted) const
             !utils::any_intersection(wanted.misc.isbns, this->misc.isbns))
         return false;
 
-    const std::array<string, 3> in_result = {this->nonexacts.title,
-                                             this->nonexacts.serie,
-                                             this->nonexacts.publisher},
-                                requested = {wanted.nonexacts.title,
-                                             wanted.nonexacts.serie,
-                                             wanted.nonexacts.publisher};
+    const std::array<string, 3> in_result = {{
+                                    this->nonexacts.title,
+                                    this->nonexacts.serie,
+                                    this->nonexacts.publisher
+                                }},
+                                requested = {{
+                                    wanted.nonexacts.title,
+                                    wanted.nonexacts.serie,
+                                    wanted.nonexacts.publisher
+                                }};
 
     for (const auto& [req, got] : func::zip(requested, in_result)) {
         if (!req.empty()) {

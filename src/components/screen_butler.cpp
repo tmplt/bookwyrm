@@ -56,7 +56,7 @@ void screen_butler::update_screens()
 void screen_butler::print_footer()
 {
     const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
-        mvprintw(tb_width() - str.length(), y, str, attrs);
+        this->mvprintw(tb_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
