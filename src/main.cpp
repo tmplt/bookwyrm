@@ -83,7 +83,9 @@ int main(int argc, char *argv[])
         cli->validate_arguments();
         const auto err = utils::validate_download_dir(cli->get(0));
         if (err) {
-            logger->error("invalid download directory: {}.", err.message());
+            string msg = err.message();
+            std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
+            logger->error("invalid download directory: {}.", msg);
             return EXIT_FAILURE;
         }
 
