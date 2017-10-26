@@ -51,6 +51,13 @@ public:
         return "[h]Close details";
     }
 
+    void move(move_direction dir)
+    {
+        /* stub */
+        (void)dir;
+        return;
+    }
+
 private:
     const bookwyrm::item &item_;
 

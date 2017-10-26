@@ -113,5 +113,56 @@ void base::mvprintw(int x, const int y, const string_view &str, const colour att
         change_cell(x++, y, ch, attrs);
 }
 
+bool base::action(const key &key, const uint32_t &ch)
+{
+    const auto move_halfpage = [this] (move_direction dir) {
+        for (size_t i = 0; i < get_height() / 2; i++)
+            move(dir);
+    };
+
+    switch (key) {
+        case key::arrow_down:
+            move(down);
+            return true;
+        case key::arrow_up:
+            move(up);
+            return true;
+        case key::space:
+            toggle_action();
+            return true;
+        case key::ctrl_d:
+            move_halfpage(down);
+            return true;
+        case key::ctrl_u:
+            move_halfpage(up);
+            return true;
+        default:
+            break;
+    }
+
+    switch (ch) {
+        case 'j':
+            move(down);
+            return true;
+        case 'k':
+            move(up);
+            return true;
+        case 'g':
+            move(top);
+            return true;
+        case 'G':
+            move(bot);
+            return true;
+        case 'd':
+            move_halfpage(down);
+            return true;
+        case 'u':
+            move_halfpage(up);
+            return true;
+    }
+
+    return false;
+}
+
 /* ns screen */
 }

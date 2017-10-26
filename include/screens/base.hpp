@@ -26,9 +26,10 @@
 
 namespace screen {
 
-constexpr static int default_padding_top  = 0,
-                     default_padding_left = 0,
-                     default_padding_bot  = 3;
+constexpr static int default_padding_top   = 0,
+                     default_padding_bot   = 3,
+                     default_padding_left  = 0,
+                     default_padding_right = 0;
 
 namespace scroll {
 enum { not_applicable = -1 };
@@ -41,6 +42,9 @@ enum { not_applicable = -1 };
  */
 class base {
 public:
+
+    enum move_direction { top, up, down, bot };
+
     /* Paint the screen. */
     virtual void update() = 0;
 
@@ -48,7 +52,13 @@ public:
     virtual void on_resize() = 0;
 
     /* Manage the screen. Return true if an action was performed. */
-    virtual bool action(const key &key, const uint32_t &ch) = 0;
+    virtual bool action(const key &key, const uint32_t &ch);
+
+    /* Toggle something on the screen, if anything. */
+    virtual void toggle_action() { };
+
+    /* Move around in/with the screen. */
+    virtual void move(move_direction dir) = 0;
 
     /* When this screen is focused, what should we print in the footer? */
     virtual string footer_info() const = 0;
@@ -115,8 +125,6 @@ protected:
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,
         padding_left_, padding_right_;
-
-    enum move_direction { top, up, down, bot };
 
 private:
     static int screen_count_;

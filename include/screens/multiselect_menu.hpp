@@ -35,7 +35,8 @@ public:
 
     void update() override;
     void on_resize() override;
-    bool action(const key &key, const uint32_t &ch) override;
+    void toggle_action() override;
+    void move(move_direction dir) override;
     string footer_info() const override;
     string footer_controls() const override;
     int scrollperc() const override;
@@ -123,12 +124,6 @@ private:
      * menu screen?
      */
     bool menu_at_top() const;
-
-    /* Move up and down the menu. */
-    void move(move_direction dir);
-
-    /* Select (or unselect) the current item for download. */
-    void toggle_select();
 
     void mark_item(const size_t idx);
     void unmark_item(const size_t idx);

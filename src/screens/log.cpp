@@ -21,60 +21,9 @@
 namespace screen {
 
 log::log()
-    : base(default_padding_top, default_padding_bot, default_padding_left, 0)
+    : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right)
 {
 
-}
-
-bool log::action(const key &key, const uint32_t &ch)
-{
-    const auto move_halfpage = [this] (move_direction dir) {
-        for (size_t i = 0; i < get_height() / 2; i++)
-            move(dir);
-    };
-
-    switch (key) {
-        case key::arrow_down:
-            move(down);
-            return true;
-        case key::arrow_up:
-            move(up);
-            return true;
-        case key::space:
-            toggle_attach();
-            return true;
-        case key::ctrl_d:
-            move_halfpage(down);
-            return true;
-        case key::ctrl_u:
-            move_halfpage(up);
-            return true;
-        default:
-            break;
-    }
-
-    switch (ch) {
-        case 'j':
-            move(down);
-            return true;
-        case 'k':
-            move(up);
-            return true;
-        case 'g':
-            move(top);
-            return true;
-        case 'G':
-            move(bot);
-            return true;
-        case 'd':
-            move_halfpage(down);
-            return true;
-        case 'u':
-            move_halfpage(up);
-            return true;
-    }
-
-    return false;
 }
 
 void log::update()
@@ -196,8 +145,10 @@ size_t log::capacity(entry_tp entry) const
     return capacity;
 }
 
-void log::toggle_attach()
+void log::toggle_action()
 {
+    /* Toggle log attachment. */
+
     if (detached_at_.has_value())
         detached_at_.reset();
     else

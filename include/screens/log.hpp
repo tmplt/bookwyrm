@@ -29,9 +29,10 @@ class log : public base {
 public:
     explicit log();
 
-    bool action(const key &key, const uint32_t &ch) override;
     void update() override;
     void on_resize() override;
+    void toggle_action() override;
+    void move(move_direction dir) override;
     string footer_info() const override;
     int scrollperc() const override;
 
@@ -56,11 +57,6 @@ private:
      * that can fit on screen.
      */
     size_t capacity(entry_tp entry) const;
-
-    /* Toggle whether we are attached to the bottom of the log or not. */
-    void toggle_attach();
-
-    void move(move_direction dir);
 };
 
 /* ns screen */

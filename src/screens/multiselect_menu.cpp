@@ -34,7 +34,7 @@ void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::w
 }
 
 multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
-    : base(default_padding_top, default_padding_bot, default_padding_left, 0),
+    : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
     selected_item_(0), scroll_offset_(0),
     items_(items)
 {
@@ -55,57 +55,6 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
     };
 
     update_column_widths();
-}
-
-bool multiselect_menu::action(const key &key, const uint32_t &ch)
-{
-    const auto move_halfpage = [this] (move_direction dir) {
-        for (size_t i = 0; i < get_height() / 2; i++)
-            move(dir);
-    };
-
-    switch (key) {
-        case key::arrow_down:
-            move(down);
-            return true;
-        case key::arrow_up:
-            move(up);
-            return true;
-        case key::space:
-            toggle_select();
-            return true;
-        case key::ctrl_d:
-            move_halfpage(down);
-            return true;
-        case key::ctrl_u:
-            move_halfpage(up);
-            return true;
-        default:
-            break;
-    }
-
-    switch (ch) {
-        case 'j':
-            move(down);
-            return true;
-        case 'k':
-            move(up);
-            return true;
-        case 'g':
-            move(top);
-            return true;
-        case 'G':
-            move(bot);
-            return true;
-        case 'd':
-            move_halfpage(down);
-            return true;
-        case 'u':
-            move_halfpage(up);
-            return true;
-    }
-
-    return false;
 }
 
 void multiselect_menu::update()
@@ -196,8 +145,10 @@ void multiselect_menu::unmark_item(const size_t idx)
     marked_items_.erase(idx);
 }
 
-void multiselect_menu::toggle_select()
+void multiselect_menu::toggle_action()
 {
+    /* Toggle item selection. */
+
     if (is_marked(selected_item_))
         unmark_item(selected_item_);
     else
