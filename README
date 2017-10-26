@@ -36,7 +36,7 @@ be subject to removal later in development. All dependencies can be
 found in `lib/`.
 
 bookwyrm is still in the early development stage, so nothing is set in
-stone. A v1.0.0 release is planned for eartly Q1 2018.
+stone. A v1.0.0 release is planned for early Q1 2018.
 
 If you have any insights, questions, or wish to contribute,
 create a PR/issue on GitHub at <https://github.com/Tmplt/bookwyrm>.
