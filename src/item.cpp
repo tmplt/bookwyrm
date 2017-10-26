@@ -97,7 +97,7 @@ nonexacts_t::nonexacts_t(const std::unique_ptr<cliparser> &cli)
 {
     authors   = cli->get_many("author");
     title     = cli->get("title");
-    serie     = cli->get("serie");
+    series    = cli->get("series");
     publisher = cli->get("publisher");
     journal   = cli->get("journal");
 }
@@ -126,7 +126,7 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
     };
 
     title     = get_value("title");
-    serie     = get_value("serie");
+    series    = get_value("series");
     publisher = get_value("publisher");
     journal   = get_value("journal");
 
@@ -148,10 +148,10 @@ bool item::matches(const item &wanted) const
         return false;
 
     const std::array<string, 3> in_result = {this->nonexacts.title,
-                                             this->nonexacts.serie,
+                                             this->nonexacts.series,
                                              this->nonexacts.publisher},
                                 requested = {wanted.nonexacts.title,
-                                             wanted.nonexacts.serie,
+                                             wanted.nonexacts.series,
                                              wanted.nonexacts.publisher};
 
     for (const auto& [req, got] : func::zip(requested, in_result)) {

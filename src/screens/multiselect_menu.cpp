@@ -46,12 +46,12 @@ multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
      * TODO: Remedy this.
      */
     columns_ = {
-        {"Title",     .30},
-        {"Year",       4 },
-        {"Serie",     .15},
-        {"Authors",   .20},
-        {"Publisher", .15},
-        {"Format",     6 },
+        {"Title",      .30},
+        {"Year",        4 },
+        {"Series",     .15},
+        {"Authors",    .20},
+        {"Publisher",  .15},
+        {"Format",      6 },
     };
 
     update_column_widths();
@@ -292,7 +292,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         const std::array<std::reference_wrapper<const string>, 6> strings = {
             items_[i].nonexacts.title,
             items_[i].exacts.year_str,
-            items_[i].nonexacts.serie,
+            items_[i].nonexacts.series,
             items_[i].nonexacts.authors_str,
             items_[i].nonexacts.publisher,
             items_[i].exacts.format

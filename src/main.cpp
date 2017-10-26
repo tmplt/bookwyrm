@@ -26,28 +26,28 @@
 int main(int argc, char *argv[])
 {
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
-        ("-a", "--author",    "Specify authors",   "AUTHOR")
-        ("-t", "--title",     "Specify title",     "TITLE")
-        ("-s", "--serie",     "Specify serie",     "SERIE")
-        ("-p", "--publisher", "Specify publisher", "PUBLISHER");
+        ("-a", "--author",     "Specify authors",   "AUTHOR")
+        ("-t", "--title",      "Specify title",     "TITLE")
+        ("-s", "--series",     "Specify series",     "SERIE")
+        ("-p", "--publisher",  "Specify publisher", "PUBLISHER");
 
     const auto excl = cligroup("Exclusive", "cannot be combined with any other arguments")
-        ("-d", "--ident",     "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
+        ("-d", "--ident",      "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
 
     const auto exact = cligroup("Exact", "all are optional")
-        ("-y", "--year",      "Specify year of release. "
-                              "A prefix modifier can be used to broaden the search. "
-                              "Available prefixes are <, >, <=, >=.", "YEAR")
-        ("-L", "--language",  "Specify text language",  "LANG")
-        ("-e", "--edition",   "Specify item edition",   "EDITION")
-        ("-E", "--extension", "Specify item extension", "EXT",
+        ("-y", "--year",       "Specify year of release. "
+                               "A prefix modifier can be used to broaden the search. "
+                               "Available prefixes are <, >, <=, >=.", "YEAR")
+        ("-L", "--language",   "Specify text language",  "LANG")
+        ("-e", "--edition",    "Specify item edition",   "EDITION")
+        ("-E", "--extension",  "Specify item extension", "EXT",
             valid_opts{"epub", "pdf", "djvu"})
-        ("-i", "--isbn",      "Specify item ISBN", "ISBN");
+        ("-i", "--isbn",       "Specify item ISBN", "ISBN");
 
     const auto misc = cligroup("Miscellaneous")
-        ("-h", "--help",      "Display this text and exit")
-        ("-v", "--version",   "Print version information (" + build_info_short + ") and exit")
-        ("-D", "--debug",     "Set logging level to debug");
+        ("-h", "--help",       "Display this text and exit")
+        ("-v", "--version",    "Print version information (" + build_info_short + ") and exit")
+        ("-D", "--debug",      "Set logging level to debug");
 
     const cligroups groups = {main, excl, exact, misc};
 

@@ -92,7 +92,7 @@ struct nonexacts_t {
     vector<string> authors;
     string authors_str;
     string title;
-    string serie;
+    string series;
     string publisher;
     string journal;
 };
@@ -124,7 +124,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream &os, item const &i)
     {
-        os << "test printout: " + i.nonexacts.serie;
+        os << "test printout: " + i.nonexacts.series;
         return os;
     }
 

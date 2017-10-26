@@ -71,7 +71,7 @@ PYBIND11_MODULE(pybookwyrm, m)
         .def(py::init<const std::map<string, string>&, const vector<string>&>())
         .def_readwrite("authors",   &bw::nonexacts_t::authors)
         .def_readwrite("title",     &bw::nonexacts_t::title)
-        .def_readwrite("serie",     &bw::nonexacts_t::serie)
+        .def_readwrite("serie",     &bw::nonexacts_t::series)
         .def_readwrite("publisher", &bw::nonexacts_t::publisher)
         .def_readwrite("journal",   &bw::nonexacts_t::journal)
         .def("__repr__", [](const bw::nonexacts_t &c) {
@@ -82,7 +82,7 @@ PYBIND11_MODULE(pybookwyrm, m)
                 "\tpublisher: '{}'\n"
                 "\tjournal:   '{}'\n"
                 "\tauthors:   '{}'\n>",
-                c.title, c.serie, c.publisher, c.journal,
+                c.title, c.series, c.publisher, c.journal,
                 utils::vector_to_string(c.authors)
             );
         });

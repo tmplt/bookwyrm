@@ -16,7 +16,7 @@ def find(wanted, bookwyrm):
         time.sleep(0.2)
 
         nonexacts = bw.nonexacts_t(
-            {'serie': 'serie' + str(i), 'title': wanted.nonexacts.title + str(i)},
+            {'series': 'series' + str(i), 'title': wanted.nonexacts.title + str(i)},
             ['Author A. ' + str(i), 'Author B.' + str(i)])
 
         exacts = bw.exacts_t({'year': 2000 + i, 'pages': 500 + i})

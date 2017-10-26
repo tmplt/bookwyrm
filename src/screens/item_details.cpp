@@ -71,7 +71,7 @@ void item_details::print_details()
     using pair = std::pair<string, std::reference_wrapper<const string>>;
     const vector<pair> v = {
         {"Title",     item_.nonexacts.title},
-        {"Serie",     item_.nonexacts.serie},
+        {"Serie",     item_.nonexacts.series},
         {"Authors",   item_.nonexacts.authors_str},
         {"Year",      item_.exacts.year_str},
         {"Publisher", item_.nonexacts.publisher},
