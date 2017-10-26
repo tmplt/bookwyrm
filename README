@@ -11,7 +11,7 @@ upon program termination.
 
 For example, one might run bookwyrm as follows:
 
-    bookwyrm --author "Naomi Novik" --serie Temeraire --year >=2015
+    bookwyrm --author "Naomi Novik" --series Temeraire --year >=2015
 
 Here is an (outdated) video of bookwyrm in action
 <https://asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD>.
@@ -32,13 +32,14 @@ on a few libraries:
     * fuzzywuzzy, for fuzzily matching found items with what's wanted.
 
 All libraries enumerated with a hyphen '-' are non-essential and may
-be subject to removal later in development.
+be subject to removal later in development. All dependencies can be
+found in `lib/`.
 
 bookwyrm is still in the early development stage, so nothing is set in
 stone. A v1.0.0 release is planned for eartly Q1 2018.
 
 If you have any insights, questions, or wish to contribute,
-contact me via email at <tmplt@dragons.rocks> or on GitHub at
-<https://github.com/Tmplt/bookwyrm>.
+create a PR/issue on GitHub at <https://github.com/Tmplt/bookwyrm>.
+You can also contact me via email at <tmplt@dragons.rocks>.
 
 bookwyrm is licensed under the GPLv3+.
