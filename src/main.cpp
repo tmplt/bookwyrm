@@ -67,12 +67,7 @@ int main(int argc, char *argv[])
             cli.validate_arguments();
 
             return std::make_optional<cliparser>(cli);
-        } catch (const cli_error &err) {
-            /*
-             * argument errors also get caught here, which it actually shouldn't.
-             * They both to derive from std::runtime_error, though.
-             */
-
+        } catch (const argument_error &err) {
             logger->error("{}; see --help", err.what());
             return {};
         }

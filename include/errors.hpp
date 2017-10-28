@@ -23,14 +23,6 @@
 #include <stdexcept>
 #include <string>
 
-class cli_error : public std::runtime_error {
-public:
-    explicit cli_error(const std::string &message, int code = 0)
-        : runtime_error(message), code(code) {}
-    virtual ~cli_error() {}
-    int code{0};
-};
-
 class program_error : public std::runtime_error {
 public:
     explicit program_error(const std::string &message, int code = 0)
@@ -39,12 +31,12 @@ public:
     int code{0};
 };
 
-#define DEFINE_CHILD_CLI_ERROR(error, parent) \
+#define DEFINE_CHILD_ERROR(error, parent) \
     class error : public parent {         \
         using parent::parent;             \
     }
-#define DEFINE_CLI_ERROR(error) DEFINE_CHILD_CLI_ERROR(error, cli_error)
+#define DEFINE_ERROR(error) DEFINE_CHILD_ERROR(error, program_error)
 
-DEFINE_CLI_ERROR(argument_error);
-DEFINE_CLI_ERROR(value_error);
-DEFINE_CLI_ERROR(component_error);
+DEFINE_ERROR(argument_error);
+DEFINE_ERROR(value_error);
+DEFINE_ERROR(component_error);
