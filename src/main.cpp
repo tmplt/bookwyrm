@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    {
+    try {
         py::scoped_interpreter interp;
 
         /*
@@ -113,8 +113,14 @@ int main(int argc, char *argv[])
         auto sources = butler.load_sources();
         auto tui = tui::make_with(butler, sources, logger);
         tui->display();
+    } catch (const component_error &err) {
+        logger->error("a dependency failed: {}. Developer error? Terminating...", err.what());
+        return EXIT_FAILURE;
+    } catch (const program_error &err) {
+        logger->error("Fatal program error: {}; I can't continue! Terminating...", err.what());
+        return EXIT_FAILURE;
     }
 
-    logger->debug("terminating successfully...");
+    logger->debug("terminating successfully, have a good day.");
     return EXIT_SUCCESS;
 }

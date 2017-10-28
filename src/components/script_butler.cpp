@@ -89,7 +89,7 @@ vector<pybind11::module> script_butler::load_sources()
     }
 
     if (sources.empty())
-        throw program_error("couldn't find any valid source scripts, terminating...");
+        throw program_error("couldn't find any valid source scripts");
 
     return sources;
 }
