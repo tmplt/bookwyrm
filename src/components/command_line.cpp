@@ -50,10 +50,11 @@ enum { /* magic padding numbers */
     desc_align_magic = 7
 };
 
-cliparser::cli_type cliparser::make(const string &&progname, const groups &&groups)
+cliparser cliparser::make(const string &&progname, const groups &&groups)
 {
-    return std::make_unique<cliparser>(
-        "Usage: " + progname + " OPTION [OPTION]... PATH", std::forward<decltype(groups)>(groups)
+    return cliparser(
+        "Usage: " + progname + " OPTION [OPTION]... PATH",
+        std::forward<decltype(groups)>(groups)
     );
 }
 

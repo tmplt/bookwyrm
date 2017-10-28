@@ -53,7 +53,7 @@ struct exacts_t {
      * This makes us able to bool-check (since -1 is false)
      * whether or not a field is empty or not.
      */
-    explicit exacts_t(const std::unique_ptr<cliparser> &cli);
+    explicit exacts_t(const cliparser &cli);
     explicit exacts_t(const std::map<string, int> &dict);
 
     year_mod ymod;
@@ -85,7 +85,7 @@ struct nonexacts_t {
      * exactly with the wanted field. Instead, we use
      * fuzzy-matching.
      */
-    explicit nonexacts_t(const std::unique_ptr<cliparser> &cli);
+    explicit nonexacts_t(const cliparser &cli);
     explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
 
     vector<string> authors;
@@ -108,7 +108,7 @@ struct misc_t {
 
 class item {
 public:
-    explicit item(const std::unique_ptr<cliparser> &cli)
+    explicit item(const cliparser &cli)
         : nonexacts(cli), exacts(cli) {}
 
     /* Construct an item from a pybind11::tuple. */

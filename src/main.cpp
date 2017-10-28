@@ -56,63 +56,68 @@ int main(int argc, char *argv[])
     logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
 
-    try {
-        /* Parse command line arguments. */
-        string progname = argv[0];
-        vector<string> args(argv + 1, argv + argc);
+    const auto cli = [=]() -> std::optional<cliparser>{
+        try {
+            /* Parse command line arguments. */
+            string progname = argv[0];
+            vector<string> args(argv + 1, argv + argc);
 
-        auto cli = cliparser::make(std::move(progname), std::move(groups));
-        cli->process_arguments(args);
+            auto cli = cliparser::make(std::move(progname), std::move(groups));
+            cli.process_arguments(args);
+            cli.validate_arguments();
 
-        if (cli->has("debug"))
-            logger->set_level(spdlog::level::debug);
+            return std::make_optional<cliparser>(cli);
+        } catch (const cli_error &err) {
+            /*
+             * argument errors also get caught here, which it actually shouldn't.
+             * They both to derive from std::runtime_error, though.
+             */
 
-        logger->debug("the mighty eldwyrm hath been summoned!");
-
-        if (cli->has("help")) {
-            cli->usage();
-            return EXIT_SUCCESS;
-        } else if (cli->has("version")) {
-            print_build_info();
-            return EXIT_SUCCESS;
-        } else if (args.empty()) {
-            cli->usage();
-            return EXIT_FAILURE;
+            logger->error("{}; see --help", err.what());
+            return {};
         }
+    }();
 
-        cli->validate_arguments();
-        const auto err = utils::validate_download_dir(cli->get(0));
-        if (err) {
-            string msg = err.message();
-            std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
-            logger->error("invalid download directory: {}.", msg);
-            return EXIT_FAILURE;
-        }
+    if (!cli)
+        return EXIT_FAILURE;
 
-        /*
-         * Start the Python interpreter and keep it alive until
-         * program termination.
-         */
+    if (cli->has("debug"))
+        logger->set_level(spdlog::level::debug);
+
+    logger->debug("the mighty eldwyrm hath been summoned!");
+
+    if (cli->has("help")) {
+        cli->usage();
+        return EXIT_SUCCESS;
+    } else if (cli->has("version")) {
+        print_build_info();
+        return EXIT_SUCCESS;
+    } else if (argc == 1) {
+        cli->usage();
+        return EXIT_FAILURE;
+    }
+
+    if (const auto err = utils::validate_download_dir(cli->get(0)); err) {
+        string msg = err.message();
+        std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
+        logger->error("invalid download directory: {}.", msg);
+        return EXIT_FAILURE;
+    }
+
+    {
         py::scoped_interpreter interp;
 
         /*
-         * Find and load all source scripts.
-         * During runtime (after .async_search() has been called),
-         * the butler will match each found item with the wanted one.
-         * If it doesn't match, it is discarded.
-         *
-         * The returned vector must exist throughout program execution.
+         * Find and load all worker scripts.
+         * During run-time, the butler will match each found item
+         * with the wanted one. If it doesn't match, it is discarded.
          */
-        const bookwyrm::item wanted(cli);
+        const bookwyrm::item wanted(*cli);
         auto butler = butler::script_butler(std::move(wanted), logger);
-        auto sources = butler.load_sources();
 
+        auto sources = butler.load_sources();
         auto tui = tui::make_with(butler, sources, logger);
         tui->display();
-
-    } catch (const cli_error &err) {
-        logger->error("{}; see --help", err.what());
-        return EXIT_FAILURE;
     }
 
     logger->debug("terminating successfully...");

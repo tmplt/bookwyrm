@@ -82,8 +82,8 @@ struct option_group {
 
 class parser {
 public:
-    using cli_type = std::unique_ptr<parser>;
-    static cli_type make(const string &&scriptname, const groups &&groups);
+    /* using cli_type = std::unique_ptr<parser>; */
+    static parser make(const string &&scriptname, const groups &&groups);
 
     /* Construct the parser. */
     explicit parser(string &&synopsis, const groups &&groups)

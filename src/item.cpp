@@ -29,11 +29,11 @@ static constexpr int fuzzy_min = 75;
 
 namespace bookwyrm {
 
-exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
+exacts_t::exacts_t(const cliparser &cli)
 {
     /* Parse the year which may have a prefixed modifier. */
     std::tie(ymod, year) = [&cli]() -> std::pair<year_mod, int> {
-        const auto year_str = cli->get("year");
+        const auto year_str = cli.get("year");
         if (year_str.empty()) return {year_mod::equal, empty};
 
         const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
@@ -77,7 +77,7 @@ exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
     }();
 
     const auto parse_number = [&cli](string &&opt) -> int {
-        const auto value_str = cli->get(opt);
+        const auto value_str = cli.get(opt);
         if (value_str.empty()) return empty;
 
         try {
@@ -93,13 +93,13 @@ exacts_t::exacts_t(const std::unique_ptr<cliparser> &cli)
     pages   = parse_number("pages");
 }
 
-nonexacts_t::nonexacts_t(const std::unique_ptr<cliparser> &cli)
+nonexacts_t::nonexacts_t(const cliparser &cli)
 {
-    authors   = cli->get_many("author");
-    title     = cli->get("title");
-    series    = cli->get("series");
-    publisher = cli->get("publisher");
-    journal   = cli->get("journal");
+    authors   = cli.get_many("author");
+    title     = cli.get("title");
+    series    = cli.get("series");
+    publisher = cli.get("publisher");
+    journal   = cli.get("journal");
 }
 
 exacts_t::exacts_t(const std::map<string, int> &dict)
