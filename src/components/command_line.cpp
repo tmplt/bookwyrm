@@ -177,33 +177,24 @@ void cliparser::process_arguments(const vector<string> &args)
 
 void cliparser::validate_arguments() const
 {
-    /* Was --ident passed? */
-    const bool ident_passed = [opts = passed_opts_] {
-        for (const auto &opt : opts) {
-            /* .first is the flag. */
-            if (opt.first == "ident") return true;
-        }
-
-        return false;
-    }();
-
     /* Did we get at least one of the required main flags? */
     const bool main_opt_passed = [opts = passed_opts_, main_opts = valid_groups_[main].options] {
-        /* Yeah, a bit of ineffective copying here, but hey, it works. */
         vector<string> required_opts, passed_opts;
 
         /* Since we only want to match against the long flags, we copy those. */
         for (const auto &opt : opts)
             passed_opts.emplace_back(opt.first);
+
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
         return utils::any_intersection(passed_opts, required_opts);
     }();
 
-    if (ident_passed && passed_opts_.size() > 1)
+    if (has("ident") && passed_opts_.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
-    else if (!main_opt_passed)
+
+    if (!has("ident") && !main_opt_passed)
         throw argument_error("at least one main argument must be specified");
 
     if (!has(0))
