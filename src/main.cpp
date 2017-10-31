@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
 
         auto sources = butler.load_sources();
         auto tui = tui::make_with(butler, sources, logger);
+
+        py::gil_scoped_release nogil;
         tui->display();
     } catch (const component_error &err) {
         logger->error("a dependency failed: {}. Developer error? Terminating...", err.what());

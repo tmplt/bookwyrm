@@ -91,9 +91,6 @@ void screen_butler::display()
 {
     repaint_screens();
 
-    /* Let the source threads free. */
-    py::gil_scoped_release nogil;
-
     struct keys::event ev;
     while (keys::poll_event(ev)) {
         if (ev.type == type::resize) {
