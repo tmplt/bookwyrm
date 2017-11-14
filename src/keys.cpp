@@ -28,14 +28,14 @@ bool poll_event(event &ev)
     if (!tb_poll_event(&tb_ev))
         return false;
 
-    ev.type = type(std::move(tb_ev.type));
-    ev.key  = key(std::move(tb_ev.key));
-    ev.ch   = std::move(tb_ev.ch);
+    ev.type = type(tb_ev.type);
+    ev.key  = key(tb_ev.key);
+    ev.ch   = tb_ev.ch;
 
-    ev.w    = std::move(tb_ev.w);
-    ev.h    = std::move(tb_ev.h);
-    ev.x    = std::move(tb_ev.x);
-    ev.y    = std::move(tb_ev.y);
+    ev.w    = tb_ev.w;
+    ev.h    = tb_ev.h;
+    ev.x    = tb_ev.x;
+    ev.y    = tb_ev.y;
 
     return true;
 }
