@@ -56,43 +56,40 @@ int main(int argc, char *argv[])
     logger->set_level(spdlog::level::warn);
     spdlog::register_logger(logger);
 
-    const auto cli = [=]() -> std::optional<cliparser>{
-        try {
-            /* Parse command line arguments. */
-            string progname = argv[0];
-            vector<string> args(argv + 1, argv + argc);
+    const auto cli = [=]() -> cliparser {
+        string progname = argv[0];
+        vector<string> args(argv + 1, argv + argc);
 
-            auto cli = cliparser::make(std::move(progname), std::move(groups));
-            cli.process_arguments(args);
-            cli.validate_arguments();
+        auto cli = cliparser::make(std::move(progname), std::move(groups));
+        cli.process_arguments(args);
 
-            return std::make_optional<cliparser>(cli);
-        } catch (const argument_error &err) {
-            logger->error("{}; see --help", err.what());
-            return {};
-        }
+        return cli;
     }();
 
-    if (!cli)
-        return EXIT_FAILURE;
-
-    if (cli->has("debug"))
+    if (cli.has("debug"))
         logger->set_level(spdlog::level::debug);
 
     logger->debug("the mighty eldwyrm hath been summoned!");
 
-    if (cli->has("help")) {
-        cli->usage();
+    if (cli.has("help")) {
+        cli.usage();
         return EXIT_SUCCESS;
-    } else if (cli->has("version")) {
+    } else if (cli.has("version")) {
         print_build_info();
         return EXIT_SUCCESS;
     } else if (argc == 1) {
-        cli->usage();
+        cli.usage();
         return EXIT_FAILURE;
     }
 
-    if (const auto err = utils::validate_download_dir(cli->get(0)); err) {
+    try {
+        cli.validate_arguments();
+    } catch (const argument_error &err) {
+        logger->error("{}; see --help", err.what());
+        return EXIT_FAILURE;
+    }
+
+    if (const auto err = utils::validate_download_dir(cli.get(0)); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
         logger->error("invalid download directory: {}.", msg);
@@ -107,7 +104,7 @@ int main(int argc, char *argv[])
          * During run-time, the butler will match each found item
          * with the wanted one. If it doesn't match, it is discarded.
          */
-        const bookwyrm::item wanted(*cli);
+        const bookwyrm::item wanted(cli);
         auto butler = butler::script_butler(std::move(wanted), logger);
 
         auto sources = butler.load_sources();
