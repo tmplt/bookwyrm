@@ -61,8 +61,13 @@ public:
     /*
      * Display the TUI and let the user enter input.
      * The input is forwarded to the appropriate screen.
+     * Returns false if user wants the program to exit without downloading anything.
+     * Returns true otherwise.
      */
-    void display();
+    bool display();
+
+    /* Take ownership of the wanted items and move them to the caller. */
+    vector<bookwyrm::item> get_wanted_items();
 
     /* Draw the context sensitive footer. */
     void print_footer();

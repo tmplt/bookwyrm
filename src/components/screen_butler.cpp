@@ -87,7 +87,7 @@ void screen_butler::resize_screens()
     repaint_screens();
 }
 
-void screen_butler::display()
+bool screen_butler::display()
 {
     repaint_screens();
 
@@ -98,16 +98,31 @@ void screen_butler::display()
             resize_screens();
         } else if (ev.type == type::key_press) {
             if (ev.key == key::escape)
-                return;
+                return false;
 
             /* When the terminal is too small, only allow quitting and window resizing. */
             if (!bookwyrm_fits())
                 continue;
 
+            if (ev.key == key::enter)
+                return true;
+
             if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
                 repaint_screens();
         }
     }
+
+    throw program_error("unable to poll input");
+}
+
+vector<bookwyrm::item> screen_butler::get_wanted_items()
+{
+    vector<bookwyrm::item> items;
+
+    for (int idx : index_->marked_items())
+        items.push_back(items_[idx]);
+
+    return items;
 }
 
 bool screen_butler::bookwyrm_fits()

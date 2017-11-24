@@ -23,6 +23,9 @@
 #include "components/script_butler.hpp"
 #include "components/screen_butler.hpp"
 
+/* #include <fmt/format.h> */
+#include <iostream>
+
 int main(int argc, char *argv[])
 {
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
@@ -96,6 +99,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    vector<bookwyrm::item> wanted_items;
+
     try {
         py::scoped_interpreter interp;
 
@@ -111,7 +116,10 @@ int main(int argc, char *argv[])
         auto tui = tui::make_with(butler, seekers, logger);
 
         py::gil_scoped_release nogil;
-        tui->display();
+
+        if (tui->display())
+            wanted_items = tui->get_wanted_items();
+
     } catch (const component_error &err) {
         logger->error("a dependency failed: {}. Developer error? Terminating...", err.what());
         return EXIT_FAILURE;
@@ -119,6 +127,14 @@ int main(int argc, char *argv[])
         logger->error("Fatal program error: {}; I can't continue! Terminating...", err.what());
         return EXIT_FAILURE;
     }
+
+    for (const auto &item : wanted_items) {
+        std::cout << item.nonexacts.title << std::endl;
+        /* std::cout << fmt::format("{} by {} ({})", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str); */
+    }
+
+    if (!wanted_items.empty())
+        logger->warn("we have some items to download ({})", wanted_items.size());
 
     logger->debug("terminating successfully. Have a good day.");
     return EXIT_SUCCESS;

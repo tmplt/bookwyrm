@@ -61,6 +61,11 @@ public:
         return items_.size();
     }
 
+    auto marked_items()
+    {
+        return marked_items_;
+    }
+
 private:
     struct columns_t {
 
@@ -132,8 +137,6 @@ private:
 
     void print_header();
     void print_column(const size_t col_idx);
-
-    static constexpr uint32_t selected_char_ = 0xBB; // »
 };
 
 } /* ns screen */
