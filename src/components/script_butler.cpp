@@ -33,33 +33,33 @@ namespace butler {
 script_butler::script_butler(const bookwyrm::item &&wanted, logger_t logger)
     : logger_(logger), wanted_(wanted) {}
 
-vector<pybind11::module> script_butler::load_sources()
+vector<pybind11::module> script_butler::load_seekers()
 {
-    vector<fs::path> source_paths;
+    vector<fs::path> seeker_paths;
 #ifdef DEBUG
     /* Bookwyrm must be run from build/ in DEBUG mode. */
-    source_paths = { fs::canonical(fs::path("../src/sources")) };
+    seeker_paths = { fs::canonical(fs::path("../src/seekers")) };
 #else
-    /* TODO: look through /etc/bookwyrm/sources/ also. */
+    /* TODO: look through /etc/bookwyrm/seekers/ also. */
     if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty())
-        source_paths.push_back(conf / "bookwyrm/sources");
+        seeker_paths.push_back(conf / "bookwyrm/seekers");
     else if (fs::path home = std::getenv("HOME"); !home.empty())
-        source_paths.push_back(home / ".config/bookwyrm/sources");
+        seeker_paths.push_back(home / ".config/bookwyrm/seekers");
     else
-        logger_->error("couldn't find any source script directories.");
+        logger_->error("couldn't find any seeker script directories.");
 #endif
 
     /*
-     * Append the source paths to Python's sys.path,
+     * Append the seeker paths to Python's sys.path,
      * allowing them to be imported.
      */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
-    for (auto &p : source_paths)
+    for (auto &p : seeker_paths)
         sys_path.append(p.string().c_str());
 
     /*
      * Find all Python modules and populate the
-     * list of sources by loading them.
+     * list of seekers by loading them.
      *
      * The first occurance of a module will be imported,
      * the latter ones will be ignored by Python. So we
@@ -67,9 +67,9 @@ vector<pybind11::module> script_butler::load_sources()
      * make sure that we don't clash with the many module
      * names in Python.
      */
-    vector<py::module> sources;
-    for (const auto &source_path : source_paths) {
-        for (const fs::path &p : fs::directory_iterator(source_path)) {
+    vector<py::module> seekers;
+    for (const auto &seeker_path : seeker_paths) {
+        for (const fs::path &p : fs::directory_iterator(seeker_path)) {
             if (p.extension() != ".py") continue;
 
             if (!utils::readable_file(p)) {
@@ -81,17 +81,17 @@ vector<pybind11::module> script_butler::load_sources()
             try {
                 string module = p.stem();
                 logger_->debug("loading module '{}'...", module);
-                sources.emplace_back(py::module::import(module.c_str()));
+                seekers.emplace_back(py::module::import(module.c_str()));
             } catch (const py::error_already_set &err) {
                 logger_->error("{}; ignoring...", err.what());
             }
         }
     }
 
-    if (sources.empty())
-        throw program_error("couldn't find any valid source scripts");
+    if (seekers.empty())
+        throw program_error("couldn't find any valid seeker scripts");
 
-    return sources;
+    return seekers;
 }
 
 script_butler::~script_butler()
@@ -109,9 +109,9 @@ script_butler::~script_butler()
         t.join();
 }
 
-void script_butler::async_search(vector<py::module> &sources)
+void script_butler::async_search(vector<py::module> &seekers)
 {
-    for (const auto &m : sources) {
+    for (const auto &m : seekers) {
         threads_.emplace_back([&m, wanted = wanted_, bw_instance = this]() {
             /* Required whenever we need to run anything Python. */
             py::gil_scoped_acquire gil;

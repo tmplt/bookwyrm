@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
         const bookwyrm::item wanted(cli);
         auto butler = butler::script_butler(std::move(wanted), logger);
 
-        auto sources = butler.load_sources();
-        auto tui = tui::make_with(butler, sources, logger);
+        auto seekers = butler.load_seekers();
+        auto tui = tui::make_with(butler, seekers, logger);
 
         py::gil_scoped_release nogil;
         tui->display();
@@ -120,6 +120,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    logger->debug("terminating successfully, have a good day.");
+    logger->debug("terminating successfully. Have a good day.");
     return EXIT_SUCCESS;
 }

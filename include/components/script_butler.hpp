@@ -43,7 +43,7 @@ class screen_butler;
 
 /*
  * The bookwyrm's very own butler. First, the butler finds
- * and loads all valid source scripts. When these scripts have all
+ * and loads all valid seeker scripts. When these scripts have all
  * started running in seperate threads, the butler will match items
  * fed to the bookwyrm with that is wanted. Only items matching
  * what is wanted will be pushed back into the items_ vector, and
@@ -65,11 +65,11 @@ public:
     explicit script_butler(const script_butler&) = delete;
     ~script_butler();
 
-    /* Find and load all source scripts. */
-    vector<py::module> load_sources();
+    /* Find and load all seeker scripts. */
+    vector<py::module> load_seekers();
 
     /* Start a std::thread for each valid Python module found. */
-    void async_search(vector<py::module> &sources);
+    void async_search(vector<py::module> &seekers);
 
     /* Try to add a found item, and then update the set menu. */
     void add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t> item_comps);

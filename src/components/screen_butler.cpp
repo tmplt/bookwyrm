@@ -209,12 +209,12 @@ void screen_butler::wprintcont(int x, const int y, const string_view &str, const
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &sources, logger_t &logger)
+std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &seekers, logger_t &logger)
 {
     auto tui = std::make_shared<butler::screen_butler>(script_butler.results(), logger);
     script_butler.set_screen_butler(tui);
     logger->set_screen_butler(tui);
-    script_butler.async_search(sources); // Watch out, it's hot!
+    script_butler.async_search(seekers); // Watch out, it's hot!
     return tui;
 }
 
