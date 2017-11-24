@@ -33,7 +33,7 @@ void log::paint()
      * how many entries back can we fit on screen?
      */
     const auto start_entry = detached_at_.value_or(entries_.cend());
-    auto entry = start_entry - capacity(start_entry);
+    auto entry = start_entry - capacity(start_entry) - 1;
 
     int y = 0;
     while (entry != entries_.cend()) {
