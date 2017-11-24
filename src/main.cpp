@@ -23,9 +23,6 @@
 #include "components/script_butler.hpp"
 #include "components/screen_butler.hpp"
 
-/* #include <fmt/format.h> */
-#include <iostream>
-
 int main(int argc, char *argv[])
 {
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
@@ -63,7 +60,7 @@ int main(int argc, char *argv[])
         try {
             cli.process_arguments(args);
         } catch (const argument_error &err) {
-            std::cerr << fmt::format("error: {}; see --help\n", err.what());
+            fmt::print(stderr, "error: {}; see --help\n", err.what());
             std::exit(EXIT_FAILURE);
         }
 
@@ -84,14 +81,14 @@ int main(int argc, char *argv[])
     try {
         cli.validate_arguments();
     } catch (const argument_error &err) {
-        std::cerr << fmt::format("error: {}; see --help\n", err.what());
+        fmt::print(stderr, "error: {}; see --help\n", err.what());
         return EXIT_FAILURE;
     }
 
     if (const auto err = utils::validate_download_dir(cli.get(0)); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
-        std::cerr << fmt::format("error: invalid download directory: {}.\n", msg);
+        fmt::print(stderr, "error: invalid download directory: {}.\n", msg);
         return EXIT_FAILURE;
     }
 
@@ -101,7 +98,6 @@ int main(int argc, char *argv[])
         auto logger = logger::create("main");
         logger->set_pattern("%l: %v");
         logger->set_level(spdlog::level::warn);
-        spdlog::register_logger(logger);
 
         if (cli.has("debug"))
             logger->set_level(spdlog::level::debug);
@@ -127,15 +123,18 @@ int main(int argc, char *argv[])
             wanted_items = tui->get_wanted_items();
 
     } catch (const component_error &err) {
-        std::cerr << fmt::format("a dependency failed: {}. Developer error? Terminating...\n", err.what());
+        fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());
         return EXIT_FAILURE;
     } catch (const program_error &err) {
-        std::cerr << fmt::format("Fatal program error: {}; I can't continue! Terminating...\n", err.what());
+        fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
     }
 
+    if (!wanted_items.empty())
+        fmt::print("\nThe following items are queued for download:\n");
+
     for (const auto &item : wanted_items) {
-        std::cout << fmt::format("{} by {} ({})\n", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str);
+        fmt::print("'{}' by {} ({})\n", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str);
     }
 
     return EXIT_SUCCESS;
