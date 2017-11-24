@@ -54,25 +54,21 @@ int main(int argc, char *argv[])
 
     const cligroups groups = {main, excl, exact, misc};
 
-    auto logger = logger::create("main");
-    logger->set_pattern("%l: %v");
-    logger->set_level(spdlog::level::warn);
-    spdlog::register_logger(logger);
-
     const auto cli = [=]() -> cliparser {
         string progname = argv[0];
         vector<string> args(argv + 1, argv + argc);
 
         auto cli = cliparser::make(std::move(progname), std::move(groups));
-        cli.process_arguments(args);
+
+        try {
+            cli.process_arguments(args);
+        } catch (const argument_error &err) {
+            std::cerr << fmt::format("error: {}; see --help\n", err.what());
+            std::exit(EXIT_FAILURE);
+        }
 
         return cli;
     }();
-
-    if (cli.has("debug"))
-        logger->set_level(spdlog::level::debug);
-
-    logger->debug("the mighty eldwyrm hath been summoned!");
 
     if (cli.has("help")) {
         cli.usage();
@@ -88,20 +84,30 @@ int main(int argc, char *argv[])
     try {
         cli.validate_arguments();
     } catch (const argument_error &err) {
-        logger->error("{}; see --help", err.what());
+        std::cerr << fmt::format("error: {}; see --help\n", err.what());
         return EXIT_FAILURE;
     }
 
     if (const auto err = utils::validate_download_dir(cli.get(0)); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
-        logger->error("invalid download directory: {}.", msg);
+        std::cerr << fmt::format("error: invalid download directory: {}.\n", msg);
         return EXIT_FAILURE;
     }
 
     vector<bookwyrm::item> wanted_items;
 
     try {
+        auto logger = logger::create("main");
+        logger->set_pattern("%l: %v");
+        logger->set_level(spdlog::level::warn);
+        spdlog::register_logger(logger);
+
+        if (cli.has("debug"))
+            logger->set_level(spdlog::level::debug);
+
+        logger->debug("the mighty eldwyrm hath been summoned!");
+
         py::scoped_interpreter interp;
 
         /*
@@ -121,21 +127,16 @@ int main(int argc, char *argv[])
             wanted_items = tui->get_wanted_items();
 
     } catch (const component_error &err) {
-        logger->error("a dependency failed: {}. Developer error? Terminating...", err.what());
+        std::cerr << fmt::format("a dependency failed: {}. Developer error? Terminating...\n", err.what());
         return EXIT_FAILURE;
     } catch (const program_error &err) {
-        logger->error("Fatal program error: {}; I can't continue! Terminating...", err.what());
+        std::cerr << fmt::format("Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
     }
 
     for (const auto &item : wanted_items) {
-        std::cout << item.nonexacts.title << std::endl;
-        /* std::cout << fmt::format("{} by {} ({})", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str); */
+        std::cout << fmt::format("{} by {} ({})\n", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str);
     }
 
-    if (!wanted_items.empty())
-        logger->warn("we have some items to download ({})", wanted_items.size());
-
-    logger->debug("terminating successfully. Have a good day.");
     return EXIT_SUCCESS;
 }
