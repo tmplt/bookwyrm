@@ -134,6 +134,11 @@ nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<stri
     authors_str = utils::vector_to_string(authors);
 }
 
+misc_t::misc_t(const vector<string> &uris)
+{
+    this->uris = uris;
+}
+
 bool item::matches(const item &wanted) const
 {
     /* Return false if any exact value doesn't match what's wanted. */

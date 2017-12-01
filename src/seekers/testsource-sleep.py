@@ -16,10 +16,12 @@ def find(wanted, bookwyrm):
         time.sleep(0.2)
 
         nonexacts = bw.nonexacts_t(
-            {'series': 'series' + str(i), 'title': wanted.nonexacts.title + str(i)},
+            {'series': 'series' + str(i), 'title': 'Some Title (' + str(i) + ')'},
             ['Author A. ' + str(i), 'Author B.' + str(i)])
 
         exacts = bw.exacts_t({'year': 2000 + i, 'pages': 500 + i})
 
-        book = (nonexacts, exacts)
+        misc = bw.misc_t(['https://dragons.rocks/helloworld.txt'])
+
+        book = (nonexacts, exacts, misc)
         bookwyrm.feed(book)

@@ -101,9 +101,11 @@ struct misc_t {
      * The POD for everything else and undecided
      * fields.
      */
+    explicit misc_t(const vector<string> &uris);
+    explicit misc_t() {}; // cannot be initialized from cli options
 
     vector<string> isbns;
-    vector<string> mirrors;
+    vector<string> uris;
 };
 
 class item {
@@ -112,8 +114,8 @@ public:
         : nonexacts(cli), exacts(cli) {}
 
     /* Construct an item from a pybind11::tuple. */
-    explicit item(const std::tuple<nonexacts_t, exacts_t> &tuple)
-        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)) {}
+    explicit item(const std::tuple<nonexacts_t, exacts_t, misc_t> &tuple)
+        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)), misc(std::get<2>(tuple)) {}
 
     /*
      * Returns true if all specified exact values are equal

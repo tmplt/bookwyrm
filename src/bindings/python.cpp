@@ -87,6 +87,10 @@ PYBIND11_MODULE(pybookwyrm, m)
             );
         });
 
+    py::class_<bw::misc_t>(m, "misc_t")
+        .def(py::init<const vector<string>&>())
+        .def_readwrite("uris", &bw::misc_t::uris);
+
     py::class_<bw::item>(m, "item")
         .def_readonly("nonexacts", &bw::item::nonexacts)
         .def_readonly("exacts",    &bw::item::exacts)

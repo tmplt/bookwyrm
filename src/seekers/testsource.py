@@ -31,5 +31,7 @@ def find(wanted, bookwyrm):
             }
         )
 
-        book = (nonexacts, exacts)
+        misc = bw.misc_t(['https://dragons.rocks/helloworld.txt'])
+
+        book = (nonexacts, exacts, misc)
         bookwyrm.feed(book)
