@@ -22,6 +22,7 @@
 #include "components/command_line.hpp"
 #include "components/script_butler.hpp"
 #include "components/screen_butler.hpp"
+#include "components/downloader.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    bookwyrm::downloader d;
     vector<bookwyrm::item> wanted_items;
 
     try {
@@ -119,8 +121,14 @@ int main(int argc, char *argv[])
 
         py::gil_scoped_release nogil;
 
-        if (tui->display())
+        if (tui->display()) {
+            /*
+             * Start download while script_butler destructs.
+             * NOTE: the TUI is blocked here; we don't want that.
+             */
+            /* d.async_download(tui->get_wanted_items()); */
             wanted_items = tui->get_wanted_items();
+        }
 
     } catch (const component_error &err) {
         fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());
@@ -130,12 +138,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (!wanted_items.empty())
-        fmt::print("\nThe following items are queued for download:\n");
-
-    for (const auto &item : wanted_items) {
-        fmt::print("'{}' by {} ({})\n", item.nonexacts.title, item.nonexacts.authors_str, item.exacts.year_str);
-    }
+    d.sync_download(wanted_items);
 
     return EXIT_SUCCESS;
 }

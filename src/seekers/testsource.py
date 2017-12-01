@@ -31,7 +31,10 @@ def find(wanted, bookwyrm):
             }
         )
 
-        misc = bw.misc_t(['https://dragons.rocks/helloworld.txt'])
+        misc = bw.misc_t([
+            'http://localhost:8000/invalidurl.txt',
+            'http://localhost:8000/helloworld.txt'
+        ])
 
         book = (nonexacts, exacts, misc)
         bookwyrm.feed(book)

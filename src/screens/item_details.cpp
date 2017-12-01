@@ -63,6 +63,8 @@ void item_details::print_borders()
 
 void item_details::print_details()
 {
+    const string uris = utils::vector_to_string(item_.misc.uris);
+
     using pair = std::pair<string, std::reference_wrapper<const string>>;
     const vector<pair> v = {
         {"Title",     item_.nonexacts.title},
@@ -70,7 +72,8 @@ void item_details::print_details()
         {"Authors",   item_.nonexacts.authors_str},
         {"Year",      item_.exacts.year_str},
         {"Publisher", item_.nonexacts.publisher},
-        {"Format",    item_.exacts.format}
+        {"Format",    item_.exacts.format},
+        {"URI",       uris},
         // include filesize here
         // and print it red if the item is gigabytes large
     };

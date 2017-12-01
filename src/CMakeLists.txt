@@ -23,6 +23,7 @@ set(SOURCE
     components/command_line.cpp
     components/script_butler.cpp
     components/screen_butler.cpp
+    components/downloader.cpp
     screens/base.cpp
     screens/multiselect_menu.cpp
     screens/item_details.cpp
@@ -44,6 +45,7 @@ set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/termbox/src)
+set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CPR_INCLUDE_DIRS})
 
 # Some pre-compile tasks:
 execute_process(COMMAND git describe --tags --dirty=-git
@@ -71,6 +73,7 @@ target_link_libraries(${PROJECT_NAME}
     fuzzywuzzy
     pybind11::embed
     stdc++fs
-    termbox_lib_static)
+    termbox_lib_static
+    curl)
 
 add_subdirectory(bindings)

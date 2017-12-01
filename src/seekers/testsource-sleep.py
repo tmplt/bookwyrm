@@ -21,7 +21,7 @@ def find(wanted, bookwyrm):
 
         exacts = bw.exacts_t({'year': 2000 + i, 'pages': 500 + i})
 
-        misc = bw.misc_t(['https://dragons.rocks/helloworld.txt'])
+        misc = bw.misc_t(['http://localhost:8000/helloworld.txt'])
 
         book = (nonexacts, exacts, misc)
         bookwyrm.feed(book)
