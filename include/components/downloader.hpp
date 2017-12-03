@@ -30,8 +30,11 @@ public:
     explicit downloader(string download_dir);
     ~downloader();
 
-    /* Downloads the given items in a blocking, synchronous order. */
-    void sync_download(vector<bookwyrm::item> items);
+    /*
+     * Downloads the given items in a blocking, synchronous order.
+     * Returns true if at least one item was downloaded.
+     */
+    bool sync_download(vector<bookwyrm::item> items);
 private:
     static int progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 

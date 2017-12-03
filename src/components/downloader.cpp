@@ -111,8 +111,10 @@ fs::path downloader::generate_filename(const bookwyrm::item &item)
     return candidate;
 }
 
-void downloader::sync_download(vector<bookwyrm::item> items)
+bool downloader::sync_download(vector<bookwyrm::item> items)
 {
+    bool success = false;
+
     for (const auto &item : items) {
         auto filename = generate_filename(item);
 
@@ -131,9 +133,10 @@ void downloader::sync_download(vector<bookwyrm::item> items)
                 fmt::print(stderr, "error: item download failed: {}\n", curl_easy_strerror(res));
                 std::fclose(out);
             } else {
-                // now we have the remote file
-                fmt::print("\t SUCCESS!\n");
                 std::fclose(out);
+                success = true;
+
+                /* That source worked, so there is no need to download from the others. */
                 break;
             }
         }
@@ -141,6 +144,8 @@ void downloader::sync_download(vector<bookwyrm::item> items)
         fmt::print(stderr, "error: no good sources for this item: {} - {} ({}). Sorry!", item.nonexacts.authors_str,
             item.nonexacts.title, item.exacts.year_str);
     }
+
+    return success;
 }
 
 }

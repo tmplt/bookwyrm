@@ -138,8 +138,19 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    if (wanted_items.empty()) {
+        /* We have nothing else to do. */
+        return EXIT_SUCCESS;
+    }
+
     try {
-        d.sync_download(wanted_items);
+        auto success = d.sync_download(wanted_items);
+
+        if (!success) {
+            fmt::print("No items were successfully downloaded\n");
+            return EXIT_FAILURE;
+        }
+
     } catch (const component_error &err) {
         fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
