@@ -13,7 +13,7 @@ For example, one might run bookwyrm as follows:
     bookwyrm --author "Naomi Novik" --series Temeraire --year >=2015
 
 Here is an (outdated) video of bookwyrm in action:
-[![asciicast](https://asciinema.org/a/asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD.png)](https://asciinema.org/a/asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD)
+[![asciicast](https://asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD.png)](https://asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD)
 
 Sources are written as scripts which run in their own worker threads.
 Some scripts are available upstream, but you can also write your own into `~/.config/bookwyrm/sources/`. Currently, only Python scripts are supported, but LUA is being considered.
