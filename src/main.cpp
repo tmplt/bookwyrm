@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    bookwyrm::downloader d;
+    bookwyrm::downloader d(cli.get(0));
     vector<bookwyrm::item> wanted_items;
 
     try {
@@ -138,7 +138,12 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    d.sync_download(wanted_items);
+    try {
+        d.sync_download(wanted_items);
+    } catch (const component_error &err) {
+        fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }

@@ -16,21 +16,29 @@
  */
 
 #include <curl/curl.h>
+#include <experimental/filesystem>
 
 #include "common.hpp"
 #include "item.hpp"
+
+namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm {
 
 class downloader {
 public:
-    explicit downloader();
+    explicit downloader(string download_dir);
     ~downloader();
 
+    /* Downloads the given items in a blocking, synchronous order. */
     void sync_download(vector<bookwyrm::item> items);
 private:
     static int progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
+    /* Generates a relative filename in dldir to save the given item. */
+    fs::path generate_filename(const bookwyrm::item &item);
+
+    const fs::path dldir;
     CURL *curl;
 };
 

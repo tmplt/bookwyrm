@@ -25,6 +25,8 @@
 #include "utils.hpp"
 #include "components/command_line.hpp"
 
+// TODO: clean theese up and set everything in stone (don't store strings, file extensions, etc.).
+
 namespace bookwyrm {
 
 /* Default value: "this value is empty". */
