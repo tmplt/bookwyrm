@@ -54,7 +54,7 @@ void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
         for (size_t x = 0; x < get_width(); x++)
-            change_cell(x, y, ascii::em_dash);
+            change_cell(x, y, rune::single::em_dash);
     };
 
     print_line(0);

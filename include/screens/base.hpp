@@ -22,7 +22,7 @@
 #include "common.hpp"
 #include "colours.hpp"
 #include "keys.hpp"
-#include "ascii.hpp"
+#include "runes.hpp"
 
 namespace screen {
 
@@ -89,14 +89,14 @@ protected:
         change_cell(x, y, ch, colour::none | attr);
     }
 
-    void change_cell(int x, int y, const ascii ch, const attribute attr)
+    void change_cell(int x, int y, const rune::single ch, const attribute attr)
     {
-        change_cell(x, y, static_cast<ascii_t>(ch), colour::none | attr);
+        change_cell(x, y, static_cast<rune_t>(ch), colour::none | attr);
     }
 
-    void change_cell(int x, int y, const ascii ch)
+    void change_cell(int x, int y, const rune::single ch)
     {
-        change_cell(x, y, static_cast<ascii_t>(ch));
+        change_cell(x, y, static_cast<rune_t>(ch));
     }
 
     /*

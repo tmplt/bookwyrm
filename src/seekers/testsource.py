@@ -32,6 +32,7 @@ def find(wanted, bookwyrm):
         )
 
         misc = bw.misc_t([
+            'http://localhost:8000/big',
             'http://localhost:8000/invalidurl.txt',
             'http://localhost:8000/helloworld.txt'
         ])

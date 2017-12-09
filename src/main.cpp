@@ -144,6 +144,11 @@ int main(int argc, char *argv[])
     }
 
     try {
+        if (wanted_items.size() == 1)
+            fmt::print("Downloading item...\n");
+        else
+            fmt::print("Downloading {} items...\n", wanted_items.size());
+
         auto success = d.sync_download(wanted_items);
 
         if (!success) {

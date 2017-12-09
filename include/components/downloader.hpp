@@ -16,14 +16,32 @@
  */
 
 #include <curl/curl.h>
+#include <iostream>
 #include <experimental/filesystem>
 
 #include "common.hpp"
 #include "item.hpp"
+#include "time.hpp"
 
 namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm {
+
+class progressbar {
+public:
+    progressbar(bool use_unicode, bool use_colour)
+        : use_unicode_(use_unicode), use_colour_(use_colour) {}
+
+    void draw(unsigned int length, double fraction)
+    {
+        std::cout << build_bar(length, fraction);
+    }
+
+private:
+    string build_bar(unsigned int length, double fraction);
+
+    const bool use_unicode_, use_colour_;
+};
 
 class downloader {
 public:
@@ -35,6 +53,10 @@ public:
      * Returns true if at least one item was downloaded.
      */
     bool sync_download(vector<bookwyrm::item> items);
+
+    time::timer timer;
+    progressbar pbar;
+
 private:
     static int progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
