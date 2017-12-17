@@ -26,6 +26,7 @@
 #include "components/command_line.hpp"
 
 // TODO: clean theese up and set everything in stone (don't store strings, file extensions, etc.).
+// and make everything const
 
 namespace bookwyrm {
 
@@ -43,55 +44,32 @@ enum { empty = -1 };
 enum class year_mod { equal, eq_gt, eq_lt, lt, gt };
 
 struct exacts_t {
-    /*
-     * A POD with added index operator.
-     * Useful in item::matches() where we want to
-     * iterate over these values and check if they match.
-     *
-     * We can then get a field value by name, which we'll
-     * want when printing the stuff out.
-     *
-     * Fields are set to "empty" (-1) during construction.
-     * This makes us able to bool-check (since -1 is false)
-     * whether or not a field is empty or not.
-     */
+    /* Holds exact data about an item (year, page count, format, etc.). */
     explicit exacts_t(const cliparser &cli);
     explicit exacts_t(const std::map<string, int> &dict);
 
     year_mod ymod;
     int year = empty;
-    string year_str = "";
 
     int edition = empty,
         volume  = empty,  /* no associated flag */
         number  = empty,  /* no associated flag */
         pages   = empty;  /* no associated flag */
 
-    string format = "fmt";
+    string format = "";
 
-    constexpr static int size = 6;
-    std::array<int, size> store = {{
+    /* Convenience container */
+    std::array<int, 6> store = {{
         year, edition, volume, number, pages
     }};
-
-    int operator[](int i) const
-    {
-        return store[i];
-    }
 };
 
 struct nonexacts_t {
-    /*
-     * As the typename suggests, this POD contains
-     * data that we're not going to match exacly match
-     * exactly with the wanted field. Instead, we use
-     * fuzzy-matching.
-     */
+    /* Holds strings, which are matched fuzzily. */
     explicit nonexacts_t(const cliparser &cli);
     explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
 
     vector<string> authors;
-    string authors_str;
     string title;
     string series;
     string publisher;
@@ -124,12 +102,6 @@ public:
      * and if all specified non-exact values passes the fuzzy ratio.
      */
     bool matches(const item &wanted) const;
-
-    friend std::ostream& operator<<(std::ostream &os, item const &i)
-    {
-        os << "test printout: " + i.nonexacts.series;
-        return os;
-    }
 
     const nonexacts_t nonexacts;
     const exacts_t exacts;

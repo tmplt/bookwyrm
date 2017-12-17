@@ -28,6 +28,7 @@
 
 #include "components/downloader.hpp"
 #include "runes.hpp"
+#include "utils.hpp"
 
 namespace bookwyrm {
 
@@ -83,8 +84,9 @@ fs::path downloader::generate_filename(const bookwyrm::item &item)
     // TODO: remove hardcodedness
     string ext = ".txt";
 
-    const fs::path base = dldir / fmt::format("{} - {} ({})", item.nonexacts.authors_str,
-            item.nonexacts.title, item.exacts.year_str);
+    const fs::path base = dldir / fmt::format("{} - {} ({})",
+            utils::vector_to_string(item.nonexacts.authors),
+            item.nonexacts.title, item.exacts.year);
 
     /* If filename.ext doesn't exists, we use that. */
     if (auto candidate = base; !fs::exists(candidate.concat(ext)))
@@ -145,8 +147,9 @@ bool downloader::sync_download(vector<bookwyrm::item> items)
         }
 
         if (!success) {
-            fmt::print(stderr, "error: no good sources for this item: {} - {} ({}). Sorry!\n", item.nonexacts.authors_str,
-                item.nonexacts.title, item.exacts.year_str);
+            fmt::print(stderr, "error: no good sources for this item: {} - {} ({}). Sorry!\n",
+                utils::vector_to_string(item.nonexacts.authors),
+                item.nonexacts.title, item.exacts.year);
         }
     }
 

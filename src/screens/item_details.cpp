@@ -66,11 +66,13 @@ void item_details::print_details()
     const string uris = utils::vector_to_string(item_.misc.uris);
 
     using pair = std::pair<string, std::reference_wrapper<const string>>;
+    string authors = utils::vector_to_string(item_.nonexacts.authors);
+    string year = std::to_string(item_.exacts.year);
     const vector<pair> v = {
         {"Title",     item_.nonexacts.title},
         {"Serie",     item_.nonexacts.series},
-        {"Authors",   item_.nonexacts.authors_str},
-        {"Year",      item_.exacts.year_str},
+        {"Authors",   authors},
+        {"Year",      year},
         {"Publisher", item_.nonexacts.publisher},
         {"Format",    item_.exacts.format},
         {"URI",       uris},
