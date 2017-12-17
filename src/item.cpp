@@ -29,113 +29,88 @@ static constexpr int fuzzy_min = 75;
 
 namespace bookwyrm {
 
-exacts_t::exacts_t(const cliparser &cli)
+int exacts_t::parse_number(const cliparser &cli, const string &&opt)
 {
-    /* Parse the year which may have a prefixed modifier. */
-    std::tie(ymod, year) = [&cli]() -> std::pair<year_mod, int> {
-        const auto year_str = cli.get("year");
-        if (year_str.empty()) return {year_mod::equal, empty};
+    const auto value_str = cli.get(opt);
+    if (value_str.empty()) return empty;
 
-        const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
-            return std::isdigit(c);
-        });
+    try {
+        return std::stoi(value_str);
+    } catch (std::exception &err) {
+        throw value_error("malformed value '" + value_str + "' for argument --" + opt);
+    }
+}
 
-        try {
-            /*
-             * NOTE: this approach allows the year to be represented as a float
-             * (which stoi truncates to an int) and allows appended not-digits.
-             * Will this cause problems?
-             */
-            const auto year = std::stoi(string(start, year_str.cend()));
+int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
+{
+    const auto elem = dict.find(key);
+    return elem == dict.cend() ? empty : elem->second;
+}
 
-            if (start != year_str.cbegin()) {
-                /* There is a modifier in front of the year */
-                string mod_str(year_str.cbegin(), start);
-                year_mod mod;
+const std::pair<year_mod, int> exacts_t::get_yearmod(const cliparser &cli)
+{
+    const auto year_str = cli.get("year");
+    if (year_str.empty()) return {year_mod::equal, empty};
 
-                if (mod_str == "=>")
-                    mod = year_mod::eq_gt;
-                else if (mod_str == "=<")
-                    mod = year_mod::eq_lt;
-                else if (mod_str == ">")
-                    mod = year_mod::gt;
-                else if (mod_str == "<")
-                    mod = year_mod::lt;
-                else
-                    throw value_error("unrecognised year modifier '" + mod_str + '\'');
+    const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
+        return std::isdigit(c);
+    });
 
-                return {mod, year};
-            }
+    try {
+        /*
+         * NOTE: this approach allows the year to be represented as a float
+         * (which stoi truncates to an int) and allows appended not-digits.
+         * Will this cause problems?
+         */
+        const auto year = std::stoi(string(start, year_str.cend()));
 
-            return {year_mod::equal, year};
+        if (start != year_str.cbegin()) {
+            /* There is a modifier in front of the year */
+            string mod_str(year_str.cbegin(), start);
+            year_mod mod;
 
-        } catch (const value_error &err) {
-            throw err;
-        } catch (const std::exception &err) {
-            throw value_error("malformed year");
+            if (mod_str == "=>")
+                mod = year_mod::eq_gt;
+            else if (mod_str == "=<")
+                mod = year_mod::eq_lt;
+            else if (mod_str == ">")
+                mod = year_mod::gt;
+            else if (mod_str == "<")
+                mod = year_mod::lt;
+            else
+                throw value_error("unrecognised year modifier '" + mod_str + '\'');
+
+            return {mod, year};
         }
-    }();
 
-    const auto parse_number = [&cli](string &&opt) -> int {
-        const auto value_str = cli.get(opt);
-        if (value_str.empty()) return empty;
+        return {year_mod::equal, year};
 
-        try {
-            return std::stoi(value_str);
-        } catch (std::exception &err) {
-            throw value_error("malformed value '" + value_str + "' for argument --" + opt);
-        }
-    };
-
-    edition = parse_number("edition");
-    volume  = parse_number("volume");
-    number  = parse_number("number");
-    pages   = parse_number("pages");
+    } catch (const value_error &err) {
+        throw err;
+    } catch (const std::exception &err) {
+        throw value_error("malformed year");
+    }
 }
 
-nonexacts_t::nonexacts_t(const cliparser &cli)
+const string nonexacts_t::get_value(const std::map<string, string> &dict, const string &&key)
 {
-    authors   = cli.get_many("author");
-    title     = cli.get("title");
-    series    = cli.get("series");
-    publisher = cli.get("publisher");
-    journal   = cli.get("journal");
-}
-
-exacts_t::exacts_t(const std::map<string, int> &dict)
-{
-    const auto get_value = [&dict](string &&key) -> int {
-        const auto elem = dict.find(key);
-        return elem == dict.end() ? empty : elem->second;
-    };
-
-    year    = get_value("year");
-    edition = get_value("edition");
-    volume  = get_value("volume");
-    number  = get_value("number");
-    pages   = get_value("pages");
-}
-
-nonexacts_t::nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
-{
-    const auto get_value = [&dict](string &&key) -> string {
-        const auto elem = dict.find(key);
-        return elem == dict.end() ? "" : elem->second;
-    };
-
-    title     = get_value("title");
-    series    = get_value("series");
-    publisher = get_value("publisher");
-    journal   = get_value("journal");
-
-    this->authors = authors;
+    const auto elem = dict.find(key);
+    return elem == dict.cend() ? "" : elem->second;
 }
 
 bool item::matches(const item &wanted) const
 {
+    // TODO: implement operator== for exacts_t?
+
     /* Return false if any exact value doesn't match what's wanted. */
     for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {
         if (req != empty && req != got)
+            return false;
+    }
+
+    /* Ad-hoc the file type, for now. */
+    if (!wanted.exacts.extension.empty()) {
+        if (this->exacts.extension != wanted.exacts.extension)
             return false;
     }
 

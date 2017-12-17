@@ -74,7 +74,7 @@ void item_details::print_details()
         {"Authors",   authors},
         {"Year",      year},
         {"Publisher", item_.nonexacts.publisher},
-        {"Format",    item_.exacts.format},
+        {"Extension", item_.exacts.extension},
         {"URI",       uris},
         // include filesize here
         // and print it red if the item is gigabytes large

@@ -41,51 +41,86 @@ enum { empty = -1 };
  *   -y >2157  : list items from later than 2157 (gt)
  *   -y <2157  : list items from earlier than 2157 (lt)
  */
-enum class year_mod { equal, eq_gt, eq_lt, lt, gt };
+enum class year_mod { equal, eq_gt, eq_lt, lt, gt, unused };
 
 struct exacts_t {
     /* Holds exact data about an item (year, page count, format, etc.). */
-    explicit exacts_t(const cliparser &cli);
-    explicit exacts_t(const std::map<string, int> &dict);
+    explicit exacts_t(const cliparser &cli)
+        : exacts_t{get_yearmod(cli), cli} {}
 
-    year_mod ymod;
-    int year = empty;
+    explicit exacts_t(const std::map<string, int> &dict, const string &extension)
+        : ymod(year_mod::unused),
+        year(get_value(dict, "year")),
+        edition(get_value(dict, "edition")),
+        volume(get_value(dict, "volume")),
+        number(get_value(dict, "number")),
+        pages(get_value(dict, "pages")),
+        extension(extension) {}
 
-    int edition = empty,
-        volume  = empty,  /* no associated flag */
-        number  = empty,  /* no associated flag */
-        pages   = empty;  /* no associated flag */
+    const year_mod ymod;
+    const int year,
+              edition,
+              volume,  /* no associated flag */
+              number,  /* no associated flag */
+              pages;   /* no associated flag */
 
-    string format = "";
+    const string extension;
 
     /* Convenience container */
-    std::array<int, 6> store = {{
+    const std::array<int, 6> store = {{
         year, edition, volume, number, pages
     }};
+
+private:
+    static int parse_number(const cliparser &cli, const string &&opt);
+    static int get_value(const std::map<string, int> &dict, const string &&key);
+
+    /* Parse the year which may have a prefixed modifier. */
+    static const std::pair<year_mod, int> get_yearmod(const cliparser &cli);
+
+    explicit exacts_t(const std::pair<year_mod, int> &pair, const cliparser &cli)
+        : ymod(std::get<0>(pair)), year(std::get<1>(pair)),
+        edition(parse_number(cli, "edition")),
+        volume(parse_number(cli, "volume")),
+        number(parse_number(cli, "number")),
+        pages(parse_number(cli, "pages")),
+        extension(cli.get("extension")) {}
 };
 
 struct nonexacts_t {
     /* Holds strings, which are matched fuzzily. */
-    explicit nonexacts_t(const cliparser &cli);
-    explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
+    explicit nonexacts_t(const cliparser &cli)
+        : authors(cli.get_many("author")),
+        title(cli.get("title")),
+        series(cli.get("series")),
+        publisher(cli.get("publisher")),
+        journal(cli.get("journal")) {}
 
-    vector<string> authors;
-    string title;
-    string series;
-    string publisher;
-    string journal;
+    explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
+        : authors(authors),
+        title(get_value(dict, "title")),
+        series(get_value(dict, "series")),
+        publisher(get_value(dict, "publisher")),
+        journal(get_value(dict, "journal")) {}
+
+    const vector<string> authors;
+    const string title;
+    const string series;
+    const string publisher;
+    const string journal;
+
+private:
+    static const string get_value(const std::map<string, string> &dict, const string &&key);
 };
 
 struct misc_t {
-    /*
-     * The POD for everything else and undecided
-     * fields.
-     */
-    explicit misc_t(const vector<string> &uris);
-    explicit misc_t() {}; // cannot be initialized from cli options
+    /* Holds everything else. */
+    explicit misc_t(const vector<string> &uris, const vector<string> &isbns)
+        : uris(uris), isbns(isbns) {}
+    explicit misc_t() {} // cannot be initialized from cli options
 
-    vector<string> isbns;
-    vector<string> uris;
+    const vector<string> uris;
+    const vector<string> isbns;
 };
 
 class item {
@@ -105,7 +140,7 @@ public:
 
     const nonexacts_t nonexacts;
     const exacts_t exacts;
-    misc_t misc;
+    const misc_t misc;
 };
 
 /* ns bookwyrm */

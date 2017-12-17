@@ -248,7 +248,7 @@ void multiselect_menu::print_column(const size_t col_idx)
             items_[i].nonexacts.series,
             authors,
             items_[i].nonexacts.publisher,
-            items_[i].exacts.format
+            items_[i].exacts.extension
         }};
 
         /* Print the string, check if it was truncated. */
