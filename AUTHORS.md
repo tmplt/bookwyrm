@@ -9,7 +9,8 @@ or that they had a project of their own that provided some help/inspiration.
 * [fmtlib](https://github.com/fmtlib), for [fmt](https://github.com/fmtlib/fmt);
 * [Scott Meyers](http://www.aristeia.com), for *Effective Mordern C++*;
 * [pybind](https://github.com/pybind), for [pybind11](https://github.com/pybind/pybind11);
-* [nsf](https://github.com/nsf), for [termbox](https://github.com/nsf/termbox).
+* [nsf](https://github.com/nsf), for [termbox](https://github.com/nsf/termbox), and
+* [Sude-](https://github.com/Sude-) for [lgogdownloader](https://github.com/Sude-/lgogdownloader) — primarily its `downloader.cpp`.
 
 Direct authors
 ---
