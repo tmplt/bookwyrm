@@ -28,7 +28,7 @@
 namespace bookwyrm {
 
 /* Default value: "this value is empty". */
-enum { empty = -1 };
+constexpr int empty = -1;
 
 /*
  * For --year:
@@ -48,24 +48,24 @@ struct exacts_t {
     explicit exacts_t(const std::map<string, int> &dict, const string &extension)
         : ymod(year_mod::unused),
         year(get_value(dict, "year")),
-        edition(get_value(dict, "edition")),
         volume(get_value(dict, "volume")),
         number(get_value(dict, "number")),
         pages(get_value(dict, "pages")),
+        size(get_value(dict, "size")),
         extension(extension) {}
 
     const year_mod ymod;
     const int year,
-              edition,
               volume,  /* no associated flag */
               number,  /* no associated flag */
-              pages;   /* no associated flag */
+              pages,   /* no associated flag */
+              size;    /* in bytes; no associated flag */
 
     const string extension;
 
     /* Convenience container */
-    const std::array<int, 6> store = {{
-        year, edition, volume, number, pages
+    const std::array<int, 5> store = {{
+        year, volume, number, pages, year
     }};
 
 private:
@@ -77,10 +77,10 @@ private:
 
     explicit exacts_t(const std::pair<year_mod, int> &pair, const cliparser &cli)
         : ymod(std::get<0>(pair)), year(std::get<1>(pair)),
-        edition(parse_number(cli, "edition")),
         volume(parse_number(cli, "volume")),
         number(parse_number(cli, "number")),
-        pages(parse_number(cli, "pages")),
+        pages(empty),
+        size(empty),
         extension(cli.get("extension")) {}
 };
 
@@ -98,17 +98,27 @@ struct nonexacts_t {
         title(get_value(dict, "title")),
         series(get_value(dict, "series")),
         publisher(get_value(dict, "publisher")),
-        journal(get_value(dict, "journal")) {}
+        journal(get_value(dict, "journal")),
+        edition(get_value(dict, "edition")) {}
 
     const vector<string> authors;
     const string title;
     const string series;
     const string publisher;
     const string journal;
+    const string edition;
 
 private:
     static const string get_value(const std::map<string, string> &dict, const string &&key);
 };
+
+struct request {
+    /* Holds necessary data to download an item. */
+
+    /* some type enum? ´headers´ will only be used when the mirror is over HTTP. */
+    const string uri;
+    const std::map<string, string> headers;
+}
 
 struct misc_t {
     /* Holds everything else. */
