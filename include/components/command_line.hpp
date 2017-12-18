@@ -85,6 +85,8 @@ public:
     /* using cli_type = std::unique_ptr<parser>; */
     static parser make(const string &&scriptname, const groups &&groups);
 
+    // TODO: strip code for valid_groups? (We have no use for it).
+
     /* Construct the parser. */
     explicit parser(string &&synopsis, const groups &&groups)
         : synopsis_(forward<string>(synopsis)),

@@ -41,8 +41,7 @@ int main(int argc, char *argv[])
                                "Available prefixes are <, >, <=, >=.", "YEAR")
         ("-L", "--language",   "Specify text language",  "LANG")
         ("-e", "--edition",    "Specify item edition",   "EDITION")
-        ("-E", "--extension",  "Specify item extension", "EXT",
-            valid_opts{"epub", "pdf", "djvu"})
+        ("-E", "--extension",  "Specify item extension", "EXT")
         ("-i", "--isbn",       "Specify item ISBN", "ISBN");
 
     const auto misc = cligroup("Miscellaneous")
