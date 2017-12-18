@@ -5,7 +5,7 @@ import time
 def find(wanted, bookwyrm):
     # Changes to wanted are module-local
     # since the item is copied.
-    wanted.nonexacts.title = "new title"
+    # wanted.nonexacts.title = "new title"
 
     # Generate some dummy items
     for i in range(100):
@@ -28,14 +28,15 @@ def find(wanted, bookwyrm):
             'volume': i,
             'number': 30 + i,
             'pages': 500 + i,
-            }
+            },
+            'pdf'
         )
 
         misc = bw.misc_t([
             'http://localhost:8000/big',
             'http://localhost:8000/invalidurl.txt',
             'http://localhost:8000/helloworld.txt'
-        ])
+        ], ['isbn1', 'isbn2'])
 
         book = (nonexacts, exacts, misc)
         bookwyrm.feed(book)

@@ -26,6 +26,7 @@
 #include "components/command_line.hpp"
 
 // TODO: clean theese up and set everything in stone (don't store strings, file extensions, etc.).
+// and make everything const
 
 namespace bookwyrm {
 
@@ -40,74 +41,86 @@ enum { empty = -1 };
  *   -y >2157  : list items from later than 2157 (gt)
  *   -y <2157  : list items from earlier than 2157 (lt)
  */
-enum class year_mod { equal, eq_gt, eq_lt, lt, gt };
+enum class year_mod { equal, eq_gt, eq_lt, lt, gt, unused };
 
 struct exacts_t {
-    /*
-     * A POD with added index operator.
-     * Useful in item::matches() where we want to
-     * iterate over these values and check if they match.
-     *
-     * We can then get a field value by name, which we'll
-     * want when printing the stuff out.
-     *
-     * Fields are set to "empty" (-1) during construction.
-     * This makes us able to bool-check (since -1 is false)
-     * whether or not a field is empty or not.
-     */
-    explicit exacts_t(const cliparser &cli);
-    explicit exacts_t(const std::map<string, int> &dict);
+    /* Holds exact data about an item (year, page count, format, etc.). */
+    explicit exacts_t(const cliparser &cli)
+        : exacts_t{get_yearmod(cli), cli} {}
 
-    year_mod ymod;
-    int year = empty;
-    string year_str = "";
+    explicit exacts_t(const std::map<string, int> &dict, const string &extension)
+        : ymod(year_mod::unused),
+        year(get_value(dict, "year")),
+        edition(get_value(dict, "edition")),
+        volume(get_value(dict, "volume")),
+        number(get_value(dict, "number")),
+        pages(get_value(dict, "pages")),
+        extension(extension) {}
 
-    int edition = empty,
-        volume  = empty,  /* no associated flag */
-        number  = empty,  /* no associated flag */
-        pages   = empty;  /* no associated flag */
+    const year_mod ymod;
+    const int year,
+              edition,
+              volume,  /* no associated flag */
+              number,  /* no associated flag */
+              pages;   /* no associated flag */
 
-    string format = "fmt";
+    const string extension;
 
-    constexpr static int size = 6;
-    std::array<int, size> store = {{
+    /* Convenience container */
+    const std::array<int, 6> store = {{
         year, edition, volume, number, pages
     }};
 
-    int operator[](int i) const
-    {
-        return store[i];
-    }
+private:
+    static int parse_number(const cliparser &cli, const string &&opt);
+    static int get_value(const std::map<string, int> &dict, const string &&key);
+
+    /* Parse the year which may have a prefixed modifier. */
+    static const std::pair<year_mod, int> get_yearmod(const cliparser &cli);
+
+    explicit exacts_t(const std::pair<year_mod, int> &pair, const cliparser &cli)
+        : ymod(std::get<0>(pair)), year(std::get<1>(pair)),
+        edition(parse_number(cli, "edition")),
+        volume(parse_number(cli, "volume")),
+        number(parse_number(cli, "number")),
+        pages(parse_number(cli, "pages")),
+        extension(cli.get("extension")) {}
 };
 
 struct nonexacts_t {
-    /*
-     * As the typename suggests, this POD contains
-     * data that we're not going to match exacly match
-     * exactly with the wanted field. Instead, we use
-     * fuzzy-matching.
-     */
-    explicit nonexacts_t(const cliparser &cli);
-    explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors);
+    /* Holds strings, which are matched fuzzily. */
+    explicit nonexacts_t(const cliparser &cli)
+        : authors(cli.get_many("author")),
+        title(cli.get("title")),
+        series(cli.get("series")),
+        publisher(cli.get("publisher")),
+        journal(cli.get("journal")) {}
 
-    vector<string> authors;
-    string authors_str;
-    string title;
-    string series;
-    string publisher;
-    string journal;
+    explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
+        : authors(authors),
+        title(get_value(dict, "title")),
+        series(get_value(dict, "series")),
+        publisher(get_value(dict, "publisher")),
+        journal(get_value(dict, "journal")) {}
+
+    const vector<string> authors;
+    const string title;
+    const string series;
+    const string publisher;
+    const string journal;
+
+private:
+    static const string get_value(const std::map<string, string> &dict, const string &&key);
 };
 
 struct misc_t {
-    /*
-     * The POD for everything else and undecided
-     * fields.
-     */
-    explicit misc_t(const vector<string> &uris);
-    explicit misc_t() {}; // cannot be initialized from cli options
+    /* Holds everything else. */
+    explicit misc_t(const vector<string> &uris, const vector<string> &isbns)
+        : uris(uris), isbns(isbns) {}
+    explicit misc_t() {} // cannot be initialized from cli options
 
-    vector<string> isbns;
-    vector<string> uris;
+    const vector<string> uris;
+    const vector<string> isbns;
 };
 
 class item {
@@ -125,15 +138,9 @@ public:
      */
     bool matches(const item &wanted) const;
 
-    friend std::ostream& operator<<(std::ostream &os, item const &i)
-    {
-        os << "test printout: " + i.nonexacts.series;
-        return os;
-    }
-
     const nonexacts_t nonexacts;
     const exacts_t exacts;
-    misc_t misc;
+    const misc_t misc;
 };
 
 /* ns bookwyrm */

@@ -240,13 +240,15 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
+        const string authors = utils::vector_to_string(items_[i].nonexacts.authors);
+        const string year = std::to_string(items_[i].exacts.year);
         const std::array<std::reference_wrapper<const string>, 6> strings = {{
             items_[i].nonexacts.title,
-            items_[i].exacts.year_str,
+            year,
             items_[i].nonexacts.series,
-            items_[i].nonexacts.authors_str,
+            authors,
             items_[i].nonexacts.publisher,
-            items_[i].exacts.format
+            items_[i].exacts.extension
         }};
 
         /* Print the string, check if it was truncated. */
