@@ -85,8 +85,12 @@ fs::path downloader::generate_filename(const bookwyrm::item &item)
             utils::vector_to_string(item.nonexacts.authors),
             item.nonexacts.title, item.exacts.year);
 
+    const auto valid_candidate = [](fs::path p) {
+        return !fs::exists(p);
+    };
+
     /* If filename.ext doesn't exists, we use that. */
-    if (auto candidate = base; !fs::exists(candidate.concat("." + item.exacts.extension)))
+    if (auto candidate = base; valid_candidate(candidate.concat("." + item.exacts.extension)))
         return candidate;
 
     /*
@@ -107,7 +111,7 @@ fs::path downloader::generate_filename(const bookwyrm::item &item)
     do {
         candidate = base;
         candidate.concat(fmt::format(".{}.{}", ++i, item.exacts.extension));
-    } while (fs::exists(candidate));
+    } while (!valid_candidate(candidate));
 
     return candidate;
 }
@@ -135,7 +139,11 @@ bool downloader::sync_download(vector<bookwyrm::item> items)
             if (CURLcode res = curl_easy_perform(curl); res != CURLE_OK) {
                 fmt::print(stderr, "{}error: item download (mirror {}) failed: {} (CURLcode = {})\n",
                         rune::vt100::erase_line, mirror++, curl_easy_strerror(res), res);
+
                 std::fclose(out);
+                if (fs::file_size(filename) == 0)
+                    fs::remove(filename);
+
             } else {
                 std::fclose(out);
                 any_success = success = true;
