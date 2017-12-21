@@ -132,9 +132,9 @@ bool downloader::sync_download(vector<bookwyrm::item> items)
             }
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, out);
 
-            if (auto res = curl_easy_perform(curl); res != CURLE_OK) {
-                fmt::print(stderr, "{}error: item download (mirror {}) failed: {}\n",
-                        rune::vt100::erase_line, mirror++, curl_easy_strerror(res));
+            if (CURLcode res = curl_easy_perform(curl); res != CURLE_OK) {
+                fmt::print(stderr, "{}error: item download (mirror {}) failed: {} (CURLcode = {})\n",
+                        rune::vt100::erase_line, mirror++, curl_easy_strerror(res), res);
                 std::fclose(out);
             } else {
                 std::fclose(out);
