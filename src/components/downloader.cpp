@@ -81,12 +81,12 @@ downloader::~downloader()
 
 fs::path downloader::generate_filename(const bookwyrm::item &item)
 {
-    const fs::path base = dldir / fmt::format("{} - {} ({}).",
+    const fs::path base = dldir / fmt::format("{} - {} ({})",
             utils::vector_to_string(item.nonexacts.authors),
             item.nonexacts.title, item.exacts.year);
 
     /* If filename.ext doesn't exists, we use that. */
-    if (auto candidate = base; !fs::exists(candidate.concat(item.exacts.extension)))
+    if (auto candidate = base; !fs::exists(candidate.concat("." + item.exacts.extension)))
         return candidate;
 
     /*
