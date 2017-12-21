@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
         auto success = d.sync_download(wanted_items);
 
-        if (!success) {
+        if (!success && wanted_items.size() > 1) {
             fmt::print("No items were successfully downloaded\n");
             return EXIT_FAILURE;
         }
