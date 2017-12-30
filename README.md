@@ -31,7 +31,7 @@ All libraries that do not use a bold font are non-essential and may be subject t
 bookwyrm is still in the early development stage, so nothing is set in stone. A v1.0.0 release is planned for early Q1 2018.
 
 If you have any insights, questions, or wish to contribute,
-create a PR/issue on GitHub at <https://github.com/Tmplt/bookwyrm>.
+create a PR/issue on GitLab at <https://gitlab.com/Tmplt/bookwyrm> or Github at <https://github.com/Tmplt/bookwyrm>.
 You can also contact me via email at `echo "dG1wbHRAZHJhZ29ucy5yb2Nrcwo=" | base64 -d`.
 
 bookwyrm is licensed under the GPLv3+.

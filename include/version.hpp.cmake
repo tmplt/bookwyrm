@@ -36,7 +36,7 @@ constexpr auto print_build_info = []() {
               << PROG_NAME << " is licensed under the GPLv3+ license, "
               << "see <http://www.gnu.org/licenses/gpl.html>.\n"
               << "This if free software: you are free to change and redistribute it.\n\n"
-              << "Written by Tmplt and others, see <https://github.com/Tmplt/bookwyrm/blob/master/AUTHORS.md>."
+              << "Written by Tmplt and others, see <https://gitlab.com/Tmplt/bookwyrm/blob/master/AUTHORS.md>."
               << std::endl;
 };
 
