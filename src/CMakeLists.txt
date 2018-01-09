@@ -15,21 +15,20 @@
 
 set(SOURCE
     ${SOURCE}
-    main.cpp
-    item.cpp
-    utils.cpp
-    keys.cpp
-    components/logger.cpp
-    components/command_line.cpp
-    components/script_butler.cpp
-    components/screen_butler.cpp
-    components/downloader.cpp
-    screens/base.cpp
-    screens/multiselect_menu.cpp
-    screens/item_details.cpp
-    screens/log.cpp
+    ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/item.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils.cpp
+    ${CMAKE_SOURCE_DIR}/src/keys.cpp
+    ${CMAKE_SOURCE_DIR}/src/components/logger.cpp
+    ${CMAKE_SOURCE_DIR}/src/components/command_line.cpp
+    ${CMAKE_SOURCE_DIR}/src/components/script_butler.cpp
+    ${CMAKE_SOURCE_DIR}/src/components/screen_butler.cpp
+    ${CMAKE_SOURCE_DIR}/src/components/downloader.cpp
+    ${CMAKE_SOURCE_DIR}/src/screens/base.cpp
+    ${CMAKE_SOURCE_DIR}/src/screens/multiselect_menu.cpp
+    ${CMAKE_SOURCE_DIR}/src/screens/item_details.cpp
+    ${CMAKE_SOURCE_DIR}/src/screens/log.cpp
 )
-
 
 # Include-order matters; if there is a header clash, the project-local headers are used.
 set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
