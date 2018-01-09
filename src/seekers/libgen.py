@@ -32,7 +32,6 @@ import isbnlib
 DOMAINS = ('libgen.io', 'gen.lib.rus.ec')
 
 # TODO list:
-#   - fix mirrors for LibGen
 #   - parse and process Scimag
 #   - parse and process Russian fiction
 #   - parse and process comics
@@ -305,12 +304,52 @@ def process_libgen(table):
                 return [isbn for isbn in font.text.split(', ') if valid_isbn(isbn)]
 
         def extract_mirrors():
-            libgenio, libgenpw, bookfi, b-ok = mirrors
+            libgenio, libgenpw, bookfi, bok = mirrors
             # first two are A-okay.
-            # Both Bookfi  and b-ok requires the referer to be the previous page.
+            # Both Bookfi  and bok requires the referer to be the previous page.
+            # TODO: process bookfi and B-Ok?
 
-        # TODO: these mirrors must be processed!
-        misc = bw.misc_t([mirror.a['href'] for mirror in mirrors], extract_isbns() or [])
+            libgenio = libgenio.a['href']
+            libgenpw = libgenpw.a['href']
+
+            try:  # libgen.io
+                # Final URL contains same md5-hash, but an additional key parameter is
+                # required (16 chars, alphanumeric, uppercase). Seems to be generated on
+                # the fly. Or can it be solved for somehow?
+                r = requests.get(libgenio)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                # -2 here, but -1 on foreignfiction
+                final = soup.table.find_all('td')[-2].a['href']
+                urls.append(final)
+            except:
+                pass
+
+            try:  # libgen.pw
+                # Final URL contains another hash, which is always the same: the two hashes are
+                # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
+                # at CRC-96).
+                r = requests.get(libgenpw)
+                soup = BeautifulSoup(r.text, 'html.parser')
+
+                # Additionally, we can also get the file size from here.
+                # But a side-effect would be real ugly. Is there a decent
+                # way to extract this outside of "extract_mirrors"?
+                #    Alternatively, the file size is also available in the main
+                # view on the gen.lib.rus.ec domain.
+                #params = soup.find('table', {'class':'book-item__params'})
+                #entry = params.find_all('tr')[1].find_all('td')[-1]
+                #size = translate_size(entry.text)
+
+                # We can skip a third request by getting the libgen.pw's hash and
+                # craft the final URL.
+                hsh = soup.find('div', {'class':'book-info__download'}).a['href'].split('/')[-1]
+                # Yes, the exclusion of the subdomain matters! (fuck)
+                final = 'https://libgen.pw/download/book/' + hsh
+                urls.append(final)
+            except:
+                pass
+
+        misc = bw.misc_t(extract_mirrors(), extract_isbns() or [])
         return (nonexacts, exacts, misc)
 
     # The first row is the column headers, so we skip it.
@@ -429,7 +468,7 @@ if __name__ == "__main__":
 
     item = bw.item((nonexacts, bw.exacts_t({},''), bw.misc_t([],[])))
     queries = build_queries(item)
-    books = []
+    # books = []
     domain = DOMAINS[0]
 
     for query in queries:
@@ -446,11 +485,14 @@ if __name__ == "__main__":
                     print("next table")
 
                     if path == '/search.php':
-                        books += process_libgen(table)
+                        books = process_libgen(table)
                     elif path == '/foreignfiction/index.php':
-                        books += process_ffiction(table)
+                        books = process_ffiction(table)
                     else:
                         print("unknown path")
+
+                    for book in books:
+                        print(books)
             except requests.exceptions.ConnectionError:
                 print("error: connection error")
                 continue
@@ -461,6 +503,6 @@ if __name__ == "__main__":
             # That domain worked; do the next query.
             break
 
-    print('I found', len(books), 'books')
-    for book in books:
-        print(book)
+    # print('I found', len(books), 'books')
+    # for book in books:
+    #     print(book)
