@@ -132,7 +132,7 @@ void script_butler::async_search(vector<py::module> &seekers)
 void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t, bookwyrm::misc_t> item_comps)
 {
     bookwyrm::item item(item_comps);
-    if (!item.matches(wanted_))
+    if (!item.matches(wanted_) || item.misc.uris.size() == 0)
         return;
 
     std::lock_guard<std::mutex> guard(items_mutex_);

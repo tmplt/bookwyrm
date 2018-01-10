@@ -287,7 +287,7 @@ class LibgenSeeker(object):
             try:
                 table = extract_table[str(f.path)](soup)
             except KeyError:
-                log(Loglevel.warn, 'cannot extract from "%s"; ignoring...' % f.path)
+                self.log(Loglevel.warn, 'cannot extract from "%s"; ignoring...' % f.path)
 
             # Have we gone through all pages?
             if f.path == '/search.php' and r.text == last_request:
