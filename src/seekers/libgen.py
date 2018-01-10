@@ -98,7 +98,7 @@ class LibgenSeeker(object):
                 Loglevel.error: bw.loglevel.error
             }
 
-            bookwyrm.log(to_bwloglvl[level], 'from ' + __file__ + ': ' + msg)
+            self.bookwyrm.log(to_bwloglvl[level], 'from ' + __file__ + ': ' + msg)
         else:
             print(msg)
 
@@ -107,6 +107,12 @@ class LibgenSeeker(object):
             self.bookwyrm.feed(item)
         else:
             print(item)
+
+    def request(self, *args, **kwargs):
+        if self.bookwyrm and self.bookwyrm.terminating():
+            raise GeneratorExit
+
+        return requests.get(*args, **kwargs)
 
     def search(self):
         global DOMAINS
@@ -135,8 +141,8 @@ class LibgenSeeker(object):
                     with open(temp_file, 'w') as fd:
                         fd.write(e.soup.prettify())
 
-                    self.log(Loglevel.error, 'unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' +
-                             '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % (f.url, temp_file))
+                    self.log(Loglevel.error, 'unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
+                             '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % temp_file)
                     continue
 
                 # That domain worked; do the next query.
@@ -271,7 +277,7 @@ class LibgenSeeker(object):
         while True:
             f.set({'page': p}).add(query_params)
 
-            r = requests.get(f.url)
+            r = self.request(f.url)
             if r.status_code != requests.codes.ok:
                 # TODO: Log failure to bookwyrm?
                 # Or log after taking exception?
@@ -387,7 +393,7 @@ class LibgenSeeker(object):
                 # Final URL contains same md5-hash, but an additional key parameter is
                 # required (16 chars, alphanumeric, uppercase). Seems to be generated on
                 # the fly. Or can it be solved for somehow?
-                r = requests.get(libgenio)
+                r = self.request(libgenio)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 # -2 here, but -1 on foreignfiction
                 final = soup.table.find_all('td')[-2].a['href']
@@ -398,7 +404,7 @@ class LibgenSeeker(object):
                 # Final URL contains another hash, which is always the same: the two hashes are
                 # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
                 # at CRC-96).
-                r = requests.get(libgenpw)
+                r = self.request(libgenpw)
                 soup = BeautifulSoup(r.text, 'html.parser')
 
                 # We can skip a third request by getting the libgen.pw's hash and
@@ -472,7 +478,7 @@ class LibgenSeeker(object):
                 # Final URL contains same md5-hash, but an additional key parameter is
                 # required (16 chars, alphanumeric, uppercase). Seems to be generated on
                 # the fly. Or can it be solved for somehow?
-                r = requests.get(io)
+                r = self.request(io)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 final = soup.table.find_all('td')[-1].a['href']
                 urls.append(final)
@@ -482,7 +488,7 @@ class LibgenSeeker(object):
                 # Final URL contains another hash, which is always the same: the two hashes are
                 # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
                 # at CRC-96).
-                r = requests.get(pw)
+                r = self.request(pw)
                 soup = BeautifulSoup(r.text, 'html.parser')
 
                 # We can skip a third request by getting the libgen.pw's hash and

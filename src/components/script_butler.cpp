@@ -119,8 +119,11 @@ void script_butler::async_search(vector<py::module> &seekers)
             try {
                 m.attr("find")(wanted, bw_instance);
             } catch (const py::error_already_set &err) {
-                bw_instance->logger_->error("module '{}' did something wrong:\n{}\n; ignoring...",
-                    m.attr("__name__").cast<string>(), err.what());
+                if (!err.matches(PyExc_GeneratorExit)) {
+                    /* Module terminated abnormally. */
+                    bw_instance->logger_->error("module '{}' did something wrong: {}; ignoring...",
+                        m.attr("__name__").cast<string>(), err.what());
+                }
             }
         });
     }
