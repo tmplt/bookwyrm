@@ -30,6 +30,15 @@ All libraries that do not use a bold font are non-essential and may be subject t
 
 bookwyrm is still in the early development stage, so nothing is set in stone. A v1.0.0 release is planned for early Q1 2018.
 
+---
+
+Food for thought: the most important part of bookwyrm is her backend, which runs all the plugins.
+In the future, bookwyrm will probably be just that; an API will be written so that it should be easy to just add some interface.
+It is a very small subset of people that want easier access to books that work in terminals.
+Some day, we'll probably have a website for this.
+
+---
+
 If you have any insights, questions, or wish to contribute,
 create a PR/issue on GitLab at <https://gitlab.com/Tmplt/bookwyrm> or Github at <https://github.com/Tmplt/bookwyrm>.
 You can also contact me via email at `echo "dG1wbHRAZHJhZ29ucy5yb2Nrcwo=" | base64 -d`.
