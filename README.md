@@ -10,7 +10,7 @@ A screen holding logs from worker threads is available by pressing TAB. All unre
 
 For example, one might run bookwyrm as follows:
 
-    bookwyrm --author "Naomi Novik" --series Temeraire --year >=2015
+    bookwyrm --author "Naomi Novik" --series Temeraire --year >=2015 .
 
 Here is an (outdated) video of bookwyrm in action:
 [![asciicast](https://asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD.png)](https://asciinema.org/a/9kRtmSvVupD6PsUdtBKQ3vZaD)
@@ -35,3 +35,12 @@ create a PR/issue on GitLab at <https://gitlab.com/Tmplt/bookwyrm> or Github at 
 You can also contact me via email at `echo "dG1wbHRAZHJhZ29ucy5yb2Nrcwo=" | base64 -d`.
 
 bookwyrm is licensed under the GPLv3+.
+
+Building instructions
+---
+```
+$ git submodule update --init --recursive
+$ mkdir build && cd build
+$ cmake .. && make
+$ src/bookwyrm OPTION [OPTION]... PATH
+```
