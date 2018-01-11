@@ -288,6 +288,7 @@ class LibgenSeeker(object):
                 table = extract_table[str(f.path)](soup)
             except KeyError:
                 self.log(Loglevel.warn, 'cannot extract from "%s"; ignoring...' % f.path)
+                raise NotImplementedError("only parsing for LibGen and ffiction currently supported.")
 
             # Have we gone through all pages?
             if f.path == '/search.php' and r.text == last_request:
