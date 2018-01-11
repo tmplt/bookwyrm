@@ -105,8 +105,6 @@ int main(int argc, char *argv[])
 
         logger->debug("the mighty eldwyrm hath been summoned!");
 
-        py::scoped_interpreter interp;
-
         /*
          * Find and load all worker scripts.
          * During run-time, the butler will match each found item

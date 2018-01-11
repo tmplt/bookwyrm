@@ -49,7 +49,7 @@ class screen_butler;
  * what is wanted will be pushed back into the items_ vector, and
  * thus presented to the user.
  */
-class script_butler {
+class __attribute__ ((visibility("hidden"))) script_butler {
 public:
     explicit script_butler(const bookwyrm::item &&wanted, logger_t logger);
 
@@ -93,6 +93,8 @@ public:
     }
 
 private:
+    py::scoped_interpreter interp;
+
     logger_t logger_;
     const bookwyrm::item wanted_;
 
