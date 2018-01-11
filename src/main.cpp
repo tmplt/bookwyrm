@@ -85,14 +85,16 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (const auto err = utils::validate_download_dir(cli.get(0)); err) {
+    const string dl_path = cli.has(0) ? cli.get(0) : ".";
+
+    if (const auto err = utils::validate_download_dir(dl_path); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
         fmt::print(stderr, "error: invalid download directory: {}.\n", msg);
         return EXIT_FAILURE;
     }
 
-    bookwyrm::downloader d(cli.get(0));
+    bookwyrm::downloader d(dl_path);
     vector<bookwyrm::item> wanted_items;
 
     try {

@@ -53,7 +53,7 @@ enum { /* magic padding numbers */
 cliparser cliparser::make(const string &&progname, const groups &&groups)
 {
     return cliparser(
-        "Usage: " + progname + " OPTION [OPTION]... PATH",
+        "Usage: " + progname + " OPTION [OPTION]... [PATH]",
         std::forward<decltype(groups)>(groups)
     );
 }
@@ -197,11 +197,8 @@ void cliparser::validate_arguments() const
     if (!has("ident") && !main_opt_passed)
         throw argument_error("at least one main argument must be specified");
 
-    if (!has(0))
-        throw argument_error("you must specify a download path");
-
     if (has(1))
-        throw argument_error("only one positional argument is allowed");
+        throw argument_error("only one positional argument (the download path) is allowed");
 }
 
 bool cliparser::parse_pair(const string_view &input, const string_view &input_next)
