@@ -8,7 +8,7 @@ or that they had a project of their own that provided some help/inspiration.
 * [gabime](https://github.com/gabime), for [spdlog](https://github.com/gabime/spdlog);
 * [fmtlib](https://github.com/fmtlib), for [fmt](https://github.com/fmtlib/fmt);
 * [Scott Meyers](http://www.aristeia.com), for *Effective Mordern C++*;
-* [pybind](https://github.com/pybind), for [pybind11](https://github.com/pybind/pybind11);
+* [pybind](https://github.com/pybind), for [pybind11](https://github.com/pybind/pybind11) and all the help given on its Gitter chat;
 * [nsf](https://github.com/nsf), for [termbox](https://github.com/nsf/termbox), and
 * [Sude-](https://github.com/Sude-) for [lgogdownloader](https://github.com/Sude-/lgogdownloader) — primarily its `downloader.cpp`.
 

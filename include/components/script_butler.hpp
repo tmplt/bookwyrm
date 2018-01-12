@@ -76,11 +76,6 @@ public:
 
     void log_entry(spdlog::level::level_enum lvl, string msg);
 
-    bool is_destructing() const
-    {
-        return destructing_.load();
-    }
-
     vector<bookwyrm::item>& results()
     {
         return items_;
@@ -92,13 +87,16 @@ public:
         screen_butler_ = screen;
     }
 
+    void unset_screen_butler()
+    {
+        screen_butler_.reset();
+    }
+
 private:
     py::scoped_interpreter interp;
 
     logger_t logger_;
     const bookwyrm::item wanted_;
-
-    std::atomic<bool> destructing_ = false;
 
     /* Somewhere to store our found items. */
     vector<bookwyrm::item> items_;
@@ -110,7 +108,7 @@ private:
     vector<std::thread> threads_;
 
     /* Which screens do we want to notify about updates? */
-    std::shared_ptr<screen_butler> screen_butler_;
+    std::weak_ptr<screen_butler> screen_butler_;
 };
 
 /* ns butler */

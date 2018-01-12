@@ -114,6 +114,5 @@ PYBIND11_MODULE(pybookwyrm, m)
 
     py::class_<butler::script_butler>(m, "bookwyrm")
         .def("feed",        &butler::script_butler::add_item)
-        .def("terminating", &butler::script_butler::is_destructing)
         .def("log",         &butler::script_butler::log_entry);
 }

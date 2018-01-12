@@ -96,17 +96,10 @@ vector<pybind11::module> script_butler::load_seekers()
 
 script_butler::~script_butler()
 {
-    /*
-     * If we want to terminate the program, we need to join the threads.
-     * And if we want to join the threads, the Python scripts must stop (e.g. return).
-     * Since C++ offers no way to terminate an std::thread before it's done, we
-     * signal the Python scripts that they should return here.
-     */
-    destructing_ = true;
     py::gil_scoped_release nogil;
 
     for (auto &t : threads_)
-        t.join();
+        t.detach();
 }
 
 void script_butler::async_search(vector<py::module> &seekers)
@@ -138,7 +131,11 @@ void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_
     std::lock_guard<std::mutex> guard(items_mutex_);
 
     items_.push_back(item);
-    screen_butler_->repaint_screens();
+
+    if (!screen_butler_.expired()) {
+        const auto screen = screen_butler_.lock();
+        screen->repaint_screens();
+    }
 }
 
 void script_butler::log_entry(spdlog::level::level_enum lvl, string msg)

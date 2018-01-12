@@ -107,14 +107,14 @@ int main(int argc, char *argv[])
 
         logger->debug("the mighty eldwyrm hath been summoned!");
 
+        const bookwyrm::item wanted(cli);
+        auto butler = butler::script_butler(std::move(wanted), logger);
+
         /*
          * Find and load all worker scripts.
          * During run-time, the butler will match each found item
          * with the wanted one. If it doesn't match, it is discarded.
          */
-        const bookwyrm::item wanted(cli);
-        auto butler = butler::script_butler(std::move(wanted), logger);
-
         auto seekers = butler.load_seekers();
         auto tui = tui::make_with(butler, seekers, logger);
 
@@ -128,6 +128,8 @@ int main(int argc, char *argv[])
             /* d.async_download(tui->get_wanted_items()); */
             wanted_items = tui->get_wanted_items();
         }
+
+        butler.unset_screen_butler();
 
     } catch (const component_error &err) {
         fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());
