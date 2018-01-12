@@ -17,11 +17,12 @@
 
 #include <termbox.h>
 
-#include "components/screen_butler.hpp"
+#include "screen_butler.hpp"
+#include "utils.hpp"
 
 namespace butler {
 
-screen_butler::screen_butler(vector<bookwyrm::item> &items, logger_t logger)
+screen_butler::screen_butler(vector<core::item> &items, logger_t logger)
     : items_(items), logger_(logger), viewing_details_(false)
 {
     /* Create the log screen. */
@@ -30,6 +31,40 @@ screen_butler::screen_butler(vector<bookwyrm::item> &items, logger_t logger)
     /* And create the default menu screen and focus on it. */
     index_ = std::make_shared<screen::multiselect_menu>(items_);
     focused_ = index_;
+}
+
+void screen_butler::log(const core::log_level level, const string message)
+{
+    using spdlvl = spdlog::level::level_enum;
+    using belvl  = core::log_level;
+
+    /* Can we perhaps construct a spdlvl with the underlying int from level? */
+    spdlvl frontend_lvl;
+
+    switch (level) {
+        case belvl::trace:
+            frontend_lvl = spdlvl::trace;
+            break;
+        case belvl::debug:
+            frontend_lvl = spdlvl::debug;
+            break;
+        case belvl::info:
+            frontend_lvl = spdlvl::info;
+            break;
+        case belvl::warn:
+            frontend_lvl = spdlvl::warn;
+            break;
+        case belvl::err:
+            frontend_lvl = spdlvl::err;
+            break;
+        case belvl::critical:
+            frontend_lvl = spdlvl::critical;
+            break;
+        case belvl::off:
+            frontend_lvl = spdlvl::off;
+    }
+
+    logger_->log(frontend_lvl, message);
 }
 
 void screen_butler::repaint_screens()
@@ -115,9 +150,9 @@ bool screen_butler::display()
     throw program_error("unable to poll input");
 }
 
-vector<bookwyrm::item> screen_butler::get_wanted_items()
+vector<core::item> screen_butler::get_wanted_items()
 {
-    vector<bookwyrm::item> items;
+    vector<core::item> items;
 
     for (int idx : index_->marked_items())
         items.push_back(items_[idx]);
@@ -224,12 +259,13 @@ void screen_butler::wprintcont(int x, const int y, const string_view &str, const
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &seekers, logger_t &logger)
+std::shared_ptr<butler::screen_butler> make_with(core::plugin_handler &plugin_handler, logger_t &logger)
 {
-    auto tui = std::make_shared<butler::screen_butler>(script_butler.results(), logger);
-    script_butler.set_frontend(tui);
+    plugin_handler.load_plugins();
+    auto tui = std::make_shared<butler::screen_butler>(plugin_handler.results(), logger);
+    plugin_handler.set_frontend(tui);
     logger->set_screen_butler(tui);
-    script_butler.async_search(seekers);
+    plugin_handler.async_search();
     return tui;
 }
 

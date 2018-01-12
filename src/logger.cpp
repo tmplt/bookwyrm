@@ -22,7 +22,7 @@
 #include <spdlog/common.h>
 #include <spdlog/details/log_msg.h>
 
-#include "components/logger.hpp"
+#include "logger.hpp"
 
 namespace logger {
 
@@ -33,7 +33,7 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
     if (const auto &fmt = msg.formatted.str(); screen_butler_.expired()) {
         buffer_.emplace_back(msg.level, fmt);
     } else if (const auto screen = screen_butler_.lock(); screen->is_log_focused()) {
-        screen->log_entry(msg.level, fmt);
+        screen->log(msg.level, fmt);
     } else {
         buffer_.emplace_back(msg.level, fmt);
 
@@ -59,7 +59,7 @@ void bookwyrm_sink::flush_to_screen()
     const auto screen = screen_butler_.lock();
 
     for (const auto& [lvl, fmt] : buffer_)
-        screen->log_entry(lvl, fmt);
+        screen->log(lvl, fmt);
 
     buffer_.clear();
 }

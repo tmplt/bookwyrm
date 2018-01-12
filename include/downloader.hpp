@@ -52,7 +52,7 @@ public:
      * Downloads the given items in a blocking, synchronous order.
      * Returns true if at least one item was downloaded.
      */
-    bool sync_download(vector<bookwyrm::item> items);
+    bool sync_download(vector<core::item> items);
 
     time::timer timer;
     progressbar pbar;
@@ -61,7 +61,7 @@ private:
     static int progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
     /* Generates a relative filename in dldir to save the given item. */
-    fs::path generate_filename(const bookwyrm::item &item);
+    fs::path generate_filename(const core::item &item);
 
     const fs::path dldir;
     CURL *curl;

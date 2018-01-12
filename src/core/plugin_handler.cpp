@@ -18,48 +18,46 @@
 #include <system_error>
 #include <cerrno>
 #include <cstdlib>
-
 #include <array>
 #include <experimental/filesystem>
 
+#include <fmt/format.h>
+
 #include "utils.hpp"
 #include "python.hpp"
-#include "components/script_butler.hpp"
+#include "plugin_handler.hpp"
 
 namespace fs = std::experimental::filesystem;
 
-namespace butler {
+namespace core {
 
-script_butler::script_butler(const bookwyrm::item &&wanted, logger_t logger)
-    : logger_(logger), wanted_(wanted) {}
-
-vector<pybind11::module> script_butler::load_seekers()
+void plugin_handler::load_plugins()
 {
-    vector<fs::path> seeker_paths;
+    vector<fs::path> plugin_paths;
 #ifdef DEBUG
     /* Bookwyrm must be run from build/ in DEBUG mode. */
-    seeker_paths = { fs::canonical(fs::path("../src/seekers")) };
+    plugin_paths = { fs::canonical(fs::path("../src/core/plugins")) };
 #else
-    /* TODO: look through /etc/bookwyrm/seekers/ also. */
+    /* TODO: look through /etc/bookwyrm/plugins/ also. */
     if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty())
-        seeker_paths.push_back(conf / "bookwyrm/seekers");
+        plugin_paths.push_back(conf / "bookwyrm/plugins");
     else if (fs::path home = std::getenv("HOME"); !home.empty())
-        seeker_paths.push_back(home / ".config/bookwyrm/seekers");
+        plugin_paths.push_back(home / ".config/bookwyrm/plugins");
     else
-        logger_->error("couldn't find any seeker script directories.");
+        log(log_level::err, "couldn't find any plugin directories.");
 #endif
 
     /*
-     * Append the seeker paths to Python's sys.path,
+     * Append the plugin paths to Python's sys.path,
      * allowing them to be imported.
      */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
-    for (auto &p : seeker_paths)
+    for (auto &p : plugin_paths)
         sys_path.append(p.string().c_str());
 
     /*
      * Find all Python modules and populate the
-     * list of seekers by loading them.
+     * list of plugins by loading them.
      *
      * The first occurance of a module will be imported,
      * the latter ones will be ignored by Python. So we
@@ -67,64 +65,65 @@ vector<pybind11::module> script_butler::load_seekers()
      * make sure that we don't clash with the many module
      * names in Python.
      */
-    vector<py::module> seekers;
-    for (const auto &seeker_path : seeker_paths) {
-        for (const fs::path &p : fs::directory_iterator(seeker_path)) {
+    vector<py::module> plugins;
+    for (const auto &plugin_path : plugin_paths) {
+        for (const fs::path &p : fs::directory_iterator(plugin_path)) {
             if (p.extension() != ".py") continue;
 
             if (!utils::readable_file(p)) {
-                logger_->error("can't load module '{}': not a regular file or unreadable"
-                        "; ignoring...", p.string());
+                log(log_level::err, fmt::format("can't load module '{}': not a regular file or unreadable"
+                        "; ignoring...", p.string()));
                 continue;
             }
 
             try {
                 string module = p.stem();
-                logger_->debug("loading module '{}'...", module);
-                seekers.emplace_back(py::module::import(module.c_str()));
+                log(log_level::debug, fmt::format("loading module '{}'...", module));
+                plugins.emplace_back(py::module::import(module.c_str()));
             } catch (const py::error_already_set &err) {
-                logger_->error("{}; ignoring...", err.what());
+                log(log_level::err, fmt::format("{}; ignoring...", err.what()));
             }
         }
     }
 
-    if (seekers.empty())
-        throw program_error("couldn't find any valid seeker scripts");
+    if (plugins.empty())
+        throw std::runtime_error("couldn't find any valid plugin scripts");
 
-    return seekers;
+    plugins_ = plugins;
 }
 
-script_butler::~script_butler()
+plugin_handler::~plugin_handler()
 {
-    py::gil_scoped_release nogil;
-
     for (auto &t : threads_)
         t.detach();
 }
 
-void script_butler::async_search(vector<py::module> &seekers)
+void plugin_handler::async_search()
 {
-    for (const auto &m : seekers) {
-        threads_.emplace_back([&m, wanted = wanted_, bw_instance = this]() {
+    for (const auto &m : plugins_) {
+        threads_.emplace_back([&m, wanted = wanted_, instance = this]() {
             /* Required whenever we need to run anything Python. */
             py::gil_scoped_acquire gil;
 
             try {
-                m.attr("find")(wanted, bw_instance);
+                m.attr("find")(wanted, instance);
             } catch (const py::error_already_set &err) {
-                if (!err.matches(PyExc_GeneratorExit)) {
-                    /* Module terminated abnormally. */
-                    bw_instance->logger_->error("module '{}' did something wrong: {}; ignoring...",
-                        m.attr("__name__").cast<string>(), err.what());
-                }
+                instance->log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
+                    m.attr("__name__").cast<string>(), err.what()));
             }
         });
     }
+
+    /*
+     * We have called all Python code we need to from here,
+     * so we release the GIL and let the modules do their job.
+     */
+    this->nogil = std::make_unique<py::gil_scoped_release>();
 }
 
-void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_t, bookwyrm::misc_t> item_comps)
+void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
 {
-    bookwyrm::item item(item_comps);
+    item item(item_comps);
     if (!item.matches(wanted_) || item.misc.uris.size() == 0)
         return;
 
@@ -132,15 +131,18 @@ void script_butler::add_item(std::tuple<bookwyrm::nonexacts_t, bookwyrm::exacts_
 
     items_.push_back(item);
 
-    if (!screen_butler_.expired()) {
-        const auto screen = screen_butler_.lock();
-        screen->repaint_screens();
+    if (!frontend_.expired()) {
+        const auto fe = frontend_.lock();
+        fe->update();
     }
 }
 
-void script_butler::log_entry(spdlog::level::level_enum lvl, string msg)
+void plugin_handler::log(log_level lvl, string msg)
 {
-    logger_->log(lvl, msg);
+    if (!frontend_.expired()) {
+        const auto fe = frontend_.lock();
+        fe->log(lvl, msg);
+    }
 }
 
 /* ns butler */

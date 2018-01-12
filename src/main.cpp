@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "item.hpp"
+#include "core/plugin_handler.hpp"
+#include "core/item.hpp"
 #include "utils.hpp"
 #include "version.hpp"
-#include "python.hpp"
-#include "components/command_line.hpp"
-#include "components/script_butler.hpp"
-#include "components/screen_butler.hpp"
-#include "components/downloader.hpp"
+#include "command_line.hpp"
+#include "screen_butler.hpp"
+#include "downloader.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -95,10 +94,11 @@ int main(int argc, char *argv[])
     }
 
     bookwyrm::downloader d(dl_path);
-    vector<bookwyrm::item> wanted_items;
+    vector<core::item> wanted_items;
 
     try {
         auto logger = logger::create("main");
+        // TODO: why are these not adhered?
         logger->set_pattern("%l: %v");
         logger->set_level(spdlog::level::warn);
 
@@ -107,22 +107,19 @@ int main(int argc, char *argv[])
 
         logger->debug("the mighty eldwyrm hath been summoned!");
 
-        const bookwyrm::item wanted(cli);
-        auto butler = butler::script_butler(std::move(wanted), logger);
+        const core::item wanted = utils::create_item(cli);
+        auto butler = core::plugin_handler(std::move(wanted));
 
         /*
          * Find and load all worker scripts.
          * During run-time, the butler will match each found item
          * with the wanted one. If it doesn't match, it is discarded.
          */
-        auto seekers = butler.load_seekers();
-        auto tui = tui::make_with(butler, seekers, logger);
-
-        py::gil_scoped_release nogil;
+        auto tui = tui::make_with(butler, logger);
 
         if (tui->display()) {
             /*
-             * Start download while script_butler destructs.
+             * Start download while plugin_handler destructs.
              * NOTE: the TUI is blocked here; we don't want that.
              */
             /* d.async_download(tui->get_wanted_items()); */

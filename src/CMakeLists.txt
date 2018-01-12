@@ -13,38 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-set(SOURCE
-    ${SOURCE}
-    ${CMAKE_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/core/item.cpp
-    ${CMAKE_SOURCE_DIR}/src/utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/keys.cpp
-    ${CMAKE_SOURCE_DIR}/src/components/logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/components/command_line.cpp
-    ${CMAKE_SOURCE_DIR}/src/core/script_butler.cpp
-    ${CMAKE_SOURCE_DIR}/src/components/screen_butler.cpp
-    ${CMAKE_SOURCE_DIR}/src/components/downloader.cpp
-    ${CMAKE_SOURCE_DIR}/src/screens/base.cpp
-    ${CMAKE_SOURCE_DIR}/src/screens/multiselect_menu.cpp
-    ${CMAKE_SOURCE_DIR}/src/screens/item_details.cpp
-    ${CMAKE_SOURCE_DIR}/src/screens/log.cpp
-)
+find_package(CURL REQUIRED)
 
-# Include-order matters; if there is a header clash, the project-local headers are used.
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/keys.cpp
+    ${PROJECT_SOURCE_DIR}/src/logger.cpp
+    ${PROJECT_SOURCE_DIR}/src/command_line.cpp
+    ${PROJECT_SOURCE_DIR}/src/screen_butler.cpp
+    ${PROJECT_SOURCE_DIR}/src/downloader.cpp
+    ${PROJECT_SOURCE_DIR}/src/screens/base.cpp
+    ${PROJECT_SOURCE_DIR}/src/screens/multiselect_menu.cpp
+    ${PROJECT_SOURCE_DIR}/src/screens/item_details.cpp
+    ${PROJECT_SOURCE_DIR}/src/screens/log.cpp)
 
-# Required dependencies:
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED QUIET)
-
-set(APP_LIBRARIES ${APP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/spdlog/include)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fmt/)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy/include)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/pybind11/include)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/lib/termbox/src)
-set(APP_INCLUDE_DIRS ${APP_INCLUDE_DIRS} ${CPR_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME}
+    PRIVATE ${PROJECT_SOURCE_DIR}/lib/spdlog/include
+    PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt
+    PRIVATE ${PROJECT_SOURCE_DIR}/lib/termbox/src
+    PRIVATE ${CURL_INCLUDE_DIRS})
 
 # Some pre-compile tasks:
 execute_process(COMMAND git describe --tags --dirty=-git
@@ -57,22 +46,11 @@ configure_file(
   ${CMAKE_SOURCE_DIR}/include/version.hpp
   ESCAPE_QUOTES @ONLY)
 
-# Make the thing.
-make_executable(${PROJECT_NAME}
-    SOURCES
-      ${SOURCE}
-    INCLUDE_DIRS
-      ${APP_INCLUDE_DIRS}
-    RAW_DEPENDS
-      ${APP_LIBRARIES})
-
 target_link_libraries(${PROJECT_NAME}
-    Threads::Threads
     fmt
-    fuzzywuzzy
-    pybind11::embed
     stdc++fs
     termbox_lib_static
-    curl)
+    ${CURL_LIBRARIES}
+    ${PROJECT_NAME}-core)
 
-add_subdirectory(bindings)
+add_subdirectory(core)

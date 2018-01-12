@@ -18,7 +18,7 @@
 #include <fmt/format.h>
 
 #include "errors.hpp"
-#include "python.hpp"
+#include "utils.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
@@ -33,7 +33,7 @@ void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::w
     }
 }
 
-multiselect_menu::multiselect_menu(vector<bookwyrm::item> const &items)
+multiselect_menu::multiselect_menu(vector<core::item> const &items)
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
     selected_item_(0), scroll_offset_(0),
     items_(items)

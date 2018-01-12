@@ -20,12 +20,14 @@
 #include <cassert>
 #include <array>
 #include <tuple>
+#include <map>
 
-#include "common.hpp"
 #include "utils.hpp"
-#include "components/command_line.hpp"
 
-namespace bookwyrm {
+using std::string;
+using std::vector;
+
+namespace core {
 
 /* Default value: "this value is empty". */
 constexpr int empty = -1;
@@ -42,8 +44,10 @@ enum class year_mod { equal, eq_gt, eq_lt, lt, gt, unused };
 
 struct exacts_t {
     /* Holds exact data about an item (year, page count, format, etc.). */
-    explicit exacts_t(const cliparser &cli)
-        : exacts_t{get_yearmod(cli), cli} {}
+
+    explicit exacts_t(std::pair<year_mod, int> yearmod, int volume, int number, const string &extension)
+        : ymod(std::get<0>(yearmod)), year(std::get<1>(yearmod)), volume(volume), number(number),
+        pages(empty), size(empty), extension(extension) {}
 
     explicit exacts_t(const std::map<string, int> &dict, const string &extension)
         : ymod(year_mod::unused),
@@ -69,29 +73,15 @@ struct exacts_t {
     }};
 
 private:
-    static int parse_number(const cliparser &cli, const string &&opt);
     static int get_value(const std::map<string, int> &dict, const string &&key);
-
-    /* Parse the year which may have a prefixed modifier. */
-    static const std::pair<year_mod, int> get_yearmod(const cliparser &cli);
-
-    explicit exacts_t(const std::pair<year_mod, int> &pair, const cliparser &cli)
-        : ymod(std::get<0>(pair)), year(std::get<1>(pair)),
-        volume(parse_number(cli, "volume")),
-        number(parse_number(cli, "number")),
-        pages(empty),
-        size(empty),
-        extension(cli.get("extension")) {}
 };
 
 struct nonexacts_t {
     /* Holds strings, which are matched fuzzily. */
-    explicit nonexacts_t(const cliparser &cli)
-        : authors(cli.get_many("author")),
-        title(cli.get("title")),
-        series(cli.get("series")),
-        publisher(cli.get("publisher")),
-        journal(cli.get("journal")) {}
+
+    explicit nonexacts_t(const vector<string> &authors, const string &title, const string &series,
+            const string &publisher, const string &journal)
+        : authors(authors), title(title), series(series), publisher(publisher), journal(journal) {}
 
     explicit nonexacts_t(const std::map<string, string> &dict, const vector<string> &authors)
         : authors(authors),
@@ -124,7 +114,7 @@ struct misc_t {
     /* Holds everything else. */
     explicit misc_t(const vector<string> &uris, const vector<string> &isbns)
         : uris(uris), isbns(isbns) {}
-    explicit misc_t() {} // cannot be initialized from cli options
+    explicit misc_t() {}
 
     const vector<string> uris;
     const vector<string> isbns;
@@ -132,8 +122,9 @@ struct misc_t {
 
 class item {
 public:
-    explicit item(const cliparser &cli)
-        : nonexacts(cli), exacts(cli) {}
+
+    explicit item(const nonexacts_t ne, const exacts_t e)
+        : nonexacts(ne), exacts(e), misc() {}
 
     /* Construct an item from a pybind11::tuple. */
     explicit item(const std::tuple<nonexacts_t, exacts_t, misc_t> &tuple)

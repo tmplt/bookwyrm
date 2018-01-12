@@ -17,9 +17,7 @@
 
 #pragma once
 
-#include "common.hpp"
-
-namespace algorithm {
+namespace core::algorithm {
 
 /*
  * Generates the cartesian product between two vectors.

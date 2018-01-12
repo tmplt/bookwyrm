@@ -26,7 +26,7 @@
 
 #include <fmt/ostream.h>
 
-#include "components/downloader.hpp"
+#include "downloader.hpp"
 #include "runes.hpp"
 #include "utils.hpp"
 
@@ -79,7 +79,7 @@ downloader::~downloader()
     /* std::cout << rune::vt100::show_cursor; */
 }
 
-fs::path downloader::generate_filename(const bookwyrm::item &item)
+fs::path downloader::generate_filename(const core::item &item)
 {
     const fs::path base = dldir / fmt::format("{} - {} ({})",
             utils::vector_to_string(item.nonexacts.authors),
@@ -116,7 +116,7 @@ fs::path downloader::generate_filename(const bookwyrm::item &item)
     return candidate;
 }
 
-bool downloader::sync_download(vector<bookwyrm::item> items)
+bool downloader::sync_download(vector<core::item> items)
 {
     bool any_success = false;
 

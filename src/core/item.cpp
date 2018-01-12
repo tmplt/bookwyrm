@@ -20,76 +20,18 @@
 #include <fuzzywuzzy.hpp>
 
 #include "item.hpp"
-#include "utils.hpp"
 #include "common.hpp"
 #include "algorithm.hpp"
 #include "functional.hpp"
 
 static constexpr int fuzzy_min = 75;
 
-namespace bookwyrm {
-
-int exacts_t::parse_number(const cliparser &cli, const string &&opt)
-{
-    const auto value_str = cli.get(opt);
-    if (value_str.empty()) return empty;
-
-    try {
-        return std::stoi(value_str);
-    } catch (std::exception &err) {
-        throw value_error("malformed value '" + value_str + "' for argument --" + opt);
-    }
-}
+namespace core {
 
 int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
 {
     const auto elem = dict.find(key);
     return elem == dict.cend() ? empty : elem->second;
-}
-
-const std::pair<year_mod, int> exacts_t::get_yearmod(const cliparser &cli)
-{
-    const auto year_str = cli.get("year");
-    if (year_str.empty()) return {year_mod::equal, empty};
-
-    const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
-        return std::isdigit(c);
-    });
-
-    try {
-        /*
-         * NOTE: this approach allows the year to be represented as a float
-         * (which stoi truncates to an int) and allows appended not-digits.
-         * Will this cause problems?
-         */
-        const auto year = std::stoi(string(start, year_str.cend()));
-
-        if (start != year_str.cbegin()) {
-            /* There is a modifier in front of the year */
-            string mod_str(year_str.cbegin(), start);
-            year_mod mod;
-
-            if (mod_str == "=>")
-                mod = year_mod::eq_gt;
-            else if (mod_str == "=<")
-                mod = year_mod::eq_lt;
-            else if (mod_str == ">")
-                mod = year_mod::gt;
-            else if (mod_str == "<")
-                mod = year_mod::lt;
-            else
-                throw value_error("unrecognised year modifier '" + mod_str + '\'');
-
-            return {mod, year};
-        }
-
-        return {year_mod::equal, year};
-
-    } catch (const value_error &err) {
-        throw err;
-    } catch (const std::exception &err) {
-        throw value_error("malformed year");
-    }
 }
 
 const string nonexacts_t::get_value(const std::map<string, string> &dict, const string &&key)

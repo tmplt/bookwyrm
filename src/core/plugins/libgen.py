@@ -92,10 +92,10 @@ class LibgenSeeker(object):
     def log(self, level, msg):
         if self.bookwyrm:
             to_bwloglvl = {
-                Loglevel.debug: bw.loglevel.debug,
-                Loglevel.info: bw.loglevel.info,
-                Loglevel.warn: bw.loglevel.warn,
-                Loglevel.error: bw.loglevel.error
+                Loglevel.debug: bw.log_level.debug,
+                Loglevel.info: bw.log_level.info,
+                Loglevel.warn: bw.log_level.warn,
+                Loglevel.error: bw.log_level.error
             }
 
             self.bookwyrm.log(to_bwloglvl[level], 'from ' + __file__ + ': ' + msg)
