@@ -37,6 +37,8 @@ In the future, bookwyrm will probably be just that; an API will be written so th
 It is a very small subset of people that want easier access to books that work in terminals.
 Some day, we'll probably have a website for this.
 
+Via the API, everything should be configurable: plugin paths, plugin options (e.g. read from config file by main program), fuzzy match levels, etc.
+
 ---
 
 If you have any insights, questions, or wish to contribute,
