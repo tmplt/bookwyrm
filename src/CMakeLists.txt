@@ -16,12 +16,12 @@
 set(SOURCE
     ${SOURCE}
     ${CMAKE_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/item.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/item.cpp
     ${CMAKE_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_SOURCE_DIR}/src/keys.cpp
     ${CMAKE_SOURCE_DIR}/src/components/logger.cpp
     ${CMAKE_SOURCE_DIR}/src/components/command_line.cpp
-    ${CMAKE_SOURCE_DIR}/src/components/script_butler.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/script_butler.cpp
     ${CMAKE_SOURCE_DIR}/src/components/screen_butler.cpp
     ${CMAKE_SOURCE_DIR}/src/components/downloader.cpp
     ${CMAKE_SOURCE_DIR}/src/screens/base.cpp

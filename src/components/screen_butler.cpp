@@ -227,7 +227,7 @@ namespace tui {
 std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &seekers, logger_t &logger)
 {
     auto tui = std::make_shared<butler::screen_butler>(script_butler.results(), logger);
-    script_butler.set_screen_butler(tui);
+    script_butler.set_frontend(tui);
     logger->set_screen_butler(tui);
     script_butler.async_search(seekers);
     return tui;

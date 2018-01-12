@@ -82,14 +82,14 @@ public:
     }
 
     /* Which menu do we update when a scripts feeds bookwyrm an item? */
-    void set_screen_butler(std::shared_ptr<screen_butler> screen)
+    void set_frontend(std::shared_ptr<screen_butler> screen)
     {
-        screen_butler_ = screen;
+        frontend_ = screen;
     }
 
-    void unset_screen_butler()
+    void unset_frontend()
     {
-        screen_butler_.reset();
+        frontend_.reset();
     }
 
 private:
@@ -108,7 +108,7 @@ private:
     vector<std::thread> threads_;
 
     /* Which screens do we want to notify about updates? */
-    std::weak_ptr<screen_butler> screen_butler_;
+    std::weak_ptr<screen_butler> frontend_;
 };
 
 /* ns butler */
