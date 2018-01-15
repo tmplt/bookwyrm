@@ -20,7 +20,7 @@
 #include "utils.hpp"
 #include "version.hpp"
 #include "command_line.hpp"
-#include "screen_butler.hpp"
+#include "tui.hpp"
 #include "downloader.hpp"
 
 int main(int argc, char *argv[])
@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
 
     try {
         auto logger = logger::create("main");
-        // TODO: why are these not adhered?
         logger->set_pattern("%l: %v");
         logger->set_level(spdlog::level::warn);
 
@@ -115,7 +114,7 @@ int main(int argc, char *argv[])
          * During run-time, the butler will match each found item
          * with the wanted one. If it doesn't match, it is discarded.
          */
-        auto tui = tui::make_with(butler, logger);
+        auto tui = bookwyrm::make_tui_with(butler, logger);
 
         if (tui->display()) {
             /*

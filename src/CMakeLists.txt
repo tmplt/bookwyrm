@@ -21,7 +21,7 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/keys.cpp
     ${PROJECT_SOURCE_DIR}/src/logger.cpp
     ${PROJECT_SOURCE_DIR}/src/command_line.cpp
-    ${PROJECT_SOURCE_DIR}/src/screen_butler.cpp
+    ${PROJECT_SOURCE_DIR}/src/tui.cpp
     ${PROJECT_SOURCE_DIR}/src/downloader.cpp
     ${PROJECT_SOURCE_DIR}/src/screens/base.cpp
     ${PROJECT_SOURCE_DIR}/src/screens/multiselect_menu.cpp

@@ -34,15 +34,9 @@ using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
 
 namespace core { class plugin_handler; }
 
-namespace butler {
+namespace bookwyrm {
 
-/*
- * Another butler. This one handles whatever screens we want to show the user,
- * as well as which of them to update. User input post-cli is also handled here,
- * which is forwarded to the currently focused screen unless it was used to
- * manage screens.
- */
-class screen_butler : public core::frontend {
+class tui : public core::frontend {
 public:
     void update()
     {
@@ -59,7 +53,7 @@ public:
     }
 
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<core::item> &items, logger_t logger);
+    explicit tui(vector<core::item> &items, logger_t logger);
 
     /* Repaint all screens that need updating. */
     void repaint_screens();
@@ -136,12 +130,9 @@ private:
     }
 };
 
-/* ns butler */
+std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger);
+
+/* ns bookwyrm */
 }
 
-namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(core::plugin_handler &plugin_handler, logger_t &logger);
-
-/* ns tui */
-}

@@ -26,10 +26,10 @@
 #include <spdlog/logger.h>
 
 #include "common.hpp"
-#include "screen_butler.hpp"
+#include "tui.hpp"
 
 /* Circular dependency guard. */
-namespace butler { class screen_butler; }
+namespace bookwyrm { class tui; }
 
 namespace logger {
 
@@ -45,9 +45,9 @@ public:
     void log(const spdlog::details::log_msg &msg) override;
     void flush() override;
 
-    void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
+    void set_tui(std::shared_ptr<bookwyrm::tui> tui)
     {
-        screen_butler_ = butler;
+        tui_ = tui;
     }
 
     /* Flush all unseen logs (content of buffer_) to the log screen. */
@@ -65,7 +65,7 @@ private:
     vector<buffer_pair> buffer_;
     std::mutex write_mutex_;
 
-    std::weak_ptr<butler::screen_butler> screen_butler_;
+    std::weak_ptr<bookwyrm::tui> tui_;
 };
 
 class bookwyrm_logger : public spdlog::logger {
@@ -73,9 +73,9 @@ public:
     explicit bookwyrm_logger(string name, std::shared_ptr<bookwyrm_sink> sink)
         : spdlog::logger(name, sink), sink_(sink) {}
 
-    void set_screen_butler(std::shared_ptr<butler::screen_butler> butler)
+    void set_tui(std::shared_ptr<bookwyrm::tui> butler)
     {
-        sink_->set_screen_butler(butler);
+        sink_->set_tui(butler);
     }
 
     void flush_to_screen()

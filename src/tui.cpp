@@ -17,12 +17,12 @@
 
 #include <termbox.h>
 
-#include "screen_butler.hpp"
+#include "tui.hpp"
 #include "utils.hpp"
 
-namespace butler {
+namespace bookwyrm {
 
-screen_butler::screen_butler(vector<core::item> &items, logger_t logger)
+tui::tui(vector<core::item> &items, logger_t logger)
     : items_(items), logger_(logger), viewing_details_(false)
 {
     /* Create the log screen. */
@@ -33,7 +33,7 @@ screen_butler::screen_butler(vector<core::item> &items, logger_t logger)
     focused_ = index_;
 }
 
-void screen_butler::log(const core::log_level level, const string message)
+void tui::log(const core::log_level level, const string message)
 {
     using spdlvl = spdlog::level::level_enum;
     using belvl  = core::log_level;
@@ -67,7 +67,7 @@ void screen_butler::log(const core::log_level level, const string message)
     logger_->log(frontend_lvl, message);
 }
 
-void screen_butler::repaint_screens()
+void tui::repaint_screens()
 {
     tb_clear();
 
@@ -88,7 +88,7 @@ void screen_butler::repaint_screens()
     tb_present();
 }
 
-void screen_butler::print_footer()
+void tui::print_footer()
 {
     const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
         this->wprint(tb_width() - str.length(), y, str, attrs);
@@ -112,7 +112,7 @@ void screen_butler::print_footer()
     }
 }
 
-void screen_butler::resize_screens()
+void tui::resize_screens()
 {
     index_->on_resize();
     log_->on_resize();
@@ -122,7 +122,7 @@ void screen_butler::resize_screens()
     repaint_screens();
 }
 
-bool screen_butler::display()
+bool tui::display()
 {
     repaint_screens();
 
@@ -150,7 +150,7 @@ bool screen_butler::display()
     throw program_error("unable to poll input");
 }
 
-vector<core::item> screen_butler::get_wanted_items()
+vector<core::item> tui::get_wanted_items()
 {
     vector<core::item> items;
 
@@ -160,7 +160,7 @@ vector<core::item> screen_butler::get_wanted_items()
     return items;
 }
 
-bool screen_butler::bookwyrm_fits()
+bool tui::bookwyrm_fits()
 {
     /*
      * I planned to use the classical 80x24, but multiselect_menu is
@@ -170,7 +170,7 @@ bool screen_butler::bookwyrm_fits()
     return tb_width() >= 50 && tb_height() >= 10;
 }
 
-bool screen_butler::meta_action(const key &key, const uint32_t &ch)
+bool tui::meta_action(const key &key, const uint32_t &ch)
 {
     switch (ch) {
         case 'l':
@@ -194,7 +194,7 @@ bool screen_butler::meta_action(const key &key, const uint32_t &ch)
     }
 }
 
-bool screen_butler::open_details()
+bool tui::open_details()
 {
     if (viewing_details_ || index_->item_count() == 0) return false;
 
@@ -209,7 +209,7 @@ bool screen_butler::open_details()
     return true;
 }
 
-bool screen_butler::close_details()
+bool tui::close_details()
 {
     if (!viewing_details_) return false;
 
@@ -223,7 +223,7 @@ bool screen_butler::close_details()
     return true;
 }
 
-bool screen_butler::toggle_log()
+bool tui::toggle_log()
 {
     if (focused_ != log_) {
         last_ = focused_;
@@ -237,13 +237,13 @@ bool screen_butler::toggle_log()
     return true;
 }
 
-void screen_butler::wprint(int x, const int y, const string_view &str, const colour attrs)
+void tui::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
     for (const uint32_t &ch : str)
         tb_change_cell(x++, y, ch, static_cast<colour_t>(attrs), 0);
 }
 
-void screen_butler::wprintcont(int x, const int y, const string_view &str, const colour attrs)
+void tui::wprintcont(int x, const int y, const string_view &str, const colour attrs)
 {
     for (int i = 0; i < x; i++)
         tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
@@ -254,20 +254,15 @@ void screen_butler::wprintcont(int x, const int y, const string_view &str, const
         tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
 }
 
-/* ns butler */
-}
-
-namespace tui {
-
-std::shared_ptr<butler::screen_butler> make_with(core::plugin_handler &plugin_handler, logger_t &logger)
+std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)
 {
     plugin_handler.load_plugins();
-    auto tui = std::make_shared<butler::screen_butler>(plugin_handler.results(), logger);
-    plugin_handler.set_frontend(tui);
-    logger->set_screen_butler(tui);
+    auto t = std::make_shared<tui>(plugin_handler.results(), logger);
+    plugin_handler.set_frontend(t);
+    logger->set_tui(t);
     plugin_handler.async_search();
-    return tui;
+    return t;
 }
 
-/* ns tui */
+/* ns bookwyrm */
 }

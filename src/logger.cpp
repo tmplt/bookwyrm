@@ -30,15 +30,15 @@ void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
 {
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (const auto &fmt = msg.formatted.str(); screen_butler_.expired()) {
+    if (const auto &fmt = msg.formatted.str(); tui_.expired()) {
         buffer_.emplace_back(msg.level, fmt);
-    } else if (const auto screen = screen_butler_.lock(); screen->is_log_focused()) {
-        screen->log(msg.level, fmt);
+    } else if (const auto tui = tui_.lock(); tui->is_log_focused()) {
+        tui->log(msg.level, fmt);
     } else {
         buffer_.emplace_back(msg.level, fmt);
 
         /* If user is in the index view, get a notice about new logs. */
-        screen->repaint_screens();
+        tui->repaint_screens();
     }
 }
 
@@ -56,10 +56,10 @@ void bookwyrm_sink::flush()
 
 void bookwyrm_sink::flush_to_screen()
 {
-    const auto screen = screen_butler_.lock();
+    const auto tui = tui_.lock();
 
     for (const auto& [lvl, fmt] : buffer_)
-        screen->log(lvl, fmt);
+        tui->log(lvl, fmt);
 
     buffer_.clear();
 }
