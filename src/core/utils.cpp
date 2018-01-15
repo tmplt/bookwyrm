@@ -22,7 +22,7 @@
 
 #include "utils.hpp"
 
-namespace utils {
+namespace core::utils {
 
 std::error_code validate_download_dir(const fs::path &path)
 {
@@ -111,97 +111,6 @@ int percent_round(double d)
 int ratio(double a, double b)
 {
     return percent_round(a / b);
-}
-
-colour to_colour(spdlog::level::level_enum lvl)
-{
-    using level = spdlog::level::level_enum;
-
-    switch (lvl) {
-        case level::debug:
-            return colour::blue;
-        case level::warn:
-            return colour::yellow;
-        case level::err: case level::critical:
-            return colour::red;
-        default:
-            return colour::none;
-    }
-}
-
-const core::item create_item(const cliparser &cli)
-{
-    const core::nonexacts_t ne(
-        cli.get_many("authors"),
-        cli.get("title"),
-        cli.get("series"),
-        cli.get("publisher"),
-        cli.get("journal")
-    );
-
-    const auto yearmod = [&cli]() -> std::pair<core::year_mod, int> {
-        const auto year_str = cli.get("year");
-        if (year_str.empty()) return {core::year_mod::equal, core::empty};
-
-        const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
-            return std::isdigit(c);
-        });
-
-        try {
-            /*
-             * NOTE: this approach allows the year to be represented as a float
-             * (which stoi truncates to an int) and allows appended not-digits.
-             * Will this cause problems?
-             */
-            const auto year = std::stoi(string(start, year_str.cend()));
-
-            if (start != year_str.cbegin()) {
-                /* There is a modifier in front of the year. */
-                string mod_str(year_str.cbegin(), start);
-                core::year_mod mod;
-
-                if (mod_str == "=>")
-                    mod = core::year_mod::eq_gt;
-                else if (mod_str == "=<")
-                    mod = core::year_mod::eq_lt;
-                else if (mod_str == ">")
-                    mod = core::year_mod::gt;
-                else if (mod_str == "<")
-                    mod = core::year_mod::lt;
-                else
-                    throw value_error("unrecognised year modifier '" + mod_str + '\'');
-
-                return {mod, year};
-            }
-
-            return {core::year_mod::equal, year};
-
-        } catch (const std::exception &err) {
-            throw value_error("malformed year");
-        }
-    }();
-
-    const auto parse_number = [&cli](const string &&opt) -> int {
-        const auto value_str = cli.get(opt);
-        if (value_str.empty()) return core::empty;
-
-        try {
-            return std::stoi(value_str);
-        } catch (std::exception &err) {
-            throw value_error("malformed value '" + value_str + "' for argument --" + opt);
-        }
-    };
-
-    const core::exacts_t e(
-        yearmod,
-        parse_number("volume"),
-        parse_number("number"),
-        cli.get("extension")
-    );
-
-    const core::item item(std::move(ne), std::move(e));
-
-    return std::move(item);
 }
 
 /* ns utils */

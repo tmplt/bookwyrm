@@ -16,10 +16,11 @@
  */
 
 #include "screens/item_details.hpp"
+#include "utils.hpp"
 
 namespace screen {
 
-item_details::item_details(const bookwyrm::item &item, int padding_top)
+item_details::item_details(const core::item &item, int padding_top)
     : base(padding_top, default_padding_bot, 0, 0), item_(item)
 {
 

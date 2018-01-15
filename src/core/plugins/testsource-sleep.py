@@ -9,10 +9,6 @@ def find(wanted, bookwyrm):
 
     # Generate some dummy data
     for i in range(10):
-
-        if bookwyrm.terminating():
-            return
-
         time.sleep(0.2)
 
         nonexacts = bw.nonexacts_t(

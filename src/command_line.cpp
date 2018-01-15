@@ -21,7 +21,7 @@
 #include <utility>
 
 #include "utils.hpp"
-#include "components/command_line.hpp"
+#include "command_line.hpp"
 
 enum {
     /*
@@ -188,7 +188,7 @@ void cliparser::validate_arguments() const
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
-        return utils::any_intersection(passed_opts, required_opts);
+        return core::utils::any_intersection(passed_opts, required_opts);
     }();
 
     if (has("ident") && passed_opts_.size() > 1)

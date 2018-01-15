@@ -92,10 +92,10 @@ class LibgenSeeker(object):
     def log(self, level, msg):
         if self.bookwyrm:
             to_bwloglvl = {
-                Loglevel.debug: bw.loglevel.debug,
-                Loglevel.info: bw.loglevel.info,
-                Loglevel.warn: bw.loglevel.warn,
-                Loglevel.error: bw.loglevel.error
+                Loglevel.debug: bw.log_level.debug,
+                Loglevel.info: bw.log_level.info,
+                Loglevel.warn: bw.log_level.warn,
+                Loglevel.error: bw.log_level.error
             }
 
             self.bookwyrm.log(to_bwloglvl[level], 'from ' + __file__ + ': ' + msg)
@@ -107,12 +107,6 @@ class LibgenSeeker(object):
             self.bookwyrm.feed(item)
         else:
             print(item)
-
-    def request(self, *args, **kwargs):
-        if self.bookwyrm and self.bookwyrm.terminating():
-            raise GeneratorExit
-
-        return requests.get(*args, **kwargs)
 
     def search(self):
         global DOMAINS
@@ -277,7 +271,7 @@ class LibgenSeeker(object):
         while True:
             f.set({'page': p}).add(query_params)
 
-            r = self.request(f.url)
+            r = requests.get(f.url)
             if r.status_code != requests.codes.ok:
                 # TODO: Log failure to bookwyrm?
                 # Or log after taking exception?
@@ -394,7 +388,7 @@ class LibgenSeeker(object):
                 # Final URL contains same md5-hash, but an additional key parameter is
                 # required (16 chars, alphanumeric, uppercase). Seems to be generated on
                 # the fly. Or can it be solved for somehow?
-                r = self.request(libgenio)
+                r = requests.get(libgenio)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 # -2 here, but -1 on foreignfiction
                 final = soup.table.find_all('td')[-2].a['href']
@@ -405,7 +399,7 @@ class LibgenSeeker(object):
                 # Final URL contains another hash, which is always the same: the two hashes are
                 # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
                 # at CRC-96).
-                r = self.request(libgenpw)
+                r = requests.get(libgenpw)
                 soup = BeautifulSoup(r.text, 'html.parser')
 
                 # We can skip a third request by getting the libgen.pw's hash and
@@ -479,7 +473,7 @@ class LibgenSeeker(object):
                 # Final URL contains same md5-hash, but an additional key parameter is
                 # required (16 chars, alphanumeric, uppercase). Seems to be generated on
                 # the fly. Or can it be solved for somehow?
-                r = self.request(io)
+                r = requests.get(io)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 final = soup.table.find_all('td')[-1].a['href']
                 urls.append(final)
@@ -489,7 +483,7 @@ class LibgenSeeker(object):
                 # Final URL contains another hash, which is always the same: the two hashes are
                 # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
                 # at CRC-96).
-                r = self.request(pw)
+                r = requests.get(pw)
                 soup = BeautifulSoup(r.text, 'html.parser')
 
                 # We can skip a third request by getting the libgen.pw's hash and

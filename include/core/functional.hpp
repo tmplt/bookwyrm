@@ -21,9 +21,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "item.hpp"
-
-namespace func {
+namespace core::func {
 
 /*
  * Take two containers, zip over them and return a vector with the length of the shortest passed container.

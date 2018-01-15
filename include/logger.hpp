@@ -26,7 +26,7 @@
 #include <spdlog/logger.h>
 
 #include "common.hpp"
-#include "components/screen_butler.hpp"
+#include "screen_butler.hpp"
 
 /* Circular dependency guard. */
 namespace butler { class screen_butler; }

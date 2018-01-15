@@ -31,7 +31,7 @@ namespace screen {
 
 class multiselect_menu : public base {
 public:
-    explicit multiselect_menu(vector<bookwyrm::item> const &items);
+    explicit multiselect_menu(vector<core::item> const &items);
 
     void paint() override;
     void on_resize() override;
@@ -51,7 +51,7 @@ public:
     /* Take back the space lent to screen::item_details */
     void decompress(int scroll);
 
-    const bookwyrm::item& selected_item() const
+    const core::item& selected_item() const
     {
         return items_[selected_item_];
     }
@@ -108,7 +108,7 @@ private:
     size_t scroll_offset_;
 
     std::mutex menu_mutex_;
-    vector<bookwyrm::item> const &items_;
+    vector<core::item> const &items_;
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;

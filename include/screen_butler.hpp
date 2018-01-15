@@ -17,12 +17,12 @@
 
 #pragma once
 
+
+#include "core/plugin_handler.hpp"
+#include "core/item.hpp"
 #include "common.hpp"
-#include "item.hpp"
-#include "python.hpp"
 #include "colours.hpp"
-#include "components/script_butler.hpp"
-#include "components/logger.hpp"
+#include "logger.hpp"
 #include "screens/base.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
@@ -32,10 +32,9 @@
 namespace logger { class bookwyrm_logger; }
 using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
 
-namespace butler {
+namespace core { class plugin_handler; }
 
-/* Circular dependency guard. */
-class script_butler;
+namespace butler {
 
 /*
  * Another butler. This one handles whatever screens we want to show the user,
@@ -43,20 +42,27 @@ class script_butler;
  * which is forwarded to the currently focused screen unless it was used to
  * manage screens.
  */
-class screen_butler {
+class screen_butler : public core::frontend {
 public:
+    void update()
+    {
+        repaint_screens();
+    }
+
+    void log(const core::log_level level, const string message);
+
+    /* Send a log entry to the log screen. */
+    void log(const spdlog::level::level_enum level, const string message)
+    {
+        log_->log_entry(level, message);
+        repaint_screens();
+    }
+
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit screen_butler(vector<bookwyrm::item> &items, logger_t logger);
+    explicit screen_butler(vector<core::item> &items, logger_t logger);
 
     /* Repaint all screens that need updating. */
     void repaint_screens();
-
-    /* Send a log entry to the log screen. */
-    void log_entry(spdlog::level::level_enum level, const string entry)
-    {
-        log_->log_entry(level, entry);
-        repaint_screens();
-    }
 
     /*
      * Display the TUI and let the user enter input.
@@ -67,7 +73,7 @@ public:
     bool display();
 
     /* Take ownership of the wanted items and move them to the caller. */
-    vector<bookwyrm::item> get_wanted_items();
+    vector<core::item> get_wanted_items();
 
     /* Draw the context sensitive footer. */
     void print_footer();
@@ -79,7 +85,7 @@ public:
 
 private:
     /* Forwarded to the multiselect menu. */
-    vector<bookwyrm::item> const &items_;
+    vector<core::item> const &items_;
 
     /* Used to flush stored logs to the log screen. */
     logger_t logger_;
@@ -135,7 +141,7 @@ private:
 
 namespace tui {
 
-std::shared_ptr<butler::screen_butler> make_with(butler::script_butler &script_butler, vector<py::module> &seekers, logger_t &logger);
+std::shared_ptr<butler::screen_butler> make_with(core::plugin_handler &plugin_handler, logger_t &logger);
 
 /* ns tui */
 }
