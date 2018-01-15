@@ -38,14 +38,9 @@ inline bool any_intersection(const Set &a, const Set &b)
 }
 
 string vector_to_string(const vector<string> &vec);
-vector<string> split_string(const string &str);
-std::pair<string, string> split_at_first(const string &str, string &&sep);
 
 /* Check if the given path is a file and can be read. */
 bool readable_file(const fs::path &path);
-
-/* Generate a Lorem Ipsum string. */
-string lipsum(int repeats);
 
 /* ns utils */
 }
