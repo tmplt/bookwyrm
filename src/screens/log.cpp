@@ -29,6 +29,13 @@ log::log()
 void log::paint()
 {
     /*
+     * Ad-hoc for now; something is wrong with entry down below.
+     * Removing this causes segfault when we have no entries.
+     */
+    if (entries_.size() == 0)
+        return;
+
+    /*
      * Starting the counting from the latest entry,
      * how many entries back can we fit on screen?
      */
