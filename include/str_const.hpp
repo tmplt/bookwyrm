@@ -2,7 +2,7 @@
  * A modified version of Scott Shurr's str_const:
  * <https://github.com/boostcon/cppnow_presentations_2012/blob/master/wed/schurr_cpp11_tools_for_class_authors.pdf?raw=true>
  *
- * No clue how I should add a copyright clause to this file.
+ * No clue how (and if) I should add a copyright clause to this file; please create an issue on the topic if you know.
  */
 
 #pragma once
