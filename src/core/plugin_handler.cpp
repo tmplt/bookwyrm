@@ -79,6 +79,8 @@ plugin_handler::~plugin_handler()
 {
     for (auto &t : threads_)
         t.detach();
+
+    frontend_.reset();
 }
 
 void plugin_handler::async_search()

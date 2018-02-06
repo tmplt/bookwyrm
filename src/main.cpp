@@ -108,8 +108,6 @@ int main(int argc, char *argv[])
             wanted_items = tui->get_wanted_items();
         }
 
-        butler.unset_frontend();
-
     } catch (const component_error &err) {
         fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());
         return EXIT_FAILURE;

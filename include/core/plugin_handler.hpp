@@ -33,7 +33,6 @@ public:
 class __attribute__ ((visibility("hidden"))) plugin_handler {
 public:
     explicit plugin_handler(const item &&wanted)
-    /* vector<py::module> */
         : wanted_(wanted) {}
 
     /*
@@ -68,11 +67,6 @@ public:
     void set_frontend(std::shared_ptr<frontend> fe)
     {
         frontend_ = fe;
-    }
-
-    void unset_frontend()
-    {
-        frontend_.reset();
     }
 
 private:
