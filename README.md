@@ -45,8 +45,6 @@ If you have any insights, questions, or wish to contribute,
 create a PR/issue on GitLab at <https://gitlab.com/Tmplt/bookwyrm> or Github at <https://github.com/Tmplt/bookwyrm>.
 You can also contact me via email at `echo "dG1wbHRAZHJhZ29ucy5yb2Nrcwo=" | base64 -d`.
 
-bookwyrm is licensed under the GPLv3+.
-
 Building instructions
 ---
 ```
@@ -55,3 +53,5 @@ $ mkdir build && cd build
 $ cmake .. && make
 $ src/bookwyrm OPTION [OPTION]... PATH
 ```
+
+If you're using Nix(OS), evaluate the expression in `default.nix` first (append `nix-shell` to the steps above).
