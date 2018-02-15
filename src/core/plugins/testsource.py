@@ -12,7 +12,7 @@ def find(wanted, bookwyrm):
         nonexacts = bw.nonexacts_t({
             'title': 'Some Title (' + str(i) + ')',
             'series': 'The Cool Series' + str(i),
-            'publisher': 'Fuck Pearson',
+            'publisher': 'Books Are Cool',
             'journal': 'No journal, no'
             },
 
