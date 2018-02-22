@@ -116,7 +116,7 @@ void item_details::print_desc(int &y, string str)
         }
 
         wprint(x, y, *word + ' ');
-        x += (*word).length() + 1;
+        x += word->length() + 1;
     }
 }
 

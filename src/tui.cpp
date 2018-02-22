@@ -22,7 +22,7 @@ void tui::log(const core::log_level level, const string message)
     using belvl  = core::log_level;
 
     /* Can we perhaps construct a spdlvl with the underlying int from level? */
-    spdlvl frontend_lvl;
+    spdlvl frontend_lvl = spdlvl::critical;
 
     switch (level) {
         case belvl::trace:

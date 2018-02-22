@@ -72,7 +72,7 @@ void plugin_handler::load_plugins()
     if (plugins.empty())
         throw std::runtime_error("couldn't find any valid plugin scripts");
 
-    plugins_ = plugins;
+    plugins_ = std::move(plugins);
 }
 
 plugin_handler::~plugin_handler()
@@ -108,7 +108,7 @@ void plugin_handler::async_search()
 
 void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
 {
-    item item(item_comps);
+    const item item(item_comps);
     if (!item.matches(wanted_) || item.misc.uris.size() == 0)
         return;
 
@@ -116,18 +116,14 @@ void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_com
 
     items_.push_back(item);
 
-    if (!frontend_.expired()) {
-        const auto fe = frontend_.lock();
-        fe->update();
-    }
+    if (!frontend_.expired())
+        frontend_.lock()->update();
 }
 
 void plugin_handler::log(log_level lvl, string msg)
 {
-    if (!frontend_.expired()) {
-        const auto fe = frontend_.lock();
-        fe->log(lvl, msg);
-    }
+    if (!frontend_.expired())
+        frontend_.lock()->log(lvl, msg);
 }
 
 /* ns butler */
