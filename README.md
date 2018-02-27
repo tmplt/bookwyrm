@@ -26,6 +26,13 @@ Aside from a C++17-compliant compiler and CMake, bookwyrm also depends on a few 
 * **pybind11**,   for interfacing with Python, and
 * **fuzzywuzzy**, for fuzzily matching found items with what's wanted.
 
+Furthermore, the Python modules need the following packages:
+* **furl**,     parsing library for urls;
+* **requests**,     http library for Python;
+* **isbnlib**,      extraction library for ISBNs (International Standard Book Number).
+
+These can be installed via `pip3 install --user <package name>`.
+
 All libraries that do not use a bold font are non-essential and may be subject to removal later in development. All dependencies are submoduled in `lib/`.
 
 bookwyrm is still in the early development stage, so nothing is set in stone. A v1.0.0 release is planned for early Q1 2018.
