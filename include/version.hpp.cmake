@@ -19,7 +19,7 @@ constexpr auto print_build_info = []() {
     std::cout << PROG_NAME << ' ' << PROG_VERSION << '\n'
               << "Copyright (C) 2016-2018 Tmplt <tmplt@dragons.rocks>\n"
               << PROG_NAME << " is licensed under the MIT license.\n\n"
-              << "Written by Tmplt and others, see <https://gitlab.com/Tmplt/bookwyrm/blob/master/AUTHORS.md>."
+              << "Written by Tmplt and others, see <https://github.com/Tmplt/bookwyrm/blob/master/AUTHORS.md>."
               << std::endl;
 };
 

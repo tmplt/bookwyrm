@@ -17,3 +17,4 @@ Direct authors
 A list of people who have directly commited code to this repo.
 
 * Tmplt <tmplt@dragons.rocks>, maintainer.
+* [CuriouslyCurious](https://github.com/CuriouslyCurious)
