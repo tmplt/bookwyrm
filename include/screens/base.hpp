@@ -1,6 +1,6 @@
 #pragma once
 
-#include <termbox.h>
+#include <ncurses.h>
 
 #include "common.hpp"
 #include "colours.hpp"

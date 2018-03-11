@@ -17,7 +17,6 @@ target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/in
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/spdlog/include
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt
-    PRIVATE ${PROJECT_SOURCE_DIR}/lib/termbox/src
     PRIVATE ${CURL_INCLUDE_DIRS})
 
 # Some pre-compile tasks:
@@ -34,7 +33,7 @@ configure_file(
 target_link_libraries(${PROJECT_NAME}
     fmt
     stdc++fs
-    termbox_lib_static
+    ncurses
     ${CURL_LIBRARIES}
     ${PROJECT_NAME}-core)
 

@@ -1,18 +1,18 @@
 #pragma once
 
-#include <termbox.h>
 #include <type_traits>
 
 /* These colours are only valid for TB_OUTPUT_NORMAL. */
 enum class colour : uint16_t {
-    black   = TB_BLACK,
-    red     = TB_RED,
-    green   = TB_GREEN,
-    yellow  = TB_YELLOW,
-    blue    = TB_BLUE,
-    magenta = TB_MAGENTA,
-    cyan    = TB_CYAN,
-    white   = TB_WHITE,
+    // TODO: translate to ncurses
+    /* black   = TB_BLACK, */
+    /* red     = TB_RED, */
+    /* green   = TB_GREEN, */
+    /* yellow  = TB_YELLOW, */
+    /* blue    = TB_BLUE, */
+    /* magenta = TB_MAGENTA, */
+    /* cyan    = TB_CYAN, */
+    /* white   = TB_WHITE, */
     none    = 0
 };
 
