@@ -14,7 +14,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-namespace utils {
+namespace bookwyrm::utils {
 
 /* Check if the path is a valid download directory. */
 std::error_code validate_download_dir(const fs::path &path);

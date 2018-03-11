@@ -1,13 +1,13 @@
 #pragma once
 
-#include <termbox.h>
+#include <ncurses.h>
 
 #include "common.hpp"
 #include "colours.hpp"
 #include "keys.hpp"
 #include "runes.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 constexpr static int default_padding_top   = 0,
                      default_padding_bot   = 3,

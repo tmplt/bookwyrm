@@ -1,5 +1,3 @@
-#include <termbox.h>
-
 #include "tui.hpp"
 #include "utils.hpp"
 
@@ -52,7 +50,7 @@ void tui::log(const core::log_level level, const string message)
 
 void tui::repaint_screens()
 {
-    tb_clear();
+    erase();
 
     if (!bookwyrm_fits()) {
         wprint(0, 0, "The terminal is too small. I don't fit!");
@@ -68,29 +66,43 @@ void tui::repaint_screens()
         print_footer();
     }
 
-    tb_present();
+    refresh();
 }
 
 void tui::print_footer()
 {
-    const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
-        this->wprint(tb_width() - str.length(), y, str, attrs);
+    const auto curses_height = []() {
+        int x, y;
+        (void)x;
+        getmaxyx(stdscr, y, x);
+        return y;
+    };
+
+    const auto curses_width = []() {
+        int x, y;
+        (void)y;
+        getmaxyx(stdscr, y, x);
+        return x;
+    };
+
+    const auto print_right_align = [this, &curses_width](int y, string &&str, const colour attrs = colour::none) {
+        this->wprint(curses_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
-    wprint(0, tb_height() - 2, focused_->footer_info());
+    wprint(0, curses_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
-        print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
+        print_right_align(curses_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    wprintcont(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    wprintcont(0, curses_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
     if (logger_->has_unread_logs()) {
-        print_right_align(tb_height() - 1, " You have unread logs! ",
+        print_right_align(curses_height() - 1, " You have unread logs! ",
                 utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
     }
 }
@@ -145,12 +157,10 @@ vector<core::item> tui::get_wanted_items()
 
 bool tui::bookwyrm_fits()
 {
-    /*
-     * I planned to use the classical 80x24, but multiselect_menu is
-     * in its current form useable in terminals much smaller
-     * than that.
-     */
-    return tb_width() >= 50 && tb_height() >= 10;
+    int x, y;
+    getmaxyx(stdscr, y, x);
+
+    return x >= 50 && y >= 10;
 }
 
 bool tui::meta_action(const key &key, const uint32_t &ch)
@@ -185,7 +195,10 @@ bool tui::open_details()
     int height;
     std::tie(index_scrollback_, height) = index_->compress();
 
-    details_ = std::make_shared<screen::item_details>(index_->selected_item(), tb_height() - height - 1);
+    int x, y;
+    getmaxyx(stdscr, y, x);
+
+    details_ = std::make_shared<screen::item_details>(index_->selected_item(), y - height - 1);
     focused_ = details_;
 
     viewing_details_ = true;
@@ -222,19 +235,33 @@ bool tui::toggle_log()
 
 void tui::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
-    for (const uint32_t &ch : str)
-        tb_change_cell(x++, y, ch, static_cast<colour_t>(attrs), 0);
+    (void)attrs;
+
+    for (const uint32_t &ch : str) {
+        // TODO: handle colour
+        mvaddch(y, x++, ch);
+    }
 }
 
 void tui::wprintcont(int x, const int y, const string_view &str, const colour attrs)
 {
-    for (int i = 0; i < x; i++)
-        tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
+    (void)attrs;
+
+    for (int i = 0; i < x; i++) {
+        // TODO: handle colour
+        mvaddch(y, i, ' ');
+    }
 
     wprint(x, y, str, attrs);
 
-    for (int i = x + str.length(); i < tb_width(); i++)
-        tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
+    int width, height;
+    getmaxyx(stdscr, height, width);
+    (void)height;
+
+    for (int i = x + str.length(); i < width; i++) {
+        // TODO: handle colour
+        mvaddch(y, i, ' ');
+    }
 }
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)

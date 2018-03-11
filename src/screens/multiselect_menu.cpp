@@ -5,7 +5,7 @@
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
 {

@@ -4,7 +4,7 @@
 
 #include "screens/base.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 int base::screen_count_ = 0;
 
@@ -17,18 +17,24 @@ base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
 
 base::~base()
 {
-    if (--screen_count_ == 0) tb_shutdown();
+    if (--screen_count_ == 0) endwin();
     assert(screen_count_ >= 0);
 }
 
 size_t base::get_width() const
 {
-    return tb_width() - padding_left_ - padding_right_;
+    int x, y;
+    getmaxyx(stdscr, y, x);
+    (void)y;
+    return x - padding_left_ - padding_right_;
 }
 
 size_t base::get_height() const
 {
-    return tb_height() - padding_top_ - padding_bot_;
+    int x, y;
+    getmaxyx(stdscr, y, x);
+    (void)x;
+    return y - padding_top_ - padding_bot_;
 }
 
 void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const colour bg)
@@ -36,28 +42,42 @@ void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const c
     x += padding_left_;
     y += padding_top_;
 
-    const bool valid_x = x >= padding_left_ && x <= tb_width() - padding_right_ - 1,
-               valid_y = y >= padding_top_ && y <= tb_height() - padding_bot_ - 1;
+    int width, height;
+    getmaxyx(stdscr, height, width);
+
+    const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
+               valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
 
     if (!valid_x || !valid_y)
         return;
 
-    tb_change_cell(x, y, ch, static_cast<colour_t>(fg), static_cast<colour_t>(bg));
+    // TODO: handle colours.
+    (void)fg;
+    (void)bg;
+    mvaddch(y, x, ch);
 }
 
 void base::init_tui()
 {
     if (screen_count_++ > 0) return;
 
-    int code = tb_init();
-    if (code < 0) {
-        string err = fmt::format("termbox init failed with code: {}", code);
-        throw component_error(err.data());
-    }
+    /*
+     * If this fails, an error is printed to standard output and exit() is called.
+     * Can it be done in a better way?
+     */
+    initscr();
 
-    tb_select_output_mode(TB_OUTPUT_NORMAL);
-    tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
-    tb_clear();
+    cbreak();                 // disable line buffering
+    keypad(stdscr, true);     // interpret function key escape sequences for us
+    noecho();                 // don't echo input to screen
+    curs_set(0);              // hide the cursor
+
+    if (has_colors()) {
+        start_color();        // enable colour support
+        use_default_colors(); // set colour index -1 as whatever colour the used terminal background is
+    } else {
+        // TODO: log warning: colours are not supported.
+    }
 }
 
 /*
@@ -68,6 +88,8 @@ void base::init_tui()
  */
 int base::wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
 {
+    (void)attrs;
+
     const size_t limit = x + space - 1;
     for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
         if (x == limit && str.length() > space) {
@@ -80,11 +102,13 @@ int base::wprintlim(size_t x, const int y, const string_view &str, const size_t 
                 whitespace++;
             }
 
-            change_cell(x, y, '~', attrs);
+            // TODO: handle colours.
+            mvaddch(y, x, '~');
             return str.length() - space + whitespace;
         }
 
-        change_cell(x++, y, *ch, attrs);
+        // TODO: handle colours.
+        mvaddch(y, x++, *ch);
     }
 
     return 0;
@@ -92,8 +116,12 @@ int base::wprintlim(size_t x, const int y, const string_view &str, const size_t 
 
 void base::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
-    for (const uint32_t &ch : str)
-        change_cell(x++, y, ch, attrs);
+    (void)attrs;
+
+    for (const uint32_t &ch : str) {
+        // TODO: handle colours.
+        mvaddch(y, x++, ch);
+    }
 }
 
 bool base::action(const key &key, const uint32_t &ch)

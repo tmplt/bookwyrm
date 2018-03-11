@@ -1,51 +1,52 @@
 #pragma once
 
-#include <termbox.h>
+#include <ncurses.h>
 
-enum class __key : uint16_t {
-    f1               = TB_KEY_F1,
-    f2               = TB_KEY_F2,
-    f3               = TB_KEY_F3,
-    f4               = TB_KEY_F4,
-    f5               = TB_KEY_F5,
-    f6               = TB_KEY_F6,
-    f7               = TB_KEY_F7,
-    f8               = TB_KEY_F8,
-    f9               = TB_KEY_F9,
-    f10              = TB_KEY_F10,
-    f11              = TB_KEY_F11,
-    f12              = TB_KEY_F12,
-    insert           = TB_KEY_INSERT,
-    del              = TB_KEY_DELETE,
-    home             = TB_KEY_HOME,
-    end              = TB_KEY_END,
-    pgup             = TB_KEY_PGUP,
-    pgdn             = TB_KEY_PGDN,
-    arrow_up         = TB_KEY_ARROW_UP,
-    arrow_down       = TB_KEY_ARROW_DOWN,
-    arrow_left       = TB_KEY_ARROW_LEFT,
-    arrow_right      = TB_KEY_ARROW_RIGHT,
-    mouse_left       = TB_KEY_MOUSE_LEFT,
-    mouse_right      = TB_KEY_MOUSE_RIGHT,
-    mouse_middle     = TB_KEY_MOUSE_MIDDLE,
-    mouse_release    = TB_KEY_MOUSE_RELEASE,
-    mouse_wheel_up   = TB_KEY_MOUSE_WHEEL_UP,
-    mouse_wheel_down = TB_KEY_MOUSE_WHEEL_DOWN,
+enum class __key : int {
+    // TODO: translate to ncurses
+    f1               = KEY_F(1),
+    f2               = KEY_F(2),
+    f3               = KEY_F(3),
+    f4               = KEY_F(4),
+    f5               = KEY_F(5),
+    f6               = KEY_F(6),
+    f7               = KEY_F(7),
+    f8               = KEY_F(8),
+    f9               = KEY_F(9),
+    f10              = KEY_F(10),
+    f11              = KEY_F(11),
+    f12              = KEY_F(12),
+    insert           = KEY_IL,
+    del              = KEY_DC,
+    home             = KEY_HOME,
+    end              = KEY_END,
+    pgup             = KEY_PPAGE,
+    pgdn             = KEY_NPAGE,
+    arrow_up         = KEY_UP,
+    arrow_down       = KEY_DOWN,
+    arrow_left       = KEY_LEFT,
+    arrow_right      = KEY_RIGHT,
+    mouse_left       ,
+    mouse_right      ,
+    mouse_middle     ,
+    mouse_release    ,
+    mouse_wheel_up   ,
+    mouse_wheel_down ,
 
-    /* Accordin to termbox.h, these may not be portable. */
-    escape = TB_KEY_ESC,
-    tab    = TB_KEY_TAB,
-    enter  = TB_KEY_ENTER,
-    ctrl_l = TB_KEY_CTRL_L,
-    ctrl_d = TB_KEY_CTRL_D,
-    ctrl_u = TB_KEY_CTRL_U,
-    space  = TB_KEY_SPACE
+    escape ,
+    tab    ,
+    enter  = KEY_ENTER,
+    ctrl_l ,
+    ctrl_d ,
+    ctrl_u ,
+    space
 };
 
-enum class __type : uint8_t {
-    key_press   = TB_EVENT_KEY,
-    resize      = TB_EVENT_RESIZE,
-    mouse_press = TB_EVENT_MOUSE
+enum class __type : int {
+    // TODO: translate to ncurses
+    key_press   = 0,
+    resize      = KEY_RESIZE,
+    mouse_press = 0
 };
 
 namespace keys {
