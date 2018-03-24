@@ -4,7 +4,7 @@
 
 #include "screens/base.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 int base::screen_count_ = 0;
 
@@ -42,8 +42,11 @@ void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const c
     x += padding_left_;
     y += padding_top_;
 
-    const bool valid_x = x >= padding_left_ && x <= tb_width() - padding_right_ - 1,
-               valid_y = y >= padding_top_ && y <= tb_height() - padding_bot_ - 1;
+    int width, height;
+    getmaxyx(stdscr, height, width);
+
+    const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
+               valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
 
     if (!valid_x || !valid_y)
         return;
@@ -69,7 +72,7 @@ void base::init_tui()
     noecho();                 // don't echo input to screen
     curs_set(0);              // hide the cursor
 
-    if (has_color()) {
+    if (has_colors()) {
         start_color();        // enable colour support
         use_default_colors(); // set colour index -1 as whatever colour the used terminal background is
     } else {

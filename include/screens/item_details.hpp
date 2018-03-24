@@ -17,7 +17,7 @@
  * The user doesn't need to exit the detail screen to select another item for details.
  * Implementing this is a problem for the future, though.
  */
-namespace screen {
+namespace bookwyrm::screen {
 
 class item_details : public base {
 public:

@@ -10,7 +10,7 @@
 #include "item.hpp"
 #include "screens/base.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 class multiselect_menu : public base {
 public:

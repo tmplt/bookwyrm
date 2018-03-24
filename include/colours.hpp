@@ -2,25 +2,27 @@
 
 #include <type_traits>
 
+namespace bookwyrm {
+
 /* These colours are only valid for TB_OUTPUT_NORMAL. */
 enum class colour : uint16_t {
     // TODO: translate to ncurses
-    /* black   = TB_BLACK, */
-    /* red     = TB_RED, */
-    /* green   = TB_GREEN, */
-    /* yellow  = TB_YELLOW, */
-    /* blue    = TB_BLUE, */
-    /* magenta = TB_MAGENTA, */
-    /* cyan    = TB_CYAN, */
-    /* white   = TB_WHITE, */
+    black   = 0,
+    red     = 0,
+    green   = 0,
+    yellow  = 0,
+    blue    = 0,
+    magenta = 0,
+    cyan    = 0,
+    white   = 0,
     none    = 0
 };
 
 enum class attribute : uint16_t {
     none      = 0,
-    bold      = TB_BOLD,
-    underline = TB_UNDERLINE,
-    reverse   = TB_REVERSE
+    bold      = 0,
+    underline = 0,
+    reverse   = 0
 };
 
 using colour_t = std::underlying_type_t<colour>;
@@ -62,3 +64,6 @@ constexpr inline attribute operator|=(attribute &lhs, colour rhs)
 /* A string can have multiple attributes, but only one colour. */
 colour operator|(colour lhs, colour rhs) = delete;
 colour operator|=(colour lhs, colour rhs) = delete;
+
+/* ns bookwyrm */
+}

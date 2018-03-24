@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 
-namespace utils {
+namespace bookwyrm::utils {
 
 std::error_code validate_download_dir(const fs::path &path)
 {

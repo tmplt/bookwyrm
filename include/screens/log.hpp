@@ -6,7 +6,7 @@
 
 #include "screens/base.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 class log : public base {
 public:
