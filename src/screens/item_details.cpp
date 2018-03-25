@@ -37,7 +37,7 @@ int item_details::scrollpercent() const
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
-        for (size_t x = 0; x < get_width(); x++)
+        for (int x = 0; x < get_width(); x++)
             change_cell(x, y, rune::single::em_dash);
     };
 
@@ -94,7 +94,7 @@ void item_details::print_desc(int &y, string str)
 
     for (auto word = words.cbegin(); word != words.cend(); ++word) {
         if (!word_fits(*word)) {
-            if (y + 1u == get_height() - 1) {
+            if (y == get_height() - 1) {
                 /* No more lines to draw on; can't fit any more. */
 
                 if (word != words.cend() - 1) {

@@ -3,7 +3,6 @@ find_package(CURL REQUIRED)
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/keys.cpp
     ${PROJECT_SOURCE_DIR}/src/logger.cpp
     ${PROJECT_SOURCE_DIR}/src/command_line.cpp
     ${PROJECT_SOURCE_DIR}/src/tui.cpp
@@ -33,7 +32,7 @@ configure_file(
 target_link_libraries(${PROJECT_NAME}
     fmt
     stdc++fs
-    ncurses
+    ncursesw
     ${CURL_LIBRARIES}
     ${PROJECT_NAME}-core)
 

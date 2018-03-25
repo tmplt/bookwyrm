@@ -121,28 +121,28 @@ bool tui::display()
 {
     repaint_screens();
 
-    struct keys::event ev;
-    while (keys::poll_event(ev)) {
-        if (ev.type == type::resize) {
+    while (true) {
+        const key ch = static_cast<key>(getch());
+
+        if (ch == key::resize) {
             close_details();
             resize_screens();
-        } else if (ev.type == type::key_press) {
-            if (ev.key == key::escape)
-                return false;
-
-            /* When the terminal is too small, only allow quitting and window resizing. */
-            if (!bookwyrm_fits())
-                continue;
-
-            if (ev.key == key::enter)
-                return true;
-
-            if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
-                repaint_screens();
+            continue;
         }
-    }
 
-    throw program_error("unable to poll input");
+        if (ch == 'q')
+            return false;
+
+        /* When the terminal is too small, only allow quitting and window resizing. */
+        if (!bookwyrm_fits())
+            continue;
+
+        if (ch == key::enter)
+            return true;
+
+        if (meta_action(static_cast<key>(0), ch) || focused_->action(static_cast<key>(0), ch))
+            repaint_screens();
+    }
 }
 
 vector<core::item> tui::get_wanted_items()
@@ -170,6 +170,8 @@ bool tui::meta_action(const key &key, const uint32_t &ch)
             return open_details();
         case 'h':
             return close_details();
+        case 'p':
+            return toggle_log();
     }
 
     switch (key) {
@@ -235,20 +237,20 @@ bool tui::toggle_log()
 
 void tui::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
-    (void)attrs;
+    attron(attrs);
 
     for (const uint32_t &ch : str) {
-        // TODO: handle colour
         mvaddch(y, x++, ch);
     }
+
+    attroff(attrs);
 }
 
 void tui::wprintcont(int x, const int y, const string_view &str, const colour attrs)
 {
-    (void)attrs;
+    attron(attrs);
 
     for (int i = 0; i < x; i++) {
-        // TODO: handle colour
         mvaddch(y, i, ' ');
     }
 
@@ -259,9 +261,10 @@ void tui::wprintcont(int x, const int y, const string_view &str, const colour at
     (void)height;
 
     for (int i = x + str.length(); i < width; i++) {
-        // TODO: handle colour
         mvaddch(y, i, ' ');
     }
+
+    attroff(attrs);
 }
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)

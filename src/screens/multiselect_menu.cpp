@@ -1,4 +1,5 @@
 #include <fmt/format.h>
+#include <ncurses.h>
 
 #include "errors.hpp"
 #include "utils.hpp"
@@ -186,7 +187,7 @@ void multiselect_menu::print_header()
         if (column.width > allowed_width) break;
 
         /* Center the title. */
-        wprint(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue | attribute::bold);
+        wprint(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue, attribute::bold);
         x += std::max(column.width, column.title.length());
 
         /* Padding between the title and the seperator to the left.. */
@@ -210,16 +211,16 @@ void multiselect_menu::print_column(const size_t col_idx)
         const bool on_selected_item = (y + scroll_offset_ == selected_item_ + 1),
                    on_marked_item   = is_marked(y + scroll_offset_ - 1);
 
-        /*
-         * Print the indicator, indicating which item is
-         * currently selected.
-         */
-        if (on_selected_item && on_marked_item)
+        /* Print the indicator, indicating which item is currently selected. */
+        if (on_selected_item && on_marked_item) {
             change_cell(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
-        else if (on_selected_item)
+        }
+        else if (on_selected_item) {
             change_cell(0, y, rune::single::double_right_angle_bracket);
-        else if (on_marked_item)
-            change_cell(0, y, ' ', attribute::reverse);
+        }
+        else if (on_marked_item) {
+            change_cell(0, y, " ", attribute::reverse);
+        }
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
@@ -248,7 +249,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         const auto string_end = c.startx + strings[col_idx].get().length() - trunc_len,
                    next_start = c.startx + c.width + 2;
         for (auto x = string_end; x <= next_start; x++)
-            change_cell(x, y, ' ', attrs);
+            change_cell(x, y, " ", attrs);
     }
 }
 

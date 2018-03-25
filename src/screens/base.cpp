@@ -1,4 +1,5 @@
 #include <cassert>
+#include <clocale>
 
 #include <fmt/format.h>
 
@@ -21,7 +22,7 @@ base::~base()
     assert(screen_count_ >= 0);
 }
 
-size_t base::get_width() const
+int base::get_width() const
 {
     int x, y;
     getmaxyx(stdscr, y, x);
@@ -29,7 +30,7 @@ size_t base::get_width() const
     return x - padding_left_ - padding_right_;
 }
 
-size_t base::get_height() const
+int base::get_height() const
 {
     int x, y;
     getmaxyx(stdscr, y, x);
@@ -37,13 +38,28 @@ size_t base::get_height() const
     return y - padding_top_ - padding_bot_;
 }
 
-void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const colour bg)
+void base::change_cell(int x, int y, const string &str, const colour clr, const attribute attrs)
 {
     x += padding_left_;
     y += padding_top_;
 
-    int width, height;
-    getmaxyx(stdscr, height, width);
+    /* Is the cell owned by the screen? */
+    if (!(x <= get_width()) || !(y <= get_height()))
+        return;
+
+    attron(clr | attrs);
+    // TODO: only print a single character (keep in mind mb chars)
+    mvaddstr(y, x, str.c_str());
+    attroff(clr | attrs);
+}
+
+void base::change_cell(int x, int y, const uint32_t ch, const colour clr, const attribute attrs)
+{
+    x += padding_left_;
+    y += padding_top_;
+
+    const int width = get_width(),
+              height = get_height();
 
     const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
                valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
@@ -51,15 +67,17 @@ void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const c
     if (!valid_x || !valid_y)
         return;
 
-    // TODO: handle colours.
-    (void)fg;
-    (void)bg;
+    attron(clr | attrs);
     mvaddch(y, x, ch);
+    attroff(clr | attrs);
 }
+
 
 void base::init_tui()
 {
     if (screen_count_++ > 0) return;
+
+    std::setlocale(LC_ALL, "");
 
     /*
      * If this fails, an error is printed to standard output and exit() is called.
@@ -75,43 +93,42 @@ void base::init_tui()
     if (has_colors()) {
         start_color();        // enable colour support
         use_default_colors(); // set colour index -1 as whatever colour the used terminal background is
+
+        init_pair(1, COLOR_BLACK,   -1);
+        init_pair(2, COLOR_RED,     -1);
+        init_pair(3, COLOR_GREEN,   -1);
+        init_pair(4, COLOR_YELLOW,  -1);
+        init_pair(5, COLOR_BLUE,    -1);
+        init_pair(6, COLOR_MAGENTA, -1);
+        init_pair(7, COLOR_CYAN,    -1);
+        init_pair(8, COLOR_WHITE,   -1);
     } else {
         // TODO: log warning: colours are not supported.
     }
 }
 
-/*
- * This implementation first prints out as much as it cans and then backtracks,
- * wasting oh-so-precious CPU-cycles.
- *
- * TODO: rewrite this to only print as much as it has to.
- */
-int base::wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
+int base::wprintlim(int x, int y, const string &str, const size_t space, const colour clr, const attribute attrs)
 {
-    (void)attrs;
+    attron(clr | attrs);
+    mvaddnstr(y, x, str.c_str(), space);
 
-    const size_t limit = x + space - 1;
-    for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
-        if (x == limit && str.length() > space) {
-            /* We can't fit the rest of the string. */
+    int truncd = 0;
+    if (str.length() > space) {
+        /* The whole string did not fit; indicate this to the user. */
 
-            /* Don't print the substring's trailing whitespace. */
-            int whitespace = 0;
-            while (std::isspace(*(--ch))) {
-                x--;
-                whitespace++;
-            }
-
-            // TODO: handle colours.
-            mvaddch(y, x, '~');
-            return str.length() - space + whitespace;
+        auto ch = str.cbegin() + space - 1;
+        int whitespace = 0;
+        while (std::isspace(*(--ch))) {
+            ++whitespace;
         }
 
-        // TODO: handle colours.
-        mvaddch(y, x++, *ch);
+        truncd = str.length() - space + whitespace;
+        getyx(stdscr, y, x);
+        mvaddch(y, x - whitespace - 1, '~');
     }
 
-    return 0;
+    attroff(clr | attrs);
+    return truncd;
 }
 
 void base::wprint(int x, const int y, const string_view &str, const colour attrs)
@@ -124,10 +141,21 @@ void base::wprint(int x, const int y, const string_view &str, const colour attrs
     }
 }
 
+void base::wprint(int x, const int y, const string_view &str, const colour clr, const attribute attrs)
+{
+
+    attron(clr | attrs);
+
+    for (const uint32_t &ch : str)
+        mvaddch(y, x++, ch);
+
+    attroff(clr | attrs);
+}
+
 bool base::action(const key &key, const uint32_t &ch)
 {
     const auto move_halfpage = [this] (move_direction dir) {
-        for (size_t i = 0; i < get_height() / 2; i++)
+        for (int i = 0; i < get_height() / 2; i++)
             move(dir);
     };
 
@@ -169,6 +197,9 @@ bool base::action(const key &key, const uint32_t &ch)
             return true;
         case 'u':
             move_halfpage(up);
+            return true;
+        case 's':
+            toggle_action();
             return true;
     }
 
