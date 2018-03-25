@@ -32,6 +32,7 @@ inline void init()
         init_pair(8, COLOR_WHITE,   -1);
     } else {
         // XXX: Can we warn users that colours are not supported?
+        // An exception, perhaps?
     }
 }
 

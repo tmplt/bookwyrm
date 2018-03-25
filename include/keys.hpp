@@ -26,51 +26,15 @@ enum key : int {
     arrow_down       = KEY_DOWN,
     arrow_left       = KEY_LEFT,
     arrow_right      = KEY_RIGHT,
-    mouse_left       = 0,
-    mouse_right      = 0,
-    mouse_middle     = 0,
-    mouse_release    = 0,
-    mouse_wheel_up   = 0,
-    mouse_wheel_down = 0,
+    resize           = KEY_RESIZE,
 
-    escape ,
-    tab    = KEY_STAB,
-    enter  = KEY_ENTER,
-    ctrl_l ,
-    ctrl_d ,
-    ctrl_u ,
-    space ,
-    resize = KEY_RESIZE
+    /*
+     * Below numbers are the return values of getch()
+     * for the listed key. I do not know if these are
+     * portable.
+     */
+    tab           = 9,
+    enter         = 10,
+    ctrl_l        = 12,
+    space         = 32,
 };
-
-enum class __type : int {
-    // TODO: translate to ncurses
-    key_press   = 0,
-    resize      = KEY_RESIZE,
-    mouse_press = 0
-};
-
-/* namespace keys { */
-
-/* struct event { */
-/*     __type type; */
-/*     __key key; */
-/*     uint32_t ch; */
-/*     int32_t w; */
-/*     int32_t h; */
-/*     int32_t x; */
-/*     int32_t y; */
-/* }; */
-
-/*
- * Abstraction of termbox's tb_poll_event.
- * Updates the passed keys::event struct with the data given
- * by tb_event_poll.
- */
-/* bool poll_event(event &ev); */
-
-/* ns keys */
-/* } */
-
-/* using key  = __key; */
-/* using type = __type; */

@@ -30,7 +30,7 @@ public:
 
     string controls_legacy() const override
     {
-        return "[h]Close details";
+        return "[h/<-]Close details";
     }
 
     void move(move_direction dir)

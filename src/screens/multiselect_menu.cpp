@@ -62,7 +62,7 @@ string multiselect_menu::footer_info() const
 
 string multiselect_menu::controls_legacy() const
 {
-    return "[j/k d/u]Navigation [SPACE]Toggle select [l]Open details";
+    return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details";
 }
 
 int multiselect_menu::scrollpercent() const

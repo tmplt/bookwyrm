@@ -84,7 +84,7 @@ void tui::print_footer()
         print_right_align(curses::get_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    wprintcont(0, curses::get_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    wprintcont(0, curses::get_height() - 1, "[q]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
@@ -149,21 +149,16 @@ bool tui::bookwyrm_fits()
 
 bool tui::meta_action(const key &key, const uint32_t &ch)
 {
-    switch (ch) {
-        case 'l':
-            return open_details();
-        case 'h':
-            return close_details();
-        case 'p':
-            return toggle_log();
-    }
+    (void)key;
 
-    switch (key) {
+    switch (ch) {
         case key::ctrl_l:
             /* Repaint the screens, done in calling function. */
             return true;
+        case 'l':
         case key::arrow_right:
             return open_details();
+        case 'h':
         case key::arrow_left:
             return close_details();
         case key::tab:

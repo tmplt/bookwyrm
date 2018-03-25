@@ -74,36 +74,20 @@ void base::wprint(int x, const int y, const string &str, const colour clr, const
 
 bool base::action(const key &key, const uint32_t &ch)
 {
+    (void)key;
+
     const auto move_halfpage = [this] (move_direction dir) {
         for (int i = 0; i < get_height() / 2; i++)
             move(dir);
     };
 
-    switch (key) {
+    switch (ch) {
+        case 'j':
         case key::arrow_down:
             move(down);
             return true;
-        case key::arrow_up:
-            move(up);
-            return true;
-        case key::space:
-            toggle_action();
-            return true;
-        case key::ctrl_d:
-            move_halfpage(down);
-            return true;
-        case key::ctrl_u:
-            move_halfpage(up);
-            return true;
-        default:
-            break;
-    }
-
-    switch (ch) {
-        case 'j':
-            move(down);
-            return true;
         case 'k':
+        case key::arrow_up:
             move(up);
             return true;
         case 'g':
@@ -118,7 +102,7 @@ bool base::action(const key &key, const uint32_t &ch)
         case 'u':
             move_halfpage(up);
             return true;
-        case 's':
+        case key::space:
             toggle_action();
             return true;
     }
