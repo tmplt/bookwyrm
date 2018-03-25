@@ -2,7 +2,7 @@
 
 #include <ncurses.h>
 
-enum class __key : int {
+enum key : int {
     // TODO: translate to ncurses
     f1               = KEY_F(1),
     f2               = KEY_F(2),
@@ -26,20 +26,21 @@ enum class __key : int {
     arrow_down       = KEY_DOWN,
     arrow_left       = KEY_LEFT,
     arrow_right      = KEY_RIGHT,
-    mouse_left       ,
-    mouse_right      ,
-    mouse_middle     ,
-    mouse_release    ,
-    mouse_wheel_up   ,
-    mouse_wheel_down ,
+    mouse_left       = 0,
+    mouse_right      = 0,
+    mouse_middle     = 0,
+    mouse_release    = 0,
+    mouse_wheel_up   = 0,
+    mouse_wheel_down = 0,
 
     escape ,
-    tab    ,
+    tab    = KEY_STAB,
     enter  = KEY_ENTER,
     ctrl_l ,
     ctrl_d ,
     ctrl_u ,
-    space
+    space ,
+    resize = KEY_RESIZE
 };
 
 enum class __type : int {
@@ -49,27 +50,27 @@ enum class __type : int {
     mouse_press = 0
 };
 
-namespace keys {
+/* namespace keys { */
 
-struct event {
-    __type type;
-    __key key;
-    uint32_t ch;
-    int32_t w;
-    int32_t h;
-    int32_t x;
-    int32_t y;
-};
+/* struct event { */
+/*     __type type; */
+/*     __key key; */
+/*     uint32_t ch; */
+/*     int32_t w; */
+/*     int32_t h; */
+/*     int32_t x; */
+/*     int32_t y; */
+/* }; */
 
 /*
  * Abstraction of termbox's tb_poll_event.
  * Updates the passed keys::event struct with the data given
  * by tb_event_poll.
  */
-bool poll_event(event &ev);
+/* bool poll_event(event &ev); */
 
 /* ns keys */
-}
+/* } */
 
-using key  = __key;
-using type = __type;
+/* using key  = __key; */
+/* using type = __type; */

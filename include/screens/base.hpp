@@ -62,42 +62,36 @@ protected:
     size_t get_height() const;
 
     /*
-     * After asserting that the screen owns the cell,
-     * change it with the given parameters.
+     * After asserting that the screen owns the cell, change it with the given parameters.
+     * Only the first character from the given string is printed.
      */
-    void change_cell(int x, int y, const uint32_t ch, const colour fg = colour::none, const colour bg = colour::none);
-
-    void change_cell(int x, int y, const uint32_t ch, const attribute attr)
+    void change_cell(int x, int y, const string &str, const colour clr, const attribute attrs = attribute::none);
+    void change_cell(int x, int y, const string &str, const attribute attrs = attribute::none)
     {
-        change_cell(x, y, ch, colour::none | attr);
+        change_cell(x, y, str, colour::none, attrs);
     }
 
-    void change_cell(int x, int y, const rune::single ch, const attribute attr)
+    /* Legacy funtions */
+    void change_cell(int x, int y, const uint32_t ch, const colour clr, const attribute attrs = attribute::none);
+    void change_cell(int x, int y, const uint32_t ch, const attribute attr = attribute::none)
     {
-        change_cell(x, y, static_cast<rune_t>(ch), colour::none | attr);
-    }
-
-    void change_cell(int x, int y, const rune::single ch)
-    {
-        change_cell(x, y, static_cast<rune_t>(ch));
+        change_cell(x, y, ch, colour::none, attr);
     }
 
     /*
-     * Akin to Ncurses mvprintw(), but:
-     * print a string starting from (x, y) along the x-axis. The space
-     * argument denotes how much of the string is printed. If the string
-     * doesn't fit, the string is truncated with '~'.
-     *
-     * Returns the count of truncated characters, counter from the end of
-     * the string.
+     * Print a string starting from (x, y) along the x-axis within the space given.
+     * If the string is longer than the space it should fit in, the string is truncated with a '~' at its last non-whitespace character.
+     * Returns the count of truncated characters, counting from the end of the string.
      */
-    int wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs = colour::white);
-    int wprintlim(size_t x, const int y, const string_view &str, const size_t space, const attribute attr)
+    int wprintlim(size_t x, const int y, const string &str, const size_t space, const colour clr, const attribute attrs = attribute::none);
+    int wprintlim(size_t x, const int y, const string &str, const size_t space, const attribute attrs = attribute::none)
     {
-        return wprintlim(x, y, str, space, colour::white | attr);
+        return wprintlim(x, y, str, space, colour::none, attrs);
     }
 
     /* Same as above, but don't truncate. */
+    void wprint(int x, const int y, const string_view &str, const colour clr, const attribute attrs);
+
     void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
     void wprint(int x, const int y, const string_view &str, const attribute attr)
     {

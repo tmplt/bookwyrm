@@ -1,4 +1,5 @@
 #include <cassert>
+#include <clocale>
 
 #include <fmt/format.h>
 
@@ -37,13 +38,13 @@ size_t base::get_height() const
     return y - padding_top_ - padding_bot_;
 }
 
-void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const colour bg)
+void base::change_cell(int x, int y, const string &str, const colour clr, const attribute attrs)
 {
     x += padding_left_;
     y += padding_top_;
 
-    int width, height;
-    getmaxyx(stdscr, height, width);
+    const int width = get_width(),
+              height = get_height();
 
     const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
                valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
@@ -51,15 +52,37 @@ void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const c
     if (!valid_x || !valid_y)
         return;
 
-    // TODO: handle colours.
-    (void)fg;
-    (void)bg;
-    mvaddch(y, x, ch);
+    attron(clr | attrs);
+    // TODO: only print a single character (keep in mind mb chars)
+    mvaddstr(y, x, str.c_str());
+    attroff(clr | attrs);
 }
+
+void base::change_cell(int x, int y, const uint32_t ch, const colour clr, const attribute attrs)
+{
+    x += padding_left_;
+    y += padding_top_;
+
+    const int width = get_width(),
+              height = get_height();
+
+    const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
+               valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
+
+    if (!valid_x || !valid_y)
+        return;
+
+    attron(clr | attrs);
+    mvaddch(y, x, ch);
+    attroff(clr | attrs);
+}
+
 
 void base::init_tui()
 {
     if (screen_count_++ > 0) return;
+
+    std::setlocale(LC_ALL, "");
 
     /*
      * If this fails, an error is printed to standard output and exit() is called.
@@ -75,21 +98,22 @@ void base::init_tui()
     if (has_colors()) {
         start_color();        // enable colour support
         use_default_colors(); // set colour index -1 as whatever colour the used terminal background is
+
+        init_pair(1, COLOR_BLACK,   -1);
+        init_pair(2, COLOR_RED,     -1);
+        init_pair(3, COLOR_GREEN,   -1);
+        init_pair(4, COLOR_YELLOW,  -1);
+        init_pair(5, COLOR_BLUE,    -1);
+        init_pair(6, COLOR_MAGENTA, -1);
+        init_pair(7, COLOR_CYAN,    -1);
+        init_pair(8, COLOR_WHITE,   -1);
     } else {
         // TODO: log warning: colours are not supported.
     }
 }
 
-/*
- * This implementation first prints out as much as it cans and then backtracks,
- * wasting oh-so-precious CPU-cycles.
- *
- * TODO: rewrite this to only print as much as it has to.
- */
-int base::wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
+int base::wprintlim(size_t x, const int y, const string &str, const size_t space, const colour clr, const attribute attrs)
 {
-    (void)attrs;
-
     const size_t limit = x + space - 1;
     for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
         if (x == limit && str.length() > space) {
@@ -102,17 +126,39 @@ int base::wprintlim(size_t x, const int y, const string_view &str, const size_t 
                 whitespace++;
             }
 
-            // TODO: handle colours.
-            mvaddch(y, x, '~');
+            change_cell(x, y, '~', clr, attrs);
             return str.length() - space + whitespace;
         }
 
-        // TODO: handle colours.
-        mvaddch(y, x++, *ch);
+        change_cell(x++, y, *ch, clr, attrs);
     }
 
     return 0;
 }
+
+/* int base::wprintlim(size_t x, const int y, const string &str, const size_t space, const colour clr, const attribute attrs) */
+/* { */
+/*     if (str.length() < space) { */
+/*         attron(clr | attrs); */
+/*         mvaddnstr(y, x, str.c_str(), space); */
+/*         attroff(clr | attrs); */
+
+/*         return 0; */
+/*     } else { */
+/*         auto ch = str.cend() - (str.length() - space); */
+/*         int whitespace = 0; */
+/*         while (--ch != str.cbegin() && std::isspace(*ch)) { */
+/*             ++whitespace; */
+/*         } */
+
+/*         attron(clr | attrs); */
+/*         mvaddnstr(y, x, str.c_str(), space - whitespace); */
+/*         addch('~'); */
+/*         attroff(clr | attrs); */
+
+/*         return str.length() - space + whitespace; */
+/*     } */
+/* } */
 
 void base::wprint(int x, const int y, const string_view &str, const colour attrs)
 {
@@ -122,6 +168,17 @@ void base::wprint(int x, const int y, const string_view &str, const colour attrs
         // TODO: handle colours.
         mvaddch(y, x++, ch);
     }
+}
+
+void base::wprint(int x, const int y, const string_view &str, const colour clr, const attribute attrs)
+{
+
+    attron(clr | attrs);
+
+    for (const uint32_t &ch : str)
+        mvaddch(y, x++, ch);
+
+    attroff(clr | attrs);
 }
 
 bool base::action(const key &key, const uint32_t &ch)
@@ -169,6 +226,9 @@ bool base::action(const key &key, const uint32_t &ch)
             return true;
         case 'u':
             move_halfpage(up);
+            return true;
+        case 's':
+            toggle_action();
             return true;
     }
 
