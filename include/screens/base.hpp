@@ -71,13 +71,6 @@ protected:
         change_cell(x, y, str, colour::none, attrs);
     }
 
-    /* Legacy funtions */
-    void change_cell(int x, int y, const uint32_t ch, const colour clr, const attribute attrs = attribute::none);
-    void change_cell(int x, int y, const uint32_t ch, const attribute attr = attribute::none)
-    {
-        change_cell(x, y, ch, colour::none, attr);
-    }
-
     /*
      * Print a string starting from (x, y) along the x-axis within the space given.
      * If the string is longer than the space it should fit in, the string is truncated with a '~' at its last non-whitespace character.
@@ -90,12 +83,10 @@ protected:
     }
 
     /* Same as above, but don't truncate. */
-    void wprint(int x, const int y, const string_view &str, const colour clr, const attribute attrs);
-
-    void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
-    void wprint(int x, const int y, const string_view &str, const attribute attr)
+    void wprint(int x, const int y, const string &str, const colour clr = colour::none, const attribute attrs = attribute::none);
+    void wprint(int x, const int y, const string &str, const attribute attr)
     {
-        wprint(x, y, str, colour::white | attr);
+        wprint(x, y, str, colour::white, attr);
     }
 
     /* How much space do we leave for bars? */
@@ -104,7 +95,6 @@ protected:
 
 private:
     static int screen_count_;
-    static void init_tui();
 };
 
 /* ns screen */

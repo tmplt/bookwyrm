@@ -99,15 +99,15 @@ private:
     void resize_screens();
 
     /* copy from screen::base. */
-    static void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    static void wprint(int x, const int y, const string &str, const colour attrs = colour::white);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void wprintcont(int x, const int y, const string_view &str, const colour attrs = colour::white);
-    static void wprintcont(int x, const int y, const string_view &str, const attribute attr)
+    static void wprintcont(int x, const int y, const string &str, const colour attrs = colour::white);
+    static void wprintcont(int x, const int y, const string &str, const attribute attr)
     {
         wprintcont(x, y, str, colour::white | attr);
     }

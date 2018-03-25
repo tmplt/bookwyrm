@@ -1,9 +1,9 @@
 #include <cassert>
-#include <clocale>
 
 #include <fmt/format.h>
 
 #include "screens/base.hpp"
+#include "curses_wrap.hpp"
 
 namespace bookwyrm::screen {
 
@@ -13,29 +13,24 @@ base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
     : padding_top_(pad_top), padding_bot_(pad_bot),
     padding_left_(pad_left), padding_right_(pad_right)
 {
-    init_tui();
+    if (screen_count_++ > 0) return;
+    curses::init();
 }
 
 base::~base()
 {
-    if (--screen_count_ == 0) endwin();
+    if (--screen_count_ == 0) curses::terminate();
     assert(screen_count_ >= 0);
 }
 
 int base::get_width() const
 {
-    int x, y;
-    getmaxyx(stdscr, y, x);
-    (void)y;
-    return x - padding_left_ - padding_right_;
+    return curses::get_width() - padding_left_ - padding_right_;
 }
 
 int base::get_height() const
 {
-    int x, y;
-    getmaxyx(stdscr, y, x);
-    (void)x;
-    return y - padding_top_ - padding_bot_;
+    return curses::get_height() - padding_top_ - padding_bot_;
 }
 
 void base::change_cell(int x, int y, const string &str, const colour clr, const attribute attrs)
@@ -47,70 +42,12 @@ void base::change_cell(int x, int y, const string &str, const colour clr, const 
     if (!(x <= get_width()) || !(y <= get_height()))
         return;
 
-    attron(clr | attrs);
-    // TODO: only print a single character (keep in mind mb chars)
-    mvaddstr(y, x, str.c_str());
-    attroff(clr | attrs);
-}
-
-void base::change_cell(int x, int y, const uint32_t ch, const colour clr, const attribute attrs)
-{
-    x += padding_left_;
-    y += padding_top_;
-
-    const int width = get_width(),
-              height = get_height();
-
-    const bool valid_x = x >= padding_left_ && x <= width - padding_right_ - 1,
-               valid_y = y >= padding_top_ && y <= height - padding_bot_ - 1;
-
-    if (!valid_x || !valid_y)
-        return;
-
-    attron(clr | attrs);
-    mvaddch(y, x, ch);
-    attroff(clr | attrs);
-}
-
-
-void base::init_tui()
-{
-    if (screen_count_++ > 0) return;
-
-    std::setlocale(LC_ALL, "");
-
-    /*
-     * If this fails, an error is printed to standard output and exit() is called.
-     * Can it be done in a better way?
-     */
-    initscr();
-
-    cbreak();                 // disable line buffering
-    keypad(stdscr, true);     // interpret function key escape sequences for us
-    noecho();                 // don't echo input to screen
-    curs_set(0);              // hide the cursor
-
-    if (has_colors()) {
-        start_color();        // enable colour support
-        use_default_colors(); // set colour index -1 as whatever colour the used terminal background is
-
-        init_pair(1, COLOR_BLACK,   -1);
-        init_pair(2, COLOR_RED,     -1);
-        init_pair(3, COLOR_GREEN,   -1);
-        init_pair(4, COLOR_YELLOW,  -1);
-        init_pair(5, COLOR_BLUE,    -1);
-        init_pair(6, COLOR_MAGENTA, -1);
-        init_pair(7, COLOR_CYAN,    -1);
-        init_pair(8, COLOR_WHITE,   -1);
-    } else {
-        // TODO: log warning: colours are not supported.
-    }
+    curses::mvprint(x, y, str, attrs, clr);
 }
 
 int base::wprintlim(int x, int y, const string &str, const size_t space, const colour clr, const attribute attrs)
 {
-    attron(clr | attrs);
-    mvaddnstr(y, x, str.c_str(), space);
+    curses::mvprintn(x, y, str, space, attrs, clr);
 
     int truncd = 0;
     if (str.length() > space) {
@@ -124,32 +61,15 @@ int base::wprintlim(int x, int y, const string &str, const size_t space, const c
 
         truncd = str.length() - space + whitespace;
         getyx(stdscr, y, x);
-        mvaddch(y, x - whitespace - 1, '~');
+        curses::mvprint(x - whitespace - 1, y, "~");
     }
 
-    attroff(clr | attrs);
     return truncd;
 }
 
-void base::wprint(int x, const int y, const string_view &str, const colour attrs)
+void base::wprint(int x, const int y, const string &str, const colour clr, const attribute attrs)
 {
-    (void)attrs;
-
-    for (const uint32_t &ch : str) {
-        // TODO: handle colours.
-        mvaddch(y, x++, ch);
-    }
-}
-
-void base::wprint(int x, const int y, const string_view &str, const colour clr, const attribute attrs)
-{
-
-    attron(clr | attrs);
-
-    for (const uint32_t &ch : str)
-        mvaddch(y, x++, ch);
-
-    attroff(clr | attrs);
+    curses::mvprint(x, y, str, attrs, clr);
 }
 
 bool base::action(const key &key, const uint32_t &ch)

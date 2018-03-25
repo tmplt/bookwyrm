@@ -1,5 +1,6 @@
 #include "tui.hpp"
 #include "utils.hpp"
+#include "curses_wrap.hpp"
 
 namespace bookwyrm {
 
@@ -50,7 +51,7 @@ void tui::log(const core::log_level level, const string message)
 
 void tui::repaint_screens()
 {
-    erase();
+    curses::erase();
 
     if (!bookwyrm_fits()) {
         wprint(0, 0, "The terminal is too small. I don't fit!");
@@ -66,43 +67,29 @@ void tui::repaint_screens()
         print_footer();
     }
 
-    refresh();
+    curses::refresh();
 }
 
 void tui::print_footer()
 {
-    const auto curses_height = []() {
-        int x, y;
-        (void)x;
-        getmaxyx(stdscr, y, x);
-        return y;
-    };
-
-    const auto curses_width = []() {
-        int x, y;
-        (void)y;
-        getmaxyx(stdscr, y, x);
-        return x;
-    };
-
-    const auto print_right_align = [this, &curses_width](int y, string &&str, const colour attrs = colour::none) {
-        this->wprint(curses_width() - str.length(), y, str, attrs);
+    const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
+        this->wprint(curses::get_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
-    wprint(0, curses_height() - 2, focused_->footer_info());
+    wprint(0, curses::get_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
-        print_right_align(curses_height() - 2, fmt::format("({}%)", perc));
+        print_right_align(curses::get_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    wprintcont(0, curses_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    wprintcont(0, curses::get_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
     if (logger_->has_unread_logs()) {
-        print_right_align(curses_height() - 1, " You have unread logs! ",
+        print_right_align(curses::get_height() - 1, " You have unread logs! ",
                 utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
     }
 }
@@ -157,10 +144,7 @@ vector<core::item> tui::get_wanted_items()
 
 bool tui::bookwyrm_fits()
 {
-    int x, y;
-    getmaxyx(stdscr, y, x);
-
-    return x >= 50 && y >= 10;
+    return (curses::get_width() >= 50 && curses::get_height() >= 10);
 }
 
 bool tui::meta_action(const key &key, const uint32_t &ch)
@@ -235,36 +219,17 @@ bool tui::toggle_log()
     return true;
 }
 
-void tui::wprint(int x, const int y, const string_view &str, const colour attrs)
+void tui::wprint(int x, const int y, const string &str, const colour attrs)
 {
-    attron(attrs);
-
-    for (const uint32_t &ch : str) {
-        mvaddch(y, x++, ch);
-    }
-
-    attroff(attrs);
+    curses::mvprint(x, y, str, attribute::none, attrs);
 }
 
-void tui::wprintcont(int x, const int y, const string_view &str, const colour attrs)
+void tui::wprintcont(int x, const int y, const string &str, const colour attrs)
 {
-    attron(attrs);
+    curses::mvprint(x, y, str, attribute::none, attrs);
 
-    for (int i = 0; i < x; i++) {
-        mvaddch(y, i, ' ');
-    }
-
-    wprint(x, y, str, attrs);
-
-    int width, height;
-    getmaxyx(stdscr, height, width);
-    (void)height;
-
-    for (int i = x + str.length(); i < width; i++) {
-        mvaddch(y, i, ' ');
-    }
-
-    attroff(attrs);
+    for (int i = x + str.length(); i < curses::get_width(); i++)
+        curses::mvprint(i, y, " ", attribute::none, attrs);
 }
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)
