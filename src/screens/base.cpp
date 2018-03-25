@@ -72,10 +72,8 @@ void base::wprint(int x, const int y, const string &str, const colour clr, const
     curses::mvprint(x, y, str, attrs, clr);
 }
 
-bool base::action(const key &key, const uint32_t &ch)
+bool base::action(const int ch)
 {
-    (void)key;
-
     const auto move_halfpage = [this] (move_direction dir) {
         for (int i = 0; i < get_height() / 2; i++)
             move(dir);

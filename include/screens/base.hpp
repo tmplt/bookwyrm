@@ -34,7 +34,7 @@ public:
     virtual void on_resize() { };
 
     /* Manage the screen. Return true if an action was performed. */
-    virtual bool action(const key &key, const uint32_t &ch);
+    virtual bool action(const int ch);
 
     /* Toggle something on the screen, if anything. */
     virtual void toggle_action() { };

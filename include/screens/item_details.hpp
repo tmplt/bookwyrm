@@ -23,7 +23,7 @@ class item_details : public base {
 public:
     explicit item_details(const core::item &item, int padding_top);
 
-    bool action(const key &key, const uint32_t &ch) override;
+    bool action(const int ch) override;
     void paint() override;
     string footer_info() const override;
     int scrollpercent() const override;

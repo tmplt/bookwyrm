@@ -35,6 +35,5 @@ enum key : int {
      */
     tab           = 9,
     enter         = 10,
-    ctrl_l        = 12,
     space         = 32,
 };

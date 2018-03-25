@@ -127,7 +127,7 @@ bool tui::display()
         if (ch == key::enter)
             return true;
 
-        if (meta_action(static_cast<key>(0), ch) || focused_->action(static_cast<key>(0), ch))
+        if (meta_action(ch) || focused_->action(ch))
             repaint_screens();
     }
 }
@@ -147,14 +147,9 @@ bool tui::bookwyrm_fits()
     return (curses::get_width() >= 50 && curses::get_height() >= 10);
 }
 
-bool tui::meta_action(const key &key, const uint32_t &ch)
+bool tui::meta_action(const int ch)
 {
-    (void)key;
-
     switch (ch) {
-        case key::ctrl_l:
-            /* Repaint the screens, done in calling function. */
-            return true;
         case 'l':
         case key::arrow_right:
             return open_details();

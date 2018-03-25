@@ -83,7 +83,7 @@ private:
     static bool bookwyrm_fits();
 
     /* Manage screens. Return true if an action was performed. */
-    bool meta_action(const key &key, const uint32_t &ch);
+    bool meta_action(const int ch);
 
     /*
      * Open a screen::item_details for the currently selected item in the index menu.

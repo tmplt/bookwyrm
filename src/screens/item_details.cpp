@@ -9,10 +9,11 @@ item_details::item_details(const core::item &item, int padding_top)
 
 }
 
-bool item_details::action(const key &key, const uint32_t &ch)
+bool item_details::action(const int ch)
 {
-    (void)key;
     (void)ch;
+
+    /* No actions for this screen yet. */
 
     return false;
 }
