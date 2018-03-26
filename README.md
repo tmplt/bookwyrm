@@ -20,12 +20,12 @@ Some scripts are available upstream, but you should also be able to write your o
 A script may need data from the user (e.g. login credentials); this can be written into `~/.config/bookwyrm/config.yaml`.
 
 Aside from a C++17-compliant compiler and CMake, bookwyrm also depends on a few libraries:
-* **fmt**,        for a few print-outs and since spdlog depends on it;
-* spdlog,         for logging warnings/errors/etc. to the user;
+* fmt,        for a few print-outs and since spdlog depends on it;
 * **ncurses**,        for the TUI;
 * **pybind11**,   for interfacing with Python, and
 * **fuzzywuzzy**, for fuzzily matching found items with what's wanted.
 
+All libraries that do not use a bold font are non-essential and may be subject to removal later in development. (Almost) all dependencies are submoduled in `lib/`.
 The only external dependency is ncurses.
 
 Furthermore, the Python modules need the following packages:
@@ -34,8 +34,6 @@ Furthermore, the Python modules need the following packages:
 * **isbnlib**,      extraction library for ISBNs (International Standard Book Number).
 
 These can be installed via `pip3 install --user <package name>`.
-
-All libraries that do not use a bold font are non-essential and may be subject to removal later in development. All dependencies are submoduled in `lib/`.
 
 bookwyrm is still in the early development stage, so nothing is set in stone. A v1.0.0 release is planned for early Q1 2018.
 

@@ -5,8 +5,7 @@
 #include <system_error>
 #include <experimental/filesystem>
 
-#include <spdlog/common.h>
-
+#include "core/plugin_handler.hpp"
 #include "command_line.hpp"
 #include "common.hpp"
 #include "colours.hpp"
@@ -36,7 +35,7 @@ int percent_round(double d);
 int ratio(double a, double b);
 
 /* Translates a level enum to a matching colour. */
-colour to_colour(spdlog::level::level_enum lvl);
+colour to_colour(core::log_level lvl);
 
 /* Generate a Lorem Ipsum string. */
 string lipsum(int repeats);

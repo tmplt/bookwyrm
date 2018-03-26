@@ -12,12 +12,15 @@
 #include "screens/log.hpp"
 
 /* Circular dependency guard. */
-namespace logger { class bookwyrm_logger; }
-using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
+/* namespace logger { class bookwyrm_logger; } */
+/* using logger_t = std::shared_ptr<logger::bookwyrm_logger>; */
 
 namespace core { class plugin_handler; }
 
 namespace bookwyrm {
+
+class logger;
+using logger_t = std::shared_ptr<logger>;
 
 class tui : public core::frontend {
 public:
@@ -26,14 +29,8 @@ public:
         repaint_screens();
     }
 
-    void log(const core::log_level level, const string message);
-
     /* Send a log entry to the log screen. */
-    void log(const spdlog::level::level_enum level, const string message)
-    {
-        log_->log_entry(level, message);
-        repaint_screens();
-    }
+    void log(const core::log_level level, const string message);
 
     /* WARN: this constructor should only be used in make_with() above. */
     explicit tui(vector<core::item> &items, logger_t logger);
@@ -113,7 +110,7 @@ private:
     }
 };
 
-std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger);
+std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t logger);
 
 /* ns bookwyrm */
 }

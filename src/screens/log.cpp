@@ -1,3 +1,4 @@
+#include <fmt/format.h>
 #include "screens/log.hpp"
 #include "utils.hpp"
 
@@ -87,7 +88,7 @@ int log::scrollpercent() const
     return utils::ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
 }
 
-void log::log_entry(spdlog::level::level_enum level, string msg)
+void log::log_entry(core::log_level level, string msg)
 {
     /*
      * We might get some error from Python here, which contain a few newlines.

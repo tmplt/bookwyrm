@@ -4,85 +4,71 @@
 #include <ostream>
 #include <mutex>
 
-#include <spdlog/sinks/sink.h>
-#include <spdlog/details/log_msg.h>
-#include <spdlog/logger.h>
-
 #include "common.hpp"
 #include "tui.hpp"
 
+namespace bookwyrm {
+
 /* Circular dependency guard. */
-namespace bookwyrm { class tui; }
+class tui;
 
-namespace logger {
-
-/*
- * A sink which stores all logs in a buffer. Can be flushed to a screen butler
- * on command. If buffer_ is non-empty on object destruction, buffer content is
- * written to std{out,err}.
- */
-class bookwyrm_sink : public spdlog::sinks::sink {
+class logger {
 public:
-    ~bookwyrm_sink();
+    // XXX: perhaps we should init the logger with the tui, instead?
+    // after all, we only ever print to it when the TUI is up or when it's terminating.
 
-    void log(const spdlog::details::log_msg &msg) override;
-    void flush() override;
+    /* Flush buffer to std{out,err} */
+    ~logger();
 
-    void set_tui(std::shared_ptr<bookwyrm::tui> tui)
+    // XXX: make this private?
+    void log(const core::log_level lvl, string msg);
+
+    // XXX: Can this somehow be done with templates?
+    void trace(const string msg)
     {
-        tui_ = tui;
+        log(core::log_level::trace, "trace: " + msg);
+    }
+    void debug(const string msg)
+    {
+        log(core::log_level::debug, "debug: " + msg);
+    }
+    void info(const string msg)
+    {
+        log(core::log_level::info, "info: " + msg);
+    }
+    void warn(const string msg)
+    {
+        log(core::log_level::warn, "warning: " + msg);
+    }
+    void err(const string msg)
+    {
+        log(core::log_level::err, "error: " + msg);
+    }
+    void critical(const string msg)
+    {
+        log(core::log_level::critical, "critical: " + msg);
     }
 
-    /* Flush all unseen logs (content of buffer_) to the log screen. */
+    void set_level(const core::log_level lvl)
+    {
+        wanted_level_ = lvl;
+    }
+
+    bool has_unread_logs() const;
+    core::log_level worst_unread() const;
     void flush_to_screen();
-
-    bool has_unread_logs() const
-    {
-        return !buffer_.empty();
-    }
-
-    spdlog::level::level_enum worst_unread() const;
+    void set_tui(std::shared_ptr<tui> tui);
 
 private:
-    using buffer_pair = std::pair<spdlog::level::level_enum, const string>;
+    core::log_level wanted_level_ = core::log_level::off;
+    using buffer_pair = std::pair<const core::log_level, const string>;
     vector<buffer_pair> buffer_;
     std::mutex write_mutex_;
 
-    std::weak_ptr<bookwyrm::tui> tui_;
+    std::weak_ptr<tui> tui_;
 };
 
-class bookwyrm_logger : public spdlog::logger {
-public:
-    explicit bookwyrm_logger(string name, std::shared_ptr<bookwyrm_sink> sink)
-        : spdlog::logger(name, sink), sink_(sink) {}
-
-    void set_tui(std::shared_ptr<bookwyrm::tui> butler)
-    {
-        sink_->set_tui(butler);
-    }
-
-    void flush_to_screen()
-    {
-        sink_->flush_to_screen();
-    }
-
-    bool has_unread_logs() const
-    {
-        return sink_->has_unread_logs();
-    }
-
-    spdlog::level::level_enum worst_unread() const
-    {
-        return sink_->worst_unread();
-    }
-
-private:
-    std::shared_ptr<bookwyrm_sink> sink_;
-};
-
-/* Create the logger. */
-std::shared_ptr<bookwyrm_logger> create(std::string &&name);
-
+/* ns bookwyrm */
 }
 
-using logger_t = std::shared_ptr<logger::bookwyrm_logger>;
+using logger_t = std::shared_ptr<bookwyrm::logger>;

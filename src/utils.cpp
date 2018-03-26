@@ -94,16 +94,17 @@ int ratio(double a, double b)
     return percent_round(a / b);
 }
 
-colour to_colour(spdlog::level::level_enum lvl)
+colour to_colour(core::log_level lvl)
 {
-    using level = spdlog::level::level_enum;
+    using level = core::log_level;
 
     switch (lvl) {
         case level::debug:
             return colour::blue;
         case level::warn:
             return colour::yellow;
-        case level::err: case level::critical:
+        case level::err:
+        case level::critical:
             return colour::red;
         default:
             return colour::none;

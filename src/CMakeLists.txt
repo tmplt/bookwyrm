@@ -14,7 +14,6 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${PROJECT_SOURCE_DIR}/lib/spdlog/include
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt
     PRIVATE ${CURL_INCLUDE_DIRS})
 

@@ -1,54 +1,45 @@
 #include <iostream>
 #include <utility>
 
-#include <spdlog/logger.h>
-#include <spdlog/common.h>
-#include <spdlog/details/log_msg.h>
-
 #include "logger.hpp"
 
-namespace logger {
+namespace bookwyrm {
 
-void bookwyrm_sink::log(const spdlog::details::log_msg &msg)
+logger::~logger()
 {
+    for (const auto& [lvl, msg] : buffer_)
+        (lvl <= core::log_level::warn ? std::cout : std::cerr) << msg;
+}
+
+void logger::log(const core::log_level lvl, string msg)
+{
+    if (lvl < wanted_level_)
+        return;
+
     std::lock_guard<std::mutex> guard(write_mutex_);
 
-    if (const auto &fmt = msg.formatted.str(); tui_.expired()) {
-        buffer_.emplace_back(msg.level, fmt);
+    if (tui_.expired()) {
+        buffer_.emplace_back(lvl, msg);
     } else if (const auto tui = tui_.lock(); tui->is_log_focused()) {
-        tui->log(msg.level, fmt);
+        tui->log(lvl, msg);
     } else {
-        buffer_.emplace_back(msg.level, fmt);
+        buffer_.emplace_back(lvl, msg);
 
         /* If user is in the index view, get a notice about new logs. */
         tui->repaint_screens();
     }
 }
 
-bookwyrm_sink::~bookwyrm_sink()
+bool logger::has_unread_logs() const
 {
-    for (const auto& [lvl, fmt] : buffer_)
-        (lvl <= spdlog::level::warn ? std::cout : std::cerr) << fmt;
+    return !buffer_.empty();
 }
 
-void bookwyrm_sink::flush()
+core::log_level logger::worst_unread() const
 {
-    std::cout << std::flush;
-    std::cerr << std::flush;
-}
+    if (!has_unread_logs())
+        throw std::runtime_error("__func__: buffer is empty");
 
-void bookwyrm_sink::flush_to_screen()
-{
-    const auto tui = tui_.lock();
-
-    for (const auto& [lvl, fmt] : buffer_)
-        tui->log(lvl, fmt);
-
-    buffer_.clear();
-}
-
-spdlog::level::level_enum bookwyrm_sink::worst_unread() const
-{
     const auto worst = std::max_element(cbegin(buffer_), cend(buffer_),
         [] (const buffer_pair &a, const buffer_pair &b) {
             return a.first < b.first;
@@ -57,14 +48,22 @@ spdlog::level::level_enum bookwyrm_sink::worst_unread() const
     return worst->first;
 }
 
-/* ns logger */
+void logger::flush_to_screen()
+{
+    if (tui_.expired())
+        throw std::runtime_error("__func__: called after tui termination");
+
+    const auto tui = tui_.lock();
+    for (const auto& [lvl, msg] : buffer_)
+        tui->log(lvl, msg);
+
+    buffer_.clear();
 }
 
-std::shared_ptr<logger::bookwyrm_logger> logger::create(std::string &&name)
+void logger::set_tui(std::shared_ptr<tui> tui)
 {
-    auto sink = std::make_unique<logger::bookwyrm_sink>();
-    auto logger = std::make_shared<logger::bookwyrm_logger>(std::forward<std::string>(name),
-            std::move(sink));
+    tui_ = tui;
+}
 
-    return logger;
+/* ns bookwyrm */
 }

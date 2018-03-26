@@ -17,36 +17,8 @@ tui::tui(vector<core::item> &items, logger_t logger)
 
 void tui::log(const core::log_level level, const string message)
 {
-    using spdlvl = spdlog::level::level_enum;
-    using belvl  = core::log_level;
-
-    /* Can we perhaps construct a spdlvl with the underlying int from level? */
-    spdlvl frontend_lvl = spdlvl::critical;
-
-    switch (level) {
-        case belvl::trace:
-            frontend_lvl = spdlvl::trace;
-            break;
-        case belvl::debug:
-            frontend_lvl = spdlvl::debug;
-            break;
-        case belvl::info:
-            frontend_lvl = spdlvl::info;
-            break;
-        case belvl::warn:
-            frontend_lvl = spdlvl::warn;
-            break;
-        case belvl::err:
-            frontend_lvl = spdlvl::err;
-            break;
-        case belvl::critical:
-            frontend_lvl = spdlvl::critical;
-            break;
-        case belvl::off:
-            frontend_lvl = spdlvl::off;
-    }
-
-    logger_->log(frontend_lvl, message);
+    log_->log_entry(level, message);
+    repaint_screens();
 }
 
 void tui::repaint_screens()
@@ -92,6 +64,8 @@ void tui::print_footer()
     if (logger_->has_unread_logs()) {
         print_right_align(curses::get_height() - 1, " You have unread logs! ",
                 utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
+    } else {
+        print_right_align(curses::get_height() - 1, " You have NO unread logs ", colour::none | attribute::reverse | attribute::bold);
     }
 }
 
@@ -223,7 +197,7 @@ void tui::printcont(int x, const int y, const string &str, const colour attrs)
         curses::mvprint(i, y, " ", attribute::none, attrs);
 }
 
-std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)
+std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t logger)
 {
     plugin_handler.load_plugins();
     auto t = std::make_shared<tui>(plugin_handler.results(), logger);

@@ -46,6 +46,8 @@ int main(int argc, char *argv[])
             cli.process_arguments(args);
         } catch (const argument_error &err) {
             fmt::print(stderr, "error: {}; see --help\n", err.what());
+
+            // evil! Return optional instead?
             std::exit(EXIT_FAILURE);
         }
 
@@ -83,12 +85,11 @@ int main(int argc, char *argv[])
     vector<core::item> wanted_items;
 
     try {
-        auto logger = logger::create("main");
-        logger->set_pattern("%l: %v");
-        logger->set_level(spdlog::level::warn);
+        auto logger = std::make_shared<bookwyrm::logger>();
+        logger->set_level(core::log_level::warn);
 
         if (cli.has("debug"))
-            logger->set_level(spdlog::level::debug);
+            logger->set_level(core::log_level::debug);
 
         logger->debug("the mighty eldwyrm hath been summoned!");
 

@@ -2,8 +2,7 @@
 
 #include <optional>
 
-#include <spdlog/details/log_msg.h>
-
+#include "core/plugin_handler.hpp"
 #include "screens/base.hpp"
 
 namespace bookwyrm::screen {
@@ -23,10 +22,10 @@ public:
         return "[j/k d/u]Navigation [SPACE]attach/detach";
     }
 
-    void log_entry(spdlog::level::level_enum level, string msg);
+    void log_entry(core::log_level level, string msg);
 
 private:
-    using entry_t = std::pair<spdlog::level::level_enum, const string>;
+    using entry_t = std::pair<const core::log_level, const string>;
     vector<entry_t> entries_;
     using entry_tp = decltype(entries_.cbegin());
 
