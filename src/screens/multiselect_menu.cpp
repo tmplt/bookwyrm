@@ -187,14 +187,14 @@ void multiselect_menu::print_header()
         if (column.width > allowed_width) break;
 
         /* Center the title. */
-        wprint(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue, attribute::bold);
+        print(x + column.width / 2  - column.title.length() / 2, 0, column.title, attribute::bold, colour::blue);
         x += std::max(column.width, column.title.length());
 
         /* Padding between the title and the seperator to the left.. */
         x++;
 
         /* Print the seperator. */
-        wprint(x++, 0, "|");
+        print(x++, 0, "|");
 
         /* ..and to the right. */
         x++;
@@ -213,13 +213,11 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         /* Print the indicator, indicating which item is currently selected. */
         if (on_selected_item && on_marked_item) {
-            change_cell(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
-        }
-        else if (on_selected_item) {
-            change_cell(0, y, rune::single::double_right_angle_bracket);
-        }
-        else if (on_marked_item) {
-            change_cell(0, y, " ", attribute::reverse);
+            print(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
+        } else if (on_selected_item) {
+            print(0, y, rune::single::double_right_angle_bracket);
+        } else if (on_marked_item) {
+            print(0, y, " ", attribute::reverse);
         }
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
@@ -236,7 +234,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         }};
 
         /* Print the string, check if it was truncated. */
-        const int trunc_len = wprintlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
+        const int trunc_len = printlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
@@ -249,7 +247,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         const auto string_end = c.startx + strings[col_idx].get().length() - trunc_len,
                    next_start = c.startx + c.width + 2;
         for (auto x = string_end; x <= next_start; x++)
-            change_cell(x, y, " ", attrs);
+            print(x, y, " ", attrs);
     }
 }
 

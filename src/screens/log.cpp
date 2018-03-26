@@ -41,7 +41,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * level in a fitting colour.
      */
     const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
-    wprint(x, y, lvl, utils::to_colour(entry->first));
+    print(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
     /*
@@ -56,7 +56,7 @@ void log::print_entry(int &y, const entry_tp entry)
             /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
             if (word.length() > static_cast<size_t>(get_width() / 3)) {
                 while (word.length() > remain) {
-                    wprint(x, y++, " " + word.substr(0, remain));
+                    print(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);
                     x = 0;
                     remain = get_width() - 1;
@@ -67,7 +67,7 @@ void log::print_entry(int &y, const entry_tp entry)
             }
         }
 
-        wprint(x, y, " " + word);
+        print(x, y, " " + word);
         x += word.length() + 1;
     }
 }

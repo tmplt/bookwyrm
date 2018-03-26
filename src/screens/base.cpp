@@ -34,7 +34,7 @@ int base::get_height() const
     return curses::get_height() - padding_top_ - padding_bot_;
 }
 
-void base::change_cell(int x, int y, const string &str, const colour clr, const attribute attrs)
+void base::print(int x, int y, const string &str, const attribute attrs, const colour clr)
 {
     x += padding_left_;
     y += padding_top_;
@@ -46,7 +46,7 @@ void base::change_cell(int x, int y, const string &str, const colour clr, const 
     curses::mvprint(x, y, str, attrs, clr);
 }
 
-int base::wprintlim(int x, int y, const string &str, const size_t space, const colour clr, const attribute attrs)
+int base::printlim(int x, int y, const string &str, const size_t space, const attribute attrs, const colour clr)
 {
     curses::mvprintn(x, y, str, space, attrs, clr);
 
@@ -66,11 +66,6 @@ int base::wprintlim(int x, int y, const string &str, const size_t space, const c
     }
 
     return truncd;
-}
-
-void base::wprint(int x, const int y, const string &str, const colour clr, const attribute attrs)
-{
-    curses::mvprint(x, y, str, attrs, clr);
 }
 
 bool base::action(const int ch)

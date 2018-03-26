@@ -18,11 +18,6 @@ namespace scroll {
 enum { not_applicable = -1 };
 }
 
-/*
- * A base screen class holding most (if not all) of the
- * implementation of functions using whatever library for
- * printing the actual characters on screen.
- */
 class base {
 public:
 
@@ -58,17 +53,15 @@ protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
 
+    /* Like the one in the curses namespace, but for a screens dedicated size instead. */
     int get_width() const;
     int get_height() const;
 
-    /*
-     * After asserting that the screen owns the cell, change it with the given parameters.
-     * Only the first character from the given string is printed.
-     */
-    void change_cell(int x, int y, const string &str, const colour clr, const attribute attrs = attribute::none);
-    void change_cell(int x, int y, const string &str, const attribute attrs = attribute::none)
+    /* Validate (x, y) and then print the given string from (x, y) along the x-axis. */
+    void print(int x, int y, const string &str, const attribute attrs = attribute::none, const colour clr = colour::none);
+    void print(int x, int y, const string &str, const colour clr)
     {
-        change_cell(x, y, str, colour::none, attrs);
+        print(x, y, str, attribute::none, clr);
     }
 
     /*
@@ -76,18 +69,7 @@ protected:
      * If the string is longer than the space it should fit in, the string is truncated with a '~' at its last non-whitespace character.
      * Returns the count of truncated characters, counting from the end of the string.
      */
-    int wprintlim(int x, int y, const string &str, const size_t space, const colour clr, const attribute attrs = attribute::none);
-    int wprintlim(int x, int y, const string &str, const size_t space, const attribute attrs = attribute::none)
-    {
-        return wprintlim(x, y, str, space, colour::none, attrs);
-    }
-
-    /* Same as above, but don't truncate. */
-    void wprint(int x, const int y, const string &str, const colour clr = colour::none, const attribute attrs = attribute::none);
-    void wprint(int x, const int y, const string &str, const attribute attr)
-    {
-        wprint(x, y, str, colour::white, attr);
-    }
+    int printlim(int x, int y, const string &str, const size_t space, const attribute attrs = attribute::none, const colour clr = colour::none);
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,

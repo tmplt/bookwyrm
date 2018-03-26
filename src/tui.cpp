@@ -54,7 +54,7 @@ void tui::repaint_screens()
     curses::erase();
 
     if (!bookwyrm_fits()) {
-        wprint(0, 0, "The terminal is too small. I don't fit!");
+        print(0, 0, "The terminal is too small. I don't fit!");
     } else if (is_log_focused()) {
         log_->paint();
         print_footer();
@@ -73,18 +73,18 @@ void tui::repaint_screens()
 void tui::print_footer()
 {
     const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
-        this->wprint(curses::get_width() - str.length(), y, str, attrs);
+        this->print(curses::get_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
-    wprint(0, curses::get_height() - 2, focused_->footer_info());
+    print(0, curses::get_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
         print_right_align(curses::get_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    wprintcont(0, curses::get_height() - 1, "[q]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    printcont(0, curses::get_height() - 1, "[q]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
@@ -209,12 +209,12 @@ bool tui::toggle_log()
     return true;
 }
 
-void tui::wprint(int x, const int y, const string &str, const colour attrs)
+void tui::print(int x, const int y, const string &str, const colour attrs)
 {
     curses::mvprint(x, y, str, attribute::none, attrs);
 }
 
-void tui::wprintcont(int x, const int y, const string &str, const colour attrs)
+void tui::printcont(int x, const int y, const string &str, const colour attrs)
 {
     curses::mvprint(x, y, str, attribute::none, attrs);
 

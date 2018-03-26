@@ -39,7 +39,7 @@ void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
         for (int x = 0; x < get_width(); x++)
-            change_cell(x, y, rune::single::em_dash);
+            print(x, y, rune::single::em_dash);
     };
 
     print_line(0);
@@ -76,11 +76,11 @@ void item_details::print_details()
      */
     int y = 1;
     for (const auto &p : v) {
-        wprint(0, y, p.first + ':', attribute::bold);
-        wprint(len + 4, y++, p.second.get());
+        print(0, y, p.first + ':', attribute::bold);
+        print(len + 4, y++, p.second.get());
     }
 
-    wprint(0, ++y, "Description:", attribute::bold);
+    print(0, ++y, "Description:", attribute::bold);
     print_desc(++y, utils::lipsum(20));
 }
 
@@ -106,7 +106,7 @@ void item_details::print_desc(int &y, string str)
                      * Subtracts an additional 1 to overwrite the space
                      * from the last word.
                      */
-                    wprint(word_fits("...") ? --x : x - 4, y, "...");
+                    print(word_fits("...") ? --x : x - 4, y, "...");
                 }
 
                 return;
@@ -116,7 +116,7 @@ void item_details::print_desc(int &y, string str)
             x = 0;
         }
 
-        wprint(x, y, *word + ' ');
+        print(x, y, *word + ' ');
         x += word->length() + 1;
     }
 }
