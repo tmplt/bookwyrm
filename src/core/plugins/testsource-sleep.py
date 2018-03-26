@@ -20,4 +20,4 @@ def find(wanted, bookwyrm):
         misc = bw.misc_t(['http://localhost:8000/helloworld.txt'], ['isbn'])
 
         book = (nonexacts, exacts, misc)
-        # bookwyrm.feed(book)
+        bookwyrm.feed(book)

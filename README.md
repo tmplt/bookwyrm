@@ -22,9 +22,11 @@ A script may need data from the user (e.g. login credentials); this can be writt
 Aside from a C++17-compliant compiler and CMake, bookwyrm also depends on a few libraries:
 * **fmt**,        for a few print-outs and since spdlog depends on it;
 * spdlog,         for logging warnings/errors/etc. to the user;
-* termbox,        for the TUI;
+* **ncurses**,        for the TUI;
 * **pybind11**,   for interfacing with Python, and
 * **fuzzywuzzy**, for fuzzily matching found items with what's wanted.
+
+The only external dependency is ncurses.
 
 Furthermore, the Python modules need the following packages:
 * **furl**,     parsing library for urls;
@@ -61,4 +63,4 @@ $ cmake .. && make
 $ src/bookwyrm OPTION [OPTION]... PATH
 ```
 
-If you're using Nix(OS), evaluate the expression in `default.nix` first (append `nix-shell` to the steps above).
+If you're using Nix(OS), evaluate the expression in `default.nix` first (prepend `nix-shell` to the steps above).
