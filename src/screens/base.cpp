@@ -62,7 +62,7 @@ int base::printlim(int x, int y, const string &str, const size_t space, const at
 
         truncd = str.length() - space + whitespace;
         getyx(stdscr, y, x);
-        curses::mvprint(x - whitespace - 1, y, "~");
+        curses::mvprint(x - whitespace - 1, y, "~", attrs, clr);
     }
 
     return truncd;
