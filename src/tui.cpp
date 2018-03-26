@@ -51,6 +51,7 @@ void tui::log(const core::log_level level, const string message)
 
 void tui::repaint_screens()
 {
+    std::lock_guard<std::mutex> guard(tui_mutex_);
     curses::erase();
 
     if (!bookwyrm_fits()) {

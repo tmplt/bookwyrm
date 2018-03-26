@@ -63,6 +63,7 @@ public:
 private:
     /* Forwarded to the multiselect menu. */
     vector<core::item> const &items_;
+    std::mutex tui_mutex_;
 
     /* Used to flush stored logs to the log screen. */
     logger_t logger_;
