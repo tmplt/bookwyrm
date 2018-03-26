@@ -50,11 +50,11 @@ void log::print_entry(int &y, const entry_tp entry)
      * than the line itself (e.g. a long path), we'll just split it where the line ends.
      */
     for (auto word : utils::split_string(msg)) {
-        if (auto remain = get_width() - 1 - x; word.length() + 1 > remain) {
+        if (size_t remain = get_width() - 1 - x; word.length() + 1 > remain) {
             /* The word doesn't fit on the rest of the line. */
 
             /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
-            if (word.length() > get_width() / 3) {
+            if (word.length() > static_cast<size_t>(get_width() / 3)) {
                 while (word.length() > remain) {
                     wprint(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);

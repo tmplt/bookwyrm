@@ -1,3 +1,4 @@
+#include <clocale>
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
 #include "utils.hpp"
@@ -8,6 +9,8 @@
 
 int main(int argc, char *argv[])
 {
+    std::setlocale(LC_ALL, "");
+
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",     "Specify authors",   "AUTHOR")
         ("-t", "--title",      "Specify title",     "TITLE")
