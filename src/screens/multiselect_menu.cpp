@@ -57,7 +57,11 @@ void multiselect_menu::paint()
 
 string multiselect_menu::footer_info() const
 {
-    return fmt::format("I've found {} items thus far.", item_count());
+    const auto count = item_count();
+    if (count == 0)
+        return "I haven't found any items yet.";
+    else
+        return fmt::format("I've found {} items thus far.", item_count());
 }
 
 string multiselect_menu::controls_legacy() const
