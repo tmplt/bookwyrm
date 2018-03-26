@@ -1,7 +1,7 @@
 #include "screens/item_details.hpp"
 #include "utils.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 item_details::item_details(const core::item &item, int padding_top)
     : base(padding_top, default_padding_bot, 0, 0), item_(item)
@@ -9,10 +9,11 @@ item_details::item_details(const core::item &item, int padding_top)
 
 }
 
-bool item_details::action(const key &key, const uint32_t &ch)
+bool item_details::action(const int ch)
 {
-    (void)key;
     (void)ch;
+
+    /* No actions for this screen yet. */
 
     return false;
 }
@@ -37,8 +38,8 @@ int item_details::scrollpercent() const
 void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
-        for (size_t x = 0; x < get_width(); x++)
-            change_cell(x, y, rune::single::em_dash);
+        for (int x = 0; x < get_width(); x++)
+            print(x, y, rune::single::em_dash);
     };
 
     print_line(0);
@@ -75,11 +76,11 @@ void item_details::print_details()
      */
     int y = 1;
     for (const auto &p : v) {
-        wprint(0, y, p.first + ':', attribute::bold);
-        wprint(len + 4, y++, p.second.get());
+        print(0, y, p.first + ':', attribute::bold);
+        print(len + 4, y++, p.second.get());
     }
 
-    wprint(0, ++y, "Description:", attribute::bold);
+    print(0, ++y, "Description:", attribute::bold);
     print_desc(++y, utils::lipsum(20));
 }
 
@@ -94,7 +95,7 @@ void item_details::print_desc(int &y, string str)
 
     for (auto word = words.cbegin(); word != words.cend(); ++word) {
         if (!word_fits(*word)) {
-            if (y + 1u == get_height() - 1) {
+            if (y == get_height() - 1) {
                 /* No more lines to draw on; can't fit any more. */
 
                 if (word != words.cend() - 1) {
@@ -105,7 +106,7 @@ void item_details::print_desc(int &y, string str)
                      * Subtracts an additional 1 to overwrite the space
                      * from the last word.
                      */
-                    wprint(word_fits("...") ? --x : x - 4, y, "...");
+                    print(word_fits("...") ? --x : x - 4, y, "...");
                 }
 
                 return;
@@ -115,7 +116,7 @@ void item_details::print_desc(int &y, string str)
             x = 0;
         }
 
-        wprint(x, y, *word + ' ');
+        print(x, y, *word + ' ');
         x += word->length() + 1;
     }
 }

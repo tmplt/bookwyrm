@@ -1,11 +1,12 @@
 #include <fmt/format.h>
+#include <ncurses.h>
 
 #include "errors.hpp"
 #include "utils.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
 {
@@ -56,12 +57,16 @@ void multiselect_menu::paint()
 
 string multiselect_menu::footer_info() const
 {
-    return fmt::format("I've found {} items thus far.", item_count());
+    const auto count = item_count();
+    if (count == 0)
+        return "I haven't found any items yet.";
+    else
+        return fmt::format("I've found {} items thus far.", item_count());
 }
 
 string multiselect_menu::controls_legacy() const
 {
-    return "[j/k d/u]Navigation [SPACE]Toggle select [l]Open details";
+    return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details";
 }
 
 int multiselect_menu::scrollpercent() const
@@ -186,14 +191,14 @@ void multiselect_menu::print_header()
         if (column.width > allowed_width) break;
 
         /* Center the title. */
-        wprint(x + column.width / 2  - column.title.length() / 2, 0, column.title, colour::blue | attribute::bold);
+        print(x + column.width / 2  - column.title.length() / 2, 0, column.title, attribute::bold, colour::blue);
         x += std::max(column.width, column.title.length());
 
         /* Padding between the title and the seperator to the left.. */
         x++;
 
         /* Print the seperator. */
-        wprint(x++, 0, "|");
+        print(x++, 0, "|");
 
         /* ..and to the right. */
         x++;
@@ -210,16 +215,14 @@ void multiselect_menu::print_column(const size_t col_idx)
         const bool on_selected_item = (y + scroll_offset_ == selected_item_ + 1),
                    on_marked_item   = is_marked(y + scroll_offset_ - 1);
 
-        /*
-         * Print the indicator, indicating which item is
-         * currently selected.
-         */
-        if (on_selected_item && on_marked_item)
-            change_cell(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
-        else if (on_selected_item)
-            change_cell(0, y, rune::single::double_right_angle_bracket);
-        else if (on_marked_item)
-            change_cell(0, y, ' ', attribute::reverse);
+        /* Print the indicator, indicating which item is currently selected. */
+        if (on_selected_item && on_marked_item) {
+            print(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
+        } else if (on_selected_item) {
+            print(0, y, rune::single::double_right_angle_bracket);
+        } else if (on_marked_item) {
+            print(0, y, " ", attribute::reverse);
+        }
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
@@ -235,7 +238,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         }};
 
         /* Print the string, check if it was truncated. */
-        const int trunc_len = wprintlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
+        const int trunc_len = printlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
 
         /*
          * Fill the space between the two column strings with inverted spaces.
@@ -248,7 +251,7 @@ void multiselect_menu::print_column(const size_t col_idx)
         const auto string_end = c.startx + strings[col_idx].get().length() - trunc_len,
                    next_start = c.startx + c.width + 2;
         for (auto x = string_end; x <= next_start; x++)
-            change_cell(x, y, ' ', attrs);
+            print(x, y, " ", attrs);
     }
 }
 

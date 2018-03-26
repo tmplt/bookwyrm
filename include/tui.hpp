@@ -63,6 +63,7 @@ public:
 private:
     /* Forwarded to the multiselect menu. */
     vector<core::item> const &items_;
+    std::mutex tui_mutex_;
 
     /* Used to flush stored logs to the log screen. */
     logger_t logger_;
@@ -83,7 +84,7 @@ private:
     static bool bookwyrm_fits();
 
     /* Manage screens. Return true if an action was performed. */
-    bool meta_action(const key &key, const uint32_t &ch);
+    bool meta_action(const int ch);
 
     /*
      * Open a screen::item_details for the currently selected item in the index menu.
@@ -98,18 +99,17 @@ private:
 
     void resize_screens();
 
-    /* copy from screen::base. */
-    static void wprint(int x, const int y, const string_view &str, const colour attrs = colour::white);
+    static void print(int x, const int y, const string &str, const colour attrs = colour::white);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void wprintcont(int x, const int y, const string_view &str, const colour attrs = colour::white);
-    static void wprintcont(int x, const int y, const string_view &str, const attribute attr)
+    static void printcont(int x, const int y, const string &str, const colour attrs = colour::white);
+    static void printcont(int x, const int y, const string &str, const attribute attr)
     {
-        wprintcont(x, y, str, colour::white | attr);
+        printcont(x, y, str, colour::white | attr);
     }
 };
 

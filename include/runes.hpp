@@ -1,17 +1,18 @@
 #pragma once
 
 #include <type_traits>
+#include <ncurses.h>
 
 #include "str_const.hpp"
 
 namespace rune {
 
-enum class single : uint32_t {
-    double_right_angle_bracket        = 0xBB,    /* » */
-    em_dash                           = 0x2014,  /* — */
-    scrollbar_fg                      = 0x2588,  /* █ */
-    scrollbar_bg                      = 0x2592,  /* ▒ */
-};
+namespace single {
+const std::string double_right_angle_bracket = "»",
+                  em_dash                    = "—",
+                  scrollbar_fg               = "█",
+                  scrollbar_bg               = "▒";
+}
 
 namespace bar {
 
@@ -51,4 +52,4 @@ namespace vt100 {
 
 }
 
-using rune_t = std::underlying_type_t<rune::single>;
+/* using rune_t = std::underlying_type_t<rune::single>; */

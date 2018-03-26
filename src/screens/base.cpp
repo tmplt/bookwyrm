@@ -1,10 +1,12 @@
 #include <cassert>
+#include <clocale>
 
 #include <fmt/format.h>
 
 #include "screens/base.hpp"
+#include "curses_wrap.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 int base::screen_count_ = 0;
 
@@ -12,122 +14,74 @@ base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
     : padding_top_(pad_top), padding_bot_(pad_bot),
     padding_left_(pad_left), padding_right_(pad_right)
 {
-    init_tui();
+    if (screen_count_++ > 0) return;
+    curses::init();
 }
 
 base::~base()
 {
-    if (--screen_count_ == 0) tb_shutdown();
+    if (--screen_count_ == 0) curses::terminate();
     assert(screen_count_ >= 0);
 }
 
-size_t base::get_width() const
+int base::get_width() const
 {
-    return tb_width() - padding_left_ - padding_right_;
+    return curses::get_width() - padding_left_ - padding_right_;
 }
 
-size_t base::get_height() const
+int base::get_height() const
 {
-    return tb_height() - padding_top_ - padding_bot_;
+    return curses::get_height() - padding_top_ - padding_bot_;
 }
 
-void base::change_cell(int x, int y, const uint32_t ch, const colour fg, const colour bg)
+void base::print(int x, int y, const string &str, const attribute attrs, const colour clr)
 {
     x += padding_left_;
     y += padding_top_;
 
-    const bool valid_x = x >= padding_left_ && x <= tb_width() - padding_right_ - 1,
-               valid_y = y >= padding_top_ && y <= tb_height() - padding_bot_ - 1;
-
-    if (!valid_x || !valid_y)
+    /* Is the cell owned by the screen? */
+    if (!(x <= get_width()) || !(y <= get_height()))
         return;
 
-    tb_change_cell(x, y, ch, static_cast<colour_t>(fg), static_cast<colour_t>(bg));
+    curses::mvprint(x, y, str, attrs, clr);
 }
 
-void base::init_tui()
+int base::printlim(int x, int y, const string &str, const size_t space, const attribute attrs, const colour clr)
 {
-    if (screen_count_++ > 0) return;
+    curses::mvprintn(x, y, str, space, attrs, clr);
 
-    int code = tb_init();
-    if (code < 0) {
-        string err = fmt::format("termbox init failed with code: {}", code);
-        throw component_error(err.data());
-    }
+    int truncd = 0;
+    if (str.length() > space) {
+        /* The whole string did not fit; indicate this to the user. */
 
-    tb_select_output_mode(TB_OUTPUT_NORMAL);
-    tb_set_cursor(TB_HIDE_CURSOR, TB_HIDE_CURSOR);
-    tb_clear();
-}
-
-/*
- * This implementation first prints out as much as it cans and then backtracks,
- * wasting oh-so-precious CPU-cycles.
- *
- * TODO: rewrite this to only print as much as it has to.
- */
-int base::wprintlim(size_t x, const int y, const string_view &str, const size_t space, const colour attrs)
-{
-    const size_t limit = x + space - 1;
-    for (auto ch = str.cbegin(); ch < str.cend(); ch++) {
-        if (x == limit && str.length() > space) {
-            /* We can't fit the rest of the string. */
-
-            /* Don't print the substring's trailing whitespace. */
-            int whitespace = 0;
-            while (std::isspace(*(--ch))) {
-                x--;
-                whitespace++;
-            }
-
-            change_cell(x, y, '~', attrs);
-            return str.length() - space + whitespace;
+        auto ch = str.cbegin() + space - 1;
+        int whitespace = 0;
+        while (std::isspace(*(--ch))) {
+            ++whitespace;
         }
 
-        change_cell(x++, y, *ch, attrs);
+        truncd = str.length() - space + whitespace;
+        getyx(stdscr, y, x);
+        curses::mvprint(x - whitespace - 1, y, "~", attrs, clr);
     }
 
-    return 0;
+    return truncd;
 }
 
-void base::wprint(int x, const int y, const string_view &str, const colour attrs)
-{
-    for (const uint32_t &ch : str)
-        change_cell(x++, y, ch, attrs);
-}
-
-bool base::action(const key &key, const uint32_t &ch)
+bool base::action(const int ch)
 {
     const auto move_halfpage = [this] (move_direction dir) {
-        for (size_t i = 0; i < get_height() / 2; i++)
+        for (int i = 0; i < get_height() / 2; i++)
             move(dir);
     };
 
-    switch (key) {
+    switch (ch) {
+        case 'j':
         case key::arrow_down:
             move(down);
             return true;
-        case key::arrow_up:
-            move(up);
-            return true;
-        case key::space:
-            toggle_action();
-            return true;
-        case key::ctrl_d:
-            move_halfpage(down);
-            return true;
-        case key::ctrl_u:
-            move_halfpage(up);
-            return true;
-        default:
-            break;
-    }
-
-    switch (ch) {
-        case 'j':
-            move(down);
-            return true;
         case 'k':
+        case key::arrow_up:
             move(up);
             return true;
         case 'g':
@@ -141,6 +95,9 @@ bool base::action(const key &key, const uint32_t &ch)
             return true;
         case 'u':
             move_halfpage(up);
+            return true;
+        case key::space:
+            toggle_action();
             return true;
     }
 

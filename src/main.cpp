@@ -1,3 +1,4 @@
+#include <clocale>
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
 #include "utils.hpp"
@@ -8,6 +9,8 @@
 
 int main(int argc, char *argv[])
 {
+    std::setlocale(LC_ALL, "");
+
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",     "Specify authors",   "AUTHOR")
         ("-t", "--title",      "Specify title",     "TITLE")
@@ -69,7 +72,7 @@ int main(int argc, char *argv[])
 
     const string dl_path = cli.has(0) ? cli.get(0) : ".";
 
-    if (const auto err = utils::validate_download_dir(dl_path); err) {
+    if (const auto err = bookwyrm::utils::validate_download_dir(dl_path); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
         fmt::print(stderr, "error: invalid download directory: {}.\n", msg);
@@ -89,7 +92,7 @@ int main(int argc, char *argv[])
 
         logger->debug("the mighty eldwyrm hath been summoned!");
 
-        const core::item wanted = utils::create_item(cli);
+        const core::item wanted = bookwyrm::utils::create_item(cli);
         auto butler = core::plugin_handler(std::move(wanted));
 
         /*

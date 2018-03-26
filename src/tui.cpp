@@ -1,7 +1,6 @@
-#include <termbox.h>
-
 #include "tui.hpp"
 #include "utils.hpp"
+#include "curses_wrap.hpp"
 
 namespace bookwyrm {
 
@@ -52,10 +51,11 @@ void tui::log(const core::log_level level, const string message)
 
 void tui::repaint_screens()
 {
-    tb_clear();
+    std::lock_guard<std::mutex> guard(tui_mutex_);
+    curses::erase();
 
     if (!bookwyrm_fits()) {
-        wprint(0, 0, "The terminal is too small. I don't fit!");
+        print(0, 0, "The terminal is too small. I don't fit!");
     } else if (is_log_focused()) {
         log_->paint();
         print_footer();
@@ -68,29 +68,29 @@ void tui::repaint_screens()
         print_footer();
     }
 
-    tb_present();
+    curses::refresh();
 }
 
 void tui::print_footer()
 {
     const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
-        this->wprint(tb_width() - str.length(), y, str, attrs);
+        this->print(curses::get_width() - str.length(), y, str, attrs);
     };
 
     /* Screen info bar. */
-    wprint(0, tb_height() - 2, focused_->footer_info());
+    print(0, curses::get_height() - 2, focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
-        print_right_align(tb_height() - 2, fmt::format("({}%)", perc));
+        print_right_align(curses::get_height() - 2, fmt::format("({}%)", perc));
 
     /* Screen controls info bar. */
-    wprintcont(0, tb_height() - 1, "[ESC]Quit [TAB]Toggle log " + focused_->controls_legacy(),
+    printcont(0, curses::get_height() - 1, "[q]Quit [TAB]Toggle log " + focused_->controls_legacy(),
             attribute::reverse | attribute::bold);
 
     /* Any unseen logs? */
     if (logger_->has_unread_logs()) {
-        print_right_align(tb_height() - 1, " You have unread logs! ",
+        print_right_align(curses::get_height() - 1, " You have unread logs! ",
                 utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
     }
 }
@@ -109,28 +109,28 @@ bool tui::display()
 {
     repaint_screens();
 
-    struct keys::event ev;
-    while (keys::poll_event(ev)) {
-        if (ev.type == type::resize) {
+    while (true) {
+        const key ch = static_cast<key>(getch());
+
+        if (ch == key::resize) {
             close_details();
             resize_screens();
-        } else if (ev.type == type::key_press) {
-            if (ev.key == key::escape)
-                return false;
-
-            /* When the terminal is too small, only allow quitting and window resizing. */
-            if (!bookwyrm_fits())
-                continue;
-
-            if (ev.key == key::enter)
-                return true;
-
-            if (meta_action(ev.key, ev.ch) || focused_->action(ev.key, ev.ch))
-                repaint_screens();
+            continue;
         }
-    }
 
-    throw program_error("unable to poll input");
+        if (ch == 'q')
+            return false;
+
+        /* When the terminal is too small, only allow quitting and window resizing. */
+        if (!bookwyrm_fits())
+            continue;
+
+        if (ch == key::enter)
+            return true;
+
+        if (meta_action(ch) || focused_->action(ch))
+            repaint_screens();
+    }
 }
 
 vector<core::item> tui::get_wanted_items()
@@ -145,29 +145,16 @@ vector<core::item> tui::get_wanted_items()
 
 bool tui::bookwyrm_fits()
 {
-    /*
-     * I planned to use the classical 80x24, but multiselect_menu is
-     * in its current form useable in terminals much smaller
-     * than that.
-     */
-    return tb_width() >= 50 && tb_height() >= 10;
+    return (curses::get_width() >= 50 && curses::get_height() >= 10);
 }
 
-bool tui::meta_action(const key &key, const uint32_t &ch)
+bool tui::meta_action(const int ch)
 {
     switch (ch) {
         case 'l':
-            return open_details();
-        case 'h':
-            return close_details();
-    }
-
-    switch (key) {
-        case key::ctrl_l:
-            /* Repaint the screens, done in calling function. */
-            return true;
         case key::arrow_right:
             return open_details();
+        case 'h':
         case key::arrow_left:
             return close_details();
         case key::tab:
@@ -185,7 +172,10 @@ bool tui::open_details()
     int height;
     std::tie(index_scrollback_, height) = index_->compress();
 
-    details_ = std::make_shared<screen::item_details>(index_->selected_item(), tb_height() - height - 1);
+    int x, y;
+    getmaxyx(stdscr, y, x);
+
+    details_ = std::make_shared<screen::item_details>(index_->selected_item(), y - height - 1);
     focused_ = details_;
 
     viewing_details_ = true;
@@ -220,21 +210,17 @@ bool tui::toggle_log()
     return true;
 }
 
-void tui::wprint(int x, const int y, const string_view &str, const colour attrs)
+void tui::print(int x, const int y, const string &str, const colour attrs)
 {
-    for (const uint32_t &ch : str)
-        tb_change_cell(x++, y, ch, static_cast<colour_t>(attrs), 0);
+    curses::mvprint(x, y, str, attribute::none, attrs);
 }
 
-void tui::wprintcont(int x, const int y, const string_view &str, const colour attrs)
+void tui::printcont(int x, const int y, const string &str, const colour attrs)
 {
-    for (int i = 0; i < x; i++)
-        tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
+    curses::mvprint(x, y, str, attribute::none, attrs);
 
-    wprint(x, y, str, attrs);
-
-    for (int i = x + str.length(); i < tb_width(); i++)
-        tb_change_cell(i, y, ' ', static_cast<colour_t>(attrs), 0);
+    for (int i = x + str.length(); i < curses::get_width(); i++)
+        curses::mvprint(i, y, " ", attribute::none, attrs);
 }
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t &logger)

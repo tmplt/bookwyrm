@@ -1,7 +1,7 @@
 #include "screens/log.hpp"
 #include "utils.hpp"
 
-namespace screen {
+namespace bookwyrm::screen {
 
 log::log()
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right)
@@ -41,7 +41,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * level in a fitting colour.
      */
     const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
-    wprint(x, y, lvl, utils::to_colour(entry->first));
+    print(x, y, lvl, utils::to_colour(entry->first));
     x += lvl.length();
 
     /*
@@ -50,13 +50,13 @@ void log::print_entry(int &y, const entry_tp entry)
      * than the line itself (e.g. a long path), we'll just split it where the line ends.
      */
     for (auto word : utils::split_string(msg)) {
-        if (auto remain = get_width() - 1 - x; word.length() + 1 > remain) {
+        if (size_t remain = get_width() - 1 - x; word.length() + 1 > remain) {
             /* The word doesn't fit on the rest of the line. */
 
             /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
-            if (word.length() > get_width() / 3) {
+            if (word.length() > static_cast<size_t>(get_width() / 3)) {
                 while (word.length() > remain) {
-                    wprint(x, y++, " " + word.substr(0, remain));
+                    print(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);
                     x = 0;
                     remain = get_width() - 1;
@@ -67,7 +67,7 @@ void log::print_entry(int &y, const entry_tp entry)
             }
         }
 
-        wprint(x, y, " " + word);
+        print(x, y, " " + word);
         x += word.length() + 1;
     }
 }

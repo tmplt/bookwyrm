@@ -3,7 +3,6 @@ find_package(CURL REQUIRED)
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/keys.cpp
     ${PROJECT_SOURCE_DIR}/src/logger.cpp
     ${PROJECT_SOURCE_DIR}/src/command_line.cpp
     ${PROJECT_SOURCE_DIR}/src/tui.cpp
@@ -17,7 +16,6 @@ target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/in
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/spdlog/include
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt
-    PRIVATE ${PROJECT_SOURCE_DIR}/lib/termbox/src
     PRIVATE ${CURL_INCLUDE_DIRS})
 
 # Some pre-compile tasks:
@@ -34,7 +32,7 @@ configure_file(
 target_link_libraries(${PROJECT_NAME}
     fmt
     stdc++fs
-    termbox_lib_static
+    ncursesw
     ${CURL_LIBRARIES}
     ${PROJECT_NAME}-core)
 

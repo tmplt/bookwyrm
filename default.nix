@@ -5,6 +5,7 @@ stdenv.mkDerivation {
     cmake
     curlFull
     gcc7
+    ncurses
     python36Full
   ];
 }

@@ -14,7 +14,6 @@ include(build/summary)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/fmt)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/pybind11)
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/termbox)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
