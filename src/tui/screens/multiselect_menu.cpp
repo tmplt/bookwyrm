@@ -1,14 +1,13 @@
 #include <fmt/format.h>
 #include <ncurses.h>
 
-#include "errors.hpp"
-#include "utils.hpp"
+#include "../utils.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
 namespace bookwyrm::screen {
 
-void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs)
+void multiselect_menu::columns_t::operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs)
 {
     int i = 0;
     for (auto &&pair : pairs) {
@@ -17,7 +16,7 @@ void multiselect_menu::columns_t::operator=(vector<std::pair<string, column_t::w
     }
 }
 
-multiselect_menu::multiselect_menu(vector<core::item> const &items)
+multiselect_menu::multiselect_menu(std::vector<core::item> const &items)
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
     selected_item_(0), scroll_offset_(0),
     items_(items)
@@ -55,7 +54,7 @@ void multiselect_menu::paint()
     print_header();
 }
 
-string multiselect_menu::footer_info() const
+std::string multiselect_menu::footer_info() const
 {
     const auto count = item_count();
     if (count == 0)
@@ -64,7 +63,7 @@ string multiselect_menu::footer_info() const
         return fmt::format("I've found {} items thus far.", item_count());
 }
 
-string multiselect_menu::controls_legacy() const
+std::string multiselect_menu::controls_legacy() const
 {
     return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details";
 }
@@ -226,9 +225,9 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
-        const string authors = utils::vector_to_string(items_[i].nonexacts.authors);
-        const string year = std::to_string(items_[i].exacts.year);
-        const std::array<std::reference_wrapper<const string>, 6> strings = {{
+        const std::string authors = utils::vector_to_string(items_[i].nonexacts.authors);
+        const std::string year = std::to_string(items_[i].exacts.year);
+        const std::array<std::reference_wrapper<const std::string>, 6> strings = {{
             items_[i].nonexacts.title,
             year,
             items_[i].nonexacts.series,

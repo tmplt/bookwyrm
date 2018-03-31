@@ -1,9 +1,7 @@
 #pragma once
 
-
-#include "core/plugin_handler.hpp"
-#include "core/item.hpp"
-#include "common.hpp"
+#include "plugin_handler.hpp"
+#include "item.hpp"
 #include "colours.hpp"
 #include "logger.hpp"
 #include "screens/base.hpp"
@@ -30,10 +28,10 @@ public:
     }
 
     /* Send a log entry to the log screen. */
-    void log(const core::log_level level, const string message);
+    void log(const core::log_level level, const std::string message);
 
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit tui(vector<core::item> &items, logger_t logger);
+    explicit tui(std::vector<core::item> &items, logger_t logger);
 
     /* Repaint all screens that need updating. */
     void repaint_screens();
@@ -47,7 +45,7 @@ public:
     bool display();
 
     /* Take ownership of the wanted items and move them to the caller. */
-    vector<core::item> get_wanted_items();
+    std::vector<core::item> get_wanted_items();
 
     /* Draw the context sensitive footer. */
     void print_footer();
@@ -59,7 +57,7 @@ public:
 
 private:
     /* Forwarded to the multiselect menu. */
-    vector<core::item> const &items_;
+    std::vector<core::item> const &items_;
     std::mutex tui_mutex_;
 
     /* Used to flush stored logs to the log screen. */
@@ -96,15 +94,15 @@ private:
 
     void resize_screens();
 
-    static void print(int x, const int y, const string &str, const colour attrs = colour::white);
+    static void print(int x, const int y, const std::string &str, const colour attrs = colour::white);
 
     /*
      * Print passed string starting from (x, y) along the x-axis.
      * All other cells on the same line will be empty (' ') with
      * attrs applied.
      */
-    static void printcont(int x, const int y, const string &str, const colour attrs = colour::white);
-    static void printcont(int x, const int y, const string &str, const attribute attr)
+    static void printcont(int x, const int y, const std::string &str, const colour attrs = colour::white);
+    static void printcont(int x, const int y, const std::string &str, const attribute attr)
     {
         printcont(x, y, str, colour::white | attr);
     }

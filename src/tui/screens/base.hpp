@@ -2,7 +2,6 @@
 
 #include <ncurses.h>
 
-#include "common.hpp"
 #include "colours.hpp"
 #include "keys.hpp"
 #include "runes.hpp"
@@ -38,10 +37,10 @@ public:
     virtual void move(move_direction dir) = 0;
 
     /* When this screen is focused, what should we print in the footer? */
-    virtual string footer_info() const = 0;
+    virtual std::string footer_info() const = 0;
 
     /* How do we control the screen? */
-    virtual string controls_legacy() const = 0;
+    virtual std::string controls_legacy() const = 0;
 
     /*
      * How many percent have we scrolled?
@@ -58,8 +57,8 @@ protected:
     int get_height() const;
 
     /* Validate (x, y) and then print the given string from (x, y) along the x-axis. */
-    void print(int x, int y, const string &str, const attribute attrs = attribute::none, const colour clr = colour::none);
-    void print(int x, int y, const string &str, const colour clr)
+    void print(int x, int y, const std::string &str, const attribute attrs = attribute::none, const colour clr = colour::none);
+    void print(int x, int y, const std::string &str, const colour clr)
     {
         print(x, y, str, attribute::none, clr);
     }
@@ -69,7 +68,7 @@ protected:
      * If the string is longer than the space it should fit in, the string is truncated with a '~' at its last non-whitespace character.
      * Returns the count of truncated characters, counting from the end of the string.
      */
-    int printlim(int x, int y, const string &str, const size_t space, const attribute attrs = attribute::none, const colour clr = colour::none);
+    int printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs = attribute::none, const colour clr = colour::none);
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,

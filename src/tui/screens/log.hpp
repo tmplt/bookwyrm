@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include "core/plugin_handler.hpp"
+#include "plugin_handler.hpp"
 #include "screens/base.hpp"
 
 namespace bookwyrm::screen {
@@ -14,19 +14,19 @@ public:
     void paint() override;
     void toggle_action() override;
     void move(move_direction dir) override;
-    string footer_info() const override;
+    std::string footer_info() const override;
     int scrollpercent() const override;
 
-    string controls_legacy() const override
+    std::string controls_legacy() const override
     {
         return "[j/k d/u]Navigation [SPACE]attach/detach";
     }
 
-    void log_entry(core::log_level level, string msg);
+    void log_entry(core::log_level level, std::string msg);
 
 private:
-    using entry_t = std::pair<const core::log_level, const string>;
-    vector<entry_t> entries_;
+    using entry_t = std::pair<const core::log_level, const std::string>;
+    std::vector<entry_t> entries_;
     using entry_tp = decltype(entries_.cbegin());
 
     std::optional<entry_tp> detached_at_;

@@ -7,21 +7,21 @@
 #include <utility>
 #include <variant>
 
-#include "core/item.hpp"
+#include "item.hpp"
 #include "screens/base.hpp"
 
 namespace bookwyrm::screen {
 
 class multiselect_menu : public base {
 public:
-    explicit multiselect_menu(vector<core::item> const &items);
+    explicit multiselect_menu(std::vector<core::item> const &items);
 
     void paint() override;
     void on_resize() override;
     void toggle_action() override;
     void move(move_direction dir) override;
-    string footer_info() const override;
-    string controls_legacy() const override;
+    std::string footer_info() const override;
+    std::string controls_legacy() const override;
     int scrollpercent() const override;
 
     /*
@@ -55,7 +55,7 @@ private:
         struct column_t {
             using width_w_t = std::variant<int, double>;
 
-            string title;
+            std::string title;
 
             /*
              * width_w(wanted).
@@ -70,7 +70,7 @@ private:
         };
 
         /* Called upon menu construction. */
-        void operator=(vector<std::pair<string, column_t::width_w_t>> &&pairs);
+        void operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs);
 
         column_t& operator[](const size_t i) { return columns_[i]; }
         size_t size() { return columns_.size();  }
@@ -91,7 +91,7 @@ private:
     size_t scroll_offset_;
 
     std::mutex menu_mutex_;
-    vector<core::item> const &items_;
+    std::vector<core::item> const &items_;
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;

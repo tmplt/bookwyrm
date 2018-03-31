@@ -1,8 +1,6 @@
 #include <cassert>
 #include <clocale>
 
-#include <fmt/format.h>
-
 #include "screens/base.hpp"
 #include "curses_wrap.hpp"
 
@@ -34,7 +32,7 @@ int base::get_height() const
     return curses::get_height() - padding_top_ - padding_bot_;
 }
 
-void base::print(int x, int y, const string &str, const attribute attrs, const colour clr)
+void base::print(int x, int y, const std::string &str, const attribute attrs, const colour clr)
 {
     x += padding_left_;
     y += padding_top_;
@@ -46,7 +44,7 @@ void base::print(int x, int y, const string &str, const attribute attrs, const c
     curses::mvprint(x, y, str, attrs, clr);
 }
 
-int base::printlim(int x, int y, const string &str, const size_t space, const attribute attrs, const colour clr)
+int base::printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs, const colour clr)
 {
     curses::mvprintn(x, y, str, space, attrs, clr);
 

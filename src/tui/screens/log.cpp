@@ -1,6 +1,6 @@
 #include <fmt/format.h>
 #include "screens/log.hpp"
-#include "utils.hpp"
+#include "../utils.hpp"
 
 namespace bookwyrm::screen {
 
@@ -73,7 +73,7 @@ void log::print_entry(int &y, const entry_tp entry)
     }
 }
 
-string log::footer_info() const
+std::string log::footer_info() const
 {
     /* stub */
     return fmt::format("You're in the log now. Entries: {}, Attached: {}",
@@ -88,7 +88,7 @@ int log::scrollpercent() const
     return utils::ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
 }
 
-void log::log_entry(core::log_level level, string msg)
+void log::log_entry(core::log_level level, std::string msg)
 {
     /*
      * We might get some error from Python here, which contain a few newlines.

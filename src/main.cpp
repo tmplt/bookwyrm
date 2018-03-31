@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include "version.hpp"
 #include "command_line.hpp"
-#include "tui.hpp"
+#include "tui/tui.hpp"
 #include "downloader.hpp"
 
 int main(int argc, char *argv[])

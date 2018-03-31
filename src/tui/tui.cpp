@@ -1,10 +1,10 @@
-#include "tui.hpp"
 #include "utils.hpp"
+#include "tui.hpp"
 #include "curses_wrap.hpp"
 
 namespace bookwyrm {
 
-tui::tui(vector<core::item> &items, logger_t logger)
+tui::tui(std::vector<core::item> &items, logger_t logger)
     : items_(items), logger_(logger), viewing_details_(false)
 {
     /* Create the log screen. */
@@ -15,7 +15,7 @@ tui::tui(vector<core::item> &items, logger_t logger)
     focused_ = index_;
 }
 
-void tui::log(const core::log_level level, const string message)
+void tui::log(const core::log_level level, const std::string message)
 {
     log_->log_entry(level, message);
     repaint_screens();
@@ -45,7 +45,7 @@ void tui::repaint_screens()
 
 void tui::print_footer()
 {
-    const auto print_right_align = [this](int y, string &&str, const colour attrs = colour::none) {
+    const auto print_right_align = [this](int y, std::string &&str, const colour attrs = colour::none) {
         this->print(curses::get_width() - str.length(), y, str, attrs);
     };
 
@@ -107,9 +107,9 @@ bool tui::display()
     }
 }
 
-vector<core::item> tui::get_wanted_items()
+std::vector<core::item> tui::get_wanted_items()
 {
-    vector<core::item> items;
+    std::vector<core::item> items;
 
     for (int idx : index_->marked_items())
         items.push_back(items_[idx]);
@@ -184,12 +184,12 @@ bool tui::toggle_log()
     return true;
 }
 
-void tui::print(int x, const int y, const string &str, const colour attrs)
+void tui::print(int x, const int y, const std::string &str, const colour attrs)
 {
     curses::mvprint(x, y, str, attribute::none, attrs);
 }
 
-void tui::printcont(int x, const int y, const string &str, const colour attrs)
+void tui::printcont(int x, const int y, const std::string &str, const colour attrs)
 {
     curses::mvprint(x, y, str, attribute::none, attrs);
 

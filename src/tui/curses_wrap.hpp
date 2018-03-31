@@ -67,7 +67,7 @@ inline int get_width()
     return x;
 }
 
-inline int mvprintn(int x, int y, const string &str, int n, attribute attrs = attribute::none, colour clr = colour::none)
+inline int mvprintn(int x, int y, const std::string &str, int n, attribute attrs = attribute::none, colour clr = colour::none)
 {
     attron(clr | attrs);
     int retval = mvaddnstr(y, x, str.c_str(), n);
@@ -75,7 +75,7 @@ inline int mvprintn(int x, int y, const string &str, int n, attribute attrs = at
     return retval;
 }
 
-inline int mvprint(int x, int y, const string &str, attribute attrs = attribute::none, colour clr = colour::none)
+inline int mvprint(int x, int y, const std::string &str, attribute attrs = attribute::none, colour clr = colour::none)
 {
     attron(clr | attrs);
     int retval = mvaddstr(y, x, str.c_str());

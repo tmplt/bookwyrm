@@ -2,7 +2,7 @@
 
 #include <fmt/format.h>
 
-#include "core/item.hpp"
+#include "item.hpp"
 #include "screens/base.hpp"
 
 /*
@@ -25,10 +25,10 @@ public:
 
     bool action(const int ch) override;
     void paint() override;
-    string footer_info() const override;
+    std::string footer_info() const override;
     int scrollpercent() const override;
 
-    string controls_legacy() const override
+    std::string controls_legacy() const override
     {
         return "[h/<-]Close details";
     }
@@ -47,7 +47,7 @@ private:
     void print_details();
 
     /* Print the item's description from line y and downward. */
-    void print_desc(int &y, string str);
+    void print_desc(int &y, std::string str);
 };
 
 /* ns screen */

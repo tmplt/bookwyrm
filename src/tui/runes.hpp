@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <ncurses.h>
+#include <array>
 
 #include "str_const.hpp"
 

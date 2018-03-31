@@ -3,14 +3,8 @@ find_package(CURL REQUIRED)
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/logger.cpp
     ${PROJECT_SOURCE_DIR}/src/command_line.cpp
-    ${PROJECT_SOURCE_DIR}/src/tui.cpp
-    ${PROJECT_SOURCE_DIR}/src/downloader.cpp
-    ${PROJECT_SOURCE_DIR}/src/screens/base.cpp
-    ${PROJECT_SOURCE_DIR}/src/screens/multiselect_menu.cpp
-    ${PROJECT_SOURCE_DIR}/src/screens/item_details.cpp
-    ${PROJECT_SOURCE_DIR}/src/screens/log.cpp)
+    ${PROJECT_SOURCE_DIR}/src/downloader.cpp)
 
 target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME}
@@ -33,6 +27,8 @@ target_link_libraries(${PROJECT_NAME}
     stdc++fs
     ncursesw
     ${CURL_LIBRARIES}
-    ${PROJECT_NAME}-core)
+    ${PROJECT_NAME}-core
+    ${PROJECT_NAME}-tui)
 
 add_subdirectory(core)
+add_subdirectory(tui)
