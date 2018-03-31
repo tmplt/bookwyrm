@@ -3,9 +3,9 @@
 #include "core/item.hpp"
 #include "utils.hpp"
 #include "version.hpp"
-#include "command_line.hpp"
+#include "components/command_line.hpp"
 #include "tui/tui.hpp"
-#include "downloader.hpp"
+#include "components/downloader.hpp"
 
 int main(int argc, char *argv[])
 {

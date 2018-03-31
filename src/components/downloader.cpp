@@ -10,8 +10,8 @@
 #include <fmt/ostream.h>
 
 #include "downloader.hpp"
-#include "runes.hpp"
-#include "utils.hpp"
+#include "../runes.hpp"
+#include "../utils.hpp"
 
 namespace bookwyrm {
 

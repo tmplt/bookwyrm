@@ -7,7 +7,7 @@
 
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
-#include "command_line.hpp"
+#include "components/command_line.hpp"
 #include "common.hpp"
 #include "tui/colours.hpp"
 
