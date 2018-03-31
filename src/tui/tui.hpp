@@ -15,7 +15,7 @@
 
 namespace core { class plugin_handler; }
 
-namespace bookwyrm {
+namespace bookwyrm::tui {
 
 class logger;
 using logger_t = std::shared_ptr<logger>;
@@ -110,7 +110,7 @@ private:
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t logger);
 
-/* ns bookwyrm */
+/* ns bookwyrm::tui */
 }
 
 

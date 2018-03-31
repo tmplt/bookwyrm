@@ -9,7 +9,7 @@
 #include "plugin_handler.hpp"
 #include "tui.hpp"
 
-namespace bookwyrm {
+namespace bookwyrm::tui {
 
 /* Circular dependency guard. */
 class tui;
@@ -70,7 +70,8 @@ private:
     std::weak_ptr<tui> tui_;
 };
 
-/* ns bookwyrm */
+using logger_t = std::shared_ptr<logger>;
+
+/* ns bookwyrm::tui */
 }
 
-using logger_t = std::shared_ptr<bookwyrm::logger>;

@@ -10,7 +10,7 @@
 #include "item.hpp"
 #include "screens/base.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 class multiselect_menu : public base {
 public:
@@ -122,4 +122,4 @@ private:
     void print_column(const size_t col_idx);
 };
 
-} /* ns screen */
+} /* ns bookwyrm::tui::screen */

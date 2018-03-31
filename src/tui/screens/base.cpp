@@ -4,7 +4,7 @@
 #include "screens/base.hpp"
 #include "curses_wrap.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 int base::screen_count_ = 0;
 
@@ -102,5 +102,5 @@ bool base::action(const int ch)
     return false;
 }
 
-/* ns screen */
+/* ns bookwyrm::tui::screen */
 }

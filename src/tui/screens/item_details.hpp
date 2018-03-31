@@ -17,7 +17,7 @@
  * The user doesn't need to exit the detail screen to select another item for details.
  * Implementing this is a problem for the future, though.
  */
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 class item_details : public base {
 public:
@@ -50,6 +50,6 @@ private:
     void print_desc(int &y, std::string str);
 };
 
-/* ns screen */
+/* ns bookwyrm::tui::screen */
 }
 

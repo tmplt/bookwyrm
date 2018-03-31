@@ -33,7 +33,7 @@ int percent_round(double d);
 int ratio(double a, double b);
 
 /* Translates a level enum to a matching colour. */
-colour to_colour(core::log_level lvl);
+tui::colour to_colour(core::log_level lvl);
 
 /* Generate a Lorem Ipsum string. */
 std::string lipsum(int repeats);

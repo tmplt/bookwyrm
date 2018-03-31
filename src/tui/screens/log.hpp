@@ -5,7 +5,7 @@
 #include "plugin_handler.hpp"
 #include "screens/base.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 class log : public base {
 public:
@@ -40,5 +40,5 @@ private:
     size_t capacity(entry_tp entry) const;
 };
 
-/* ns screen */
+/* ns bookwyr::tui::screen */
 }

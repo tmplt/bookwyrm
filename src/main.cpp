@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     vector<core::item> wanted_items;
 
     try {
-        auto logger = std::make_shared<bookwyrm::logger>();
+        auto logger = std::make_shared<bookwyrm::tui::logger>();
         logger->set_level(core::log_level::warn);
 
         if (cli.has("debug"))
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
          * During run-time, the butler will match each found item
          * with the wanted one. If it doesn't match, it is discarded.
          */
-        auto tui = bookwyrm::make_tui_with(butler, logger);
+        auto tui = bookwyrm::tui::make_tui_with(butler, logger);
 
         if (tui->display()) {
             /*

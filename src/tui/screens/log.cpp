@@ -2,7 +2,7 @@
 #include "screens/log.hpp"
 #include "../utils.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 log::log()
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right)
@@ -167,5 +167,5 @@ void log::move(move_direction dir)
     }
 }
 
-/* ns screen */
+/* ns bookwyrm::tui::screen */
 }

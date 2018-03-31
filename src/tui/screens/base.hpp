@@ -6,7 +6,7 @@
 #include "keys.hpp"
 #include "runes.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 constexpr static int default_padding_top   = 0,
                      default_padding_bot   = 3,
@@ -78,5 +78,5 @@ private:
     static int screen_count_;
 };
 
-/* ns screen */
+/* ns bookwyrm::tui::screen */
 }

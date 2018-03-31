@@ -2,6 +2,8 @@
 
 #include <ncurses.h>
 
+namespace bookwyrm::tui {
+
 enum key : int {
     // TODO: translate to ncurses
     f1               = KEY_F(1),
@@ -43,3 +45,6 @@ enum key : int {
     enter         = 10,
     space         = 32,
 };
+
+/* ns bookwyrm::tui */
+}

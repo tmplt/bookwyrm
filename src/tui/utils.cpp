@@ -72,20 +72,20 @@ int ratio(double a, double b)
     return percent_round(a / b);
 }
 
-colour to_colour(core::log_level lvl)
+tui::colour to_colour(core::log_level lvl)
 {
     using level = core::log_level;
 
     switch (lvl) {
         case level::debug:
-            return colour::blue;
+            return tui::colour::blue;
         case level::warn:
-            return colour::yellow;
+            return tui::colour::yellow;
         case level::err:
         case level::critical:
-            return colour::red;
+            return tui::colour::red;
         default:
-            return colour::none;
+            return tui::colour::none;
     }
 }
 

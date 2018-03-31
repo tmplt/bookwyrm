@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include "colours.hpp"
 
-namespace bookwyrm::curses {
+namespace bookwyrm::tui::curses {
 
 inline void init()
 {

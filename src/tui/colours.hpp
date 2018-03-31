@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <ncurses.h>
 
-namespace bookwyrm {
+namespace bookwyrm::tui {
 
 /* Predefined NCurses colour pairs. See screen/base.cpp */
 enum class colour : int {
@@ -71,5 +71,5 @@ constexpr inline attribute operator|=(attribute &lhs, colour rhs)
     return lhs;
 }
 
-/* ns bookwyrm */
+/* ns bookwyrm::tui */
 }

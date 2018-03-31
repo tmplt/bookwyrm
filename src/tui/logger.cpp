@@ -3,7 +3,7 @@
 
 #include "logger.hpp"
 
-namespace bookwyrm {
+namespace bookwyrm::tui {
 
 logger::~logger()
 {
@@ -11,7 +11,7 @@ logger::~logger()
         (lvl <= core::log_level::warn ? std::cout : std::cerr) << msg;
 }
 
-void logger::log(const core::log_level lvl, std::string msg)
+void logger::log(const core::log_level lvl, string msg)
 {
     if (lvl < wanted_level_)
         return;

@@ -1,7 +1,7 @@
 #include "screens/item_details.hpp"
 #include "../utils.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 item_details::item_details(const core::item &item, int padding_top)
     : base(padding_top, default_padding_bot, 0, 0), item_(item)
@@ -39,7 +39,7 @@ void item_details::print_borders()
 {
     const auto print_line = [this](int y) {
         for (int x = 0; x < get_width(); x++)
-            print(x, y, rune::single::em_dash);
+            print(x, y, rune::em_dash);
     };
 
     print_line(0);
@@ -121,5 +121,5 @@ void item_details::print_desc(int &y, std::string str)
     }
 }
 
-/* ns screen */
+/* ns bookwyrm::tui::screen */
 }

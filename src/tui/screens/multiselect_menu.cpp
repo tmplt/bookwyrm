@@ -5,7 +5,7 @@
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
-namespace bookwyrm::screen {
+namespace bookwyrm::tui::screen {
 
 void multiselect_menu::columns_t::operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs)
 {
@@ -216,9 +216,9 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         /* Print the indicator, indicating which item is currently selected. */
         if (on_selected_item && on_marked_item) {
-            print(0, y, rune::single::double_right_angle_bracket, attribute::reverse);
+            print(0, y, rune::double_right_angle_bracket, attribute::reverse);
         } else if (on_selected_item) {
-            print(0, y, rune::single::double_right_angle_bracket);
+            print(0, y, rune::double_right_angle_bracket);
         } else if (on_marked_item) {
             print(0, y, " ", attribute::reverse);
         }
@@ -275,4 +275,4 @@ void multiselect_menu::decompress(int scroll)
     scroll_offset_ -= scroll;
 }
 
-} /* ns screen */
+} /* ns bookwyrm::tui::screen */

@@ -2,7 +2,7 @@
 #include "tui.hpp"
 #include "curses_wrap.hpp"
 
-namespace bookwyrm {
+namespace bookwyrm::tui {
 
 tui::tui(std::vector<core::item> &items, logger_t logger)
     : items_(items), logger_(logger), viewing_details_(false)
@@ -207,5 +207,5 @@ std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_
     return t;
 }
 
-/* ns bookwyrm */
+/* ns bookwyrm::tui */
 }
