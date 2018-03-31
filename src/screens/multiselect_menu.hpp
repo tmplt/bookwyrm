@@ -7,7 +7,7 @@
 #include <utility>
 #include <variant>
 
-#include "item.hpp"
+#include "core/item.hpp"
 #include "screens/base.hpp"
 
 namespace bookwyrm::screen {

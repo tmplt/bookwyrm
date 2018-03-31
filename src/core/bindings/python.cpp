@@ -1,9 +1,9 @@
 #include <fmt/format.h>
 
-#include "python.hpp"
-#include "utils.hpp"
-#include "item.hpp"
-#include "plugin_handler.hpp"
+#include "../python.hpp"
+#include "../utils.hpp"
+#include "../item.hpp"
+#include "../plugin_handler.hpp"
 
 PYBIND11_MODULE(pybookwyrm, m)
 {

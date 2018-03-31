@@ -2,7 +2,7 @@
 
 #include <fmt/format.h>
 
-#include "item.hpp"
+#include "core/item.hpp"
 #include "screens/base.hpp"
 
 /*

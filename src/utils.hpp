@@ -6,10 +6,10 @@
 #include <experimental/filesystem>
 
 #include "core/plugin_handler.hpp"
+#include "core/item.hpp"
 #include "command_line.hpp"
 #include "common.hpp"
 #include "colours.hpp"
-#include "item.hpp"
 
 namespace fs = std::experimental::filesystem;
 

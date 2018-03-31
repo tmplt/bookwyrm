@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/screens/item_details.cpp
     ${PROJECT_SOURCE_DIR}/src/screens/log.cpp)
 
-target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt
     PRIVATE ${CURL_INCLUDE_DIRS})
@@ -24,8 +24,8 @@ execute_process(COMMAND git describe --tags --dirty=-git
   OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 
 configure_file(
-  ${PROJECT_SOURCE_DIR}/include/version.hpp.cmake
-  ${CMAKE_SOURCE_DIR}/include/version.hpp
+  ${PROJECT_SOURCE_DIR}/src/version.hpp.cmake
+  ${CMAKE_SOURCE_DIR}/src/version.hpp
   ESCAPE_QUOTES @ONLY)
 
 target_link_libraries(${PROJECT_NAME}
