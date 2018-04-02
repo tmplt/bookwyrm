@@ -1,6 +1,6 @@
 #pragma once
 
-namespace core::algorithm {
+namespace bookwyrm::core::algorithm {
 
 /*
  * Generates the cartesian product between two vectors.
@@ -19,5 +19,5 @@ auto product(const vector<T1> &a, const vector<T2> &b)
     return products;
 }
 
-/* ns algorithm */
+/* ns bookwyrk::core::algorithm */
 }

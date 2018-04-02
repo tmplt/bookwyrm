@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 
-namespace core::utils {
+namespace bookwyrm::core::utils {
 
 string vector_to_string(const vector<string> &vec)
 {
@@ -19,5 +19,5 @@ bool readable_file(const fs::path &path)
     return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
 }
 
-/* ns utils */
+/* ns bookwyrm::core::utils */
 }

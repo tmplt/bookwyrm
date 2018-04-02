@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace core::func {
+namespace bookwyrm::core::func {
 
 /*
  * Take two containers, zip over them and return a vector with the length of the shortest passed container.
@@ -26,5 +26,5 @@ auto zip(const Cont1 &ac, const Cont2 &bc) -> std::vector<std::pair<typename Con
     return pairs;
 }
 
-/* ns func */
+/* ns bookwyrm::core::func */
 }

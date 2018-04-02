@@ -8,7 +8,7 @@
 #include "item.hpp"
 #include "python.hpp"
 
-namespace core {
+namespace bookwyrm::core {
 
 enum class log_level {
     trace    = 0,
@@ -89,5 +89,5 @@ private:
     vector<py::module> plugins_;
 };
 
-/* ns butler */
+/* ns bookwyrm::core */
 }

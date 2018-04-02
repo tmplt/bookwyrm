@@ -7,6 +7,8 @@
 #include "tui/tui.hpp"
 #include "components/downloader.hpp"
 
+using namespace bookwyrm;
+
 int main(int argc, char *argv[])
 {
     std::setlocale(LC_ALL, "");

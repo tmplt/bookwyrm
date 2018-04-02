@@ -171,7 +171,7 @@ void cliparser::validate_arguments() const
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
-        return core::utils::any_intersection(passed_opts, required_opts);
+        return bookwyrm::core::utils::any_intersection(passed_opts, required_opts);
     }();
 
     if (has("ident") && passed_opts_.size() > 1)

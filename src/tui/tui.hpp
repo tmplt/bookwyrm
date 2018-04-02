@@ -13,7 +13,7 @@
 /* namespace logger { class bookwyrm_logger; } */
 /* using logger_t = std::shared_ptr<logger::bookwyrm_logger>; */
 
-namespace core { class plugin_handler; }
+namespace bookwyrm::core { class plugin_handler; }
 
 namespace bookwyrm::tui {
 

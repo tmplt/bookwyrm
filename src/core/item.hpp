@@ -10,7 +10,7 @@
 using std::string;
 using std::vector;
 
-namespace core {
+namespace bookwyrm::core {
 
 /* Default value: "this value is empty". */
 constexpr int empty = -1;
@@ -124,5 +124,5 @@ public:
     const misc_t misc;
 };
 
-/* ns bookwyrm */
+/* ns bookwyrm::core */
 }

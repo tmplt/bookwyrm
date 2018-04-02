@@ -5,6 +5,10 @@
 #include "../item.hpp"
 #include "../plugin_handler.hpp"
 
+using namespace bookwyrm;
+using std::string;
+using std::vector;
+
 PYBIND11_MODULE(pybookwyrm, m)
 {
     m.attr("__doc__") = "bookwyrm python bindings";

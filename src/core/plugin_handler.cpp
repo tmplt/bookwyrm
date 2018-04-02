@@ -12,7 +12,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-namespace core {
+namespace bookwyrm::core {
 
 void plugin_handler::load_plugins()
 {

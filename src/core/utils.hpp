@@ -9,7 +9,7 @@ namespace fs = std::experimental::filesystem;
 using std::string;
 using std::vector;
 
-namespace core::utils {
+namespace bookwyrm::core::utils {
 
 /* Return true if any element is shared between two sets. */
 template <typename Set>
@@ -23,5 +23,5 @@ string vector_to_string(const vector<string> &vec);
 /* Check if the given path is a file and can be read. */
 bool readable_file(const fs::path &path);
 
-/* ns utils */
+/* ns bookwyrm::core::utils */
 }

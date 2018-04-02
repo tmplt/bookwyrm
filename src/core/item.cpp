@@ -7,9 +7,9 @@
 #include "algorithm.hpp"
 #include "functional.hpp"
 
-static constexpr int fuzzy_min = 75;
+namespace bookwyrm::core {
 
-namespace core {
+static constexpr int fuzzy_min = 75;
 
 int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
 {
@@ -89,5 +89,5 @@ bool item::matches(const item &wanted) const
     return true;
 }
 
-/* ns bookwyrm */
+/* ns bookwyrm::core */
 }
