@@ -1,11 +1,64 @@
+#include <iostream>
+
 #include "../utils.hpp"
 #include "tui.hpp"
 #include "curses_wrap.hpp"
 
 namespace bookwyrm::tui {
 
-tui::tui(std::vector<core::item> &items, logger_t logger)
-    : items_(items), logger_(logger), viewing_details_(false)
+logger::~logger()
+{
+    std::lock_guard<std::mutex> guard(log_mutex_);
+
+    for (const auto& [lvl, msg] : buffer_)
+        (lvl <= core::log_level::warn ? std::cout : std::cerr) << msg << "\n";
+}
+
+void logger::log(const core::log_level level, std::string message)
+{
+    if (level < wanted_level_)
+        return;
+
+    std::lock_guard<std::mutex> guard(log_mutex_);
+
+    if (screen_.expired()) {
+        buffer_.emplace_back(level, message);
+    } else if (const auto screen = screen_.lock(); is_log_focused()) {
+        screen->log_entry(level, message);
+    } else {
+        buffer_.emplace_back(level, message);
+    }
+}
+
+core::log_level logger::worst_unread() const
+{
+    if (!has_unread_logs())
+        throw std::runtime_error("__func__: buffer is empty");
+
+    const auto worst = std::max_element(cbegin(buffer_), cend(buffer_),
+        [] (const buffer_pair &a, const buffer_pair &b) {
+            return a.first < b.first;
+        });
+
+    return worst->first;
+}
+
+void logger::flush_to_screen()
+{
+    if (screen_.expired())
+        throw std::runtime_error("__func__: buffer is empty");
+
+    std::lock_guard<std::mutex> guard(log_mutex_);
+
+    const auto screen = screen_.lock();
+    for (const auto& [level, message] : buffer_)
+        screen->log_entry(level, message);
+
+    buffer_.clear();
+}
+
+tui::tui(std::vector<core::item> &items, bool debug_log)
+    : viewing_details_(false), items_(items)
 {
     /* Create the log screen. */
     log_ = std::make_shared<screen::log>();
@@ -13,11 +66,18 @@ tui::tui(std::vector<core::item> &items, logger_t logger)
     /* And create the default menu screen and focus on it. */
     index_ = std::make_shared<screen::multiselect_menu>(items_);
     focused_ = index_;
+
+    /* Create the logger. */
+    logger_ = std::make_unique<logger>(log_,
+            (debug_log ? core::log_level::debug : core::log_level::warn),
+            [this]() { return this->is_log_focused(); });
+
+    logger_->debug("the mighty bookwyrm hath been summoned!");
 }
 
 void tui::log(const core::log_level level, const std::string message)
 {
-    log_->log_entry(level, message);
+    logger_->log(level, message);
     repaint_screens();
 }
 
@@ -64,8 +124,6 @@ void tui::print_footer()
     if (logger_->has_unread_logs()) {
         print_right_align(curses::get_height() - 1, " You have unread logs! ",
                 utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
-    } else {
-        print_right_align(curses::get_height() - 1, " You have NO unread logs ", colour::none | attribute::reverse | attribute::bold);
     }
 }
 
@@ -197,12 +255,11 @@ void tui::printcont(int x, const int y, const std::string &str, const colour att
         curses::mvprint(i, y, " ", attribute::none, attrs);
 }
 
-std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, logger_t logger)
+std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, bool debug_log)
 {
     plugin_handler.load_plugins();
-    auto t = std::make_shared<tui>(plugin_handler.results(), logger);
+    auto t = std::make_shared<tui>(plugin_handler.results(), debug_log);
     plugin_handler.set_frontend(t);
-    logger->set_tui(t);
     plugin_handler.async_search();
     return t;
 }
