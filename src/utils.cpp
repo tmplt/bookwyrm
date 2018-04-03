@@ -84,7 +84,7 @@ string lipsum(int repeats)
     return ret;
 }
 
-int percent_round(double d)
+static inline int percent_round(double d)
 {
     return std::round<int>(100 * d);
 }

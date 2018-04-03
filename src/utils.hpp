@@ -15,6 +15,13 @@ namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm::utils {
 
+/* Return true if any element is shared between two sets. */
+template <typename Set>
+inline bool any_intersection(const Set &a, const Set &b)
+{
+    return std::find_first_of(a.cbegin(), a.cend(), b.cbegin(), b.cend()) != a.cend();
+}
+
 /* Check if the path is a valid download directory. */
 std::error_code validate_download_dir(const fs::path &path);
 
@@ -24,12 +31,6 @@ std::pair<string, string> split_at_first(const string &str, string &&sep);
 
 /* Check if the given path is a file and can be read. */
 bool readable_file(const fs::path &path);
-
-/*
- * Return a rounded percentage in the range [0,100]
- * from a domain of [0.0,1.0]
- */
-int percent_round(double d);
 
 /* Returns the ratio of a into b in percentage. */
 int ratio(double a, double b);

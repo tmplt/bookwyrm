@@ -1,6 +1,6 @@
 #include <fmt/format.h>
 #include "screens/log.hpp"
-#include "../utils.hpp"
+#include "../../utils.hpp"
 
 namespace bookwyrm::tui::screen {
 

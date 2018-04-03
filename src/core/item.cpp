@@ -6,6 +6,7 @@
 #include "common.hpp"
 #include "algorithm.hpp"
 #include "functional.hpp"
+#include "../utils.hpp"
 
 namespace bookwyrm::core {
 

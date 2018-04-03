@@ -1,7 +1,7 @@
 #include <fmt/format.h>
 
 #include "../python.hpp"
-#include "../utils.hpp"
+#include "../../utils.hpp"
 #include "../item.hpp"
 #include "../plugin_handler.hpp"
 
@@ -65,7 +65,7 @@ PYBIND11_MODULE(pybookwyrm, m)
                 "\tjournal:   '{}'\n"
                 "\tauthors:   '{}'\n>",
                 c.title, c.series, c.edition, c.publisher, c.journal,
-                core::utils::vector_to_string(c.authors)
+                utils::vector_to_string(c.authors)
             );
         });
 
@@ -78,8 +78,8 @@ PYBIND11_MODULE(pybookwyrm, m)
                 "<pybookwyrn.misc_t with fields:\n"
                 "\tisbns:     '{}'\n"
                 "\turis:      '{}'\n",
-                core::utils::vector_to_string(c.isbns),
-                core::utils::vector_to_string(c.uris)
+                utils::vector_to_string(c.isbns),
+                utils::vector_to_string(c.uris)
             );
         });
 

@@ -126,7 +126,6 @@ string cliparser::get(size_t index) const
     return has(index) ? positional_args_[index] : "";
 }
 
-
 vector<string> cliparser::get_many(const string &&opt) const
 {
     vector<string> values;
@@ -171,7 +170,7 @@ void cliparser::validate_arguments() const
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
-        return bookwyrm::core::utils::any_intersection(passed_opts, required_opts);
+        return bookwyrm::utils::any_intersection(passed_opts, required_opts);
     }();
 
     if (has("ident") && passed_opts_.size() > 1)

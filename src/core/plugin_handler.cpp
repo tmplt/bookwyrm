@@ -6,7 +6,7 @@
 
 #include <fmt/format.h>
 
-#include "utils.hpp"
+#include "../utils.hpp"
 #include "python.hpp"
 #include "plugin_handler.hpp"
 

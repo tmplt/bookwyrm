@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cassert>
+#include <vector>
+#include <string>
 #include <array>
 #include <tuple>
 #include <map>
-
-#include "utils.hpp"
 
 using std::string;
 using std::vector;

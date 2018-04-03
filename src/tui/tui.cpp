@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include "../utils.hpp"
 #include "tui.hpp"
 #include "curses_wrap.hpp"
 

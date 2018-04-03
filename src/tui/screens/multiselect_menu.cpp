@@ -1,7 +1,7 @@
 #include <fmt/format.h>
 #include <ncurses.h>
 
-#include "../utils.hpp"
+#include "../../utils.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
