@@ -77,7 +77,30 @@ tui::tui(std::vector<core::item> &items, bool debug_log)
 
 void tui::log(const core::log_level level, const std::string message)
 {
-    logger_->log(level, message);
+    /* XXX: ugly; rethink this. */
+    switch (level) {
+        case core::log_level::trace:
+            logger_->trace(message);
+            break;
+        case core::log_level::debug:
+            logger_->debug(message);
+            break;
+        case core::log_level::info:
+            logger_->info(message);
+            break;
+        case core::log_level::warn:
+            logger_->warn(message);
+            break;
+        case core::log_level::err:
+            logger_->err(message);
+            break;
+        case core::log_level::critical:
+            logger_->critical(message);
+            break;
+        default:
+            return;
+    }
+
     repaint_screens();
 }
 
