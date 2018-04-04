@@ -208,9 +208,11 @@ bool tui::meta_action(const int ch)
     switch (ch) {
         case 'l':
         case key::arrow_right:
+            if (is_log_focused()) return false;
             return open_details();
         case 'h':
         case key::arrow_left:
+            if (is_log_focused()) return false;
             return close_details();
         case key::tab:
             return toggle_log();
