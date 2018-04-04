@@ -20,6 +20,8 @@ base::~base()
 {
     if (--screen_count_ == 0) curses::terminate();
     assert(screen_count_ >= 0);
+
+    delwin(curses_window_);
 }
 
 int base::get_width() const
@@ -41,12 +43,12 @@ void base::print(int x, int y, const std::string &str, const attribute attrs, co
     if (!(x <= get_width()) || !(y <= get_height()))
         return;
 
-    curses::mvprint(x, y, str, attrs, clr);
+    curses::mvprint(curses_window_, x, y, str, attrs, clr);
 }
 
 int base::printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs, const colour clr)
 {
-    curses::mvprintn(x, y, str, space, attrs, clr);
+    curses::mvprintn(curses_window_, x, y, str, space, attrs, clr);
 
     int truncd = 0;
     if (str.length() > space) {
@@ -60,7 +62,7 @@ int base::printlim(int x, int y, const std::string &str, const size_t space, con
 
         truncd = str.length() - space + whitespace;
         getyx(stdscr, y, x);
-        curses::mvprint(x - whitespace - 1, y, "~", attrs, clr);
+        curses::mvprint(curses_window_, x - whitespace - 1, y, "~", attrs, clr);
     }
 
     return truncd;

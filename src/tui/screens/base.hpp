@@ -48,6 +48,16 @@ public:
      */
     virtual int scrollpercent() const = 0;
 
+    void erase()
+    {
+        werase(curses_window_);
+    }
+
+    void refresh()
+    {
+        wrefresh(curses_window_);
+    }
+
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
@@ -76,6 +86,7 @@ protected:
 
 private:
     static int screen_count_;
+    WINDOW *curses_window_;
 };
 
 /* ns bookwyrm::tui::screen */
