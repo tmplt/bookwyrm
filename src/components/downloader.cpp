@@ -124,8 +124,10 @@ bool downloader::sync_download(vector<core::item> items)
                         rune::vt100::erase_line, mirror++, curl_easy_strerror(res), res);
 
                 std::fclose(out);
-                if (fs::file_size(filename) == 0)
+                if (fs::file_size(filename) == 0) {
+                    /* TODO: warn the user about file removal (or just warn that the file is empty?) */
                     fs::remove(filename);
+                }
 
             } else {
                 std::fclose(out);
@@ -180,8 +182,8 @@ int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t 
 
         /* Download rate unit conversion. */
         const string rate_unit = [&rate]() {
-            constexpr auto k = 1024,
-                           M = 1048576;
+            constexpr auto k = std::pow(2, 10),
+                           M = std::pow(2, 20);
 
             if (rate > M) {
                 rate /= M;
@@ -196,8 +198,8 @@ int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t 
         fmt::print("{}\r  {:.0f}% ", rune::vt100::erase_line, fraction * 100);
 
         string status_text = fmt::format(" {dlnow:.2f}/{dltotal:.2f}MB @ {rate:.2f}{unit} ETA: {eta}\r",
-                fmt::arg("dlnow",   static_cast<double>(dlnow)/1024/1024),
-                fmt::arg("dltotal", static_cast<double>(dltotal)/1024/1024),
+                fmt::arg("dlnow",   static_cast<double>(dlnow) / std::pow(2, 20)),
+                fmt::arg("dltotal", static_cast<double>(dltotal) / std::pow(2, 20)),
                 fmt::arg("rate",    rate),
                 fmt::arg("unit",    rate_unit),
                 fmt::arg("eta",     eta_ss.str()));
