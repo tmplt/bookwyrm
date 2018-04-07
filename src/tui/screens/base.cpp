@@ -12,6 +12,11 @@ base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
     : padding_top_(pad_top), padding_bot_(pad_bot),
     padding_left_(pad_left), padding_right_(pad_right)
 {
+    /* Configure screen acrea */
+    curses_window_ = newwin(curses::get_height() - pad_top - pad_bot,
+            curses::get_width() - pad_left - pad_right,
+            pad_top, pad_left);
+
     if (screen_count_++ > 0) return;
     curses::init();
 }
@@ -26,22 +31,32 @@ base::~base()
 
 int base::get_width() const
 {
-    return curses::get_width() - padding_left_ - padding_right_;
+    int x, y;
+    (void)y;
+    getmaxyx(curses_window_, y, x);
+    return x;
+
+    /* return curses::get_width() - padding_left_ - padding_right_; */
 }
 
 int base::get_height() const
 {
-    return curses::get_height() - padding_top_ - padding_bot_;
+    int x, y;
+    (void)x;
+    getmaxyx(curses_window_, y, x);
+    return y;
+
+    /* return curses::get_height() - padding_top_ - padding_bot_; */
 }
 
 void base::print(int x, int y, const std::string &str, const attribute attrs, const colour clr)
 {
-    x += padding_left_;
-    y += padding_top_;
+    /* x += padding_left_; */
+    /* y += padding_top_; */
 
     /* Is the cell owned by the screen? */
-    if (!(x <= get_width()) || !(y <= get_height()))
-        return;
+    /* if (!(x <= get_width()) || !(y <= get_height())) */
+    /*     return; */
 
     curses::mvprint(curses_window_, x, y, str, attrs, clr);
 }
@@ -61,7 +76,7 @@ int base::printlim(int x, int y, const std::string &str, const size_t space, con
         }
 
         truncd = str.length() - space + whitespace;
-        getyx(stdscr, y, x);
+        getyx(curses_window_, y, x);
         curses::mvprint(curses_window_, x - whitespace - 1, y, "~", attrs, clr);
     }
 

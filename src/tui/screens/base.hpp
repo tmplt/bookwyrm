@@ -62,7 +62,7 @@ protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
     ~base();
 
-    /* Like the one in the curses namespace, but for a screens dedicated size instead. */
+    /* Get screen dimentions */
     int get_width() const;
     int get_height() const;
 

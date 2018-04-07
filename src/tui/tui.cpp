@@ -107,6 +107,7 @@ void tui::log(const core::log_level level, const std::string message)
 void tui::repaint_screens()
 {
     std::lock_guard<std::mutex> guard(tui_mutex_);
+    index_->erase();
     curses::erase();
 
     if (!bookwyrm_fits()) {
@@ -124,6 +125,7 @@ void tui::repaint_screens()
     }
 
     curses::refresh();
+    index_->refresh();
 }
 
 void tui::print_footer()
@@ -269,15 +271,15 @@ bool tui::toggle_log()
 
 void tui::print(int x, const int y, const std::string &str, const colour attrs)
 {
-    curses::mvprint(x, y, str, attribute::none, attrs);
+    curses::mvprint(nullptr, x, y, str, attribute::none, attrs);
 }
 
 void tui::printcont(int x, const int y, const std::string &str, const colour attrs)
 {
-    curses::mvprint(x, y, str, attribute::none, attrs);
+    curses::mvprint(nullptr, x, y, str, attribute::none, attrs);
 
     for (int i = x + str.length(); i < curses::get_width(); i++)
-        curses::mvprint(i, y, " ", attribute::none, attrs);
+        curses::mvprint(nullptr, i, y, " ", attribute::none, attrs);
 }
 
 std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, bool debug_log)
