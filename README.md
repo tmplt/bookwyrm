@@ -62,4 +62,4 @@ $ cmake .. && make
 $ src/bookwyrm OPTION [OPTION]... PATH
 ```
 
-If you're using Nix(OS), evaluate the expression in `default.nix` first (prepend `nix-shell` to the steps above).
+If you're using Nix(OS), evaluate the expression in `shell.nix` first (prepend `nix-shell` to the steps above).
