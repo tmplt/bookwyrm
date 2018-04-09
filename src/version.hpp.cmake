@@ -10,8 +10,12 @@
 #include "version.hpp"
 
 #define PROG_NAME "@PROJECT_NAME@"
-    #cmakedefine PROG_VERSION "@PROG_VERSION@"
+#cmakedefine PROG_VERSION "@PROG_VERSION@"
 #ifndef PROG_VERSION
+    #ifndef GIT_TAG
+        #define GIT_TAG "<PROG_VERSION,GIT_TAG undefined; fix me>"
+    #endif
+
     #define PROG_VERSION GIT_TAG
 #endif
 

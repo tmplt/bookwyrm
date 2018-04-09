@@ -22,6 +22,15 @@ configure_file(
   ${CMAKE_SOURCE_DIR}/src/version.hpp
   ESCAPE_QUOTES @ONLY)
 
+if(NOT ENV{PROG_VERSION} AND NOT ENV{GIT_TAG})
+    set(errmsg "Neither $PROG_VERSION or $GIT_TAG defined; version undefined!")
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        message_colored(FATAL_ERROR "${errmsg} Version must be defined in release!" 31)
+    else()
+        message_colored(WARNING "${errmsg}" 33)
+    endif()
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     fmt
     stdc++fs
