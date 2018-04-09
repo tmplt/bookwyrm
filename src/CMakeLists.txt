@@ -34,7 +34,6 @@ endif()
 target_link_libraries(${PROJECT_NAME}
     fmt
     stdc++fs
-    ncursesw
     ${CURL_LIBRARIES}
     ${PROJECT_NAME}-core
     ${PROJECT_NAME}-tui)

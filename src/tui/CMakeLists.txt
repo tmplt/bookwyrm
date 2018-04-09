@@ -1,5 +1,6 @@
 # Required external dependencies
 set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_NEED_WIDE TRUE)
 find_package(Curses REQUIRED)
 
 add_library(${PROJECT_NAME}-tui STATIC
@@ -17,4 +18,4 @@ target_include_directories(${PROJECT_NAME}-tui
 
 target_link_libraries(${PROJECT_NAME}-tui
     ${PROJECT_NAME}-core
-    ncursesw)
+    ${CURSES_LIBRARIES})
