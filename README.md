@@ -27,16 +27,17 @@ Aside from a C++17-compliant compiler and CMake, bookwyrm also depends on a few 
 * **fuzzywuzzy**, for fuzzily matching found items with what's wanted.
 
 All libraries that do not use a bold font are non-essential and may be subject to removal later in development. (Almost) all dependencies are submoduled in `lib/`.
-The only external dependency is ncurses.
+The only external C++ dependency is ncurses.
 
 Furthermore, the Python modules need the following packages:
-* **furl**,     parsing library for urls;
-* **requests**,     http library for Python;
-* **isbnlib**,      extraction library for ISBNs (International Standard Book Number).
+* **furl**,     for parsing and modifying URLs;
+* **requests**,     for sane HTTP requests, and
+* isbnlib,      for validating ISBNs.
 
-These can be installed via `pip3 install --user <package name>`.
+If you're not using Nix(OS), these can be installed via `pip3 install [--user] -r requirements.txt`.
 
-bookwyrm is still in the early development stage, so nothing is set in stone. A v1.0.0 release is planned for early Q1 2018.
+bookwyrm is still in the early development stage, so nothing is set in stone.
+A v1.0.0 release was planned for early Q1 2018, but that didn't happen now, did it?
 
 ---
 

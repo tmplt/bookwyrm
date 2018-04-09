@@ -1,0 +1,3 @@
+furl
+requests
+isbnlib
