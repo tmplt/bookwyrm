@@ -4,6 +4,7 @@ with python36Packages;
 let
   homepagePrefix = "https://pypi.org/project";
 
+  # TODO: PR these to nixpkgs
   orderedmultidict = buildPythonPackage rec {
     name = "${pname}-${version}";
     pname = "orderedmultidict";
