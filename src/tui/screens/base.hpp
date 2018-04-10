@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <ncurses.h>
 
 #include "colours.hpp"
@@ -69,6 +70,12 @@ protected:
      * Returns the count of truncated characters, counting from the end of the string.
      */
     int printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs = attribute::none, const colour clr = colour::none);
+
+    /* Returns the ratio of a int b in percentage. Used for scroll percentage. */
+    static inline int ratio(double a, double b)
+    {
+        return std::round<int>(100 * (a / b));
+    }
 
     /* How much space do we leave for bars? */
     int padding_top_, padding_bot_,

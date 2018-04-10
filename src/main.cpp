@@ -1,4 +1,8 @@
+#include <unistd.h>
+#include <cerrno>
 #include <clocale>
+#include <system_error>
+
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
 #include "utils.hpp"
@@ -8,6 +12,28 @@
 #include "components/downloader.hpp"
 
 using namespace bookwyrm;
+
+static std::error_code validate_download_dir(const fs::path &path)
+{
+    constexpr auto error = [](auto ec) -> std::error_code {
+        return {ec, std::generic_category()};
+    };
+
+    if (!fs::exists(path))
+        return error(ENOENT);
+
+    if (fs::space(path).available == 0)
+        return error(ENOSPC);
+
+    if (!fs::is_directory(path))
+        return error(ENOTDIR);
+
+    /* Can we write to the directory? */
+    if (access(path.c_str(), W_OK) != 0)
+        return error(EACCES);
+
+    return {};
+}
 
 static const core::item create_item(const cliparser &cli)
 {
@@ -151,7 +177,7 @@ int main(int argc, char *argv[])
 
     const string dl_path = cli.has(0) ? cli.get(0) : ".";
 
-    if (const auto err = bookwyrm::utils::validate_download_dir(dl_path); err) {
+    if (const auto err = validate_download_dir(dl_path); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
         fmt::print(stderr, "error: invalid download directory: {}.\n", msg);

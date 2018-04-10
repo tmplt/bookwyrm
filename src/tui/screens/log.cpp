@@ -86,7 +86,7 @@ int log::scrollpercent() const
     if (!detached_at_.has_value())
         return 100;
 
-    return utils::ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
+    return ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
 }
 
 void log::log_entry(core::log_level level, std::string msg)

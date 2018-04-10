@@ -6,11 +6,44 @@
 #include <array>
 #include <tuple>
 #include <map>
+#include <algorithm>
 
 using std::string;
 using std::vector;
 
 namespace bookwyrm::core {
+
+namespace func {
+
+/*
+ * Take two containers, zip over them and return a vector with the length of the shortest passed container.
+ *
+ * NOTE: This is some ugly template programming. Please fix it.
+ */
+template <typename Cont1, typename Cont2>
+auto zip(const Cont1 &ac, const Cont2 &bc) -> std::vector<std::pair<typename Cont1::value_type, typename Cont2::value_type>>
+{
+    std::vector<std::pair<typename Cont1::value_type, typename Cont2::value_type>> pairs;
+    auto a = std::cbegin(ac);
+    auto b = std::cbegin(bc);
+
+    while (a != std::cend(ac) && b != std::cend(bc))
+        pairs.emplace_back(*a++, *b++);
+
+    assert(pairs.size() == std::min(ac.size(), bc.size()));
+
+    return pairs;
+}
+
+/* Return true if any element is shared between two sets. */
+template <typename Set>
+inline bool any_intersection(const Set &a, const Set &b)
+{
+    return std::find_first_of(a.cbegin(), a.cend(), b.cbegin(), b.cend()) != a.cend();
+}
+
+/* ns func */
+}
 
 /* Default value: "this value is empty". */
 constexpr int empty = -1;

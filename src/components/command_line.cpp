@@ -5,6 +5,7 @@
 
 #include "command_line.hpp"
 #include "../utils.hpp"
+#include "../core/item.hpp"
 
 enum {
     /*
@@ -170,7 +171,8 @@ void cliparser::validate_arguments() const
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
-        return bookwyrm::utils::any_intersection(passed_opts, required_opts);
+        return std::find_first_of(passed_opts.cbegin(), passed_opts.cend(),
+                required_opts.cbegin(), required_opts.cend()) != passed_opts.cend();
     }();
 
     if (has("ident") && passed_opts_.size() > 1)

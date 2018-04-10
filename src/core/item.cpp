@@ -28,7 +28,7 @@ bool item::matches(const item &wanted) const
     // TODO: implement operator== for exacts_t?
 
     /* Return false if any exact value doesn't match what's wanted. */
-    for (const auto& [req, got] : utils::zip(wanted.exacts.store, this->exacts.store)) {
+    for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {
         if (req != empty && req != got)
             return false;
     }
@@ -41,7 +41,7 @@ bool item::matches(const item &wanted) const
 
     /* Does the item contain a wanted ISBN? */
     if (!wanted.misc.isbns.empty() &&
-            !utils::any_intersection(wanted.misc.isbns, this->misc.isbns))
+            !func::any_intersection(wanted.misc.isbns, this->misc.isbns))
         return false;
 
     const std::array<string, 3> in_result = {{
@@ -55,7 +55,7 @@ bool item::matches(const item &wanted) const
                                     wanted.nonexacts.publisher
                                 }};
 
-    for (const auto& [req, got] : utils::zip(requested, in_result)) {
+    for (const auto& [req, got] : func::zip(requested, in_result)) {
         if (!req.empty()) {
             /*
              * partial: useful for course literature that can have some
