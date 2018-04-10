@@ -2,7 +2,6 @@ find_package(CURL REQUIRED)
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/main.cpp
-    ${PROJECT_SOURCE_DIR}/src/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/components/command_line.cpp
     ${PROJECT_SOURCE_DIR}/src/components/downloader.cpp)
 

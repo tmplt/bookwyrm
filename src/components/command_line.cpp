@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "command_line.hpp"
-#include "../utils.hpp"
+#include "../string.hpp"
 #include "../core/item.hpp"
 
 enum {
@@ -92,7 +92,7 @@ void cliparser::usage() const
                 pad += opt.flag_long.length() + opt.token.length() + desc_align_magic;
 
                 std::cout << string(pad, ' ') << opt.token << " is one of: "
-                          << bookwyrm::utils::vector_to_string(opt.values);
+                          << bookwyrm::vector_to_string(opt.values);
             } else {
                 std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
             }
@@ -201,7 +201,7 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
             std::find(valid_values.cbegin(), valid_values.cend(), value) == valid_values.cend()) {
             throw value_error(
                 "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
-                "; valid options are: " + bookwyrm::utils::vector_to_string(valid_values)
+                "; valid options are: " + bookwyrm::vector_to_string(valid_values)
             );
         }
 

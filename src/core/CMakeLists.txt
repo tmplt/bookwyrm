@@ -3,7 +3,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 add_library(${PROJECT_NAME}-core STATIC
-    ${PROJECT_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/item.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_handler.cpp)
 

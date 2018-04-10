@@ -12,7 +12,7 @@
 
 #include "downloader.hpp"
 #include "../runes.hpp"
-#include "../utils.hpp"
+#include "../string.hpp"
 
 namespace bookwyrm {
 
@@ -66,7 +66,7 @@ downloader::~downloader()
 fs::path downloader::generate_filename(const core::item &item)
 {
     const fs::path base = dldir / fmt::format("{} - {} ({})",
-            utils::vector_to_string(item.nonexacts.authors),
+            vector_to_string(item.nonexacts.authors),
             item.nonexacts.title, item.exacts.year);
 
     const auto valid_candidate = [](fs::path p) {
@@ -141,7 +141,7 @@ bool downloader::sync_download(vector<core::item> items)
 
         if (!success) {
             fmt::print(stderr, "error: no good sources for this item: {} - {} ({}). Sorry!\n",
-                utils::vector_to_string(item.nonexacts.authors),
+                vector_to_string(item.nonexacts.authors),
                 item.nonexacts.title, item.exacts.year);
         }
     }

@@ -1,8 +1,16 @@
-#include "utils.hpp"
+#pragma once
 
-namespace bookwyrm::utils {
+#include <string>
+#include <vector>
 
-string vector_to_string(const vector<string> &vec)
+using std::string;
+using std::vector;
+
+namespace bookwyrm {
+
+// TODO: improve this (and with string_views)?
+
+inline string vector_to_string(const vector<string> &vec)
 {
     string retstring = "";
     for (const auto &e : vec)
@@ -11,7 +19,7 @@ string vector_to_string(const vector<string> &vec)
     return retstring;
 }
 
-vector<string> split_string(const string &str)
+inline vector<string> split_string(const string &str)
 {
     vector<string> tokens;
     string word;
@@ -34,7 +42,7 @@ vector<string> split_string(const string &str)
     return tokens;
 }
 
-std::pair<string, string> split_at_first(const string &str, string &&sep)
+inline std::pair<string, string> split_at_first(const string &str, string &&sep)
 {
     string left  = str.substr(0, str.find_first_of(sep) + 1),
            right = str.substr(str.find_first_of(sep) + 1);

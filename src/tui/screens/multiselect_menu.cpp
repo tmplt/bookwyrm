@@ -1,7 +1,7 @@
 #include <fmt/format.h>
 #include <ncurses.h>
 
-#include "../../utils.hpp"
+#include "../../string.hpp"
 #include "screens/multiselect_menu.hpp"
 #include "screens/item_details.hpp"
 
@@ -225,7 +225,7 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
-        const std::string authors = utils::vector_to_string(items_[i].nonexacts.authors);
+        const std::string authors = vector_to_string(items_[i].nonexacts.authors);
         const std::string year = std::to_string(items_[i].exacts.year);
         const std::array<std::reference_wrapper<const std::string>, 6> strings = {{
             items_[i].nonexacts.title,

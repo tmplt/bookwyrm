@@ -1,5 +1,5 @@
 #include "screens/item_details.hpp"
-#include "../utils.hpp"
+#include "../string.hpp"
 
 namespace bookwyrm::tui::screen {
 
@@ -48,10 +48,10 @@ void item_details::print_borders()
 
 void item_details::print_details()
 {
-    const std::string uris = utils::vector_to_string(item_.misc.uris);
+    const std::string uris = vector_to_string(item_.misc.uris);
 
     using pair = std::pair<std::string, std::reference_wrapper<const std::string>>;
-    std::string authors = utils::vector_to_string(item_.nonexacts.authors);
+    std::string authors = vector_to_string(item_.nonexacts.authors);
     std::string year = std::to_string(item_.exacts.year);
     const std::vector<pair> v = {
         {"Title",     item_.nonexacts.title},
@@ -102,7 +102,7 @@ void item_details::print_details()
 void item_details::print_desc(int &y, std::string str)
 {
     int x = 0;
-    const auto words = utils::split_string(str);
+    const auto words = split_string(str);
 
     auto word_fits = [this, &x](const std::string &str) -> bool {
         return static_cast<size_t>(get_width()) - x > str.length();

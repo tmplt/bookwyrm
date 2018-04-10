@@ -1,7 +1,7 @@
 #include <fmt/format.h>
 #include "screens/log.hpp"
 #include "tui.hpp"
-#include "../../utils.hpp"
+#include "../../string.hpp"
 
 namespace bookwyrm::tui::screen {
 
@@ -42,7 +42,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * First up, split the log level from the message, and print the
      * level in a fitting colour.
      */
-    const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
+    const auto [lvl, msg] = split_at_first(entry->second, ":");
     print(x, y, lvl, to_colour(entry->first));
     x += lvl.length();
 
@@ -51,7 +51,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * we want to split it across multiple lines. But course, if one word is longer
      * than the line itself (e.g. a long path), we'll just split it where the line ends.
      */
-    for (auto word : utils::split_string(msg)) {
+    for (auto word : split_string(msg)) {
         if (size_t remain = get_width() - 1 - x; word.length() + 1 > remain) {
             /* The word doesn't fit on the rest of the line. */
 

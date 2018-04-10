@@ -5,7 +5,7 @@
 #include "item.hpp"
 #include "common.hpp"
 #include "algorithm.hpp"
-#include "../utils.hpp"
+#include "../string.hpp"
 
 namespace bookwyrm::core {
 
