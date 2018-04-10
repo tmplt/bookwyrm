@@ -61,7 +61,5 @@ tui::colour to_colour(core::log_level lvl);
 /* Generate a Lorem Ipsum string. */
 string lipsum(int repeats);
 
-const core::item create_item(const cliparser &cli);
-
 /* ns utils */
 }
