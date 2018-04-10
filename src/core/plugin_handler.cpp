@@ -2,15 +2,12 @@
 #include <cerrno>
 #include <cstdlib>
 #include <array>
-#include <experimental/filesystem>
 
 #include <fmt/format.h>
 
 #include "../utils.hpp"
 #include "python.hpp"
 #include "plugin_handler.hpp"
-
-namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm::core {
 
@@ -53,7 +50,7 @@ void plugin_handler::load_plugins()
         for (const fs::path &p : fs::directory_iterator(plugin_path)) {
             if (p.extension() != ".py") continue;
 
-            if (!utils::readable_file(p)) {
+            if (!readable_file(p)) {
                 log(log_level::err, fmt::format("can't load module '{}': not a regular file or unreadable"
                         "; ignoring...", p.string()));
                 continue;

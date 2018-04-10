@@ -1,12 +1,16 @@
 #pragma once
 
+#include <unistd.h>
 #include <mutex>
 #include <memory>
 #include <atomic>
 #include <thread>
+#include <experimental/filesystem>
 
 #include "item.hpp"
 #include "python.hpp"
+
+namespace fs = std::experimental::filesystem;
 
 namespace bookwyrm::core {
 
@@ -70,6 +74,11 @@ public:
     }
 
 private:
+    static inline bool readable_file(const fs::path &path)
+    {
+        return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
+    }
+
     py::scoped_interpreter interp;
     std::unique_ptr<py::gil_scoped_release> nogil;
 

@@ -68,11 +68,6 @@ std::pair<string, string> split_at_first(const string &str, string &&sep)
     return {left, right};
 }
 
-bool readable_file(const fs::path &path)
-{
-    return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
-}
-
 static inline int percent_round(double d)
 {
     return std::round<int>(100 * d);
