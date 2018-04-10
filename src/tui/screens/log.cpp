@@ -1,5 +1,6 @@
 #include <fmt/format.h>
 #include "screens/log.hpp"
+#include "tui.hpp"
 #include "../../utils.hpp"
 
 namespace bookwyrm::tui::screen {
@@ -42,7 +43,7 @@ void log::print_entry(int &y, const entry_tp entry)
      * level in a fitting colour.
      */
     const auto [lvl, msg] = utils::split_at_first(entry->second, ":");
-    print(x, y, lvl, utils::to_colour(entry->first));
+    print(x, y, lvl, to_colour(entry->first));
     x += lvl.length();
 
     /*

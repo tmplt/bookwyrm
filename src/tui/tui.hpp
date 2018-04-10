@@ -13,6 +13,9 @@
 
 namespace bookwyrm::tui {
 
+/* Translates a level enum to a matching colour. */
+colour to_colour(core::log_level lvl);
+
 struct logger {
     explicit logger(std::shared_ptr<screen::log> screen, core::log_level wanted_level, std::function<bool(void)> &&predicate)
         : wanted_level_(wanted_level), screen_(screen), is_log_focused(predicate) { }

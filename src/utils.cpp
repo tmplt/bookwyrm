@@ -1,5 +1,6 @@
 #include <cerrno>
 #include <cmath>
+#include <unistd.h>
 
 #include "utils.hpp"
 
@@ -72,18 +73,6 @@ bool readable_file(const fs::path &path)
     return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
 }
 
-/* For testing purposes. */
-string lipsum(int repeats)
-{
-    const string str = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-    string ret;
-    for (int i = 0; i < repeats; ++i)
-        ret += str + (i == repeats - 1 ? "" : " ");
-
-    return ret;
-}
-
 static inline int percent_round(double d)
 {
     return std::round<int>(100 * d);
@@ -92,23 +81,6 @@ static inline int percent_round(double d)
 int ratio(double a, double b)
 {
     return percent_round(a / b);
-}
-
-tui::colour to_colour(core::log_level lvl)
-{
-    using level = core::log_level;
-
-    switch (lvl) {
-        case level::debug:
-            return tui::colour::blue;
-        case level::warn:
-            return tui::colour::yellow;
-        case level::err:
-        case level::critical:
-            return tui::colour::red;
-        default:
-            return tui::colour::none;
-    }
 }
 
 /* ns utils */

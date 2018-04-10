@@ -1,10 +1,26 @@
 #include <iostream>
 
-#include "../utils.hpp"
 #include "tui.hpp"
 #include "curses_wrap.hpp"
 
 namespace bookwyrm::tui {
+
+colour to_colour(core::log_level lvl)
+{
+    using level = core::log_level;
+
+    switch (lvl) {
+        case level::debug:
+            return colour::blue;
+        case level::warn:
+            return colour::yellow;
+        case level::err:
+        case level::critical:
+            return colour::red;
+        default:
+            return colour::none;
+    }
+}
 
 logger::~logger()
 {
@@ -146,7 +162,7 @@ void tui::print_footer()
     /* Any unseen logs? */
     if (logger_->has_unread_logs()) {
         print_right_align(curses::get_height() - 1, " You have unread logs! ",
-                utils::to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
+                to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
     }
 }
 

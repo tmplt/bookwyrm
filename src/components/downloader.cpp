@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 #include <iomanip>
 #include <sstream>
+#include <unistd.h>
 
 #include <fmt/ostream.h>
 

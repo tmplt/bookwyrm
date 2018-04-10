@@ -1,15 +1,9 @@
 #pragma once
 
-#include <unistd.h>
 #include <algorithm>
-#include <system_error>
 #include <experimental/filesystem>
 
-#include "core/plugin_handler.hpp"
-#include "core/item.hpp"
-#include "components/command_line.hpp"
 #include "common.hpp"
-#include "tui/colours.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -54,12 +48,6 @@ bool readable_file(const fs::path &path);
 
 /* Returns the ratio of a into b in percentage. */
 int ratio(double a, double b);
-
-/* Translates a level enum to a matching colour. */
-tui::colour to_colour(core::log_level lvl);
-
-/* Generate a Lorem Ipsum string. */
-string lipsum(int repeats);
 
 /* ns utils */
 }
