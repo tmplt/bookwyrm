@@ -24,7 +24,7 @@ configure_file(
 
 if(NOT ENV{PROG_VERSION} AND NOT ENV{GIT_TAG})
     set(errmsg "Neither $PROG_VERSION or $GIT_TAG defined; version undefined!")
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    if (BUILDING_RELEASE)
         message_colored(FATAL_ERROR "${errmsg} Version must be defined in release!" 31)
     else()
         message_colored(WARNING "${errmsg}" 33)
