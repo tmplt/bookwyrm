@@ -36,6 +36,8 @@ let
 
     propagatedBuildInputs = [ orderedmultidict ];
 
+    doCheck = false;
+
     meta = with stdenv.lib; {
       description = "URL parsing and manipulation made easy";
       homepage = "${homepagePrefix}/${pname}";
