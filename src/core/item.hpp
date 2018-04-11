@@ -74,6 +74,18 @@ struct exacts_t {
         size(get_value(dict, "size")),
         extension(extension) {}
 
+    bool operator==(const exacts_t &other) const
+    {
+        return (ymod == other.ymod &&
+            year == other.year &&
+            volume == other.year &&
+            number == other.number &&
+            pages == other.pages &&
+            size == other.size &&
+            extension == other.extension && // XXX: for some items, only this will differ. Check if first?
+            store == other.store);
+    }
+
     const year_mod ymod;
     const int year,
               volume,  /* no associated flag */
@@ -107,6 +119,16 @@ struct nonexacts_t {
         journal(get_value(dict, "journal")),
         edition(get_value(dict, "edition")) {}
 
+    bool operator==(const nonexacts_t &other) const
+    {
+        return (authors == other.authors &&
+            title == other.title &&
+            series == other.series &&
+            publisher == other.publisher &&
+            journal == other.journal &&
+            edition == other.edition);
+    }
+
     const vector<string> authors;
     const string title;
     const string series;
@@ -132,11 +154,17 @@ struct misc_t {
         : uris(uris), isbns(isbns) {}
     explicit misc_t() {}
 
+    bool operator==(const misc_t &other) const
+    {
+        return (uris == other.uris &&
+            isbns == other.isbns);
+    }
+
     const vector<string> uris;
     const vector<string> isbns;
 };
 
-class item {
+struct item {
 public:
 
     explicit item(const nonexacts_t ne, const exacts_t e)
@@ -151,6 +179,13 @@ public:
      * and if all specified non-exact values passes the fuzzy ratio.
      */
     bool matches(const item &wanted) const;
+
+    bool operator==(const item &other) const
+    {
+        return (nonexacts == other.nonexacts &&
+            exacts == other.exacts &&
+            misc == other.misc);
+    }
 
     const nonexacts_t nonexacts;
     const exacts_t exacts;

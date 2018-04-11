@@ -6,15 +6,17 @@
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <unordered_set>
 
 #include "item.hpp"
+#include "hash.hpp"
 #include "screens/base.hpp"
 
 namespace bookwyrm::tui::screen {
 
 class multiselect_menu : public base {
 public:
-    explicit multiselect_menu(std::vector<core::item> const &items);
+    explicit multiselect_menu(std::unordered_set<core::item> const &items);
 
     void paint() override;
     void on_resize() override;
@@ -36,7 +38,7 @@ public:
 
     const core::item& selected_item() const
     {
-        return items_[selected_item_];
+        return *std::next(items_.cbegin(), selected_item_);
     }
 
     size_t item_count() const
@@ -91,7 +93,7 @@ private:
     size_t scroll_offset_;
 
     std::mutex menu_mutex_;
-    std::vector<core::item> const &items_;
+    std::unordered_set<core::item> const &items_;
 
     /* Item indices marked for download. */
     std::set<int> marked_items_;

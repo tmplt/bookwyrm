@@ -5,10 +5,12 @@
 #include <memory>
 #include <atomic>
 #include <thread>
+#include <unordered_set>
 #include <experimental/filesystem>
 
 #include "item.hpp"
 #include "python.hpp"
+#include "hash.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -62,7 +64,8 @@ public:
 
     void log(log_level lvl, std::string msg);
 
-    vector<core::item>& results()
+    // TODO: return const and make const
+    std::unordered_set<core::item>& results()
     {
         return items_;
     }
@@ -85,7 +88,7 @@ private:
     const core::item wanted_;
 
     /* Somewhere to store our found items. */
-    vector<core::item> items_;
+    std::unordered_set<core::item> items_;
 
     /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;

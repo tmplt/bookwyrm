@@ -16,7 +16,7 @@ void multiselect_menu::columns_t::operator=(std::vector<std::pair<std::string, c
     }
 }
 
-multiselect_menu::multiselect_menu(std::vector<core::item> const &items)
+multiselect_menu::multiselect_menu(std::unordered_set<core::item> const &items)
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
     selected_item_(0), scroll_offset_(0),
     items_(items)
@@ -225,15 +225,17 @@ void multiselect_menu::print_column(const size_t col_idx)
 
         const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
-        const std::string authors = vector_to_string(items_[i].nonexacts.authors);
-        const std::string year = std::to_string(items_[i].exacts.year);
+        const auto item = *std::next(items_.cbegin(), i);
+
+        const std::string authors = vector_to_string(item.nonexacts.authors);
+        const std::string year = std::to_string(item.exacts.year);
         const std::array<std::reference_wrapper<const std::string>, 6> strings = {{
-            items_[i].nonexacts.title,
+            item.nonexacts.title,
             year,
-            items_[i].nonexacts.series,
+            item.nonexacts.series,
             authors,
-            items_[i].nonexacts.publisher,
-            items_[i].exacts.extension
+            item.nonexacts.publisher,
+            item.exacts.extension
         }};
 
         /* Print the string, check if it was truncated. */

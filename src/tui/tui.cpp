@@ -73,7 +73,7 @@ void logger::flush_to_screen()
     buffer_.clear();
 }
 
-tui::tui(std::vector<core::item> &items, bool debug_log)
+tui::tui(std::unordered_set<core::item> &items, bool debug_log)
     : viewing_details_(false), items_(items)
 {
     /* Create the log screen. */
@@ -209,7 +209,7 @@ std::vector<core::item> tui::get_wanted_items()
     std::vector<core::item> items;
 
     for (int idx : index_->marked_items())
-        items.push_back(items_[idx]);
+        items.push_back(*std::next(items_.cbegin(), idx));
 
     return items;
 }
