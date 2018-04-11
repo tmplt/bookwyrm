@@ -73,7 +73,7 @@ void logger::flush_to_screen()
     buffer_.clear();
 }
 
-tui::tui(std::unordered_set<core::item> &items, bool debug_log)
+tui::tui(std::set<core::item> &items, bool debug_log)
     : viewing_details_(false), items_(items)
 {
     /* Create the log screen. */

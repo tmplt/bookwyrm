@@ -76,6 +76,7 @@ struct exacts_t {
 
     bool operator==(const exacts_t &other) const
     {
+        // TODO: use std::tie?
         return (ymod == other.ymod &&
             year == other.year &&
             volume == other.year &&
@@ -168,11 +169,11 @@ struct item {
 public:
 
     explicit item(const nonexacts_t ne, const exacts_t e)
-        : nonexacts(ne), exacts(e), misc() {}
+        : nonexacts(ne), exacts(e), misc(), index(items_idx++) {}
 
     /* Construct an item from a pybind11::tuple. */
     explicit item(const std::tuple<nonexacts_t, exacts_t, misc_t> &tuple)
-        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)), misc(std::get<2>(tuple)) {}
+        : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)), misc(std::get<2>(tuple)), index(items_idx++) {}
 
     /*
      * Returns true if all specified exact values are equal
@@ -187,9 +188,19 @@ public:
             misc == other.misc);
     }
 
+    /* For keeping sort order in an std::set. */
+    bool operator<(const item &other) const
+    {
+        return index < other.index;
+    }
+
     const nonexacts_t nonexacts;
     const exacts_t exacts;
     const misc_t misc;
+    const size_t index;
+
+private:
+    static size_t items_idx; // = 0
 };
 
 /* ns bookwyrm::core */

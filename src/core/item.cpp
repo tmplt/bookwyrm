@@ -11,6 +11,8 @@ namespace bookwyrm::core {
 
 static constexpr int fuzzy_min = 75;
 
+size_t item::items_idx = 0;
+
 int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
 {
     const auto elem = dict.find(key);

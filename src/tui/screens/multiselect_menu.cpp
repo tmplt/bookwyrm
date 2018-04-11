@@ -16,7 +16,7 @@ void multiselect_menu::columns_t::operator=(std::vector<std::pair<std::string, c
     }
 }
 
-multiselect_menu::multiselect_menu(std::unordered_set<core::item> const &items)
+multiselect_menu::multiselect_menu(std::set<core::item> const &items)
     : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
     selected_item_(0), scroll_offset_(0),
     items_(items)

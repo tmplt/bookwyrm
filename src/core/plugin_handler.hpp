@@ -5,7 +5,7 @@
 #include <memory>
 #include <atomic>
 #include <thread>
-#include <unordered_set>
+#include <set>
 #include <experimental/filesystem>
 
 #include "item.hpp"
@@ -65,7 +65,7 @@ public:
     void log(log_level lvl, std::string msg);
 
     // TODO: return const and make const
-    std::unordered_set<core::item>& results()
+    std::set<core::item>& results()
     {
         return items_;
     }
@@ -88,7 +88,7 @@ private:
     const core::item wanted_;
 
     /* Somewhere to store our found items. */
-    std::unordered_set<core::item> items_;
+    std::set<core::item> items_;
 
     /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;

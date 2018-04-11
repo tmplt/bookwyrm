@@ -72,7 +72,7 @@ private:
 class tui : public core::frontend {
 public:
     /* WARN: this constructor should only be used in make_with() above. */
-    explicit tui(std::unordered_set<core::item> &items, bool debug_log);
+    explicit tui(std::set<core::item> &items, bool debug_log);
 
     void update()
     {
@@ -144,7 +144,7 @@ private:
     int index_scrollback_ = -1;
 
     /* Forwarded to the multiselect menu. */
-    std::unordered_set<core::item> const &items_;
+    std::set<core::item> const &items_;
     std::mutex tui_mutex_;
 
     std::unique_ptr<logger> logger_;
