@@ -76,15 +76,9 @@ struct exacts_t {
 
     bool operator==(const exacts_t &other) const
     {
-        // TODO: use std::tie?
-        return (ymod == other.ymod &&
-            year == other.year &&
-            volume == other.year &&
-            number == other.number &&
-            pages == other.pages &&
-            size == other.size &&
-            extension == other.extension && // XXX: for some items, only this will differ. Check if first?
-            store == other.store);
+        /* extension is checked first, because some sources offer items in multiple formats. */
+        return std::tie(extension, ymod, year, volume, number, pages, size) ==
+            std::tie(other.extension, other.ymod, other.year, other.volume, other.number, other.pages, other.size);
     }
 
     const year_mod ymod;
@@ -122,12 +116,8 @@ struct nonexacts_t {
 
     bool operator==(const nonexacts_t &other) const
     {
-        return (authors == other.authors &&
-            title == other.title &&
-            series == other.series &&
-            publisher == other.publisher &&
-            journal == other.journal &&
-            edition == other.edition);
+        return std::tie(authors, title, series, publisher, journal, edition) ==
+            std::tie(other.authors, other.title, other.series, other.publisher, other.journal, other.edition);
     }
 
     const vector<string> authors;
@@ -157,8 +147,7 @@ struct misc_t {
 
     bool operator==(const misc_t &other) const
     {
-        return (uris == other.uris &&
-            isbns == other.isbns);
+        return std::tie(uris, isbns) == std::tie(other.uris, other.isbns);
     }
 
     const vector<string> uris;
@@ -183,9 +172,8 @@ public:
 
     bool operator==(const item &other) const
     {
-        return (nonexacts == other.nonexacts &&
-            exacts == other.exacts &&
-            misc == other.misc);
+        return std::tie(nonexacts, exacts, misc) ==
+            std::tie(other.nonexacts, other.exacts, other.misc);
     }
 
     /* For keeping sort order in an std::set. */
