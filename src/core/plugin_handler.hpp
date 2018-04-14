@@ -96,6 +96,9 @@ private:
     /* The same Python modules, but now running! */
     vector<std::thread> threads_;
 
+    /* This buffer could be ditched if we enforce set_frontend() before load_plugins(). */
+    using buffer_pair = std::pair<const log_level, const std::string>;
+    std::vector<buffer_pair> buffer_;
     std::weak_ptr<frontend> frontend_;
 
     vector<py::module> plugins_;

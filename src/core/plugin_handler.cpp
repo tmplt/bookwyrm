@@ -119,8 +119,16 @@ void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_com
 
 void plugin_handler::log(log_level lvl, string msg)
 {
-    if (!frontend_.expired())
+    if (frontend_.expired()) {
+        buffer_.emplace_back(lvl, msg);
+    } else if (!buffer_.empty()) {
+        for (const auto& [level, message] : buffer_)
+            frontend_.lock()->log(level, message);
+
+        buffer_.clear();
+    } else {
         frontend_.lock()->log(lvl, msg);
+    }
 }
 
 /* ns butler */
