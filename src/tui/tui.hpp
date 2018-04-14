@@ -157,7 +157,5 @@ private:
 
 };
 
-std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, bool debug_log);
-
 /* ns bookwyrm::tui */
 }

@@ -187,17 +187,15 @@ int main(int argc, char *argv[])
 
     try {
         const core::item wanted = create_item(cli);
-        auto butler = core::plugin_handler(std::move(wanted));
+        auto ph = core::plugin_handler(std::move(wanted));
 
-        /*
-         * Find and load all worker scripts.
-         * During run-time, the butler will match each found item
-         * with the wanted one. If it doesn't match, it is discarded.
-         */
-        auto tui = bookwyrm::tui::make_tui_with(butler, cli.has("debug"));
+        ph.load_plugins();
+        auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"));
+        ph.set_frontend(ui);
+        ph.async_search();
 
-        if (tui->display())
-            wanted_items = tui->get_wanted_items();
+        if (ui->display())
+            wanted_items = ui->get_wanted_items();
 
     } catch (const component_error &err) {
         fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());

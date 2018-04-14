@@ -296,14 +296,5 @@ void tui::printcont(int x, const int y, const std::string &str, const colour att
         curses::mvprint(i, y, " ", attribute::none, attrs);
 }
 
-std::shared_ptr<tui> make_tui_with(core::plugin_handler &plugin_handler, bool debug_log)
-{
-    plugin_handler.load_plugins();
-    auto t = std::make_shared<tui>(plugin_handler.results(), debug_log);
-    plugin_handler.set_frontend(t);
-    plugin_handler.async_search();
-    return t;
-}
-
 /* ns bookwyrm::tui */
 }
