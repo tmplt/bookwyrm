@@ -82,9 +82,7 @@ private:
         return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
     }
 
-    py::scoped_interpreter interp;
-    std::unique_ptr<py::gil_scoped_release> nogil;
-
+    /* The item to propagate to all plugins. */
     const core::item wanted_;
 
     /* Somewhere to store our found items. */
@@ -93,14 +91,18 @@ private:
     /* A lock for when multiple threads want to add an item. */
     std::mutex items_mutex_;
 
-    /* The same Python modules, but now running! */
-    vector<std::thread> threads_;
-
-    /* This buffer could be ditched if we enforce set_frontend() before load_plugins(). */
+    /*
+     * Buffer log entries until a frontend is available.
+     * This could be ditched if we enforce set_frontend() before load_plugins().
+     */
     using buffer_pair = std::pair<const log_level, const std::string>;
     std::vector<buffer_pair> buffer_;
     std::weak_ptr<frontend> frontend_;
 
+    /* Python-specific; do not change the order of this. */
+    py::scoped_interpreter interp;
+    std::unique_ptr<py::gil_scoped_release> nogil;
+    vector<std::thread> threads_;
     vector<py::module> plugins_;
 };
 
