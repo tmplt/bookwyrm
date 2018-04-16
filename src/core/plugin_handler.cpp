@@ -110,8 +110,8 @@ void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_com
 
     std::lock_guard<std::mutex> guard(items_mutex_);
 
-    const auto [itemp, inserted] = items_.insert(item);
-    (void)itemp;
+    bool inserted = false;
+    std::tie(std::ignore, inserted) = items_.insert(item);
 
     if (inserted && !frontend_.expired())
         frontend_.lock()->update();

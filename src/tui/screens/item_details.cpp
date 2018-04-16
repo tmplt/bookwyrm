@@ -11,7 +11,7 @@ item_details::item_details(const core::item &item, int padding_top)
 
 bool item_details::action(const int ch)
 {
-    (void)ch;
+    std::ignore = ch;
 
     /* No actions for this screen yet. */
 

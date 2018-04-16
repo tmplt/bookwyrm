@@ -36,7 +36,7 @@ public:
     void move(move_direction dir)
     {
         /* stub */
-        (void)dir;
+        std::ignore = dir;
         return;
     }
 

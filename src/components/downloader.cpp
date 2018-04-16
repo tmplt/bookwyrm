@@ -152,8 +152,8 @@ bool downloader::sync_download(vector<core::item> items)
 int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
 {
     /* We never upload anything. */
-    (void)ulnow;
-    (void)ultotal;
+    std::ignore = ulnow;
+    std::ignore = ultotal;
 
     /*
      * dltotal: the size of the file being downloaded (in bytes)

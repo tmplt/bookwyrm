@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ncurses.h>
+#include <tuple>
 #include "colours.hpp"
 
 namespace bookwyrm::tui::curses {
@@ -54,7 +55,7 @@ inline void refresh()
 inline int get_height()
 {
     int x, y;
-    (void)x;
+    std::ignore = x;
     getmaxyx(stdscr, y, x);
     return y;
 }
@@ -62,7 +63,7 @@ inline int get_height()
 inline int get_width()
 {
     int x, y;
-    (void)y;
+    std::ignore = y;
     getmaxyx(stdscr, y, x);
     return x;
 }
