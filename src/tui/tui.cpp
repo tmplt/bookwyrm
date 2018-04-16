@@ -181,7 +181,7 @@ bool tui::display()
     repaint_screens();
 
     while (true) {
-        const key ch = static_cast<key>(getch());
+        const key ch = static_cast<key>(curses::getkey());
 
         if (ch == key::resize) {
             close_details();
@@ -245,10 +245,8 @@ bool tui::open_details()
     int height;
     std::tie(index_scrollback_, height) = index_->compress();
 
-    int x, y;
-    getmaxyx(stdscr, y, x);
-
-    details_ = std::make_shared<screen::item_details>(index_->selected_item(), y - height - 1);
+    details_ = std::make_shared<screen::item_details>(index_->selected_item(),
+            curses::get_height() - height - 1);
     focused_ = details_;
 
     viewing_details_ = true;

@@ -52,6 +52,11 @@ inline void refresh()
     ::refresh();
 }
 
+inline int getkey()
+{
+    return ::getch();
+}
+
 inline int get_height()
 {
     int x, y;
