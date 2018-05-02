@@ -113,8 +113,8 @@ void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_com
     bool inserted = false;
     std::tie(std::ignore, inserted) = items_.insert(item);
 
-    if (inserted && !frontend_.expired())
-        frontend_.lock()->update();
+    if (auto fe = frontend_.lock(); fe && inserted)
+        fe->update();
 }
 
 void plugin_handler::log(log_level lvl, string msg)
@@ -122,12 +122,16 @@ void plugin_handler::log(log_level lvl, string msg)
     if (frontend_.expired()) {
         buffer_.emplace_back(lvl, msg);
     } else if (!buffer_.empty()) {
+        auto fe = frontend_.lock();
+        if (!fe) return;
+
         for (const auto& [level, message] : buffer_)
-            frontend_.lock()->log(level, message);
+            fe->log(level, message);
 
         buffer_.clear();
     } else {
-        frontend_.lock()->log(lvl, msg);
+        if (auto fe = frontend_.lock(); fe)
+            fe->log(lvl, msg);
     }
 }
 
