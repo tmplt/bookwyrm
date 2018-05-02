@@ -81,13 +81,38 @@ plugin_handler::~plugin_handler()
 
 void plugin_handler::async_search()
 {
+    /* Ensure pybind internals are initialized. */
+    py::get_shared_data("");
+
     for (const auto &m : plugins_) {
         threads_.emplace_back([&m, wanted = wanted_, instance = this]() {
             /* Required whenever we need to run anything Python. */
-            py::gil_scoped_acquire gil;
+            auto gil = std::make_unique<py::gil_scoped_acquire>();
+
+            /*
+             * We have to go manual here. Normally, when unwinding on pthread exit,
+             * Python operations may be performed without holding the GIL, leading to a segfault.
+             *
+             * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
+             */
+            py::object func = m.attr("find");
+            py::tuple args = py::make_tuple(wanted, instance);
 
             try {
-                m.attr("find")(wanted, instance);
+                PyObject_Call(func.ptr(), args.ptr(), nullptr);
+            } catch (abi::__forced_unwind&) {
+                /*
+                 * Forced stack unwinding at thread exit —
+                 * if Python is shutting down, don't clean up Python state.
+                 */
+                if (!Py_IsInitialized()) {
+                    args.release();
+                    func.release();
+                    gil.release();
+                }
+
+                /* Important rethrow! But what do we catch? */
+                throw;
             } catch (const py::error_already_set &err) {
                 instance->log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
                     m.attr("__name__").cast<string>(), err.what()));
