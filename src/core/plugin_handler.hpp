@@ -101,9 +101,9 @@ private:
 
     /* Python-specific; do not change the order of this. */
     py::scoped_interpreter interp;
-    std::unique_ptr<py::gil_scoped_release> nogil;
     vector<std::thread> threads_;
     vector<py::module> plugins_;
+    std::unique_ptr<py::gil_scoped_release> nogil;
 };
 
 /* ns bookwyrm::core */
