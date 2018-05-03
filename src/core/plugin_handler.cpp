@@ -84,8 +84,8 @@ void plugin_handler::async_search()
     /* Ensure pybind internals are initialized. */
     py::get_shared_data("");
 
-    for (const auto &m : plugins_) {
-        threads_.emplace_back([&m, wanted = wanted_, instance = this]() {
+    for (py::module m : plugins_) {
+        threads_.emplace_back([m, wanted = wanted_, instance = this]() mutable {
             /* Required whenever we need to run anything Python. */
             auto gil = std::make_unique<py::gil_scoped_acquire>();
 
@@ -95,10 +95,12 @@ void plugin_handler::async_search()
              *
              * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
              */
-            py::object func = m.attr("find");
+            py::object func;
             py::tuple args = py::make_tuple(wanted, instance);
 
             try {
+                func = m.attr("find");
+                m.release().dec_ref();
                 PyObject_Call(func.ptr(), args.ptr(), nullptr);
             } catch (abi::__forced_unwind&) {
                 /*
