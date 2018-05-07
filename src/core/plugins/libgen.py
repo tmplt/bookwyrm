@@ -28,15 +28,7 @@ import re
 import isbnlib
 import tempfile
 
-DOMAINS = ('libgen.io', 'gen.lib.rus.ec')
-
-
-class Loglevel(Enum):
-    debug = 1
-    info = 2
-    warn = 3
-    error = 4
-
+DOMAINS = ('libgen.io',)
 
 class SoupError(Exception):
     def __init__(self, soup, error):
@@ -76,14 +68,7 @@ class LibgenSeeker(object):
 
     def log(self, level, msg):
         if self.bookwyrm:
-            to_bwloglvl = {
-                Loglevel.debug: bw.log_level.debug,
-                Loglevel.info: bw.log_level.info,
-                Loglevel.warn: bw.log_level.warn,
-                Loglevel.error: bw.log_level.error
-            }
-
-            self.bookwyrm.log(to_bwloglvl[level], 'from ' + __file__ + ': ' + msg)
+            self.bookwyrm.log(level, 'from ' + __file__ + ': ' + msg)
         else:
             print(msg)
 
@@ -92,40 +77,6 @@ class LibgenSeeker(object):
             self.bookwyrm.feed(item)
         else:
             print(item)
-
-    def search(self):
-        global DOMAINS
-
-        for query in self.queries:
-            for domain in DOMAINS:
-                path, params = query
-                f = furl('http://' + domain + path).set(query_params=params)
-
-                try:
-                    for table in self.tables_fetcher(f):
-                        if path == '/search.php':
-                            self.process_libgen(table)
-                        elif path == '/foreignfiction/index.php':
-                            self.process_ffiction(table)
-                        else:
-                            self.log(Loglevel.warn, 'unknown path "%s"; ignored.' % path)
-                except requests.exceptions.ConnectionError as e:
-                    self.log(Loglevel.error, 'connection error (%s)! Trying another domain/query...' % e)
-                    continue
-                except requests.exceptions.HTTPError as e:
-                    self.log(Loglevel.error, 'HTTP error (%s)! Trying another domain/query...' % e)
-                    continue
-                except SoupError as e:
-                    temp_file = tempfile.mktemp()
-                    with open(temp_file, 'w') as fd:
-                        fd.write(e.soup.prettify())
-
-                    self.log(Loglevel.error, 'unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
-                             '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % temp_file)
-                    continue
-
-                # That domain worked; do the next query.
-                break
 
     def build_queries(self, item):
         """
@@ -142,15 +93,15 @@ class LibgenSeeker(object):
         #   * Standards (/standarts/index.php; different structure; on hold), and
         #   * Magazines (different structure (domain, et al.; on hold)
         #
-        # Categories marked on hold may be implemented upon request.
+        # Categories marked on hold have not been implemented yet.
         #    To get everything we want, we aptly build a set set of queries that
         # searches all categories. We return a set of pairs holding the query dictionary,
         # and the path to the index.php, absolute to domain root.
         #    Unfortunately, Library Genesis only allows to search one field at a time,
         # so when the wanted item specifies title AND authors AND publisher etc.,
-        # we must do a query per field. Luckily, bookwyrm does the heavy lifting for us,
-        # and some fields are unecessary, e.g. extension and year; these are not fuzzily matched.
-        # TODO: investigate possibility of dupes. Hashmap?
+        # we must do a query per field. Luckily, bookwyrm does the heavy lifting for us, sorting away
+        # unwanted items, and some fields are unecessary, e.g. extension and year;
+        # these are not fuzzily matched.
 
         queries = []
         e = item.exacts
@@ -209,22 +160,58 @@ class LibgenSeeker(object):
         # The Scientific Articles Category
         #
 
-        def non_empty(*xs):
-            res = [x for x in xs if x != bw.empty]
-            return res[0] if res else None
+        # def non_empty(*xs):
+        #     res = [x for x in xs if x != bw.empty]
+        #     return res[0] if res else None
 
-        queries.append(
-            ('/scimag/index.php', {
-                's': ne.title,
-                'journalid': ne.journal,
-                'v': non_empty(e.volume, e.year),  # TODO: e.volume should be a string?
-                # 'i': add ne.issue?
-                'p': non_empty(e.pages),
-                'redirect': 0  # Don't redirect to Sci-Hub on no results
-            })
-        )
+        # queries.append(
+        #     ('/scimag/index.php', {
+        #         's': ne.title,
+        #         'journalid': ne.journal,
+        #         'v': non_empty(e.volume, e.year),  # TODO: e.volume should be a string?
+        #         # 'i': add ne.issue?
+        #         'p': non_empty(e.pages),
+        #         'redirect': 0  # Don't redirect to Sci-Hub on no results
+        #     })
+        # )
 
         return queries
+
+
+    def search(self):
+        global DOMAINS
+
+        for query in self.queries:
+            for domain in DOMAINS:
+                path, params = query
+                f = furl('http://' + domain + path).set(query_params=params)
+
+                try:
+                    for table in self.tables_fetcher(f):
+                        if path == '/search.php':
+                            self.process_libgen(table)
+                        elif path == '/foreignfiction/index.php':
+                            self.process_ffiction(table)
+                        else:
+                            self.log(bw.log_level.warn, 'unknown path "%s"; ignored.' % path)
+                except requests.exceptions.ConnectionError as e:
+                    self.log(bw.log_level.error, 'connection error (%s)! Trying another domain/query...' % e)
+                    continue
+                except requests.exceptions.HTTPError as e:
+                    self.log(bw.log_level.error, 'HTTP error (%s)! Trying another domain/query...' % e)
+                    continue
+                except SoupError as e:
+                    temp_file = tempfile.mktemp()
+                    with open(temp_file, 'w') as fd:
+                        fd.write(e.soup.prettify())
+
+                    self.log(bw.log_level.error, 'unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
+                             '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % temp_file)
+                    continue
+
+                # That domain worked; do the next query.
+                break
+
 
     def tables_fetcher(self, f):
         """
@@ -266,10 +253,11 @@ class LibgenSeeker(object):
             try:
                 table = extract_table[str(f.path)](soup)
             except KeyError:
-                self.log(Loglevel.warn, 'cannot extract from "%s"; ignoring...' % f.path)
+                self.log(bw.log_level.warn, 'cannot extract from "%s"; ignoring...' % f.path)
                 raise NotImplementedError("only parsing for LibGen and ffiction currently supported.")
 
             # Have we gone through all pages?
+            # XXX: This really doesn't feel stable.
             if f.path == '/search.php' and r.text == last_request:
                 return
             elif f.path == '/foreignfiction/index.php' and table.text == '':
@@ -358,7 +346,7 @@ class LibgenSeeker(object):
                     return [isbn for isbn in font.text.split(', ') if valid_isbn(isbn)]
 
             def extract_mirrors():
-                libgenio, libgenpw, bookfi, bok = mirrors
+                libgenpw, libgenio, bookfi, bok = mirrors
                 # Only libgenpw can be downloaded from directly without fuss;
                 # the rest require the intermediate page as HTTP referer.
                 # TODO: process bookfi and B-Ok?
