@@ -38,8 +38,8 @@ public:
 
 class __attribute__ ((visibility("hidden"))) plugin_handler {
 public:
-    explicit plugin_handler(const item &&wanted)
-        : wanted_(wanted) {}
+    explicit plugin_handler(const item &&wanted, bool debug)
+        : wanted_(wanted), debug_(debug) {}
 
     /*
      * Explicitly delete the copy-constructor.
@@ -84,6 +84,9 @@ private:
 
     /* The item to propagate to all plugins. */
     const core::item wanted_;
+
+    /* Should debug scripts be loaded? */
+    const bool debug_;
 
     /* Somewhere to store our found items. */
     std::set<core::item> items_;

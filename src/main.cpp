@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
     try {
         const core::item wanted = create_item(cli);
-        auto ph = core::plugin_handler(std::move(wanted));
+        auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"));
 
         ph.load_plugins();
         auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"));

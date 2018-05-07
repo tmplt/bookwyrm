@@ -48,6 +48,7 @@ void plugin_handler::load_plugins()
     for (const auto &plugin_path : plugin_paths) {
         for (const fs::path &p : fs::directory_iterator(plugin_path)) {
             if (p.extension() != ".py") continue;
+            if (!debug_ && p.stem().string().rfind("debug-", 0) == 0) continue;
 
             if (!readable_file(p)) {
                 log(log_level::err, fmt::format("can't load module '{}': not a regular file or unreadable"
@@ -81,6 +82,8 @@ plugin_handler::~plugin_handler()
 
 void plugin_handler::async_search()
 {
+    assert(!plugins_.empty());
+
     /* Ensure pybind internals are initialized. */
     py::get_shared_data("");
 
