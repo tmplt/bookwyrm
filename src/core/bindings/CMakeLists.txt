@@ -5,3 +5,4 @@ target_include_directories(pybookwyrm
     PUBLIC  ${PROJECT_SOURCE_DIR}/include/core)
 
 target_link_libraries(pybookwyrm PRIVATE ${PROJECT_NAME}-core)
+install(TARGETS pybookwyrm LIBRARY DESTINATION usr/lib)

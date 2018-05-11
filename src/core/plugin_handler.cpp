@@ -5,6 +5,7 @@
 
 #include <fmt/format.h>
 
+#include "prefix.hpp"
 #include "python.hpp"
 #include "plugin_handler.hpp"
 
@@ -17,7 +18,7 @@ void plugin_handler::load_plugins()
     /* Bookwyrm must be run from build/ in DEBUG mode. */
     plugin_paths = { fs::canonical(fs::path("../src/core/plugins")) };
 #else
-    plugin_paths = { fs::canonical(fs::path("/etc/bookwyrm/plugins/")) };
+    plugin_paths = { fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/etc/bookwyrm/plugins")) };
 
     /* if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty()) */
     /*     plugin_paths.push_back(conf / "bookwyrm/plugins"); */
@@ -34,6 +35,10 @@ void plugin_handler::load_plugins()
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
     for (auto &p : plugin_paths)
         sys_path.append(p.string().c_str());
+
+    /* And add the path to where pybookwyrm.so is available. */
+    const std::string lib_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
+    sys_path.append(lib_path.c_str());
 
     /*
      * Find all Python modules and populate the

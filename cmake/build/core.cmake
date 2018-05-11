@@ -13,8 +13,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(NOT CMAKE_BUILD_TYPE)
   message_colored(STATUS "No build type specified; using Debug" 33)
   set(CMAKE_BUILD_TYPE "Debug")
-elseif(NOT (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Debug"))
-  message_colored(FATAL_ERROR "Invalid build type. Valid build types are 'Debug' and 'Release'" 31)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
