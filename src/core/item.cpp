@@ -27,8 +27,6 @@ const string nonexacts_t::get_value(const std::map<string, string> &dict, const 
 
 bool item::matches(const item &wanted) const
 {
-    // TODO: implement operator== for exacts_t?
-
     /* Return false if any exact value doesn't match what's wanted. */
     for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {
         if (req != empty && req != got)
