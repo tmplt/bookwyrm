@@ -17,13 +17,14 @@ void plugin_handler::load_plugins()
     /* Bookwyrm must be run from build/ in DEBUG mode. */
     plugin_paths = { fs::canonical(fs::path("../src/core/plugins")) };
 #else
-    /* TODO: look through /etc/bookwyrm/plugins/ also. */
-    if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty())
-        plugin_paths.push_back(conf / "bookwyrm/plugins");
-    else if (fs::path home = std::getenv("HOME"); !home.empty())
-        plugin_paths.push_back(home / ".config/bookwyrm/plugins");
-    else
-        log(log_level::err, "couldn't find any plugin directories.");
+    plugin_paths = { fs::canonical(fs::path("/etc/bookwyrm/plugins/")) };
+
+    /* if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty()) */
+    /*     plugin_paths.push_back(conf / "bookwyrm/plugins"); */
+    /* else if (fs::path home = std::getenv("HOME"); !home.empty()) */
+    /*     plugin_paths.push_back(home / ".config/bookwyrm/plugins"); */
+    /* else */
+    /*     log(log_level::err, "couldn't find any plugin directories."); */
 #endif
 
     /*

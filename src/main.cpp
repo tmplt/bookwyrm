@@ -203,6 +203,9 @@ int main(int argc, char *argv[])
     } catch (const program_error &err) {
         fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
+    } catch (const std::experimental::filesystem::filesystem_error &err) {
+        fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
+        return EXIT_FAILURE;
     }
 
     if (wanted_items.empty()) {
