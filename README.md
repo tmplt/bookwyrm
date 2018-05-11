@@ -13,7 +13,7 @@ For example, one might run bookwyrm as follows:
     bookwyrm --author "Naomi Novik" --series Temeraire --year >=2015 .
 
 Here is a (possible outdated) video of bookwyrm's TUI in action:
-[![asciicast](https://asciinema.org/a/koJsbwSrXJIrXqlNqgrSnYeJs.png)](https://asciinema.org/a/koJsbwSrXJIrXqlNqgrSnYeJs)
+[![asciicast](https://asciinema.org/a/dGYzT0k95jcoyHxEqS9oANAtm.png)](https://asciinema.org/a/dGYzT0k95jcoyHxEqS9oANAtm)
 In the log screen, issue #46 can be observed.
 
 Sources are written as scripts which run in their own worker threads.
