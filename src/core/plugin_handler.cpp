@@ -40,8 +40,8 @@ void plugin_handler::load_plugins()
     const std::string lib_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
     sys_path.append(lib_path.c_str());
 
-    log(log_level::err, fmt::format("looking for scripts in {}", plugin_paths[0].string()));
-    log(log_level::err, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
+    log(log_level::debug, fmt::format("looking for scripts in {}", plugin_paths[0].string()));
+    log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
 
     /*
      * Find all Python modules and populate the
@@ -84,9 +84,11 @@ void plugin_handler::load_plugins()
 plugin_handler::~plugin_handler()
 {
     /* Flush log entries. */
-    // TODO: respect [--debug] and print log level before msg.
-    for (const auto& [lvl, msg] : buffer_)
+    // TODO: print log level before msg.
+    for (const auto& [lvl, msg] : buffer_) {
+        if (!debug_ && lvl <= log_level::debug) continue;
         (lvl <= log_level::warn ? std::cout : std::cerr) << msg << "\n";
+    }
 
     for (auto &t : threads_)
         t.detach();
