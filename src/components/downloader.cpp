@@ -65,9 +65,13 @@ downloader::~downloader()
 
 fs::path downloader::generate_filename(const core::item &item)
 {
-    const fs::path base = dldir / fmt::format("{} - {} ({})",
+    fs::path base = dldir / fmt::format("{} - {}",
             vector_to_string(item.nonexacts.authors),
-            item.nonexacts.title, item.exacts.year);
+            item.nonexacts.title);
+
+    if (item.exacts.year != core::empty) {
+        base += fmt::format("({})", item.exacts.year);
+    }
 
     const auto valid_candidate = [](fs::path p) {
         return !fs::exists(p);
