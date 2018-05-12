@@ -87,7 +87,8 @@ plugin_handler::~plugin_handler()
     // TODO: print log level before msg.
     for (const auto& [lvl, msg] : buffer_) {
         if (!debug_ && lvl <= log_level::debug) continue;
-        (lvl <= log_level::warn ? std::cout : std::cerr) << msg << "\n";
+        (lvl <= log_level::warn ? std::cout : std::cerr)
+            << loglvl_to_string(lvl) + ": " + msg << "\n";
     }
 
     for (auto &t : threads_)

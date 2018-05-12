@@ -26,6 +26,21 @@ enum class log_level {
     off      = 6
 };
 
+inline string loglvl_to_string(log_level lvl)
+{
+    vector<string> strings = {{
+        "trace",
+        "debug",
+        "info",
+        "warn",
+        "error",
+        "critical",
+        "off",
+    }};
+
+    return strings[static_cast<int>(lvl)];
+}
+
 class frontend {
 public:
 
