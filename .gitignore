@@ -2,4 +2,5 @@ build/
 !cmake/build/
 __pycache__
 **/version.hpp
+**/prefix.hpp
 *.output
