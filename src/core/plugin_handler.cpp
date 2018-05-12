@@ -167,19 +167,23 @@ void plugin_handler::log(log_level lvl, string msg)
 {
     if (frontend_.expired()) {
         buffer_.emplace_back(lvl, msg);
-    } else if (!buffer_.empty()) {
-        auto fe = frontend_.lock();
-        if (!fe) return;
-
-        for (const auto& [level, message] : buffer_)
-            fe->log(level, message);
-
-        buffer_.clear();
-    } else {
+    }  else {
         if (auto fe = frontend_.lock(); fe)
             fe->log(lvl, msg);
     }
 }
+
+void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
+{
+    frontend_ = fe;
+
+    /* Propegate the log buffer. */
+    for (const auto& [lvl, msg] : buffer_)
+        fe->log(lvl, msg);
+
+    buffer_.clear();
+}
+
 
 /* ns butler */
 }

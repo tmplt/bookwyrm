@@ -71,10 +71,7 @@ public:
     }
 
     /* What frontend do we want to notify on updates? */
-    void set_frontend(std::shared_ptr<frontend> fe)
-    {
-        frontend_ = fe;
-    }
+    void set_frontend(std::shared_ptr<frontend> fe);
 
 private:
     static inline bool readable_file(const fs::path &path)
