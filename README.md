@@ -55,3 +55,6 @@ $ src/bookwyrm OPTION [OPTION]... PATH
 ```
 
 If you're using Nix(OS), evaluate the expression in `shell.nix` first (append `nix-shell` after cloning the repository).
+
+If you're using Arch Linux, bookwyrm is available on the AUR as `bookwyrm-git`.
+The `PKGBUILD` contain some configuration fixes vis-a-vis a Nix environment.
