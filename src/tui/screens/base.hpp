@@ -59,7 +59,7 @@ protected:
 
     /* Validate (x, y) and then print the given string from (x, y) along the x-axis. */
     void print(int x, int y, const std::string &str, const attribute attrs = attribute::none, const colour clr = colour::none);
-    void print(int x, int y, const std::string &str, const colour clr)
+    inline void print(int x, int y, const std::string &str, const colour clr)
     {
         print(x, y, str, attribute::none, clr);
     }

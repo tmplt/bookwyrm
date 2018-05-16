@@ -25,6 +25,30 @@ const string nonexacts_t::get_value(const std::map<string, string> &dict, const 
     return elem == dict.cend() ? "" : elem->second;
 }
 
+bool exacts_t::operator==(const exacts_t &other) const
+{
+    /* extension is checked first, because some sources offer items in multiple formats. */
+    return std::tie(extension, ymod, year, volume, number, pages, size) ==
+        std::tie(other.extension, other.ymod, other.year, other.volume, other.number, other.pages, other.size);
+}
+
+bool nonexacts_t::operator==(const nonexacts_t &other) const
+{
+    return std::tie(authors, title, series, publisher, journal, edition) ==
+        std::tie(other.authors, other.title, other.series, other.publisher, other.journal, other.edition);
+}
+
+bool misc_t::operator==(const misc_t &other) const
+{
+    return std::tie(uris, isbns) == std::tie(other.uris, other.isbns);
+}
+
+bool item::operator==(const item &other) const
+{
+    return std::tie(nonexacts, exacts, misc) ==
+        std::tie(other.nonexacts, other.exacts, other.misc);
+}
+
 bool item::matches(const item &wanted) const
 {
     /* Return false if any exact value doesn't match what's wanted. */

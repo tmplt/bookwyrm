@@ -36,17 +36,17 @@ public:
     /* Take back the space lent to screen::item_details */
     void decompress(int scroll);
 
-    const core::item& selected_item() const
+    inline const core::item& selected_item() const
     {
         return *std::next(items_.cbegin(), selected_item_);
     }
 
-    size_t item_count() const
+    inline size_t item_count() const
     {
         return items_.size();
     }
 
-    auto marked_items()
+    inline auto marked_items()
     {
         return marked_items_;
     }

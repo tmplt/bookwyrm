@@ -1,4 +1,4 @@
-pybind11_add_module(pybookwyrm python.cpp)
+pybind11_add_module(pybookwyrm python.cpp ../../string.cpp)
 
 target_include_directories(pybookwyrm
     PRIVATE ${PROJECT_SOURCE_DIR}/lib/fmt

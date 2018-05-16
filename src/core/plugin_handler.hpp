@@ -80,19 +80,13 @@ public:
     void log(log_level lvl, std::string msg);
 
     // TODO: return const and make const
-    std::set<core::item>& results()
-    {
-        return items_;
-    }
+    std::set<core::item>& results();
 
     /* What frontend do we want to notify on updates? */
     void set_frontend(std::shared_ptr<frontend> fe);
 
 private:
-    static inline bool readable_file(const fs::path &path)
-    {
-        return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
-    }
+    static bool readable_file(const fs::path &path);
 
     /* The item to propagate to all plugins. */
     const core::item wanted_;

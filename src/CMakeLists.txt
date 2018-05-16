@@ -4,7 +4,8 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/components/command_line.cpp
     ${PROJECT_SOURCE_DIR}/src/components/downloader.cpp
-    ${PROJECT_SOURCE_DIR}/src/core/plugins/libgen.py)
+    ${PROJECT_SOURCE_DIR}/src/core/plugins/libgen.py
+    ${PROJECT_SOURCE_DIR}/src/string.cpp)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION usr/bin COMPONENT binaries)
 install(FILES core/plugins/libgen.py DESTINATION etc/${PROJECT_NAME}/plugins COMPONENT config)

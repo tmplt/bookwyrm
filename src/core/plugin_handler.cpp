@@ -174,6 +174,11 @@ void plugin_handler::log(log_level lvl, string msg)
     }
 }
 
+std::set<core::item>& plugin_handler::results()
+{
+    return items_;
+}
+
 void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
 {
     frontend_ = fe;
@@ -183,6 +188,11 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
         fe->log(lvl, msg);
 
     buffer_.clear();
+}
+
+bool plugin_handler::readable_file(const fs::path &path)
+{
+    return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
 }
 
 

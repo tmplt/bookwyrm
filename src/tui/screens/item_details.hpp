@@ -28,7 +28,7 @@ public:
     std::string footer_info() const override;
     int scrollpercent() const override;
 
-    std::string controls_legacy() const override
+    inline std::string controls_legacy() const override
     {
         return "[h/<-]Close details";
     }

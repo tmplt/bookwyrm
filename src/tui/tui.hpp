@@ -25,27 +25,27 @@ struct logger {
 
     void log(const core::log_level level, std::string message);
 
-    void trace(const std::string msg)
+    inline void trace(const std::string msg)
     {
         log(core::log_level::trace, "trace: " + msg);
     }
-    void debug(const std::string msg)
+    inline void debug(const std::string msg)
     {
         log(core::log_level::debug, "debug: " + msg);
     }
-    void info(const std::string msg)
+    inline void info(const std::string msg)
     {
         log(core::log_level::info, "info: " + msg);
     }
-    void warn(const std::string msg)
+    inline void warn(const std::string msg)
     {
         log(core::log_level::warn, "warning: " + msg);
     }
-    void err(const std::string msg)
+    inline void err(const std::string msg)
     {
         log(core::log_level::err, "error: " + msg);
     }
-    void critical(const std::string msg)
+    inline void critical(const std::string msg)
     {
         log(core::log_level::critical, "critical: " + msg);
     }
@@ -74,10 +74,7 @@ public:
     /* WARN: this constructor should only be used in make_with() above. */
     explicit tui(std::set<core::item> &items, bool debug_log);
 
-    void update()
-    {
-        repaint_screens();
-    }
+    inline void update();
 
     /* Send a log entry to the log screen. */
     void log(const core::log_level level, const std::string message);
@@ -99,10 +96,7 @@ public:
     /* Draw the context sensitive footer. */
     void print_footer();
 
-    bool is_log_focused() const
-    {
-        return focused_ == log_;
-    }
+    bool is_log_focused() const;
 
 private:
     /* Returns false if bookwyrm doesn't fit in the terminal window. */
@@ -132,7 +126,7 @@ private:
      * attrs applied.
      */
     static void printcont(int x, const int y, const std::string &str, const colour attrs = colour::white);
-    static void printcont(int x, const int y, const std::string &str, const attribute attr)
+    static inline void printcont(int x, const int y, const std::string &str, const attribute attr)
     {
         printcont(x, y, str, colour::white | attr);
     }

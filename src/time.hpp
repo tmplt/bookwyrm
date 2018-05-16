@@ -11,12 +11,12 @@ public:
         reset();
     }
 
-    void reset()
+    inline void reset()
     {
         last_update = clock::now();
     }
 
-    double ms_since_last_update()
+    inline double ms_since_last_update()
     {
         const auto time_now = clock::now();
         std::chrono::duration<double, std::milli> ms = time_now - last_update;
@@ -47,17 +47,17 @@ public:
         seconds_ = duration; // remaining seconds
     }
 
-    int hours() const
+    inline int hours() const
     {
         return hours_;
     }
 
-    int minutes() const
+    inline int minutes() const
     {
         return minutes_;
     }
 
-    int seconds() const
+    inline int seconds() const
     {
         return seconds_;
     }

@@ -91,6 +91,16 @@ tui::tui(std::set<core::item> &items, bool debug_log)
     logger_->debug("the mighty bookwyrm hath been summoned!");
 }
 
+void tui::update()
+{
+    repaint_screens();
+}
+
+bool tui::is_log_focused() const
+{
+    return focused_ == log_;
+}
+
 void tui::log(const core::log_level level, const std::string message)
 {
     /* XXX: ugly; rethink this. */

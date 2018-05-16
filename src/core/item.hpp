@@ -74,12 +74,7 @@ struct exacts_t {
         size(get_value(dict, "size")),
         extension(extension) {}
 
-    bool operator==(const exacts_t &other) const
-    {
-        /* extension is checked first, because some sources offer items in multiple formats. */
-        return std::tie(extension, ymod, year, volume, number, pages, size) ==
-            std::tie(other.extension, other.ymod, other.year, other.volume, other.number, other.pages, other.size);
-    }
+    bool operator==(const exacts_t &other) const;
 
     const year_mod ymod;
     const int year,
@@ -114,11 +109,7 @@ struct nonexacts_t {
         journal(get_value(dict, "journal")),
         edition(get_value(dict, "edition")) {}
 
-    bool operator==(const nonexacts_t &other) const
-    {
-        return std::tie(authors, title, series, publisher, journal, edition) ==
-            std::tie(other.authors, other.title, other.series, other.publisher, other.journal, other.edition);
-    }
+    bool operator==(const nonexacts_t &other) const;
 
     const vector<string> authors;
     const string title;
@@ -145,10 +136,7 @@ struct misc_t {
         : uris(uris), isbns(isbns) {}
     explicit misc_t() {}
 
-    bool operator==(const misc_t &other) const
-    {
-        return std::tie(uris, isbns) == std::tie(other.uris, other.isbns);
-    }
+    bool operator==(const misc_t &other) const;
 
     const vector<string> uris;
     const vector<string> isbns;
@@ -170,11 +158,7 @@ public:
      */
     bool matches(const item &wanted) const;
 
-    bool operator==(const item &other) const
-    {
-        return std::tie(nonexacts, exacts, misc) ==
-            std::tie(other.nonexacts, other.exacts, other.misc);
-    }
+    bool operator==(const item &other) const;
 
     /* For keeping sort order in an std::set. */
     bool operator<(const item &other) const
