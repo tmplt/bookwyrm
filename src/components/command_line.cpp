@@ -183,6 +183,15 @@ void cliparser::validate_arguments() const
 
     if (has(1))
         throw argument_error("only one positional argument (the download path) is allowed");
+
+    if (has("accuracy")) {
+        try {
+            if (int a = std::stoi(get("accuracy")); a < 0 || a > 100)
+                throw value_error("accuracy is only valid within the range of 0-100% percent");
+        } catch (std::invalid_argument&) {
+            throw value_error("malformed accuracy");
+        }
+    }
 }
 
 bool cliparser::parse_pair(const string_view &input, const string_view &input_next)

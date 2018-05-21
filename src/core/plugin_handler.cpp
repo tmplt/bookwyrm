@@ -91,6 +91,8 @@ void plugin_handler::async_search()
     /* Ensure pybind internals are initialized. */
     py::get_shared_data("");
 
+    log(log_level::debug, fmt::format("seaching with an accuracy of {}%", options_.fuzzy_threshold));
+
     for (py::module m : plugins_) {
         threads_.emplace_back([m, wanted = wanted_, instance = this]() mutable {
             /* Required whenever we need to run anything Python. */

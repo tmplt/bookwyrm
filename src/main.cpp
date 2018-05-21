@@ -135,7 +135,8 @@ int main(int argc, char *argv[])
     const auto misc = cligroup("Miscellaneous")
         ("-h", "--help",       "Display this text and exit")
         ("-v", "--version",    "Print version information (" + build_info_short + ") and exit")
-        ("-D", "--debug",      "Set logging level to debug");
+        ("-D", "--debug",      "Set logging level to debug")
+        ("-A", "--accuracy",   "Set searching accuracy in percentage", "ACCURACY");
 
     const cligroups groups = {main, excl, exact, misc};
 
@@ -196,6 +197,8 @@ int main(int argc, char *argv[])
         /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
         opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/etc/bookwyrm/plugins")) }};
 #endif
+        opts.fuzzy_threshold = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
+
         auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
 
         ph.load_plugins();
