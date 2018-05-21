@@ -51,8 +51,8 @@ constexpr int empty = -1;
 /*
  * For --year:
  *   -y 2157   : list items from 2157 (equal)
- *   -y =>2157 : list items from 2157 and later (eq_gt)
- *   -y =<2157 : list items from 2157 and earlier (eq_lt)
+ *   -y >=2157 : list items from 2157 and later (eq_gt)
+ *   -y <=2157 : list items from 2157 and earlier (eq_lt)
  *   -y >2157  : list items from later than 2157 (gt)
  *   -y <2157  : list items from earlier than 2157 (lt)
  */
@@ -87,7 +87,7 @@ struct exacts_t {
 
     /* Convenience container */
     const std::array<int, 5> store = {{
-        year, volume, number, pages, year
+        volume, number, pages
     }};
 
 private:

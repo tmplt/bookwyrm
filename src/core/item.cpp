@@ -55,6 +55,32 @@ bool item::matches(const item &wanted, const int fuzzy_min) const
             return false;
     }
 
+    if (wanted.exacts.year != empty) {
+        const auto& req = wanted.exacts.year,
+                    got = this->exacts.year;
+
+        switch (wanted.exacts.ymod) {
+            case year_mod::equal:
+                if (!(got == req)) return false;
+                break;
+            case year_mod::eq_gt:
+                if (!(got >= req)) return false;
+                break;
+            case year_mod::eq_lt:
+                if (!(got <= req)) return false;
+                break;
+            case year_mod::gt:
+                if (!(got > req)) return false;
+                break;
+            case year_mod::lt:
+                if (!(got < req)) return false;
+                break;
+            case year_mod::unused:
+                /* Should never happen. */
+                assert(false);
+        }
+    }
+
     /* Ad-hoc the file type, for now. */
     if (!wanted.exacts.extension.empty()) {
         if (this->exacts.extension != wanted.exacts.extension)

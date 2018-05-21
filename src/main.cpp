@@ -64,11 +64,11 @@ static const core::item create_item(const cliparser &cli)
             if (start != year_str.cbegin()) {
                 /* There is a modifier in front of the year. */
                 string mod_str(year_str.cbegin(), start);
-                core::year_mod mod;
+                core::year_mod mod = core::year_mod::equal;
 
-                if (mod_str == "=>")
+                if (mod_str == ">=")
                     mod = core::year_mod::eq_gt;
-                else if (mod_str == "=<")
+                else if (mod_str == "<=")
                     mod = core::year_mod::eq_lt;
                 else if (mod_str == ">")
                     mod = core::year_mod::gt;
