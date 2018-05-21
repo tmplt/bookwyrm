@@ -9,8 +9,6 @@
 
 namespace bookwyrm::core {
 
-static constexpr int fuzzy_min = 75;
-
 size_t item::items_idx = 0;
 
 int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
@@ -49,7 +47,7 @@ bool item::operator==(const item &other) const
         std::tie(other.nonexacts, other.exacts, other.misc);
 }
 
-bool item::matches(const item &wanted) const
+bool item::matches(const item &wanted, const int fuzzy_min) const
 {
     /* Return false if any exact value doesn't match what's wanted. */
     for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {

@@ -5,6 +5,7 @@
 
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
+#include "core/prefix.hpp"
 #include "version.hpp"
 #include "components/command_line.hpp"
 #include "tui/tui.hpp"
@@ -187,7 +188,15 @@ int main(int argc, char *argv[])
 
     try {
         const core::item wanted = create_item(cli);
-        auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"));
+        core::options opts;
+#ifdef DEBUG
+        /* bookwyrm must be run from build/ in DEBUG mode. */
+        opts.plugin_paths = {{ fs::canonical(fs::path("../src/core/plugins")) }};
+#else
+        /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
+        opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/etc/bookwyrm/plugins")) }};
+#endif
+        auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
 
         ph.load_plugins();
         auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"));

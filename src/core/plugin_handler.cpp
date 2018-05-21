@@ -13,34 +13,21 @@ namespace bookwyrm::core {
 
 void plugin_handler::load_plugins()
 {
-    vector<fs::path> plugin_paths;
-#ifdef DEBUG
-    /* Bookwyrm must be run from build/ in DEBUG mode. */
-    plugin_paths = { fs::canonical(fs::path("../src/core/plugins")) };
-#else
-    plugin_paths = { fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/etc/bookwyrm/plugins")) };
-
-    /* if (fs::path conf = std::getenv("XDG_CONFIG_HOME"); !conf.empty()) */
-    /*     plugin_paths.push_back(conf / "bookwyrm/plugins"); */
-    /* else if (fs::path home = std::getenv("HOME"); !home.empty()) */
-    /*     plugin_paths.push_back(home / ".config/bookwyrm/plugins"); */
-    /* else */
-    /*     log(log_level::err, "couldn't find any plugin directories."); */
-#endif
-
     /*
      * Append the plugin paths to Python's sys.path,
      * allowing them to be imported.
      */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
-    for (auto &p : plugin_paths)
+    for (auto &p : options_.plugin_paths)
         sys_path.append(p.string().c_str());
 
     /* And add the path to where pybookwyrm.so is available. */
     const std::string lib_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
     sys_path.append(lib_path.c_str());
 
-    log(log_level::debug, fmt::format("looking for scripts in {}", plugin_paths[0].string()));
+    for (auto &path : options_.plugin_paths)
+        log(log_level::debug, fmt::format("looking for scripts in {}", path.string()));
+
     log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
 
     /*
@@ -54,7 +41,7 @@ void plugin_handler::load_plugins()
      * names in Python.
      */
     vector<py::module> plugins;
-    for (const auto &plugin_path : plugin_paths) {
+    for (const auto &plugin_path : options_.plugin_paths) {
         for (const fs::path &p : fs::directory_iterator(plugin_path)) {
             if (p.extension() != ".py") continue;
             if (!debug_ && p.stem().string().rfind("debug-", 0) == 0) continue;
@@ -67,8 +54,8 @@ void plugin_handler::load_plugins()
 
             try {
                 string module = p.stem();
-                log(log_level::debug, fmt::format("loading module '{}'...", module));
                 plugins.emplace_back(py::module::import(module.c_str()));
+                log(log_level::debug, fmt::format("loaded module '{}'.", module));
             } catch (const py::error_already_set &err) {
                 log(log_level::err, fmt::format("{}; ignoring...", err.what()));
             }
@@ -152,7 +139,7 @@ void plugin_handler::async_search()
 void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
 {
     const item item(item_comps);
-    if (!item.matches(wanted_) || item.misc.uris.size() == 0)
+    if (!item.matches(wanted_, options_.fuzzy_threshold) || item.misc.uris.size() == 0)
         return;
 
     std::lock_guard<std::mutex> guard(items_mutex_);

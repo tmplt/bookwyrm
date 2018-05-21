@@ -41,6 +41,11 @@ inline string loglvl_to_string(log_level lvl)
     return strings[static_cast<int>(lvl)];
 }
 
+struct options {
+    vector<fs::path> plugin_paths;
+    unsigned int fuzzy_threshold = 75;
+};
+
 class frontend {
 public:
 
@@ -53,8 +58,8 @@ public:
 
 class __attribute__ ((visibility("hidden"))) plugin_handler {
 public:
-    explicit plugin_handler(const item &&wanted, bool debug)
-        : wanted_(wanted), debug_(debug) {}
+    explicit plugin_handler(const item &&wanted, bool debug, const options options)
+        : wanted_(wanted), debug_(debug), options_(options) {}
 
     /*
      * Explicitly delete the copy-constructor.
@@ -93,6 +98,8 @@ private:
 
     /* Should debug scripts be loaded? */
     const bool debug_;
+
+    const options options_;
 
     /* Somewhere to store our found items. */
     std::set<core::item> items_;

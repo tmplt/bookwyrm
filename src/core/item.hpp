@@ -156,7 +156,7 @@ public:
      * Returns true if all specified exact values are equal
      * and if all specified non-exact values passes the fuzzy ratio.
      */
-    bool matches(const item &wanted) const;
+    bool matches(const item &wanted, const int fuzzy_min) const;
 
     bool operator==(const item &other) const;
 
