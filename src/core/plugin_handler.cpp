@@ -9,7 +9,7 @@
 #include "python.hpp"
 #include "plugin_handler.hpp"
 
-namespace bookwyrm::core {
+using namespace bookwyrm::core;
 
 void plugin_handler::load_plugins()
 {
@@ -94,7 +94,8 @@ void plugin_handler::async_search()
     log(log_level::debug, fmt::format("seaching with an accuracy of {}%", options_.fuzzy_threshold));
 
     for (py::module m : plugins_) {
-        threads_.emplace_back([m, wanted = wanted_, instance = this]() mutable {
+        running_plugins_++;
+        threads_.emplace_back([m, wanted = wanted_, this]() mutable {
             /* Required whenever we need to run anything Python. */
             auto gil = std::make_unique<py::gil_scoped_acquire>();
 
@@ -105,12 +106,14 @@ void plugin_handler::async_search()
              * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
              */
             py::object func;
-            py::tuple args = py::make_tuple(wanted, instance);
+            py::tuple args = py::make_tuple(wanted, this);
 
             try {
                 func = m.attr("find");
                 m.release().dec_ref();
                 PyObject_Call(func.ptr(), args.ptr(), nullptr);
+
+                running_plugins_--;
             } catch (abi::__forced_unwind&) {
                 /*
                  * Forced stack unwinding at thread exit —
@@ -122,11 +125,14 @@ void plugin_handler::async_search()
                     gil.release();
                 }
 
+                running_plugins_--;
+
                 /* Important rethrow! But what do we catch? */
                 throw;
             } catch (const py::error_already_set &err) {
-                instance->log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
+                log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
                     m.attr("__name__").cast<string>(), err.what()));
+                running_plugins_--;
             }
         });
     }
@@ -163,7 +169,7 @@ void plugin_handler::log(log_level lvl, string msg)
     }
 }
 
-std::set<core::item>& plugin_handler::results()
+std::set<item>& plugin_handler::results()
 {
     return items_;
 }
@@ -179,11 +185,12 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
     buffer_.clear();
 }
 
+const std::atomic<int>& plugin_handler::running_plugins() const
+{
+    return running_plugins_;
+}
+
 bool plugin_handler::readable_file(const fs::path &path)
 {
     return fs::is_regular_file(path) && access(path.c_str(), R_OK) == 0;
-}
-
-
-/* ns butler */
 }

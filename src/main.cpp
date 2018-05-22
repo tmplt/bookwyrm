@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
         auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
 
         ph.load_plugins();
-        auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"));
+        auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"), ph.running_plugins());
         ph.set_frontend(ui);
         ph.async_search();
 

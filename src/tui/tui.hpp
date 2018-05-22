@@ -71,8 +71,7 @@ private:
 
 class tui : public core::frontend {
 public:
-    /* WARN: this constructor should only be used in make_with() above. */
-    explicit tui(std::set<core::item> &items, bool debug_log);
+    explicit tui(std::set<core::item> &items, bool debug_log, const std::atomic<int> &running_plugins);
 
     inline void update();
 
@@ -140,6 +139,8 @@ private:
     /* Forwarded to the multiselect menu. */
     std::set<core::item> const &items_;
     std::mutex tui_mutex_;
+
+    const std::atomic<int> &running_plugins_;
 
     std::unique_ptr<logger> logger_;
 

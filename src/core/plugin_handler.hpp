@@ -73,13 +73,24 @@ public:
     explicit plugin_handler(const plugin_handler&) = delete;
     ~plugin_handler();
 
-    /* Finds and loads all valid plugins. */
+    /**
+     * @brief Find and load all plugins
+     */
     void load_plugins();
 
-    /* Start a std::thread for each valid plugin found. */
+    /**
+     * @brief Start searching with a dedicated thread for each found plugin
+     * @warning Should be called after the \ref plugin_handler::load_plugins function
+     */
     void async_search();
 
     /* Try to add a found item, and then update the set frontend. */
+
+    /**
+     * @brief Try to add a found item, and the update the set frontend.
+     * @param item_comps Item components passed from CPython via Pybind11
+     * @warning Should be called after the \ref plugin_handler::set_frontend function
+     */
     void add_item(std::tuple<core::nonexacts_t, core::exacts_t, core::misc_t> item_comps);
 
     void log(log_level lvl, std::string msg);
@@ -87,8 +98,16 @@ public:
     // TODO: return const and make const
     std::set<core::item>& results();
 
-    /* What frontend do we want to notify on updates? */
+    /**
+     * @brief Set the frontend that we want to notify on updates
+     * @param fe The frontend that we want to notify
+     */
     void set_frontend(std::shared_ptr<frontend> fe);
+
+    /**
+     * @brief Return how many plugins are still searching
+     */
+    const std::atomic<int>& running_plugins() const;
 
 private:
     static bool readable_file(const fs::path &path);
@@ -114,6 +133,8 @@ private:
     using buffer_pair = std::pair<const log_level, const std::string>;
     std::vector<buffer_pair> buffer_;
     std::weak_ptr<frontend> frontend_;
+
+    std::atomic<int> running_plugins_{0};
 
     /* Python-specific; do not change the order of this. */
     py::scoped_interpreter interp;

@@ -73,8 +73,8 @@ void logger::flush_to_screen()
     buffer_.clear();
 }
 
-tui::tui(std::set<core::item> &items, bool debug_log)
-    : viewing_details_(false), items_(items)
+tui::tui(std::set<core::item> &items, bool debug_log, const std::atomic<int> &running_plugins)
+    : viewing_details_(false), items_(items), running_plugins_(running_plugins)
 {
     /* Create the log screen. */
     log_ = std::make_shared<screen::log>();
@@ -159,7 +159,8 @@ void tui::print_footer()
     };
 
     /* Screen info bar. */
-    print(0, curses::get_height() - 2, focused_->footer_info());
+    print(0, curses::get_height() - 2, fmt::format("Searching with {} plugins... ",
+        running_plugins_.load()) + focused_->footer_info());
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
