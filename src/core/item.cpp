@@ -20,7 +20,7 @@ int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
 const string nonexacts_t::get_value(const std::map<string, string> &dict, const string &&key)
 {
     const auto elem = dict.find(key);
-    return elem == dict.cend() ? "" : elem->second;
+    return elem == dict.cend() ? "" : trim(elem->second);
 }
 
 bool exacts_t::operator==(const exacts_t &other) const
