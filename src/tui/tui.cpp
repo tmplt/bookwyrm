@@ -159,7 +159,7 @@ void tui::print_footer()
     };
 
     /* Screen info bar. */
-    print(0, curses::get_height() - 2, fmt::format("Searching with {} plugins... ",
+    print(0, curses::get_height() - 2, fmt::format("Searching with {} plugin(s)... ",
         running_plugins_.load()) + focused_->footer_info());
 
     /* Scroll percentage, if any. */

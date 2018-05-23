@@ -93,9 +93,17 @@ void plugin_handler::async_search()
 
     log(log_level::debug, fmt::format("seaching with an accuracy of {}%", options_.fuzzy_threshold));
 
+    /* Thread-safe lambda that notifies frontend about terminating plugin. */
+    auto decrement_running_plugins = [this]() {
+        running_plugins_--;
+        if (auto fe = frontend_.lock(); fe)
+            fe->update();
+    };
+
+    running_plugins_ = plugins_.size();
+
     for (py::module m : plugins_) {
-        running_plugins_++;
-        threads_.emplace_back([m, wanted = wanted_, this]() mutable {
+        threads_.emplace_back([m, decrement_running_plugins, this]() mutable {
             /* Required whenever we need to run anything Python. */
             auto gil = std::make_unique<py::gil_scoped_acquire>();
 
@@ -106,14 +114,14 @@ void plugin_handler::async_search()
              * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
              */
             py::object func;
-            py::tuple args = py::make_tuple(wanted, this);
+            py::tuple args = py::make_tuple(wanted_, this);
 
             try {
                 func = m.attr("find");
                 m.release().dec_ref();
                 PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
-                running_plugins_--;
+                decrement_running_plugins();
             } catch (abi::__forced_unwind&) {
                 /*
                  * Forced stack unwinding at thread exit —
@@ -125,14 +133,14 @@ void plugin_handler::async_search()
                     gil.release();
                 }
 
-                running_plugins_--;
+                decrement_running_plugins();
 
                 /* Important rethrow! But what do we catch? */
                 throw;
             } catch (const py::error_already_set &err) {
                 log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
                     m.attr("__name__").cast<string>(), err.what()));
-                running_plugins_--;
+                decrement_running_plugins();
             }
         });
     }
