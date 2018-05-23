@@ -158,9 +158,14 @@ void tui::print_footer()
         this->print(curses::get_width() - str.length(), y, str, attrs);
     };
 
-    /* Screen info bar. */
-    print(0, curses::get_height() - 2, fmt::format("Searching with {} plugin(s)... ",
-        running_plugins_.load()) + focused_->footer_info());
+    /* Print number of running plugins and screen info bar. */
+    if (int plugins = running_plugins_.load(); plugins == 0) {
+        print(0, curses::get_height() - 2, fmt::format("Search finished, I have found {} items.",
+            index_->item_count()));
+    } else {
+        print(0, curses::get_height() - 2, fmt::format("Searching with {} plugins... "
+            "I have found {} items thus far.", plugins, index_->item_count()));
+    }
 
     /* Scroll percentage, if any. */
     if (int perc = focused_->scrollpercent(); perc > -1)
