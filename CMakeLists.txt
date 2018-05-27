@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-project(bookwyrm VERSION 0.4.0 LANGUAGES CXX)
+project(bookwyrm VERSION 0.5.0 LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
