@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
         opts.plugin_paths = {{ fs::canonical(fs::path("../src/core/plugins")) }};
 #else
         /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
-        opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/etc/bookwyrm/plugins")) }};
+        opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins")) }};
 #endif
         opts.fuzzy_threshold = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
 

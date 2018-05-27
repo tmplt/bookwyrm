@@ -21,14 +21,15 @@ void plugin_handler::load_plugins()
     for (auto &p : options_.plugin_paths)
         sys_path.append(p.string().c_str());
 
+#if DEBUG
     /* And add the path to where pybookwyrm.so is available. */
     const std::string lib_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
     sys_path.append(lib_path.c_str());
+    log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
+#endif
 
     for (auto &path : options_.plugin_paths)
         log(log_level::debug, fmt::format("looking for scripts in {}", path.string()));
-
-    log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
 
     /*
      * Find all Python modules and populate the
