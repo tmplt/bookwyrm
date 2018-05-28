@@ -346,7 +346,9 @@ class LibgenSeeker(object):
                     return [isbn for isbn in font.text.split(', ') if valid_isbn(isbn)]
 
             def extract_mirrors():
-                libgenpw, libgenio, bookfi, bok = mirrors
+                # libgenpw, libgenio, bookfi, bok = mirrors
+                libgenpw = mirrors[0]
+                libgenio = mirrors[1]
                 # Only libgenpw can be downloaded from directly without fuss;
                 # the rest require the intermediate page as HTTP referer.
                 # TODO: process bookfi and B-Ok?
