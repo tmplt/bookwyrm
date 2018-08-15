@@ -104,9 +104,12 @@ void plugin_handler::async_search()
     running_plugins_ = plugins_.size();
 
     for (py::module m : plugins_) {
+        log(log_level::debug, fmt::format("running module '{}'", m.attr("__name__").cast<string>()));
         threads_.emplace_back([m, decrement_running_plugins, this]() mutable {
             /* Required whenever we need to run anything Python. */
             auto gil = std::make_unique<py::gil_scoped_acquire>();
+
+            const string name = m.attr("__name__").cast<string>();
 
             /*
              * We have to go manual here. Normally, when unwinding on pthread exit,
@@ -118,11 +121,14 @@ void plugin_handler::async_search()
             py::tuple args = py::make_tuple(wanted_, this);
 
             try {
+                /* Run the module's find function with the wanted item as argument. */
                 func = m.attr("find");
                 m.release().dec_ref();
-                PyObject_Call(func.ptr(), args.ptr(), nullptr);
+                PyObject* obj = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
-                decrement_running_plugins();
+                if (obj == nullptr)
+                    log(log_level::err, fmt::format("plugin '{}' exited non-successfully: did it raise an exception?", name));
+
             } catch (abi::__forced_unwind&) {
                 /*
                  * Forced stack unwinding at thread exit —
@@ -133,16 +139,14 @@ void plugin_handler::async_search()
                     func.release();
                     gil.release();
                 }
-
-                decrement_running_plugins();
-
-                /* Important rethrow! But what do we catch? */
                 throw;
             } catch (const py::error_already_set &err) {
-                log(log_level::err, fmt::format("module '{}' did something wrong: {}; ignoring...",
-                    m.attr("__name__").cast<string>(), err.what()));
-                decrement_running_plugins();
+                log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
+                    name, err.what()));
             }
+
+            decrement_running_plugins();
+            log(log_level::debug, fmt::format("exiting plugin '{}'", name));
         });
     }
 
