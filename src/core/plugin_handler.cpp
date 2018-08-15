@@ -23,9 +23,8 @@ void plugin_handler::load_plugins()
 
 #if DEBUG
     /* And add the path to where pybookwyrm.so is available. */
-    const std::string lib_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
-    sys_path.append(lib_path.c_str());
-    log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", lib_path));
+    sys_path.append(options_.library_path.c_str());
+    log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", options_.library_path));
 #endif
 
     for (auto &path : options_.plugin_paths)
@@ -174,6 +173,16 @@ void plugin_handler::async_search()
      * so we release the GIL and let the modules do their job.
      */
     this->nogil = std::make_unique<py::gil_scoped_release>();
+}
+
+void plugin_handler::wait()
+{
+    /*
+     * Wait until all plugins have finished
+     * TODO: clean this up
+     */
+    while (running_plugins_ != 0)
+        ;
 }
 
 void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)

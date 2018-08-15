@@ -204,6 +204,7 @@ int main(int argc, char *argv[])
         opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins")) }};
 #endif
         opts.fuzzy_threshold = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
+        opts.library_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
 
         /* Construct and start the plugin handler. */
         auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));

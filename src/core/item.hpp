@@ -74,6 +74,13 @@ struct exacts_t {
         size(get_value(dict, "size")),
         extension(extension) {}
 
+    exacts_t() : ymod(year_mod::unused),
+        year(empty),
+        volume(empty),
+        number(empty),
+        pages(empty),
+        size(empty) {}
+
     bool operator==(const exacts_t &other) const;
 
     const year_mod ymod;
@@ -109,6 +116,8 @@ struct nonexacts_t {
         journal(get_value(dict, "journal")),
         edition(get_value(dict, "edition")) {}
 
+    nonexacts_t() = default;
+
     bool operator==(const nonexacts_t &other) const;
 
     const vector<string> authors;
@@ -134,7 +143,7 @@ struct misc_t {
     /* Holds everything else. */
     explicit misc_t(const vector<string> &uris, const vector<string> &isbns)
         : uris(uris), isbns(isbns) {}
-    explicit misc_t() {}
+    misc_t() = default;
 
     bool operator==(const misc_t &other) const;
 
@@ -144,13 +153,14 @@ struct misc_t {
 
 struct item {
 public:
-
     explicit item(const nonexacts_t ne, const exacts_t e)
         : nonexacts(ne), exacts(e), misc(), index(items_idx++) {}
 
     /* Construct an item from a pybind11::tuple. */
     explicit item(const std::tuple<nonexacts_t, exacts_t, misc_t> &tuple)
         : nonexacts(std::get<0>(tuple)), exacts(std::get<1>(tuple)), misc(std::get<2>(tuple)), index(items_idx++) {}
+
+    item() : index(empty) {}
 
     /*
      * Returns true if all specified exact values are equal

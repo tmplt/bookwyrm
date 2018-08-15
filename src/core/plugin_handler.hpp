@@ -43,6 +43,7 @@ inline string loglvl_to_string(log_level lvl)
 
 struct options {
     vector<fs::path> plugin_paths;
+    string library_path;
     unsigned int fuzzy_threshold = 75;
 };
 
@@ -83,6 +84,8 @@ public:
      * @warning Should be called after the \ref plugin_handler::load_plugins function
      */
     void async_search();
+
+    void wait();
 
     /* Try to add a found item, and then update the set frontend. */
 
