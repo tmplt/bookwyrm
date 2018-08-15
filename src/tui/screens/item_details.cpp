@@ -52,10 +52,10 @@ void item_details::print_details()
 
     using pair = std::pair<std::string, std::reference_wrapper<const std::string>>;
     std::string authors = vector_to_string(item_.nonexacts.authors);
-    const std::string year = [year = item_.exacts.year]() {
+    const std::string year = std::invoke([year = item_.exacts.year]() {
         const std::string str = std::to_string(year);
         return (str == "-1" ? "N/A" : std::move(str));
-    }();
+    });
 
     const std::vector<pair> v = {
         {"Title",     item_.nonexacts.title},

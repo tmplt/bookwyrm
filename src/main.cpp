@@ -48,7 +48,7 @@ static const core::item create_item(const cliparser &cli)
         cli.get("journal")
     );
 
-    const auto yearmod = [&cli]() -> std::pair<core::year_mod, int> {
+    const auto yearmod = std::invoke([&cli]() -> std::pair<core::year_mod, int> {
         const auto year_str = cli.get("year");
         if (year_str.empty()) return {core::year_mod::equal, core::empty};
 
@@ -88,7 +88,7 @@ static const core::item create_item(const cliparser &cli)
         } catch (const std::exception &err) {
             throw value_error("malformed year");
         }
-    }();
+    });
 
     const auto parse_number = [&cli](const string &&opt) -> int {
         const auto value_str = cli.get(opt);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
     const cligroups groups = {main, excl, exact, misc};
 
-    const auto cli = [=]() -> cliparser {
+    const auto cli = std::invoke([=]() -> cliparser {
         string progname = argv[0];
         vector<string> args(argv + 1, argv + argc);
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
         }
 
         return cli;
-    }();
+    });
 
     /* Check for --help */
     if (cli.has("help")) {

@@ -228,10 +228,10 @@ void multiselect_menu::print_column(const size_t col_idx)
         const auto item = *std::next(items_.cbegin(), i);
 
         const std::string authors = vector_to_string(item.nonexacts.authors);
-        const std::string year = [year = item.exacts.year]() {
+        const std::string year = std::invoke([year = item.exacts.year]() {
             const std::string str = std::to_string(year);
             return (str == "-1" ? " " : std::move(str));
-        }();
+        });
 
         const std::array<std::reference_wrapper<const std::string>, 6> strings = {{
             item.nonexacts.title,

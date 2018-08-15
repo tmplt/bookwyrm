@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <ncurses.h>
+#include <functional>
 
 #include "colours.hpp"
 #include "keys.hpp"

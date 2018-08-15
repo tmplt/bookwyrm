@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 #include <iomanip>
 #include <sstream>
+#include <functional>
 #include <unistd.h>
 
 #include <fmt/ostream.h>
@@ -186,7 +187,7 @@ int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t 
         }
 
         /* Download rate unit conversion. */
-        const string rate_unit = [&rate]() {
+        const string rate_unit = std::invoke([&rate]() {
             constexpr auto k = std::pow(2, 10),
                            M = std::pow(2, 20);
 
@@ -197,7 +198,7 @@ int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t 
                 rate /= k;
                 return "kB/s";
             }
-        }();
+        });
 
         const double fraction = static_cast<double>(dlnow) / static_cast<double>(dltotal);
         fmt::print("{}\r  {:.0f}% ", rune::vt100::erase_line, fraction * 100);
@@ -210,11 +211,11 @@ int downloader::progress_callback(void *clientp, curl_off_t dltotal, curl_off_t 
                 fmt::arg("eta",     eta_ss.str()));
 
         /* Draw the progress bar. */
-        const int term_width = []() {
+        const int term_width = std::invoke([]() {
             struct winsize w;
             ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
             return w.ws_col;
-        }();
+        });
 
         int bar_length = 26,
             min_bar_length = 5,

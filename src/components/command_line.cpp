@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <utility>
+#include <functional>
 
 #include "command_line.hpp"
 #include "../string.hpp"
@@ -161,7 +162,7 @@ void cliparser::process_arguments(const vector<string> &args)
 void cliparser::validate_arguments() const
 {
     /* Did we get at least one of the required main flags? */
-    const bool main_opt_passed = [opts = passed_opts_, main_opts = valid_groups_[main].options] {
+    const bool main_opt_passed = std::invoke([opts = passed_opts_, main_opts = valid_groups_[main].options] {
         vector<string> required_opts, passed_opts;
 
         /* Since we only want to match against the long flags, we copy those. */
@@ -173,7 +174,7 @@ void cliparser::validate_arguments() const
 
         return std::find_first_of(passed_opts.cbegin(), passed_opts.cend(),
                 required_opts.cbegin(), required_opts.cend()) != passed_opts.cend();
-    }();
+    });
 
     if (has("ident") && passed_opts_.size() > 1)
         throw argument_error("ident flag is exclusive and may not be passed with another flag");
