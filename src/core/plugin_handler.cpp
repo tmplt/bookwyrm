@@ -125,10 +125,28 @@ void plugin_handler::async_search()
                 /* Run the module's find function with the wanted item as argument. */
                 func = m.attr("find");
                 m.release().dec_ref();
-                PyObject* obj = PyObject_Call(func.ptr(), args.ptr(), nullptr);
+                PyObject* retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
-                if (obj == nullptr)
-                    log(log_level::err, fmt::format("plugin '{}' exited non-successfully: did it raise an exception?", name));
+                /* Check if an exception was thrown */
+                if (retval == nullptr) {
+                    /* Coerce the error out from Python */
+                    PyObject *ptype = nullptr, *pvalue = nullptr, *ptraceback = nullptr;
+                    PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+                    PyObject *utf8 = PyObject_Repr(pvalue);
+                    PyObject *pystr = PyUnicode_AsEncodedString(utf8, "utf-8", nullptr);
+                    const char *errmsg = PyBytes_AS_STRING(pystr);
+
+                    /* Decrement reference count of used objects */
+                    Py_XDECREF(utf8);
+                    Py_XDECREF(pystr);
+                    Py_XDECREF(ptype);
+                    Py_XDECREF(pvalue);
+                    Py_XDECREF(ptraceback);
+
+                    log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}", name, errmsg));
+                }
+
+                Py_XDECREF(retval);
 
             } catch (abi::__forced_unwind&) {
                 /*
