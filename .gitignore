@@ -4,3 +4,4 @@ __pycache__
 **/version.hpp
 **/prefix.hpp
 *.output
+.direnv*
