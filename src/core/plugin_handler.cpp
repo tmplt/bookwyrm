@@ -45,6 +45,7 @@ void plugin_handler::load_plugins()
     for (const auto &plugin_path : options_.plugin_paths) {
         for (const fs::path &p : fs::directory_iterator(plugin_path)) {
             if (p.extension() != ".py") continue;
+            /* Only load debug-* plugins if --debug is passed. */
             if (!debug_ && p.stem().string().rfind("debug-", 0) == 0) continue;
 
             if (!readable_file(p)) {

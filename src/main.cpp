@@ -19,14 +19,17 @@ static std::error_code validate_download_dir(const fs::path &path)
         return {ec, std::generic_category()};
     };
 
+    /* Is the file a directory? */
+    if (!fs::is_directory(path))
+        return error(ENOTDIR);
+
+    /* Does the directory exist? */
     if (!fs::exists(path))
         return error(ENOENT);
 
+    /* Is there space available? */
     if (fs::space(path).available == 0)
         return error(ENOSPC);
-
-    if (!fs::is_directory(path))
-        return error(ENOTDIR);
 
     /* Can we write to the directory? */
     if (access(path.c_str(), W_OK) != 0)
@@ -158,6 +161,7 @@ int main(int argc, char *argv[])
         return cli;
     }();
 
+    /* Check for --help */
     if (cli.has("help")) {
         cli.usage();
         return EXIT_SUCCESS;
@@ -169,6 +173,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* Validate arguments */
     try {
         cli.validate_arguments();
     } catch (const argument_error &err) {
@@ -176,8 +181,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* Validate download path */
     const string dl_path = cli.has(0) ? cli.get(0) : ".";
-
     if (const auto err = validate_download_dir(dl_path); err) {
         string msg = err.message();
         std::transform(msg.begin(), msg.end(), msg.begin(), ::tolower);
@@ -185,9 +190,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* Start bookwyrm */
     vector<core::item> wanted_items;
-
     try {
+        /* Construct options */
         const core::item wanted = create_item(cli);
         core::options opts;
 #ifdef DEBUG
@@ -199,13 +205,14 @@ int main(int argc, char *argv[])
 #endif
         opts.fuzzy_threshold = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
 
+        /* Construct and start the plugin handler. */
         auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
-
         ph.load_plugins();
         auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"), ph.running_plugins());
         ph.set_frontend(ui);
         ph.async_search();
 
+        /* Display the UI, getting wanted items if any where selected. */
         if (ui->display())
             wanted_items = ui->get_wanted_items();
 
@@ -228,6 +235,7 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
+    /* Download previously selected items. */
     try {
         bookwyrm::downloader d(dl_path);
 
@@ -236,8 +244,7 @@ int main(int argc, char *argv[])
         else
             fmt::print("Downloading {} items...\n", wanted_items.size());
 
-        auto success = d.sync_download(wanted_items);
-
+        const auto success = d.sync_download(wanted_items);
         if (!success && wanted_items.size() > 1) {
             fmt::print("No items were successfully downloaded\n");
             return EXIT_FAILURE;
