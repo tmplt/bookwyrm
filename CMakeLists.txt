@@ -18,7 +18,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/fmt)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/fuzzywuzzy)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/pybind11)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/test)
+add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     # Relocation R_X86_64_PC32 against symbols declared in the following libraries
