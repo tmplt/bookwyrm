@@ -1,6 +1,4 @@
-import pybookwyrm
-
 def someotherfunc():
-    i = 42
+    pass
 
 #PASS AttributeError: module 'missing-find' has no attribute 'find'

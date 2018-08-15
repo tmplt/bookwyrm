@@ -56,7 +56,7 @@ void plugin_handler::load_plugins()
             try {
                 string module = p.stem();
                 plugins.emplace_back(py::module::import(module.c_str()));
-                log(log_level::debug, fmt::format("loaded module '{}'.", module));
+                log(log_level::debug, fmt::format("loaded module '{}'", module));
             } catch (const py::error_already_set &err) {
                 log(log_level::err, fmt::format("{}; ignoring...", err.what()));
             }
@@ -118,11 +118,12 @@ void plugin_handler::async_search()
              * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
              */
             py::object func;
-            py::tuple args = py::make_tuple(wanted_, this);
+            py::tuple args;
 
             try {
                 /* Run the module's find function with the wanted item as argument. */
                 func = m.attr("find");
+                args = py::make_tuple(wanted_, this);
                 m.release().dec_ref();
                 PyObject* retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
@@ -161,6 +162,8 @@ void plugin_handler::async_search()
             } catch (const py::error_already_set &err) {
                 log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
                     name, err.what()));
+            } catch (const py::cast_error&) {
+                log(log_level::err, fmt::format("plugin '{}' does not import the required pybookwyrm module", name));
             }
 
             decrement_running_plugins();
@@ -187,6 +190,7 @@ void plugin_handler::wait()
 
 void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
 {
+    log(log_level::debug, "consuming one new item");
     const item item(item_comps);
     if (!item.matches(wanted_, options_.fuzzy_threshold) || item.misc.uris.size() == 0)
         return;
