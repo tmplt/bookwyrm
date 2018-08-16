@@ -5,7 +5,10 @@
 # binary doing the actual testing.
 
 dir=$(mktemp --directory)
-mkdir -p $dir/$2 && cp $2 "$_"
+mkdir -p $dir && cp $2 $dir/
 
-echo "Executing $1 $dir/$2 $3"
-exec $1 $dir/$2 $3
+echo "Executing"
+echo "\t\$ $1 $dir $3"
+echo "Where $dir contains $2"
+echo ""
+exec $1 $dir $3

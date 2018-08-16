@@ -1,0 +1,45 @@
+stages:
+    - compilation
+    - testing
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CC: gcc-7
+    CXX: g++-7
+
+before_script:
+    - apt-get update -qq && apt-get install -y -qq software-properties-common
+    - add-apt-repository ppa:ubuntu-toolchain-r/test
+    - apt-get update -qq && apt-get install -y -qq cmake ninja-build libncurses5-dev python3-all-dev gcc-7 g++-7 libcurl4-openssl-dev
+
+#######################
+# Compilation targets #
+#######################
+
+cmp:gcc:
+    stage: compilation
+    image: ubuntu
+    script:
+        - mkdir build && cd build
+        - cmake -DCURSES_LIBRARY=/usr/lib/x86_64-linux-gnu/libcurses.so -DCURSES_INCLUDE_PATH=/usr/include -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
+        - ninja
+    artifacts:
+        paths:
+            - build
+        expire_in: 3 hour
+
+##############
+# Unit tests #
+##############
+
+core:gcc:
+    stage: testing
+    image: ubuntu
+    dependencies:
+        - cmp:gcc
+    script:
+        # TODO: download artifacts from cmp:gcc instead of rebuilding
+        - cd build
+        - cmake -DCURSES_LIBRARY=/usr/lib/x86_64-linux-gnu/libcurses.so -DCURSES_INCLUDE_PATH=/usr/include -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
+        - ninja
+        - ctest --output-on-failure

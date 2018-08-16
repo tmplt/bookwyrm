@@ -40,7 +40,7 @@ endfunction()
 function(add_plugin_handler_test test)
     add_test(NAME ${test}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/test_run_plugin.sh" "${CMAKE_BINARY_DIR}/test/test_run_plugin" "${test}" "${CMAKE_BINARY_DIR}/src/core/bindings/"
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/test_run_plugin.sh" "${CMAKE_BINARY_DIR}/tests/test_run_plugin" "${test}" "${CMAKE_BINARY_DIR}/src/core/bindings/"
     )
 
     # Parse plugin for pass/fail conditions:
