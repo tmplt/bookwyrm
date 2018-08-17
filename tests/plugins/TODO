@@ -1,3 +1,0 @@
-* dupe testing
-* accuracy testing
-* a test that spawns a few threads doing heavier Python work (math, propably) and detaches these. Loop this behavior for a bit to make sure async_search() is safe

@@ -61,12 +61,22 @@ endfunction()
 option(test_plugin_handlers "Perform unit tests to ensure functionality of plugin handlers?" ON)
 
 if(test_plugin_handlers)
+    # Test detaching working plugin threads
+    add_executable(test_detach src/test_detach.cpp)
+    target_include_directories(test_detach BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/src)
+    target_link_libraries(test_detach bookwyrm-core)
+    add_test(NAME "core/thread_detach"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND "${CMAKE_BINARY_DIR}/tests/test_detach" "${CMAKE_CURRENT_SOURCE_DIR}/detach" "${CMAKE_BINARY_DIR}/src/core/bindings/")
+
+    # Test plugin behavior
     add_executable(test_run_plugin src/test_run_plugin.cpp)
     target_include_directories(test_run_plugin BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/src)
     target_link_libraries(test_run_plugin bookwyrm-core)
 
     file(GLOB test_list_plugins RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} plugins/*)
     list(LENGTH test_list_plugins num_test_plugins)
+    # TODO: add one for the detach test
     message(STATUS "Unit tests: ${num_test_plugins} plugin handler tests")
     foreach(test ${test_list_plugins})
         add_plugin_handler_test(${test})
