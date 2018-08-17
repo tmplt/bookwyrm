@@ -5,7 +5,7 @@
 
 #include <fmt/format.h>
 
-#include "prefix.hpp"
+#include "../prefix.hpp"
 #include "python.hpp"
 #include "plugin_handler.hpp"
 

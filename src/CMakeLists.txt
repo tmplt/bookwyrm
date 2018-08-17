@@ -30,8 +30,8 @@ configure_file(
   ESCAPE_QUOTES @ONLY)
 
 configure_file(
-  ${PROJECT_SOURCE_DIR}/src/core/prefix.hpp.cmake
-  ${CMAKE_SOURCE_DIR}/src/core/prefix.hpp
+  ${PROJECT_SOURCE_DIR}/src/prefix.hpp.cmake
+  ${CMAKE_SOURCE_DIR}/src/prefix.hpp
   ESCAPE_QUOTES @ONLY)
 
 #if(NOT ENV{PROG_VERSION} AND NOT ENV{GIT_TAG})

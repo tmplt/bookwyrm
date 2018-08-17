@@ -5,7 +5,7 @@
 
 #include "core/plugin_handler.hpp"
 #include "core/item.hpp"
-#include "core/prefix.hpp"
+#include "prefix.hpp"
 #include "version.hpp"
 #include "components/command_line.hpp"
 #include "tui/tui.hpp"
