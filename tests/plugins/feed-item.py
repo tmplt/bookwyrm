@@ -10,4 +10,4 @@ def find(wanted, bookwyrm):
     book = (nonexacts, exacts, misc)
     bookwyrm.feed(book)
 
-#PASS consuming one new item
+#PASS trying to add one new item...

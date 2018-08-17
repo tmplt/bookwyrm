@@ -22,7 +22,7 @@ void plugin_handler::load_plugins()
         sys_path.append(p.string().c_str());
 
 #if DEBUG
-    /* And add the path to where pybookwyrm.so is available. */
+    /* Add the path to where pybookwyrm.so is available. */
     sys_path.append(options_.library_path.c_str());
     log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", options_.library_path));
 #endif
@@ -42,19 +42,22 @@ void plugin_handler::load_plugins()
      */
     vector<py::module> plugins;
     for (const auto &plugin_path : options_.plugin_paths) {
-        for (const fs::path &p : fs::directory_iterator(plugin_path)) {
-            if (p.extension() != ".py") continue;
-            /* Only load debug-* plugins if --debug is passed. */
-            if (!debug_ && p.stem().string().rfind("debug-", 0) == 0) continue;
+        for (const fs::path &path : fs::directory_iterator(plugin_path)) {
 
-            if (!readable_file(p)) {
+            /* Check if we can load the file */
+            if (path.extension() != ".py") {
+                log(log_level::debug, fmt::format("'{}' doesn't look like a Python module; ignoring...", path.string()));
+                continue;
+            }
+            if (!readable_file(path)) {
                 log(log_level::err, fmt::format("can't load module '{}': not a regular file or unreadable"
-                        "; ignoring...", p.string()));
+                        "; ignoring...", path.string()));
                 continue;
             }
 
+            /* Load the module */
             try {
-                string module = p.stem();
+                string module = path.stem();
                 plugins.emplace_back(py::module::import(module.c_str()));
                 log(log_level::debug, fmt::format("loaded module '{}'", module));
             } catch (const py::error_already_set &err) {
@@ -71,10 +74,13 @@ void plugin_handler::load_plugins()
 
 plugin_handler::~plugin_handler()
 {
-    /* Flush log entries. */
-    // TODO: print log level before msg.
+    /*
+     * Flush log entries.
+     * TODO: colour this output to match that of the log screen.
+     */
     for (const auto& [lvl, msg] : buffer_) {
-        if (!debug_ && lvl <= log_level::debug) continue;
+        if (!debug_ && lvl <= log_level::debug)
+            continue;
         (lvl <= log_level::warn ? std::cout : std::cerr)
             << loglvl_to_string(lvl) + ": " + msg << "\n";
     }
@@ -92,92 +98,94 @@ void plugin_handler::async_search()
     /* Ensure pybind internals are initialized. */
     py::get_shared_data("");
 
-    log(log_level::debug, fmt::format("seaching with an accuracy of {}%", options_.fuzzy_threshold));
-
-    /* Thread-safe lambda that notifies frontend about terminating plugin. */
-    auto decrement_running_plugins = [this]() {
-        running_plugins_--;
-        if (auto fe = frontend_.lock(); fe)
-            fe->update();
-    };
-
+    log(log_level::debug, fmt::format("seaching with an accuracy of {}%", options_.accuracy));
     running_plugins_ = plugins_.size();
 
-    for (py::module m : plugins_) {
-        log(log_level::debug, fmt::format("running module '{}'", m.attr("__name__").cast<string>()));
-        threads_.emplace_back([m, decrement_running_plugins, this]() mutable {
-            /* Required whenever we need to run anything Python. */
-            auto gil = std::make_unique<py::gil_scoped_acquire>();
-
-            const string name = m.attr("__name__").cast<string>();
-
-            /*
-             * We have to go manual here. Normally, when unwinding on pthread exit,
-             * Python operations may be performed without holding the GIL, leading to a segfault.
-             *
-             * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
-             */
-            py::object func;
-            py::tuple args;
-
-            try {
-                /* Run the module's find function with the wanted item as argument. */
-                func = m.attr("find");
-                args = py::make_tuple(wanted_, this);
-                m.release().dec_ref();
-                PyObject* retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
-
-                /* Check if an exception was thrown */
-                if (retval == nullptr) {
-                    /* Coerce the error out from Python */
-                    PyObject *ptype = nullptr, *pvalue = nullptr, *ptraceback = nullptr;
-                    PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-                    PyObject *utf8 = PyObject_Repr(pvalue);
-                    PyObject *pystr = PyUnicode_AsEncodedString(utf8, "utf-8", nullptr);
-                    const char *errmsg = PyBytes_AS_STRING(pystr);
-
-                    /* Decrement reference count of used objects */
-                    Py_XDECREF(utf8);
-                    Py_XDECREF(pystr);
-                    Py_XDECREF(ptype);
-                    Py_XDECREF(pvalue);
-                    Py_XDECREF(ptraceback);
-
-                    log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}", name, errmsg));
-                }
-
-                Py_XDECREF(retval);
-
-            } catch (abi::__forced_unwind&) {
-                /*
-                 * Forced stack unwinding at thread exit —
-                 * if Python is shutting down, don't clean up Python state.
-                 */
-                if (!Py_IsInitialized()) {
-                    args.release();
-                    func.release();
-                    gil.release();
-                }
-                throw;
-            } catch (const py::error_already_set &err) {
-                log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
-                    name, err.what()));
-            } catch (const py::cast_error&) {
-                log(log_level::err, fmt::format("plugin '{}' does not import the required pybookwyrm module", name));
-            }
-
-            decrement_running_plugins();
-            log(log_level::debug, fmt::format("exiting plugin '{}'", name));
-        });
+    /* Start running each loaded plugin in a seperate thread */
+    for (py::module module : plugins_) {
+        log(log_level::debug, fmt::format("running module '{}'", module.attr("__name__").cast<string>()));
+        threads_.emplace_back(&plugin_handler::python_module_runner, this, module);
     }
 
     /*
-     * We have called all Python code we need to from here,
-     * so we release the GIL and let the modules do their job.
+     * We have called all Python code we need to from here.
+     * We release the GIL and let the modules do their job.
      */
     this->nogil = std::make_unique<py::gil_scoped_release>();
 }
 
+
+void plugin_handler::python_module_runner(py::module module)
+{
+    /* Aqcuire the Global Interpreter Lock, required for running any Python code. */
+    auto gil = std::make_unique<py::gil_scoped_acquire>();
+
+    const string name = module.attr("__name__").cast<string>();
+
+    /*
+     * We have to go manual here. Normally, when unwinding on pthread exit,
+     * Python operations may be performed without holding the GIL, leading to a segfault.
+     * See <https://github.com/pybind/pybind11/issues/1360>.
+     *
+     * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
+     */
+    py::object func;
+    py::tuple args;
+
+    try {
+        /* Run the module's find-function with the wanted item, and bookwyrm instance as argument. */
+        func = module.attr("find");
+        args = py::make_tuple(wanted_, this);
+        module.release().dec_ref();
+        PyObject* retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
+
+        /* Check if an exception was thrown */
+        if (retval == nullptr) {
+            /* Coerce the exception error message out from CPython */
+            PyObject *ptype = nullptr, *pvalue = nullptr, *ptraceback = nullptr;
+            PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+            PyObject *utf8 = PyObject_Repr(pvalue);
+            PyObject *pystr = PyUnicode_AsEncodedString(utf8, "utf-8", nullptr);
+            const char *errmsg = PyBytes_AS_STRING(pystr);
+
+            /* Decrement reference count of used objects */
+            Py_XDECREF(utf8);
+            Py_XDECREF(pystr);
+            Py_XDECREF(ptype);
+            Py_XDECREF(pvalue);
+            Py_XDECREF(ptraceback);
+
+            log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}", name, errmsg));
+        }
+
+        Py_XDECREF(retval);
+
+    } catch (abi::__forced_unwind&) {
+        /*
+         * Forced stack unwinding at thread exit —
+         * if Python is shutting down, don't clean up Python state.
+         */
+        if (!Py_IsInitialized()) {
+            args.release();
+            func.release();
+            gil.release();
+        }
+        throw;
+    } catch (const py::error_already_set &err) {
+        log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
+            name, err.what()));
+    } catch (const py::cast_error&) {
+        log(log_level::err, fmt::format("plugin '{}' does not import the required pybookwyrm module", name));
+    }
+
+    /* Propegate that this plugin is terminating */
+    log(log_level::debug, fmt::format("exiting plugin '{}'", name));
+    running_plugins_--;
+    if (auto fe = frontend_.lock(); fe)
+        fe->update();
+}
+
+#ifdef DEBUG
 void plugin_handler::wait()
 {
     /*
@@ -187,18 +195,24 @@ void plugin_handler::wait()
     while (running_plugins_ != 0)
         ;
 }
+#endif
 
 void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
 {
-    log(log_level::debug, "consuming one new item");
+    log(log_level::debug, "trying to add one new item...");
     const item item(item_comps);
-    if (!item.matches(wanted_, options_.fuzzy_threshold) || item.misc.uris.size() == 0)
+    if (!item.matches(wanted_, options_.accuracy) || item.misc.uris.size() == 0)
         return;
 
     std::lock_guard<std::mutex> guard(items_mutex_);
 
     bool inserted = false;
     std::tie(std::ignore, inserted) = items_.insert(item);
+
+    if (inserted)
+        log(log_level::debug, "added one new item");
+    else
+        log(log_level::debug, "ignored one too similar item");
 
     if (auto fe = frontend_.lock(); fe && inserted)
         fe->update();
@@ -223,10 +237,9 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
 {
     frontend_ = fe;
 
-    /* Propegate the log buffer. */
+    /* Propegate the log buffer, if any entries. */
     for (const auto& [lvl, msg] : buffer_)
         fe->log(lvl, msg);
-
     buffer_.clear();
 }
 

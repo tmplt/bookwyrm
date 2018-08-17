@@ -117,15 +117,14 @@ int main(int argc, char *argv[])
 {
     std::setlocale(LC_ALL, "");
 
+    /* Define command line options */
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",     "Specify authors",   "AUTHOR")
         ("-t", "--title",      "Specify title",     "TITLE")
         ("-s", "--series",     "Specify series",     "SERIE")
         ("-p", "--publisher",  "Specify publisher", "PUBLISHER");
-
     const auto excl = cligroup("Exclusive", "cannot be combined with any other arguments")
         ("-d", "--ident",      "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
-
     const auto exact = cligroup("Exact", "all are optional")
         ("-y", "--year",       "Specify year of release. "
                                "A prefix modifier can be used to broaden the search. "
@@ -134,15 +133,14 @@ int main(int argc, char *argv[])
         ("-e", "--edition",    "Specify item edition",   "EDITION")
         ("-E", "--extension",  "Specify item extension", "EXT")
         ("-i", "--isbn",       "Specify item ISBN", "ISBN");
-
     const auto misc = cligroup("Miscellaneous")
         ("-h", "--help",       "Display this text and exit")
         ("-v", "--version",    "Print version information (" + build_info_short + ") and exit")
         ("-D", "--debug",      "Set logging level to debug")
         ("-A", "--accuracy",   "Set searching accuracy in percentage", "ACCURACY");
 
+    /* Construct a command line parser */
     const cligroups groups = {main, excl, exact, misc};
-
     const auto cli = std::invoke([=]() -> cliparser {
         string progname = argv[0];
         vector<string> args(argv + 1, argv + argc);
@@ -203,7 +201,7 @@ int main(int argc, char *argv[])
         /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
         opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins")) }};
 #endif
-        opts.fuzzy_threshold = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
+        opts.accuracy = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
         opts.library_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
 
         /* Construct and start the plugin handler. */

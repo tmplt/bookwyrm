@@ -44,7 +44,7 @@ inline string loglvl_to_string(log_level lvl)
 struct options {
     vector<fs::path> plugin_paths;
     string library_path;
-    unsigned int fuzzy_threshold = 75;
+    unsigned int accuracy = 75;
 };
 
 class frontend {
@@ -85,9 +85,13 @@ public:
      */
     void async_search();
 
+#ifdef DEBUG
+    /**
+     * @brief Wait for all plugins to finish execution
+     * @warning Should be called after the \ref plugin_handler::async_search function
+     */
     void wait();
-
-    /* Try to add a found item, and then update the set frontend. */
+#endif
 
     /**
      * @brief Try to add a found item, and the update the set frontend.
@@ -96,9 +100,19 @@ public:
      */
     void add_item(std::tuple<core::nonexacts_t, core::exacts_t, core::misc_t> item_comps);
 
+    /**
+     * @brief Log an error message
+     *
+     * Logged message is propagated to the configured frontend, if any.
+     * Any non-propagated logs are flushed to std{out,err} upon plugin_handler destruction.
+     */
     void log(log_level lvl, std::string msg);
 
-    // TODO: return const and make const
+    /**
+     * @brief Return all found items
+     *
+     * TODO [doc] return const and make const
+     */
     std::set<core::item>& results();
 
     /**
@@ -114,11 +128,12 @@ public:
 
 private:
     static bool readable_file(const fs::path &path);
+    void python_module_runner(py::module module);
 
     /* The item to propagate to all plugins. */
     const core::item wanted_;
 
-    /* Should debug scripts be loaded? */
+    /* Should debug logs be printed for the user? */
     const bool debug_;
 
     const options options_;

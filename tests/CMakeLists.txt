@@ -76,6 +76,8 @@ if(test_plugin_handlers)
 
     file(GLOB test_list_plugins RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} plugins/*)
     list(LENGTH test_list_plugins num_test_plugins)
+    # Account for core/thread_detach
+    math(EXPR num_test_plugins "${num_test_plugins} + 1")
     # TODO: add one for the detach test
     message(STATUS "Unit tests: ${num_test_plugins} plugin handler tests")
     foreach(test ${test_list_plugins})
