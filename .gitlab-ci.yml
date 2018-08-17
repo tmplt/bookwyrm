@@ -38,8 +38,5 @@ core:gcc:
     dependencies:
         - cmp:gcc
     script:
-        # TODO: download artifacts from cmp:gcc instead of rebuilding
         - cd build
-        - cmake -DCURSES_LIBRARY=/usr/lib/x86_64-linux-gnu/libcurses.so -DCURSES_INCLUDE_PATH=/usr/include -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
-        - ninja
         - ctest --output-on-failure
