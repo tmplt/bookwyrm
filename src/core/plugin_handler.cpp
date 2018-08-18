@@ -174,8 +174,9 @@ void plugin_handler::python_module_runner(py::module module)
     } catch (const py::error_already_set &err) {
         log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
             name, err.what()));
-    } catch (const py::cast_error&) {
-        log(log_level::err, fmt::format("plugin '{}' does not import the required pybookwyrm module", name));
+    } catch (const py::cast_error& err) {
+        log(log_level::err, fmt::format("plugin '{}' did something wrong with types; "
+                    "does the module import the required pybookwyrm module? Details: {}", name, err.what()));
     }
 
     /* Propegate that this plugin is terminating */
@@ -197,10 +198,10 @@ void plugin_handler::wait()
 }
 #endif
 
-void plugin_handler::add_item(std::tuple<nonexacts_t, exacts_t, misc_t> item_comps)
+void plugin_handler::add_item(py::dict dict)
 {
-    log(log_level::debug, "trying to add one new item...");
-    const item item(item_comps);
+    const item item(dict);
+    log(log_level::debug, fmt::format("trying to add one new item with title '{}'...", item.nonexacts.title));
     if (!item.matches(wanted_, options_.accuracy) || item.misc.uris.size() == 0)
         return;
 

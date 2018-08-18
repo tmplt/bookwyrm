@@ -95,10 +95,10 @@ public:
 
     /**
      * @brief Try to add a found item, and the update the set frontend.
-     * @param item_comps Item components passed from CPython via Pybind11
+     * @param dict Python dictionary containing all item information
      * @warning Should be called after the \ref plugin_handler::set_frontend function
      */
-    void add_item(std::tuple<core::nonexacts_t, core::exacts_t, core::misc_t> item_comps);
+    void add_item(py::dict dict);
 
     /**
      * @brief Log an error message

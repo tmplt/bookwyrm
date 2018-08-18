@@ -25,7 +25,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         .value("gt",    core::year_mod::gt);
 
     py::class_<core::exacts_t>(m, "exacts_t")
-        .def(py::init<const std::map<string, int>&, const string&>())
         .def_readonly("year",      &core::exacts_t::year)
         .def_readonly("extension", &core::exacts_t::extension)
         .def_readonly("volume",    &core::exacts_t::volume)
@@ -48,7 +47,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         });
 
     py::class_<core::nonexacts_t>(m, "nonexacts_t")
-        .def(py::init<const std::map<string, string>&, const vector<string>&>())
         .def_readonly("authors",   &core::nonexacts_t::authors)
         .def_readonly("title",     &core::nonexacts_t::title)
         .def_readonly("series",    &core::nonexacts_t::series)
@@ -70,7 +68,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         });
 
     py::class_<core::misc_t>(m, "misc_t")
-        .def(py::init<const vector<string>&, const vector<string>&>())
         .def_readonly("isbns", &core::misc_t::isbns)
         .def_readonly("uris", &core::misc_t::uris)
         .def("__repr__", [](const core::misc_t &c) {
@@ -84,7 +81,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         });
 
     py::class_<core::item>(m, "item")
-        .def(py::init<const std::tuple<core::nonexacts_t, core::exacts_t, core::misc_t>&>())
         .def_readonly("nonexacts", &core::item::nonexacts)
         .def_readonly("exacts",    &core::item::exacts)
         .def("__repr__", [](const core::item &i) {

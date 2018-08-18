@@ -11,17 +11,52 @@ namespace bookwyrm::core {
 
 size_t item::items_idx = 0;
 
-int exacts_t::get_value(const std::map<string, int> &dict, const string &&key)
+static int get_integral(const py::dict &dict, const char *key)
 {
-    const auto elem = dict.find(key);
-    return elem == dict.cend() ? empty : elem->second;
+    if (!dict.contains(key))
+        return empty;
+    return py::int_(dict[key]);
 }
 
-const string nonexacts_t::get_value(const std::map<string, string> &dict, const string &&key)
+static string get_string(const py::dict &dict, const char *key)
 {
-    const auto elem = dict.find(key);
-    return elem == dict.cend() ? "" : trim(elem->second);
+    if (!dict.contains(key))
+        return "";
+    return trim(py::str(dict[key]));
 }
+
+static vector<string> get_vector_string(const py::dict &dict, const char *key)
+{
+    if (!dict.contains(key))
+        return {{ }};
+
+    vector<string> strings;
+    for (auto &handle : py::list(dict[key]))
+        strings.push_back(trim(py::str(handle)));
+    return strings;
+}
+
+exacts_t::exacts_t(const py::dict &dict)
+    : ymod(year_mod::unused),
+    year(get_integral(dict, "year")),
+    volume(get_integral(dict, "volume")),
+    number(get_integral(dict, "number")),
+    pages(get_integral(dict, "pages")),
+    size(get_integral(dict, "size")),
+    extension(get_string(dict, "extension")) {}
+
+nonexacts_t::nonexacts_t(const py::dict &dict)
+    : authors(get_vector_string(dict, "authors")),
+    title(get_string(dict, "title")),
+    series(get_string(dict, "series")),
+    publisher(get_string(dict, "publisher")),
+    journal(get_string(dict, "journal")),
+    edition(get_string(dict, "edition")) {}
+
+misc_t::misc_t(const py::dict &dict)
+    : uris(get_vector_string(dict, "uris")),
+    isbns(get_vector_string(dict, "isbns")) {}
+
 
 bool exacts_t::operator==(const exacts_t &other) const
 {

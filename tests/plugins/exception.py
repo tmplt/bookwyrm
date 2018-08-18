@@ -1,4 +1,4 @@
-import pybookwyrm as bw
+import pybookwyrm
 
 def find(wanted, bookwyrm):
     raise ValueError('Something very bad happened')
