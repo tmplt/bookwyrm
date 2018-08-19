@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
         core::options opts;
 #ifdef DEBUG
         /* bookwyrm must be run from build/ in DEBUG mode. */
-        opts.plugin_paths = {{ fs::canonical(fs::path("../src/core/plugins")) }};
+        opts.plugin_paths = {{ fs::canonical(fs::path("../src/plugins")) }};
 #else
         /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
         opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins")) }};
