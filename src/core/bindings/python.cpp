@@ -43,7 +43,6 @@ static py::object getattr(const core::item &item, const std::string &key)
     /*
      * Exact attributes.
      * No reason to query a wanted item size.
-     * TODO: add ymod.
      */
     if (key == "yearmod")
         return py::cast(item.exacts.ymod);
