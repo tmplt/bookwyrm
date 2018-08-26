@@ -1,4 +1,5 @@
 #include <system_error>
+#include <functional>
 #include <cerrno>
 #include <cstdlib>
 #include <array>
@@ -16,10 +17,34 @@ void plugin_handler::load_plugins()
     /*
      * Append the plugin paths to Python's sys.path,
      * allowing them to be imported.
+     * Make sure that the plugin doesn't share name with a standard lib module.
      */
     auto sys_path = py::reinterpret_borrow<py::list>(py::module::import("sys").attr("path"));
-    for (auto &p : options_.plugin_paths)
-        sys_path.append(p.string().c_str());
+    const auto standard_modules = std::invoke([]() {
+        /* Get the names of all standard Python modules */
+        std::vector<std::string> names;
+        for (auto &handle : py::list(py::module::import("pkgutil").attr("iter_modules")())) {
+            names.push_back(py::str(handle.attr("name")));
+        }
+
+        return names;
+    });
+    for (auto &path : options_.plugin_paths) {
+        for (auto &plugin : fs::directory_iterator(path)) {
+            if (!fs::is_regular_file(plugin)) {
+                /* We'll only import regular files */
+                continue;
+            }
+
+            if (std::find(standard_modules.cbegin(), standard_modules.cend(), plugin.path().stem().string())
+                    != standard_modules.cend()) {
+                throw std::runtime_error(fmt::format("cannot load plugin that shares name with a standard library module ({})",
+                            plugin.path().string()));
+            }
+        }
+
+        sys_path.append(path.string().c_str());
+    }
 
 #if DEBUG
     /* Add the path to where pybookwyrm.so is available. */
