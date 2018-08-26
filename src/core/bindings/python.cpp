@@ -9,6 +9,35 @@ using namespace bookwyrm;
 using std::string;
 using std::vector;
 
+namespace detail {
+
+struct log_wrapper {
+public:
+    explicit log_wrapper(core::plugin_handler* instance)
+        : ph_(instance)
+    {
+        assert(ph_ != nullptr);
+    }
+
+    void debug(const std::string &msg)
+    {
+        ph_->log(core::log_level::debug, msg);
+    }
+    void warn(const std::string &msg)
+    {
+        ph_->log(core::log_level::warn, msg);
+    }
+    void error(const std::string &msg)
+    {
+        ph_->log(core::log_level::err, msg);
+    }
+
+private:
+    core::plugin_handler* ph_;
+};
+
+}
+
 static py::object getattr(const core::item &item, const std::string &key)
 {
     /*
@@ -66,13 +95,19 @@ PYBIND11_MODULE(pybookwyrm, m)
 
     /* core::plugin_handler bindings */
 
-    py::enum_<core::log_level>(m, "log_level")
-        .value("debug", core::log_level::debug)
-        .value("info",  core::log_level::info)
-        .value("warn",  core::log_level::warn)
-        .value("error", core::log_level::err);
+    py::class_<detail::log_wrapper>(m, "log")
+        .def("debug", &detail::log_wrapper::debug)
+        .def("warn", &detail::log_wrapper::warn)
+        .def("error", &detail::log_wrapper::error);
 
     py::class_<core::plugin_handler>(m, "bookwyrm")
         .def("feed",        &core::plugin_handler::add_item)
-        .def("log",         &core::plugin_handler::log);
+        .def("__getattr__", [&](core::plugin_handler &ph, const std::string &key) {
+            /* TODO: Don't create a new wrapper instance every time */
+            if (key == "log") {
+                return detail::log_wrapper(&ph);
+            }
+
+            throw std::invalid_argument(std::string("AttributeError: no item attribute with key '") + key + "'");
+        });
 }
