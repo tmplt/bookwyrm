@@ -9,6 +9,42 @@ using namespace bookwyrm;
 using std::string;
 using std::vector;
 
+static py::object getattr(const core::item &item, const std::string &key)
+{
+    /*
+     * Exact attributes.
+     * No reason to query a wanted item size.
+     * TODO: add ymod.
+     */
+    if (key == "yearmod")
+        return py::cast(item.exacts.ymod);
+    else if (key == "year")
+        return py::cast(item.exacts.year);
+    else if (key == "volume")
+        return py::cast(item.exacts.volume);
+    else if (key == "number")
+        return py::cast(item.exacts.number);
+    else if (key == "pages")
+        return py::cast(item.exacts.pages);
+
+    /* Nonexact attributes */
+    else if (key == "authors")
+        return py::cast(item.exacts.volume);
+    else if (key == "title")
+        return py::cast(item.nonexacts.title);
+    else if (key == "series")
+        return py::cast(item.nonexacts.series);
+    else if (key == "publisher")
+        return py::cast(item.nonexacts.publisher);
+    else if (key == "journal")
+        return py::cast(item.nonexacts.journal);
+    else if (key == "edition")
+        return py::cast(item.nonexacts.edition);
+
+    /* TODO: throw something that turns into an actual AttributeError in Python instead. */
+    throw std::invalid_argument(std::string("AttributeError: no item attribute with key '") + key + "'");
+}
+
 PYBIND11_MODULE(pybookwyrm, m)
 {
     m.attr("__doc__") = "bookwyrm python bindings";
@@ -17,75 +53,16 @@ PYBIND11_MODULE(pybookwyrm, m)
 
     m.attr("empty") = core::empty;
 
-    py::enum_<core::year_mod>(m, "year_mod")
-        .value("equal", core::year_mod::equal)
-        .value("eq_gt", core::year_mod::eq_gt)
-        .value("eq_lt", core::year_mod::eq_lt)
-        .value("lt",    core::year_mod::lt)
-        .value("gt",    core::year_mod::gt);
-
-    py::class_<core::exacts_t>(m, "exacts_t")
-        .def_readonly("year",      &core::exacts_t::year)
-        .def_readonly("extension", &core::exacts_t::extension)
-        .def_readonly("volume",    &core::exacts_t::volume)
-        .def_readonly("number",    &core::exacts_t::number)
-        .def_readonly("pages",     &core::exacts_t::pages)
-        /* .def_readwrite("lang",    &core::exacts_t::lang) */
-        .def("__repr__", [](const core::exacts_t &c) {
-            return fmt::format(
-                "<pybookwyrm.exacts_t with fields:\n"
-                "\tyear:      {}\n"
-                "\tfile type: {}\n"
-                "\tvolume:    {}\n"
-                "\tnumber:    {}\n"
-                "\tpages:     {}\n"
-                "\tsize:      {}B\n",
-                /* "\tlanguage:  {}\n>", */
-                c.year, c.extension, c.volume,
-                c.number, c.pages, c.size //, c.lang
-            );
-        });
-
-    py::class_<core::nonexacts_t>(m, "nonexacts_t")
-        .def_readonly("authors",   &core::nonexacts_t::authors)
-        .def_readonly("title",     &core::nonexacts_t::title)
-        .def_readonly("series",    &core::nonexacts_t::series)
-        .def_readonly("publisher", &core::nonexacts_t::publisher)
-        .def_readonly("journal",   &core::nonexacts_t::journal)
-        .def_readonly("edition",   &core::nonexacts_t::edition)
-        .def("__repr__", [](const core::nonexacts_t &c) {
-            return fmt::format(
-                "<pybookwyrm.nonexacts_t with fields:\n"
-                "\ttitle:     '{}'\n"
-                "\tserie:     '{}'\n"
-                "\tedition:   '{}'\n"
-                "\tpublisher: '{}'\n"
-                "\tjournal:   '{}'\n"
-                "\tauthors:   '{}'\n>",
-                c.title, c.series, c.edition, c.publisher, c.journal,
-                vector_to_string(c.authors)
-            );
-        });
-
-    py::class_<core::misc_t>(m, "misc_t")
-        .def_readonly("isbns", &core::misc_t::isbns)
-        .def_readonly("uris", &core::misc_t::uris)
-        .def("__repr__", [](const core::misc_t &c) {
-            return fmt::format(
-                "<pybookwyrn.misc_t with fields:\n"
-                "\tisbns:     '{}'\n"
-                "\turis:      '{}'\n",
-                vector_to_string(c.isbns),
-                vector_to_string(c.uris)
-            );
-        });
+    py::enum_<core::year_mod>(m, "yearmod")
+        .value("unused", core::year_mod::unused)
+        .value("equal",  core::year_mod::equal)
+        .value("eq_gt",  core::year_mod::eq_gt)
+        .value("eq_lt",  core::year_mod::eq_lt)
+        .value("lt",     core::year_mod::lt)
+        .value("gt",     core::year_mod::gt);
 
     py::class_<core::item>(m, "item")
-        .def_readonly("nonexacts", &core::item::nonexacts)
-        .def_readonly("exacts",    &core::item::exacts)
-        .def("__repr__", [](const core::item &i) {
-            return "<bookwyrm.item with title '" + i.nonexacts.title + "'>";
-        });
+        .def("__getattr__", &getattr);
 
     /* core::plugin_handler bindings */
 
