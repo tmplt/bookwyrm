@@ -27,3 +27,6 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set_target_properties(fuzzywuzzy PROPERTIES COMPILE_FLAGS "-fPIC")
     set_target_properties(${PROJECT_NAME}-core PROPERTIES COMPILE_FLAGS "-fPIC")
 endif()
+
+file(GLOB_RECURSE check_cxx_source_files src/*.[ch]pp)
+include(cmake/clang-cpp-checks.cmake)
