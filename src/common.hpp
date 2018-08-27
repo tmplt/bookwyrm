@@ -1,11 +1,11 @@
 #pragma once
 
+#include <experimental/string_view>
 #include <string>
 #include <vector>
-#include <experimental/string_view>
 
 #include "errors.hpp"
 
+using std::experimental::string_view;
 using std::string;
 using std::vector;
-using std::experimental::string_view;

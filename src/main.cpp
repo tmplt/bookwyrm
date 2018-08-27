@@ -1,23 +1,21 @@
-#include <unistd.h>
 #include <cerrno>
 #include <clocale>
 #include <system_error>
+#include <unistd.h>
 
-#include "core/plugin_handler.hpp"
-#include "core/item.hpp"
-#include "prefix.hpp"
-#include "version.hpp"
 #include "components/command_line.hpp"
-#include "tui/tui.hpp"
 #include "components/downloader.hpp"
+#include "core/item.hpp"
+#include "core/plugin_handler.hpp"
+#include "prefix.hpp"
+#include "tui/tui.hpp"
+#include "version.hpp"
 
 using namespace bookwyrm;
 
 static std::error_code validate_download_dir(const fs::path &path)
 {
-    constexpr auto error = [](auto ec) -> std::error_code {
-        return {ec, std::generic_category()};
-    };
+    constexpr auto error = [](auto ec) -> std::error_code { return {ec, std::generic_category()}; };
 
     /* Is the file a directory? */
     if (!fs::is_directory(path))
@@ -41,20 +39,14 @@ static std::error_code validate_download_dir(const fs::path &path)
 static const core::item create_item(const cliparser &cli)
 {
     const core::nonexacts_t ne(
-        cli.get_many("authors"),
-        cli.get("title"),
-        cli.get("series"),
-        cli.get("publisher"),
-        cli.get("journal")
-    );
+        cli.get_many("authors"), cli.get("title"), cli.get("series"), cli.get("publisher"), cli.get("journal"));
 
     const auto yearmod = std::invoke([&cli]() -> std::pair<core::year_mod, int> {
         const auto year_str = cli.get("year");
-        if (year_str.empty()) return {core::year_mod::equal, core::empty};
+        if (year_str.empty())
+            return {core::year_mod::equal, core::empty};
 
-        const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) {
-            return std::isdigit(c);
-        });
+        const auto start = std::find_if(year_str.cbegin(), year_str.cend(), [](char c) { return std::isdigit(c); });
 
         try {
             /*
@@ -92,7 +84,8 @@ static const core::item create_item(const cliparser &cli)
 
     const auto parse_number = [&cli](const string &&opt) -> int {
         const auto value_str = cli.get(opt);
-        if (value_str.empty()) return core::empty;
+        if (value_str.empty())
+            return core::empty;
 
         try {
             return std::stoi(value_str);
@@ -101,12 +94,7 @@ static const core::item create_item(const cliparser &cli)
         }
     };
 
-    const core::exacts_t e(
-        yearmod,
-        parse_number("volume"),
-        parse_number("number"),
-        cli.get("extension")
-    );
+    const core::exacts_t e(yearmod, parse_number("volume"), parse_number("number"), cli.get("extension"));
 
     const core::item item(std::move(ne), std::move(e));
 
@@ -118,6 +106,7 @@ int main(int argc, char *argv[])
     std::setlocale(LC_ALL, "");
 
     /* Define command line options */
+    // clang-format off
     const auto main = cligroup("Main", "necessarily inclusive arguments; at least one required")
         ("-a", "--author",     "Specify authors",   "AUTHOR")
         ("-t", "--title",      "Specify title",     "TITLE")
@@ -137,7 +126,8 @@ int main(int argc, char *argv[])
         ("-h", "--help",       "Display this text and exit")
         ("-v", "--version",    "Print version information (" + build_info_short + ") and exit")
         ("-D", "--debug",      "Set logging level to debug")
-        ("-A", "--accuracy",   "Set searching accuracy in percentage", "ACCURACY");
+        ("-A", "--accuracy", "Set searching accuracy in percentage", "ACCURACY");
+    // clang-format on
 
     /* Construct a command line parser */
     const cligroups groups = {main, excl, exact, misc};
@@ -196,10 +186,10 @@ int main(int argc, char *argv[])
         core::options opts;
 #ifdef DEBUG
         /* bookwyrm must be run from build/ in DEBUG mode. */
-        opts.plugin_paths = {{ fs::canonical(fs::path("../src/plugins")) }};
+        opts.plugin_paths = {{fs::canonical(fs::path("../src/plugins"))}};
 #else
         /* Check $XDG_CONFIG_HOME or $HOME/.config/bookwyrm also. */
-        opts.plugin_paths = {{ fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins")) }};
+        opts.plugin_paths = {{fs::canonical(fs::path(std::string(INSTALL_PREFIX) + "/share/bookwyrm/plugins"))}};
 #endif
         opts.accuracy = cli.has("accuracy") ? std::stoi(cli.get("accuracy")) : 75;
         opts.library_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);

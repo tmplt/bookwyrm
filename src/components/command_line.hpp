@@ -10,119 +10,119 @@ using std::forward;
 
 namespace command_line {
 
-struct option;
-struct option_group;
-using options = vector<option>;
-using groups  = vector<option_group>;
-
-/*
- * Holds all properties for an option.
- * (A possible flag to pass to the program.)
- */
-struct option {
-    const string flag, flag_long, desc;
+    struct option;
+    struct option_group;
+    using options = vector<option>;
+    using groups = vector<option_group>;
 
     /*
-     * e.g. seen as --log LEVEL in usage(),
-     * where LEVEL is the token.
+     * Holds all properties for an option.
+     * (A possible flag to pass to the program.)
      */
-    const string token;
+    struct option {
+        const string flag, flag_long, desc;
 
-    /*
-     * For options where a set of values are allowed,
-     * e.g. --log LEVEL, where LEVEL is one of:
-     * error, warning, info, trace.
-     */
-    const vector<string> values;
-
-    explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "",
-            vector<string> &&c = {})
-        : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)),
-        desc(forward<string>(desc)), token(forward<string>(token)),
-        values(forward<decltype(c)>(c)) {}
-};
-
-/* A named group with it's related options. */
-struct option_group {
-    const string name;
-    const string synopsis;
-    vector<option> options;
-
-    explicit option_group(string &&name, string &&synopsis = "")
-        : name(forward<string>(name)), synopsis(forward<string>(synopsis)) {}
-
-    template <typename... Args>
-    option_group& operator()(Args&&... args)
-    {
         /*
-         * Since the underlaying type is an option we just have to
-         * forward the arguments.
+         * e.g. seen as --log LEVEL in usage(),
+         * where LEVEL is the token.
          */
-        options.emplace_back(forward<Args>(args)...);
-        return *this;
-    }
-};
+        const string token;
 
-class parser {
-public:
-    /* using cli_type = std::unique_ptr<parser>; */
-    static parser make(const string &&scriptname, const groups &&groups);
+        /*
+         * For options where a set of values are allowed,
+         * e.g. --log LEVEL, where LEVEL is one of:
+         * error, warning, info, trace.
+         */
+        const vector<string> values;
 
-    // TODO: strip code for valid_groups? (We have no use for it).
+        explicit option(string &&flag, string &&flag_long, string &&desc, string &&token = "", vector<string> &&c = {})
+            : flag(forward<string>(flag)), flag_long(forward<string>(flag_long)), desc(forward<string>(desc)),
+              token(forward<string>(token)), values(forward<decltype(c)>(c))
+        {
+        }
+    };
 
-    /* Construct the parser. */
-    explicit parser(string &&synopsis, const groups &&groups)
-        : synopsis_(forward<string>(synopsis)),
-        valid_groups_(forward<decltype(groups)>(groups)) {}
+    /* A named group with it's related options. */
+    struct option_group {
+        const string name;
+        const string synopsis;
+        vector<option> options;
 
-    /* Print program usage. */
-    void usage() const;
+        explicit option_group(string &&name, string &&synopsis = "")
+            : name(forward<string>(name)), synopsis(forward<string>(synopsis))
+        {
+        }
 
-    /* Process command line arguments. */
-    void process_arguments(const vector<string> &args);
+        template <typename... Args> option_group &operator()(Args &&... args)
+        {
+            /*
+             * Since the underlaying type is an option we just have to
+             * forward the arguments.
+             */
+            options.emplace_back(forward<Args>(args)...);
+            return *this;
+        }
+    };
 
-    /*
-     * Program specific; adhere to the options' synopsises seen in main(),
-     * e.g. pass at least one main argument if -d isn't passed.
-     */
-    void validate_arguments() const;
+    class parser {
+    public:
+        /* using cli_type = std::unique_ptr<parser>; */
+        static parser make(const string &&scriptname, const groups &&groups);
 
-    /* Check if an option/positional argument has been passed. */
-    bool has(const string &option) const;
-    bool has(size_t index) const;
+        // TODO: strip code for valid_groups? (We have no use for it).
 
-    /* Get the value for a given option/positional argument. */
-    string get(string opt) const;
-    string get(size_t index) const;
+        /* Construct the parser. */
+        explicit parser(string &&synopsis, const groups &&groups)
+            : synopsis_(forward<string>(synopsis)), valid_groups_(forward<decltype(groups)>(groups))
+        {
+        }
 
-    /* Get all values for a given option. (i.e. --author) */
-    vector<string> get_many(const string &&opt) const;
+        /* Print program usage. */
+        void usage() const;
 
-private:
+        /* Process command line arguments. */
+        void process_arguments(const vector<string> &args);
 
-    /*
-     * Parse an argument with the next argument, which may be its value (or another flag).
-     * and emplace the valid ones into passed_opts_. Returns true if the next argument
-     * from the command line should be ignored.
-     */
-    bool parse_pair(const string_view &input, const string_view &input_next);
+        /*
+         * Program specific; adhere to the options' synopsises seen in main(),
+         * e.g. pass at least one main argument if -d isn't passed.
+         */
+        void validate_arguments() const;
 
-    /* An option must either match its long of short variant to exist. */
-    static bool opt_exists(const string_view &option, string opt_short, string opt_long);
+        /* Check if an option/positional argument has been passed. */
+        bool has(const string &option) const;
+        bool has(size_t index) const;
 
-    /* Program synopsis. */
-    const string synopsis_;
+        /* Get the value for a given option/positional argument. */
+        string get(string opt) const;
+        string get(size_t index) const;
 
-    const options valid_opts_;
-    const groups valid_groups_;
-    std::multimap<string, string> passed_opts_;
-    vector<string> positional_args_;
-};
+        /* Get all values for a given option. (i.e. --author) */
+        vector<string> get_many(const string &&opt) const;
 
-/* ns command_line */
-}
+    private:
+        /*
+         * Parse an argument with the next argument, which may be its value (or
+         * another flag). and emplace the valid ones into passed_opts_. Returns true
+         * if the next argument from the command line should be ignored.
+         */
+        bool parse_pair(const string_view &input, const string_view &input_next);
+
+        /* An option must either match its long of short variant to exist. */
+        static bool opt_exists(const string_view &option, string opt_short, string opt_long);
+
+        /* Program synopsis. */
+        const string synopsis_;
+
+        const options valid_opts_;
+        const groups valid_groups_;
+        std::multimap<string, string> passed_opts_;
+        vector<string> positional_args_;
+    };
+
+} // namespace command_line
 
 using cliparser = command_line::parser;
-using cligroup  = command_line::option_group;
+using cligroup = command_line::option_group;
 using cligroups = command_line::groups;
 using valid_opts = std::initializer_list<string>;

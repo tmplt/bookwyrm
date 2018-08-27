@@ -1,14 +1,14 @@
-#include <system_error>
-#include <functional>
+#include <array>
 #include <cerrno>
 #include <cstdlib>
-#include <array>
+#include <functional>
+#include <system_error>
 
 #include <fmt/format.h>
 
 #include "../prefix.hpp"
-#include "python.hpp"
 #include "plugin_handler.hpp"
+#include "python.hpp"
 
 using namespace bookwyrm::core;
 
@@ -36,10 +36,11 @@ void plugin_handler::load_plugins()
                 continue;
             }
 
-            if (std::find(standard_modules.cbegin(), standard_modules.cend(), plugin.path().stem().string())
-                    != standard_modules.cend()) {
-                throw std::runtime_error(fmt::format("cannot load plugin that shares name with a standard library module ({})",
-                            plugin.path().string()));
+            if (std::find(standard_modules.cbegin(), standard_modules.cend(), plugin.path().stem().string()) !=
+                standard_modules.cend()) {
+                throw std::runtime_error(fmt::format("cannot load plugin that shares name with a standard "
+                                                     "library module ({})",
+                                                     plugin.path().string()));
             }
         }
 
@@ -75,8 +76,10 @@ void plugin_handler::load_plugins()
                 continue;
             }
             if (!readable_file(path)) {
-                log(log_level::err, fmt::format("can't load module '{}': not a regular file or unreadable"
-                        "; ignoring...", path.string()));
+                log(log_level::err,
+                    fmt::format("can't load module '{}': not a regular file or unreadable"
+                                "; ignoring...",
+                                path.string()));
                 continue;
             }
 
@@ -103,11 +106,10 @@ plugin_handler::~plugin_handler()
      * Flush log entries.
      * TODO: colour this output to match that of the log screen.
      */
-    for (const auto& [lvl, msg] : buffer_) {
+    for (const auto & [ lvl, msg ] : buffer_) {
         if (!debug_ && lvl <= log_level::debug)
             continue;
-        (lvl <= log_level::warn ? std::cout : std::cerr)
-            << loglvl_to_string(lvl) + ": " + msg << "\n";
+        (lvl <= log_level::warn ? std::cout : std::cerr) << loglvl_to_string(lvl) + ": " + msg << "\n";
     }
 
     for (auto &t : threads_)
@@ -139,30 +141,32 @@ void plugin_handler::async_search()
     this->nogil = std::make_unique<py::gil_scoped_release>();
 }
 
-
 void plugin_handler::python_module_runner(py::module module)
 {
-    /* Aqcuire the Global Interpreter Lock, required for running any Python code. */
+    /* Aqcuire the Global Interpreter Lock, required for running any Python code.
+     */
     auto gil = std::make_unique<py::gil_scoped_acquire>();
 
     const string name = module.attr("__name__").cast<string>();
 
     /*
      * We have to go manual here. Normally, when unwinding on pthread exit,
-     * Python operations may be performed without holding the GIL, leading to a segfault.
-     * See <https://github.com/pybind/pybind11/issues/1360>.
+     * Python operations may be performed without holding the GIL, leading to a
+     * segfault. See <https://github.com/pybind/pybind11/issues/1360>.
      *
-     * This fix may only work on Linux, since abi::__forced_unwind is an implementation detail.
+     * This fix may only work on Linux, since abi::__forced_unwind is an
+     * implementation detail.
      */
     py::object func;
     py::tuple args;
 
     try {
-        /* Run the module's find-function with the wanted item, and bookwyrm instance as argument. */
+        /* Run the module's find-function with the wanted item, and bookwyrm
+         * instance as argument. */
         func = module.attr("find");
         args = py::make_tuple(wanted_, this);
         module.release().dec_ref();
-        PyObject* retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
+        PyObject *retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
         /* Check if an exception was thrown */
         if (retval == nullptr) {
@@ -185,7 +189,7 @@ void plugin_handler::python_module_runner(py::module module)
 
         Py_XDECREF(retval);
 
-    } catch (abi::__forced_unwind&) {
+    } catch (abi::__forced_unwind &) {
         /*
          * Forced stack unwinding at thread exit —
          * if Python is shutting down, don't clean up Python state.
@@ -197,11 +201,14 @@ void plugin_handler::python_module_runner(py::module module)
         }
         throw;
     } catch (const py::error_already_set &err) {
-        log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}",
-            name, err.what()));
-    } catch (const py::cast_error& err) {
-        log(log_level::err, fmt::format("plugin '{}' did something wrong with types; "
-                    "does the module import the required pybookwyrm module? Details: {}", name, err.what()));
+        log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}", name, err.what()));
+    } catch (const py::cast_error &err) {
+        log(log_level::err,
+            fmt::format("plugin '{}' did something wrong with types; "
+                        "does the module import the required pybookwyrm module? "
+                        "Details: {}",
+                        name,
+                        err.what()));
     }
 
     /* Propegate that this plugin is terminating */
@@ -248,13 +255,13 @@ void plugin_handler::log(log_level lvl, string msg)
 {
     if (frontend_.expired()) {
         buffer_.emplace_back(lvl, msg);
-    }  else {
+    } else {
         if (auto fe = frontend_.lock(); fe)
             fe->log(lvl, msg);
     }
 }
 
-std::set<item>& plugin_handler::results()
+std::set<item> &plugin_handler::results()
 {
     return items_;
 }
@@ -264,12 +271,12 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
     frontend_ = fe;
 
     /* Propegate the log buffer, if any entries. */
-    for (const auto& [lvl, msg] : buffer_)
+    for (const auto & [ lvl, msg ] : buffer_)
         fe->log(lvl, msg);
     buffer_.clear();
 }
 
-const std::atomic<size_t>& plugin_handler::running_plugins() const
+const std::atomic<size_t> &plugin_handler::running_plugins() const
 {
     return running_plugins_;
 }

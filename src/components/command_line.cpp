@@ -1,12 +1,12 @@
-#include <iostream>
 #include <algorithm>
-#include <iomanip>
-#include <utility>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <utility>
 
-#include "command_line.hpp"
-#include "../string.hpp"
 #include "../core/item.hpp"
+#include "../string.hpp"
+#include "command_line.hpp"
 
 enum {
     /*
@@ -31,16 +31,13 @@ enum {
 };
 
 enum { /* magic padding numbers */
-    padding_margin = 4,
-    desc_align_magic = 7
+       padding_margin = 4,
+       desc_align_magic = 7
 };
 
 cliparser cliparser::make(const string &&progname, const groups &&groups)
 {
-    return cliparser(
-        "Usage: " + progname + " OPTION [OPTION]... [PATH]",
-        std::forward<decltype(groups)>(groups)
-    );
+    return cliparser("Usage: " + progname + " OPTION [OPTION]... [PATH]", std::forward<decltype(groups)>(groups));
 }
 
 void cliparser::usage() const
@@ -55,8 +52,7 @@ void cliparser::usage() const
      */
     for (const auto &group : valid_groups_) {
         for (const auto &opt : group.options) {
-            size_t len = opt.flag_long.length() + opt.flag.length() +
-                         opt.token.length() + padding_margin;
+            size_t len = opt.flag_long.length() + opt.flag.length() + opt.token.length() + padding_margin;
 
             maxlen = std::max(len, maxlen);
         }
@@ -67,9 +63,7 @@ void cliparser::usage() const
      * descriptions, token and possible values for said token (if any).
      */
     for (const auto &group : valid_groups_) {
-        std::cout << group.name << " arguments"
-                  << (group.synopsis.empty() ? ":" : " - " + group.synopsis + ":")
-                  << '\n';
+        std::cout << group.name << " arguments" << (group.synopsis.empty() ? ":" : " - " + group.synopsis + ":") << '\n';
 
         for (const auto &opt : group.options) {
             /* Padding between flags and description. */
@@ -87,13 +81,11 @@ void cliparser::usage() const
              * This line is printed below the description.
              */
             if (!opt.values.empty()) {
-                std::cout << std::setw(pad + opt.desc.length())
-                          << opt.desc << '\n';
+                std::cout << std::setw(pad + opt.desc.length()) << opt.desc << '\n';
 
                 pad += opt.flag_long.length() + opt.token.length() + desc_align_magic;
 
-                std::cout << string(pad, ' ') << opt.token << " is one of: "
-                          << bookwyrm::vector_to_string(opt.values);
+                std::cout << string(pad, ' ') << opt.token << " is one of: " << bookwyrm::vector_to_string(opt.values);
             } else {
                 std::cout << std::setw(pad + opt.desc.length()) << opt.desc;
             }
@@ -162,7 +154,7 @@ void cliparser::process_arguments(const vector<string> &args)
 void cliparser::validate_arguments() const
 {
     /* Did we get at least one of the required main flags? */
-    const bool main_opt_passed = std::invoke([opts = passed_opts_, main_opts = valid_groups_[main].options] {
+    const bool main_opt_passed = std::invoke([ opts = passed_opts_, main_opts = valid_groups_[main].options ] {
         vector<string> required_opts, passed_opts;
 
         /* Since we only want to match against the long flags, we copy those. */
@@ -172,8 +164,8 @@ void cliparser::validate_arguments() const
         for (const auto &opt : main_opts)
             required_opts.emplace_back(opt.flag_long.substr(2));
 
-        return std::find_first_of(passed_opts.cbegin(), passed_opts.cend(),
-                required_opts.cbegin(), required_opts.cend()) != passed_opts.cend();
+        return std::find_first_of(passed_opts.cbegin(), passed_opts.cend(), required_opts.cbegin(), required_opts.cend()) !=
+               passed_opts.cend();
     });
 
     if (has("ident") && passed_opts_.size() > 1)
@@ -189,7 +181,7 @@ void cliparser::validate_arguments() const
         try {
             if (int a = std::stoi(get("accuracy")); a < 0 || a > 100)
                 throw value_error("accuracy is only valid within the range of 0-100% percent");
-        } catch (std::invalid_argument&) {
+        } catch (std::invalid_argument &) {
             throw value_error("malformed accuracy");
         }
     }
@@ -202,17 +194,15 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
      * if a list of valid values are associated with that option,
      * we check that too.
      */
-    const auto validate_opt_value = [](const string_view &flag, const string_view &value,
-            const vector<string> &valid_values) {
+    const auto validate_opt_value = [](const string_view &flag,
+                                       const string_view &value,
+                                       const vector<string> &valid_values) {
         if (value.empty())
             throw value_error("missing value for " + string(flag.data()));
 
-        if (!valid_values.empty() &&
-            std::find(valid_values.cbegin(), valid_values.cend(), value) == valid_values.cend()) {
-            throw value_error(
-                "invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
-                "; valid options are: " + bookwyrm::vector_to_string(valid_values)
-            );
+        if (!valid_values.empty() && std::find(valid_values.cbegin(), valid_values.cend(), value) == valid_values.cend()) {
+            throw value_error("invalid value '" + string(value.data()) + "' for argument " + string(flag.data()) +
+                              "; valid options are: " + bookwyrm::vector_to_string(valid_values));
         }
 
         return value;
@@ -249,7 +239,7 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
 bool cliparser::opt_exists(const string_view &option, string opt_short, string opt_long)
 {
     const bool is_short = option.compare(0, opt_short.length(), opt_short) == 0,
-               is_long  = option.compare(0, opt_long.length(), opt_long) == 0;
+               is_long = option.compare(0, opt_long.length(), opt_long) == 0;
 
     return is_short || is_long;
 }
