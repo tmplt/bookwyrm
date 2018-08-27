@@ -142,13 +142,15 @@ public:
     explicit item(const py::dict &dict)
         : nonexacts(dict), exacts(dict), misc(dict), index(items_idx++) {}
 
-    item() : index(empty) {}
+#ifdef DEBUG
+    item() : index(0) {}
+#endif
 
     /*
      * Returns true if all specified exact values are equal
      * and if all specified non-exact values passes the fuzzy ratio.
      */
-    bool matches(const item &wanted, const int fuzzy_min) const;
+    bool matches(const item &wanted, const unsigned int fuzzy_min) const;
 
     bool operator==(const item &other) const;
 

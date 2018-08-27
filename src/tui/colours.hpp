@@ -6,7 +6,7 @@
 namespace bookwyrm::tui {
 
 /* Predefined NCurses colour pairs. See screen/base.cpp */
-enum class colour : int {
+enum class colour : unsigned int {
     black   = COLOR_PAIR(1),
     red     = COLOR_PAIR(2),
     green   = COLOR_PAIR(3),
@@ -18,7 +18,7 @@ enum class colour : int {
     none    = 0
 };
 
-enum class attribute : int {
+enum class attribute : unsigned int {
     bold      = A_BOLD,
     underline = A_UNDERLINE,
     reverse   = A_REVERSE,

@@ -71,7 +71,7 @@ private:
 
 class tui : public core::frontend {
 public:
-    explicit tui(std::set<core::item> &items, bool debug_log, const std::atomic<int> &running_plugins);
+    explicit tui(std::set<core::item> &items, bool debug_log, const std::atomic<size_t> &running_plugins);
 
     inline void update();
 
@@ -140,7 +140,7 @@ private:
     std::set<core::item> const &items_;
     std::mutex tui_mutex_;
 
-    const std::atomic<int> &running_plugins_;
+    const std::atomic<size_t> &running_plugins_;
 
     std::unique_ptr<logger> logger_;
 

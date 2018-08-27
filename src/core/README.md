@@ -3,14 +3,14 @@
 ### Description
 The core (or backend, if you will) is the integral part of bookwyrm.
 Given at the least a title, author, series or publisher, bookwyrm will propagate your query to all available plugins, handled by the aptly named `plugin_handler`.
-Each plugin exposes a `find()` function which queries its defining source and gives the result of this back to bookwyrm via function call-backs.
+Each plugin exposes a `find()` function which queries its defining source and gives the result of this back to bookwyrm via function callbacks.
 Each plugin is run in its own thread by calling `async_search()`, and continues to run until the `plugin_handler` is destructed and the program exits;
 each worker thread is `std::thread::detach()`ed when it's no longer needed.
 
 `bindings/` contains bindings for the supported plugin languages.
 At present, only Python is supported.
 
-All upstream plugins are available in `plugins/`.
+All upstream plugins are available in `../plugins/`.
 In future releases, users shall be able to write their own plugins into `$XDG_CONFIG_HOME/bookwyrm/`.
 
 ### API
@@ -18,7 +18,7 @@ bookwyrm's backend exposes the aforementioned `plugin_handler`:
 * `plugin_handler(const item &&wanted)`: constructor with the wanted item (provided fields filled in, the rest blank).
 * `void load_plugins()`: finds and loads all suitable plugins. Must be called before `async_search()`.
 * `void async_search()`: runs each plugin's `find()` function asynchronously.
-* `void add_item(std::tuple<...> item_comps)`: add a found item. Never called directly, but bound to plugin languages.
+* `void add_item(py::dict dict)`: add a found item. Never called directly, but bound to Python.
 * `void log(log_level lvl, std::string msg)`: log a message from a plugin. Will be used to warn the user about missing/invalid source credentials, for example.
 * `std::vector<core::item&> results()`: returns a reference to the vector of all found items.
 * `void set_frontend(std::shared_ptr<frontend> fe)`: set which frontend to notify when an item has been found.

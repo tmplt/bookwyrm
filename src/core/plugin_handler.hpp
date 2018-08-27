@@ -38,7 +38,7 @@ inline string loglvl_to_string(log_level lvl)
         "off",
     }};
 
-    return strings[static_cast<int>(lvl)];
+    return strings[static_cast<size_t>(lvl)];
 }
 
 struct options {
@@ -49,6 +49,7 @@ struct options {
 
 class frontend {
 public:
+    virtual ~frontend() {}
 
     /* Updates the frontend after more items have been found. */
     virtual void update() = 0;
@@ -124,7 +125,7 @@ public:
     /**
      * @brief Return how many plugins are still searching
      */
-    const std::atomic<int>& running_plugins() const;
+    const std::atomic<size_t>& running_plugins() const;
 
 private:
     static bool readable_file(const fs::path &path);
@@ -152,7 +153,7 @@ private:
     std::vector<buffer_pair> buffer_;
     std::weak_ptr<frontend> frontend_;
 
-    std::atomic<int> running_plugins_{0};
+    std::atomic<size_t> running_plugins_{0};
 
     /* Python-specific; do not change the order of this. */
     py::scoped_interpreter interp;

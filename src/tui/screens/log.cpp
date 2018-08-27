@@ -25,7 +25,7 @@ void log::paint()
      * how many entries back can we fit on screen?
      */
     const auto start_entry = detached_at_.value_or(entries_.cend());
-    auto entry = start_entry - capacity(start_entry) - 1;
+    auto entry = start_entry - static_cast<long int>(capacity(start_entry)) - 1;
 
     int y = 0;
     while (entry != entries_.cend()) {
@@ -44,7 +44,7 @@ void log::print_entry(int &y, const entry_tp entry)
      */
     const auto [lvl, msg] = split_at_first(entry->second, ":");
     print(x, y, lvl, to_colour(entry->first));
-    x += lvl.length();
+    x += static_cast<int>(lvl.length());
 
     /*
      * Next up, the actual message. If the whole message doesn't fit on one line
@@ -52,12 +52,12 @@ void log::print_entry(int &y, const entry_tp entry)
      * than the line itself (e.g. a long path), we'll just split it where the line ends.
      */
     for (auto word : split_string(msg)) {
-        if (size_t remain = get_width() - 1 - x; word.length() + 1 > remain) {
+        if (int remain = get_width() - 1 - x; static_cast<int>(word.length()) + 1 > remain) {
             /* The word doesn't fit on the rest of the line. */
 
             /* 3 is an arbitrary divisor, but we use it so that only very long words are split. */
-            if (word.length() > static_cast<size_t>(get_width() / 3)) {
-                while (word.length() > remain) {
+            if (static_cast<int>(word.length()) > get_width() / 3) {
+                while (static_cast<int>(word.length()) > remain) {
                     print(x, y++, " " + word.substr(0, remain));
                     word = word.substr(remain);
                     x = 0;

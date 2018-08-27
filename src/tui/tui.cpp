@@ -73,7 +73,7 @@ void logger::flush_to_screen()
     buffer_.clear();
 }
 
-tui::tui(std::set<core::item> &items, bool debug_log, const std::atomic<int> &running_plugins)
+tui::tui(std::set<core::item> &items, bool debug_log, const std::atomic<size_t> &running_plugins)
     : viewing_details_(false), items_(items), running_plugins_(running_plugins)
 {
     /* Create the log screen. */

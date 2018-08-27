@@ -50,9 +50,10 @@ public:
      */
     virtual int scrollpercent() const = 0;
 
+    virtual ~base();
+
 protected:
     explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
-    ~base();
 
     /* Like the one in the curses namespace, but for a screens dedicated size instead. */
     int get_width() const;
@@ -75,7 +76,7 @@ protected:
     /* Returns the ratio of a int b in percentage. Used for scroll percentage. */
     static inline int ratio(double a, double b)
     {
-        return std::round<int>(100 * (a / b));
+        return static_cast<int>(std::round(100 * (a / b)));
     }
 
     /* How much space do we leave for bars? */

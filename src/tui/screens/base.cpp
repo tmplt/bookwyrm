@@ -46,21 +46,21 @@ void base::print(int x, int y, const std::string &str, const attribute attrs, co
 
 int base::printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs, const colour clr)
 {
-    curses::mvprintn(x, y, str, space, attrs, clr);
+    curses::mvprintn(x, y, str, static_cast<int>(space), attrs, clr);
 
     int truncd = 0;
     if (str.length() > space) {
         /* The whole string did not fit; indicate this to the user. */
 
-        auto ch = str.cbegin() + space - 1;
-        int whitespace = 0;
+        auto ch = str.cbegin() + static_cast<long int>(space) - 1;
+        size_t whitespace = 0;
         while (std::isspace(*(--ch))) {
             ++whitespace;
         }
 
-        truncd = str.length() - space + whitespace;
+        truncd = static_cast<int>(str.length() - space + whitespace);
         getyx(stdscr, y, x);
-        curses::mvprint(x - whitespace - 1, y, "~", attrs, clr);
+        curses::mvprint(x - static_cast<int>(whitespace) - 1, y, "~", attrs, clr);
     }
 
     return truncd;

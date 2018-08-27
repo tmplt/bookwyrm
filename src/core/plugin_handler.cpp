@@ -269,7 +269,7 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
     buffer_.clear();
 }
 
-const std::atomic<int>& plugin_handler::running_plugins() const
+const std::atomic<size_t>& plugin_handler::running_plugins() const
 {
     return running_plugins_;
 }

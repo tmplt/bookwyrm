@@ -81,7 +81,7 @@ void item_details::print_details()
     int y = 1;
     for (const auto &p : v) {
         print(0, y, p.first + ':', attribute::bold);
-        print(len + 4, y++, p.second.get());
+        print(static_cast<int>(len + 4), y++, p.second.get());
     }
 
 #ifdef DEBUG
@@ -109,7 +109,7 @@ void item_details::print_desc(int &y, std::string str)
     const auto words = split_string(str);
 
     auto word_fits = [this, &x](const std::string &str) -> bool {
-        return static_cast<size_t>(get_width()) - x > str.length();
+        return static_cast<size_t>(get_width() - x) > str.length();
     };
 
     for (auto word = words.cbegin(); word != words.cend(); ++word) {
@@ -136,7 +136,7 @@ void item_details::print_desc(int &y, std::string str)
         }
 
         print(x, y, *word + ' ');
-        x += word->length() + 1;
+        x += static_cast<int>(word->length()) + 1;
     }
 }
 

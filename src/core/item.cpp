@@ -82,7 +82,7 @@ bool item::operator==(const item &other) const
         std::tie(other.nonexacts, other.exacts, other.misc);
 }
 
-bool item::matches(const item &wanted, const int fuzzy_min) const
+bool item::matches(const item &wanted, const unsigned int fuzzy_min) const
 {
     /* Return false if any exact value doesn't match what's wanted. */
     for (const auto& [req, got] : func::zip(wanted.exacts.store, this->exacts.store)) {
@@ -151,14 +151,14 @@ bool item::matches(const item &wanted, const int fuzzy_min) const
     }
 
     if (!wanted.nonexacts.authors.empty()) {
-        int max_ratio = 0;
+        unsigned int max_ratio = 0;
         for (const auto& [req, got] : algorithm::product(wanted.nonexacts.authors,
                     this->nonexacts.authors)) {
             /*
              * From some quick testing, it feels like token_set_ratio
              * works best here.
              */
-            int ratio = fuzz::token_set_ratio(req, got);
+            auto ratio = fuzz::token_set_ratio(req, got);
             max_ratio = std::max(ratio, max_ratio);
 
             if (max_ratio >= fuzzy_min)

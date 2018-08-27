@@ -38,7 +38,7 @@ public:
 
     inline const core::item& selected_item() const
     {
-        return *std::next(items_.cbegin(), selected_item_);
+        return *std::next(items_.cbegin(), static_cast<long int>(selected_item_));
     }
 
     inline size_t item_count() const
