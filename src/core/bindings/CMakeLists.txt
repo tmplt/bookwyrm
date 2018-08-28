@@ -8,7 +8,7 @@ target_link_libraries(pybookwyrm PRIVATE ${PROJECT_NAME}-core)
 
 # Determine install directory
 # TODO: replace this with FindPython3 when it's released
-find_package(PythonInterp REQUIRED)
+find_package(PythonInterp 3.0 REQUIRED)
 execute_process(
     COMMAND ${PYTHON_EXECUTABLE} -c
     "from distutils.sysconfig import get_python_lib; print(get_python_lib(plat_specific=True, prefix=''))"

@@ -9,9 +9,9 @@ variables:
     CXX: g++-7
 
 before_script:
-    - apt-get update -qq && apt-get install -y -qq software-properties-common
+    - apt-get update -qq && apt-get install -y -qq software-properties-common clang-tools-5.0 clang-format-5.0
     - add-apt-repository ppa:ubuntu-toolchain-r/test
-    - apt-get update -qq && apt-get install -y -qq cmake ninja-build libncurses5-dev python3-all-dev gcc-7 g++-7 libcurl4-openssl-dev clang-tools
+    - apt-get update -qq && apt-get install -y -qq cmake ninja-build libncurses5-dev python3-all-dev gcc-7 g++-7 libcurl4-openssl-dev
 
 #######################
 # Compilation targets #
@@ -22,7 +22,7 @@ cmp:gcc:
     image: ubuntu
     script:
         - mkdir build && cd build
-        - cmake -DCURSES_LIBRARY=/usr/lib/x86_64-linux-gnu/libcurses.so -DCURSES_INCLUDE_PATH=/usr/include -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
+        - cmake -DCURSES_LIBRARY=/usr/lib/x86_64-linux-gnu/libcurses.so -DCURSES_INCLUDE_PATH=/usr/include -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6 -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
         - ninja
     artifacts:
         paths:
