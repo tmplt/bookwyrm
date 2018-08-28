@@ -34,9 +34,9 @@ else()
 endif()
 
 if(ENABLE_CCACHE)
-  require_binary(ccache)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${BINPATH_ccache})
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${BINPATH_ccache})
+  find_program(ccache_program ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_program})
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${ccache_program})
 endif()
 
 # Install paths
