@@ -38,3 +38,43 @@ if(clang_format)
 else()
     message(STATUS "Could NOT find clang-format")
 endif()
+
+find_program(cppcheck "cppcheck")
+if(cppcheck)
+    message(STATUS "Found ${cppcheck}, adding linting targets")
+
+    # Set export commands on
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+    add_custom_target(
+        cppcheck
+        COMMAND ${cppcheck}
+        --enable=all
+        --project=${CMAKE_BINARY_DIR}/compile_commands.json
+        --std=c++11
+        --verbose
+        --quiet
+        --xml-version=2
+        --language=c++
+        --suppress=missingIncludeSystem
+        --output-file=${CMAKE_BINARY_DIR}/cppcheck_results.xml
+        ${CHECK_CXX_SOURCE_FILES}
+        COMMENT "Generate cppcheck report for the project"
+    )
+
+    find_program(cppcheck_html "cppcheck-htmlreport")
+    if(cppcheck_html)
+        add_custom_target(
+            cppcheck-html
+            COMMAND ${cppcheck_html}
+            --title=${CMAKE_PROJECT_NAME}
+            --file=${CMAKE_BINARY_DIR}/cppcheck_results.xml
+            --report-dir=${CMAKE_BINARY_DIR}/cppcheck_results
+            --source-dir=${CMAKE_SOURCE_DIR}
+            COMMENT "Convert cppcheck report to HTML output"
+        )
+        add_dependencies(cppcheck-html cppcheck)
+    endif()
+else()
+    message(STATUS "Could NOT find cppcheck")
+endif()

@@ -9,7 +9,7 @@ variables:
     CXX: g++-7
 
 before_script:
-    - apt-get update -qq && apt-get install -y -qq software-properties-common clang-tools-5.0 clang-format-5.0
+    - apt-get update -qq && apt-get install -y -qq software-properties-common clang-tools-5.0 clang-format-5.0 cppcheck python-pygments
     - add-apt-repository ppa:ubuntu-toolchain-r/test
     - apt-get update -qq && apt-get install -y -qq cmake ninja-build libncurses5-dev python3-all-dev gcc-7 g++-7 libcurl4-openssl-dev
 
@@ -54,4 +54,16 @@ fmt:gcc:
     script:
         - cd build
         - ninja check-format
-
+fmt:cppcheck:
+    stage: formatting
+    image: ubuntu
+    dependencies:
+        - cmp:gcc
+    script:
+        - cd build
+        - ninja cppcheck
+        - ninja cppcheck-html
+    artifacts:
+        paths:
+            - build/cppcheck_results
+        expire_in: 72 hour
