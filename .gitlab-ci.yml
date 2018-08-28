@@ -54,6 +54,7 @@ fmt:gcc:
     script:
         - cd build
         - ninja check-format
+
 fmt:cppcheck:
     stage: formatting
     image: ubuntu

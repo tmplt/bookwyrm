@@ -4,6 +4,7 @@
 
 # Define build options {{{
 
+# TODO: actually use these
 option(CXXLIB_CLANG       "Link against libc++"        OFF)
 option(CXXLIB_GCC         "Link against stdlibc++"     OFF)
 

@@ -69,7 +69,7 @@ in
     name = "bookwyrm-${version}";
     version = "0.5.0";
 
-    src = ./.;
+    src = ../.;
 
     meta = with stdenv.lib; {
       description = "A TUI for searching for and downloading publicly available ebooks";
