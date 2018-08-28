@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+
+# git pre-commit hook that runs an clang-format stylecheck.
+# Features:
+#  - abort commit when commit does not comply with the style guidelines
+#  - create a patch of the proposed style changes and apply it automatically
+
+##################################################################
+# SETTINGS
+# set path to clang-format binary
+for bin in "clang-format-5.0" "clang-format-4.0" "clang-format";
+do
+    CLANG_FORMAT=$(which "$bin" 2> /dev/null)
+    [ -n "$CLANG_FORMAT" ] && break
+done
+
+
+# set file extensions to handle
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .tpp .C"
+
+# if true also displays the changes and inform if no changes have to be made
+VERBOSE=0
+
+##################################################################
+
+# check whether the given file matches any of the set extensions
+matches_extension() {
+    local filename=$(basename "$1")
+    local extension=".${filename##*.}"
+    local ext
+
+    for ext in $FILE_EXTS; do [ "$ext" = "$extension" ] && return 0; done
+
+    return 1
+}
+
+# necessary check for initial commit
+if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# create a random filename to store our generated patch
+prefix="pre-commit-clang-format"
+suffix="$(date +%s)"
+patch="/tmp/$prefix-$suffix.patch"
+patch_color="/tmp/$prefix-$suffix-color.patch"
+staged_file="/tmp/$prefix-$suffix-file.txt"
+
+# clean up any older clang-format patches
+rm -f /tmp/$prefix*.patch
+
+# stop if clang format not available
+if [ ! -x "$CLANG_FORMAT" ] ; then
+    SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+    printf "Error: clang-format executable not found, cannot check format!\n"
+    printf "Set the correct path in ${SCRIPTPATH}/$(basename "$0").\n"
+    exit 1
+fi
+
+# create one patch containing all changes to the files
+git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+do
+    # ignore file if we do check for file extensions and the file
+    # does not match any of the extensions specified in $FILE_EXTS
+    if ! matches_extension "$file"; then
+        continue;
+    fi
+
+    # temporary save the staged file to work with this instead of the real file
+    git show :$file > $staged_file
+
+    # clang-format our sourcefile, create a patch and append it to our $patch
+    cat "$staged_file" | "$CLANG_FORMAT" -assume-filename=$file -style=file | \
+        git diff --no-index -- "$staged_file" - | \
+        sed -e "s|--- a$staged_file|--- a/$file|" | \
+        sed -e "s|+++ b/-|+++ b/$file|" >> "$patch" 
+
+    # also make a colored patch for displaying if needed    
+    if [ "$VERBOSE" -ne 0 ] ; then   
+        cat "$staged_file" | "$CLANG_FORMAT" -assume-filename=$file -style=file | \
+            git diff --color --no-index -- "$staged_file" - | \
+            sed -e "s|--- a$staged_file|--- a/$file|" | \
+            sed -e "s|+++ b/-|+++ b/$file|" >> "$patch_color"
+    fi
+done
+
+# if no patch has been generated all is ok, clean up the file stub and exit
+if [ ! -s "$patch" ] ; then
+    if [ "$VERBOSE" -ne 0 ] ; then 
+        printf "Changes in this commit comply with the clang-format rules.\n"
+    fi
+    rm -f "$patch"
+    rm -f "$patch_color"
+    rm -f "$staged_file"
+    exit 0
+fi
+
+# check if it is possible to apply this patch both to the index as well as the working directory
+git status > /dev/null 2>&1
+git apply --index --check $patch > /dev/null 2>&1
+if [ $? -ne 0 ] ; then
+    printf "The clang-format rules are not satisfied and changes have to be made!\n";
+    printf "An automatic patch is not possible because you have differences between your staged and unstaged files...\n";
+    printf "Nothing committed! Add changes to the index or apply format changes manually and commit again.\n";
+    rm -f "$patch";
+    rm -f "$patch_color";
+    rm -f "$staged_file"
+    exit 1;
+fi
+
+# a patch has been created, let the user know about it
+printf "The clang-format rules are not satisfied and changes have to be made!\n"
+printf "A patch has been created to fix the format automatically before continuing...\n"
+if [ "$VERBOSE" -ne 0 ] ; then
+    printf "The following differences were found between the code to commit "
+    printf "and the clang-format rules:\n"
+    cat "$patch_color"
+    printf "\n"
+fi
+
+# assign stdin back to keyboard
+exec < /dev/tty
+
+# ask what we want to do with the patch
+while true; do
+    read -p "Do you want to install the patch (yes - commit with patch, no - do not commit)? [y/n] " yn
+        case $yn in
+            [Yy] )
+                git apply --index $patch; 
+                rm -f "$patch";
+                rm -f "$patch_color";
+                rm -f "$staged_file"
+                exit 0
+            ;;
+            [Nn] )
+                printf "Changes are not applied! You can apply these changes manually with:\n";
+                printf "  git apply --index $patch\n";
+                printf "  (needs to be called from the root directory of your repository)\n";
+                printf "Nothing committed! Apply format changes and commit again.\n";
+                rm -f "$patch_color";
+                rm -f "$staged_file"
+                exit 1
+            ;;
+            * )
+                echo "Please answer y(es) or n(o)."
+            ;;
+    esac
+done

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# do the clang-format check
+sh .git/hooks/pre-commit-clang-format
