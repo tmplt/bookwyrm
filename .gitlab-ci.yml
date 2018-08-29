@@ -54,6 +54,7 @@ fmt:gcc:
     script:
         - cd build
         - ninja check-format
+    allow_failure: true
 
 fmt:cppcheck:
     stage: formatting
