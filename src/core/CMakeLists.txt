@@ -5,7 +5,8 @@ find_package(Threads REQUIRED)
 add_library(${PROJECT_NAME}-core STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/item.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_handler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../string.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../string.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/bindings/python.cpp)
 
 target_include_directories(${PROJECT_NAME}-core
     PUBLIC  ${PROJECT_SOURCE_DIR}/include/core

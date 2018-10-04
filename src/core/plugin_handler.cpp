@@ -164,7 +164,7 @@ void plugin_handler::python_module_runner(py::module module)
         /* Run the module's find-function with the wanted item, and bookwyrm
          * instance as argument. */
         func = module.attr("find");
-        args = py::make_tuple(wanted_, this);
+        args = py::make_tuple(detail::to_py_dict(wanted_), this);
         module.release().dec_ref();
         PyObject *retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 

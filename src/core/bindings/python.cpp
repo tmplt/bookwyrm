@@ -11,7 +11,7 @@ using std::vector;
 
 namespace detail {
 
-    struct log_wrapper {
+    struct __attribute__((visibility("hidden"))) log_wrapper {
     public:
         explicit log_wrapper(core::plugin_handler *instance) : ph_(instance) { assert(ph_ != nullptr); }
 
@@ -23,43 +23,40 @@ namespace detail {
         core::plugin_handler *ph_;
     };
 
+    py::dict to_py_dict(const core::item &item)
+    {
+        py::dict dict;
+
+        /* Exacts attributes */
+        dict["year_mod"] = py::cast(item.exacts.ymod);
+        std::vector<std::pair<string, int>> exact_pairs = {{{"year", item.exacts.year},
+                                                            {"volume", item.exacts.volume},
+                                                            {"number", item.exacts.number},
+                                                            {"pages", item.exacts.pages}}};
+        for (auto &pair : exact_pairs) {
+            if (std::get<1>(pair) != core::empty)
+                dict[std::get<0>(pair).c_str()] = std::get<1>(pair);
+        }
+        if (!item.exacts.extension.empty())
+            dict["extension"] = py::cast(item.exacts.extension);
+
+        /* Nonexact attributes */
+        if (!item.nonexacts.authors.empty())
+            dict["authors"] = py::cast(item.nonexacts.authors);
+        std::vector<std::pair<string, string>> nonexact_pairs = {{{"title", item.nonexacts.title},
+                                                                  {"series", item.nonexacts.series},
+                                                                  {"publisher", item.nonexacts.publisher},
+                                                                  {"journal", item.nonexacts.journal},
+                                                                  {"edition", item.nonexacts.edition}}};
+        for (auto &pair : nonexact_pairs) {
+            if (!std::get<1>(pair).empty())
+                dict[std::get<0>(pair).c_str()] = py::cast(std::get<1>(pair));
+        }
+
+        return std::move(dict);
+    }
+
 } // namespace detail
-
-static py::object getattr(const core::item &item, const std::string &key)
-{
-    /*
-     * Exact attributes.
-     * No reason to query a wanted item size.
-     */
-    if (key == "yearmod")
-        return py::cast(item.exacts.ymod);
-    else if (key == "year")
-        return py::cast(item.exacts.year);
-    else if (key == "volume")
-        return py::cast(item.exacts.volume);
-    else if (key == "number")
-        return py::cast(item.exacts.number);
-    else if (key == "pages")
-        return py::cast(item.exacts.pages);
-
-    /* Nonexact attributes */
-    else if (key == "authors")
-        return py::cast(item.exacts.volume);
-    else if (key == "title")
-        return py::cast(item.nonexacts.title);
-    else if (key == "series")
-        return py::cast(item.nonexacts.series);
-    else if (key == "publisher")
-        return py::cast(item.nonexacts.publisher);
-    else if (key == "journal")
-        return py::cast(item.nonexacts.journal);
-    else if (key == "edition")
-        return py::cast(item.nonexacts.edition);
-
-    /* TODO: throw something that turns into an actual AttributeError in Python
-     * instead. */
-    throw std::invalid_argument(std::string("AttributeError: no item attribute with key '") + key + "'");
-}
 
 PYBIND11_MODULE(pybookwyrm, m)
 {
@@ -76,8 +73,6 @@ PYBIND11_MODULE(pybookwyrm, m)
         .value("eq_lt", core::year_mod::eq_lt)
         .value("lt", core::year_mod::lt)
         .value("gt", core::year_mod::gt);
-
-    py::class_<core::item>(m, "item").def("__getattr__", &getattr);
 
     /* core::plugin_handler bindings */
 
