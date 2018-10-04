@@ -35,6 +35,17 @@ class SoupError(Exception):
         self.soup = soup
         super().__init__('failed to parse soup: ' + str(error))
 
+class FakeLogger():
+    def __getattr__(self, attr):
+        return lambda msg: print(msg)
+
+
+class FakeBookwyrm():
+    def __getattr__(self, attr):
+        if attr == "log":
+            return FakeLogger()
+        elif attr == "feed":
+            return lambda item: print(item)
 
 #
 # Utility functions
@@ -57,12 +68,12 @@ def translate_size(string):
         'G': 1e9
     }
 
-    # While LibGen lists sizes in '[kM]b', it's actually in bytes
+    # While LibGen lists sizes in '[kM]b', it's actually in bytes (B)
     return int(count * si_prefix.get(unit[0]))
 
 
 class LibgenSeeker(object):
-    def __init__(self, wanted, bookwyrm=None):
+    def __init__(self, wanted, bookwyrm=FakeBookwyrm()):
         self.queries = self.build_queries(wanted)
         self.bookwyrm = bookwyrm
 
@@ -73,6 +84,9 @@ class LibgenSeeker(object):
             print(msg)
 
     def feed(self, item):
+        """
+        Feed an item to the bookwyrm instance, otherwise print it out.
+        """
         if self.bookwyrm:
             self.bookwyrm.feed(item)
         else:
@@ -81,7 +95,7 @@ class LibgenSeeker(object):
     def build_queries(self, item):
         """
         Build a set of Library Genesis search queries from an item.
-        The set contains a pair: (path to index.php, query dictionary)
+        The set contains a pair: (path to index.php, item dictionary)
         """
 
         # Library Genesis divides its library into the following categories:
@@ -104,8 +118,6 @@ class LibgenSeeker(object):
         # these are not fuzzily matched.
 
         queries = []
-        e = item.exacts
-        ne = item.nonexacts
 
         #
         # The Text Book Category
@@ -113,48 +125,48 @@ class LibgenSeeker(object):
 
         # All appended queries below inherit the following keys
         base = {
-            'req': 100,  # 100 results per page
-            'view': 'simple'
+            'req': 100,       # 100 results per page
+            'view': 'simple'  # The HTML we want to parse
         }
 
         def search_for_in(req, col):
             queries.append(('/search.php', {**base, 'req': req, 'column': col}))
 
-        if ne.title:
-            search_for_in(ne.title, 'title')
+        if 'title' in item:
+            search_for_in(item['title'], 'title')
 
-        if ne.authors:
-            search_for_in(', '.join(ne.authors), 'author')
+        if 'authors' in item:
+            search_for_in(', '.join(item['authors']), 'author')
 
-        if ne.series:
-            search_for_in(ne.series, 'series')
+        if 'series' in item:
+            search_for_in(item['series'], 'series')
 
-        if ne.publisher:
-            search_for_in(ne.publisher, 'publisher')
+        if 'publisher' in item:
+            search_for_in(item['publisher'], 'publisher')
 
         #
         # The Fiction Category
         #
 
         base = {
-            'f_ext': e.extension or "All",
+            'f_ext': item['extension'] if 'extension' in item else "All",
             'f_group': 0,  # Don't group results of differing extensions.
             'f_lang': 0,   # Search for all languages, for now.
         }
 
-        fields = {'all': 0, 'title': 1, 'author': 2, 'series': 3}
+        fields = {'all': 0, 'title': 1, 'authors': 2, 'series': 3}
 
         def search_for_in(s, col):
             queries.append(('/foreignfiction/index.php', {**base, 's': s, 'f_column': col}))
 
-        if ne.title:
-            search_for_in(ne.title, fields['title'])
+        if 'title' in item:
+            search_for_in(item['title'], fields['title'])
 
-        if ne.authors:
-            search_for_in(', '.join(ne.authors), fields['author'])
+        if 'authors' in item:
+            search_for_in(', '.join(item['authors']), fields['authors'])
 
-        if ne.series:
-            search_for_in(ne.series, fields['series'])
+        if 'series' in item:
+            search_for_in(item['series'], fields['series'])
 
         #
         # The Scientific Articles Category
@@ -193,19 +205,19 @@ class LibgenSeeker(object):
                         elif path == '/foreignfiction/index.php':
                             self.process_ffiction(table)
                         else:
-                            self.log(bw.log_level.warn, 'unknown path "%s"; ignored.' % path)
+                            self.bookwyrm.log.war('unknown path "%s"; ignored.' % path)
                 except requests.exceptions.ConnectionError as e:
-                    self.log(bw.log_level.error, 'connection error (%s)! Trying another domain/query...' % e)
+                    self.bookwyrm.log.error('connection error (%s)!' % e)
                     continue
                 except requests.exceptions.HTTPError as e:
-                    self.log(bw.log_level.error, 'HTTP error (%s)! Trying another domain/query...' % e)
+                    self.bookwyrm.log.error('HTTP error (%s)!' % e)
                     continue
                 except SoupError as e:
                     temp_file = tempfile.mktemp()
                     with open(temp_file, 'w') as fd:
                         fd.write(e.soup.prettify())
 
-                    self.log(bw.log_level.error, 'unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
+                    self.bookwyrm.log.error('unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
                              '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % temp_file)
                     continue
 
@@ -253,7 +265,7 @@ class LibgenSeeker(object):
             try:
                 table = extract_table[str(f.path)](soup)
             except KeyError:
-                self.log(bw.log_level.warn, 'cannot extract from "%s"; ignoring...' % f.path)
+                self.bookwyrm.log.warn('cannot extract from "%s"; ignoring...' % f.path)
                 raise NotImplementedError("only parsing for LibGen and ffiction currently supported.")
 
             # Have we gone through all pages?
@@ -314,13 +326,14 @@ class LibgenSeeker(object):
                     if font.text.startswith('[') and font.text.endswith(']'):
                         return font.text[1:-1]
 
-            nonexacts = bw.nonexacts_t({
+            nonexacts = {
                 'series': stei.a.text if has_series else '',
                 'title': extract_title(),
                 'publisher': publisher.text,
                 'edition': extract_edition() or '',
-                'language': language.text
-            }, authors.text.split(', '))
+                'language': language.text,
+                'authors': authors.text.split(', ')
+            }
 
             def try_toint(s):
                 try:
@@ -328,11 +341,12 @@ class LibgenSeeker(object):
                 except ValueError:
                     return bw.empty
 
-            exacts = bw.exacts_t({
+            exacts = {
                 'year': try_toint(year),
                 'pages': try_toint(pages),
-                'size': translate_size(size) or bw.empty
-            }, extension.text)
+                'size': translate_size(size) or bw.empty,
+                'extension': extension.text
+            }
 
             def extract_isbns():
                 def valid_isbn(isbn):
@@ -386,14 +400,18 @@ class LibgenSeeker(object):
 
                 return urls
 
-            misc = bw.misc_t(extract_mirrors(), extract_isbns() or [])
-            return (nonexacts, exacts, misc)
+            misc = {
+                # 'mirrors': extract_mirrors(),
+                'isbns': extract_isbns() or []
+            }
+
+            return {**nonexacts, **exacts, **misc}
 
         # The first row is the column headers, so we skip it.
         try:
             for row in table.find_all('tr')[1:]:
                 try:
-                    self.feed(make_item(row))
+                    self.bookwyrm.feed(make_item(row))
                 except AttributeError as e:
                     raise SoupError(row, e)
         except AttributeError as e:
@@ -416,16 +434,17 @@ class LibgenSeeker(object):
             # ',' is used to seperate first and last name, but what
             # is used for author seperation?
 
-            nonexacts = bw.nonexacts_t({
+            nonexacts = {
                 'series': series.text,
                 'title': title.text,
                 'language': language.text,
-            }, [authors.text])
+                'authors': [authors.text]
+            }
 
             def extract_extension(s):
                 return s.split('(', 1)[0]
 
-            exacts = bw.exacts_t({}, extract_extension(mirrors.text))
+            exacts = {'extension': extract_extension(mirrors.text)}
 
             def extract_mirrors():
                 # Two mirrors are offered: one libgen.io and one libgen.pw.
@@ -469,8 +488,11 @@ class LibgenSeeker(object):
 
                 return urls
 
-            misc = bw.misc_t(extract_mirrors(), [])
-            return (nonexacts, exacts, misc)
+            misc = {
+                # 'mirrors': extract_mirrors()
+            }
+
+            return {**nonexacts, **exacts, **misc}
 
         for row in table.find_all('tr'):
             try:
@@ -484,11 +506,10 @@ def find(wanted, bookwyrm):
 
 
 if __name__ == "__main__":
-    nonexacts = bw.nonexacts_t({
+    item = {
         'title': 'Victory of Eagles',
-        'series': 'Temeraire'},
-        ['Naomi Novik']
-    )
+        'series': 'Temeraire',
+        'authors': ['Naomi Novik']
+    }
 
-    item = bw.item((nonexacts, bw.exacts_t({}, ''), bw.misc_t([], [])))
     LibgenSeeker(item).search()
