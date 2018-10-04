@@ -177,6 +177,12 @@ void plugin_handler::python_module_runner(py::module module)
             PyObject *pystr = PyUnicode_AsEncodedString(utf8, "utf-8", nullptr);
             const char *errmsg = PyBytes_AS_STRING(pystr);
 
+            /* Find where the error was thrown. */
+            auto *traceback = (PyTracebackObject*)ptraceback;
+            while (traceback->tb_next != nullptr)
+                traceback = traceback->tb_next;
+            const int lineno = traceback->tb_lineno;
+
             /* Decrement reference count of used objects */
             Py_XDECREF(utf8);
             Py_XDECREF(pystr);
@@ -184,7 +190,7 @@ void plugin_handler::python_module_runner(py::module module)
             Py_XDECREF(pvalue);
             Py_XDECREF(ptraceback);
 
-            log(log_level::err, fmt::format("plugin '{}' exited non-successfully: {}", name, errmsg));
+            log(log_level::err, fmt::format("plugin '{}' exited non-successfully (line: {}): {}", name, lineno, errmsg));
         }
 
         Py_XDECREF(retval);
