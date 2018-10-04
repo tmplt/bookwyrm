@@ -1,4 +1,4 @@
 def find(wanted, bookwyrm):
     pass
 
-#PASS does the module import the required pybookwyrm module?
+#PASS TypeError: Unregistered type : bookwyrm::core::year_mod
