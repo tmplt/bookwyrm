@@ -145,9 +145,14 @@ void cliparser::process_arguments(const vector<string> &args)
         }
 
         const string_view &arg = args[i];
-        const string_view &next_arg = args.size() > i + 1 ? args[i + 1] : "";
 
-        skip_next_arg = parse_pair(arg, next_arg);
+        /* XXX: Work-around for weird string_view behavior. */
+        if (args.size() > i + 1) {
+            const string_view &next_arg = args[i + 1];
+            skip_next_arg = parse_pair(arg, next_arg);
+        } else {
+            skip_next_arg = parse_pair(arg, "");
+        }
     }
 }
 
