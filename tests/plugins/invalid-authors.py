@@ -5,4 +5,4 @@ def find(wanted, bookwyrm):
     book = {'authors': None}
     bookwyrm.feed(book)
 
-#PASS error: plugin 'invalid-authors' exited non-successfully: TypeError("'NoneType' object is not iterable",)
+#PASS TypeError("'NoneType' object is not iterable",)
