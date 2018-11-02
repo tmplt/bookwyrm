@@ -28,30 +28,33 @@ namespace detail {
         py::dict dict;
 
         /* Exacts attributes */
-        dict["year_mod"] = py::cast(item.exacts.ymod);
-        std::vector<std::pair<string, int>> exact_pairs = {{{"year", item.exacts.year},
-                                                            {"volume", item.exacts.volume},
-                                                            {"number", item.exacts.number},
-                                                            {"pages", item.exacts.pages}}};
-        for (auto &pair : exact_pairs) {
-            if (std::get<1>(pair) != core::empty)
-                dict[std::get<0>(pair).c_str()] = std::get<1>(pair);
-        }
-        if (!item.exacts.extension.empty())
-            dict["extension"] = py::cast(item.exacts.extension);
+        /* dict["year_mod"] = py::cast(item.exacts.ymod); */
+        /* std::vector<std::pair<string, int>> exact_pairs = {{{"year", item.exacts.year}, */
+        /*                                                     {"volume", item.exacts.volume}, */
+        /*                                                     {"number", item.exacts.number}, */
+        /*                                                     {"pages", item.exacts.pages}}}; */
+        /* for (auto &pair : exact_pairs) { */
+        /*     if (std::get<1>(pair) != core::empty) */
+        /*         dict[std::get<0>(pair).c_str()] = std::get<1>(pair); */
+        /* } */
+        /* if (!item.exacts.extension.empty()) */
+        /*     dict["extension"] = py::cast(item.exacts.extension); */
 
-        /* Nonexact attributes */
-        if (!item.nonexacts.authors.empty())
-            dict["authors"] = py::cast(item.nonexacts.authors);
-        std::vector<std::pair<string, string>> nonexact_pairs = {{{"title", item.nonexacts.title},
-                                                                  {"series", item.nonexacts.series},
-                                                                  {"publisher", item.nonexacts.publisher},
-                                                                  {"journal", item.nonexacts.journal},
-                                                                  {"edition", item.nonexacts.edition}}};
-        for (auto &pair : nonexact_pairs) {
-            if (!std::get<1>(pair).empty())
-                dict[std::get<0>(pair).c_str()] = py::cast(std::get<1>(pair));
-        }
+        /* /1* Nonexact attributes *1/ */
+        /* if (!item.nonexacts.authors.empty()) */
+        /*     dict["authors"] = py::cast(item.nonexacts.authors); */
+        /* std::vector<std::pair<string, string>> nonexact_pairs = {{{"title", item.nonexacts.title}, */
+        /*                                                           {"series", item.nonexacts.series}, */
+        /*                                                           {"publisher", item.nonexacts.publisher}, */
+        /*                                                           {"journal", item.nonexacts.journal}, */
+        /*                                                           {"edition", item.nonexacts.edition}}}; */
+        /* for (auto &pair : nonexact_pairs) { */
+        /*     if (!std::get<1>(pair).empty()) */
+        /*         dict[std::get<0>(pair).c_str()] = py::cast(std::get<1>(pair).c_str()); */
+        /* } */
+
+        dict["title"] = py::cast(item.nonexacts.title);
+        /* dict["title"] = py::cast(std::string("Victory of Eagles")); */
 
         return std::move(dict);
     }

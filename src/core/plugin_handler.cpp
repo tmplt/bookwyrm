@@ -159,12 +159,16 @@ void plugin_handler::python_module_runner(py::module module)
      */
     py::object func;
     py::tuple args;
+    /* py::dict wanted = detail::to_py_dict(wanted_); */
+
+    py::dict wanted;
+    wanted["title"] = py::cast(wanted_.nonexacts.title);
 
     try {
         /* Run the module's find-function with the wanted item, and bookwyrm
          * instance as argument. */
         func = module.attr("find");
-        args = py::make_tuple(detail::to_py_dict(wanted_), this);
+        args = py::make_tuple(wanted, this);
         module.release().dec_ref();
         PyObject *retval = PyObject_Call(func.ptr(), args.ptr(), nullptr);
 
@@ -178,7 +182,7 @@ void plugin_handler::python_module_runner(py::module module)
             const char *errmsg = PyBytes_AS_STRING(pystr);
 
             /* Find where the error was thrown. */
-            auto *traceback = (PyTracebackObject*)ptraceback;
+            auto *traceback = (PyTracebackObject *)ptraceback;
             while (traceback->tb_next != nullptr)
                 traceback = traceback->tb_next;
             const int lineno = traceback->tb_lineno;

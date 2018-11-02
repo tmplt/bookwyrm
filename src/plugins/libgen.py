@@ -267,6 +267,9 @@ class LibgenSeeker(object):
             except KeyError:
                 self.bookwyrm.log.warn('cannot extract from "%s"; ignoring...' % f.path)
                 raise NotImplementedError("only parsing for LibGen and ffiction currently supported.")
+            except IndexError:
+                self.bookwyrm.log.warn('unable to extract table from "%s"; ignoring...' % f.url)
+                continue
 
             # Have we gone through all pages?
             # XXX: This really doesn't feel stable.
@@ -408,14 +411,14 @@ class LibgenSeeker(object):
             return {**nonexacts, **exacts, **misc}
 
         # The first row is the column headers, so we skip it.
-        try:
+        # try:
             for row in table.find_all('tr')[1:]:
-                try:
+                # try:
                     self.bookwyrm.feed(make_item(row))
-                except AttributeError as e:
-                    raise SoupError(row, e)
-        except AttributeError as e:
-            raise SoupError(table, e)
+                # except AttributeError as e:
+                    # raise SoupError(row, e)
+        # except AttributeError as e:
+            # raise SoupError(table, e)
 
     def process_ffiction(self, table):
         """
@@ -503,6 +506,7 @@ class LibgenSeeker(object):
 
 def find(wanted, bookwyrm):
     LibgenSeeker(wanted, bookwyrm).search()
+    #bookwyrm.log.warn("title: %s" % wanted['title'])
 
 
 if __name__ == "__main__":
