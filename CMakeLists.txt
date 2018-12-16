@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.4.3 FATAL_ERROR)
 
+find_program(ccache_program ccache)
+if(ccache_program)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${ccache_program}")
+endif()
+
 project(bookwyrm VERSION 0.5.0 LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH
