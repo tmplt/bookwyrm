@@ -29,15 +29,9 @@ import sys
 import requests
 import re
 import isbnlib
-import tempfile
 
 DOMAINS = ('93.174.95.27',)
 DEBUG = __name__ == '__main__'
-
-class SoupError(Exception):
-    def __init__(self, soup, error):
-        self.soup = soup
-        super().__init__('failed to parse soup: ' + str(error))
 
 class FakeLogger():
     def __getattr__(self, attr):
@@ -227,14 +221,6 @@ class LibgenSeeker(object):
                     continue
                 except requests.exceptions.HTTPError as e:
                     self.bookwyrm.log.error('HTTP error (%s)!' % e)
-                    continue
-                except SoupError as e:
-                    temp_file = tempfile.mktemp()
-                    with open(temp_file, 'w') as fd:
-                        fd.write(e.soup.prettify())
-
-                    self.bookwyrm.log.error('unable to parse "%s"; somewhere a None appeared. Please submit a bug at ' % f.url +
-                             '<https://github.com/Tmplt/bookwyrm/issues/new> and attach `%s`. Continuing...' % temp_file)
                     continue
 
                 # That domain worked; do the next query.
@@ -527,7 +513,6 @@ class LibgenSeeker(object):
 
 def find(wanted, bookwyrm):
     LibgenSeeker(wanted, bookwyrm).search()
-    #bookwyrm.log.warn("title: %s" % wanted['title'])
 
 
 if __name__ == "__main__":
