@@ -239,51 +239,42 @@ class LibgenSeeker(object):
         # current page can easily be extracted to create a loop invariant, were we to actually
         # execute JS.
         #     With the most logical way to check if we're on the last page out of the window,
-        # we'll have to hack some invariants together:
-        #     - /search.php: check if the last request matches the previous one;
-        #     - /foreignfiction/index.php: check if the table is empty;
+        # we'll have to hack some conditions together:
+        #     - /search.php: check if extracted table only contains a single line;
+        #     - /foreignfiction/index.php: check if extracted table only contains a single line;
         # When the respective invariant is True, we've gone through all pages.
-        last_request = None
 
         p = 1
         query_params = f.args.copy()
 
-        extract_table = {
+        table_extractors = {
             '/search.php': lambda soup: soup.find('table', {'class': 'c', 'rules': 'rows'}, recursive=False),
             '/foreignfiction/index.php': lambda soup: soup.find_all('table', {'rules': 'rows'})[-1],
         }
+        exhaust_conditions = {
+            '/search.php': lambda table: len(table.find_all('tr')) == 1,
+            '/foreignfiction/index.php': lambda table: len(table.find_all('tr')) == 1
+        }
 
-        # The ad-hoc'ed invariants does NOT look good. How can we make this better?
         while True:
             f.set({'page': p}).add(query_params)
 
+            # Fetch the page
             r = requests.get(f.url)
             if r.status_code != requests.codes.ok:
-                # TODO: Log failure to bookwyrm?
-                # Or log after taking exception?
                 r.raise_for_status()
 
+            # Extract table
             soup = BeautifulSoup(r.text, 'html.parser')
-            try:
-                table = extract_table[str(f.path)](soup)
-            except KeyError:
-                self.bookwyrm.log.warn('cannot extract from "%s"; ignoring...' % f.path)
-                raise NotImplementedError("only parsing for LibGen and ffiction currently supported.")
-            except IndexError:
-                self.bookwyrm.log.warn('unable to extract table from "%s"; ignoring...' % f.url)
-                continue
+            table = table_extractors[str(f.path)](soup)
 
-            # Have we gone through all pages?
-            # XXX: This really doesn't feel stable.
-            if f.path == '/search.php' and r.text == last_request:
-                return
-            elif f.path == '/foreignfiction/index.php' and table.text == '':
+            # Have we exhaused all pages?
+            if exhaust_conditions[str(f.path)](table):
                 return
 
             yield table
 
             p += 1
-            last_request = r.text
 
     def process_libgen(self, table):
         """
