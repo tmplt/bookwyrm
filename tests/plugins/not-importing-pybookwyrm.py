@@ -1,4 +1,7 @@
+# While there exist no reason to not import pybookwyrm, a module
+# that doesn't actually call back should still work.
+
 def find(wanted, bookwyrm):
     pass
 
-#PASS TypeError: Unregistered type : bookwyrm::core::year_mod
+#PASS exiting plugin 'not-importing-pybookwyrm'

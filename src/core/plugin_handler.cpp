@@ -53,6 +53,12 @@ void plugin_handler::load_plugins()
     log(log_level::debug, fmt::format("coercing CPython to look for pybookwyrm in {}", options_.library_path));
 #endif
 
+    /*
+     * Triage fix for crash in detail::to_py_dict if no loaded plugin imports pybookwyrm.
+     * TODO: do away with this, and link pybookwyrm instead.
+     */
+    std::ignore = py::module::import("pybookwyrm");
+
     for (auto &path : options_.plugin_paths)
         log(log_level::debug, fmt::format("looking for scripts in {}", path.string()));
 
