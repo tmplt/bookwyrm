@@ -18,17 +18,21 @@ Scrapes Library Genesis <https://en.wikipedia.org/wiki/Library_Genesis> for item
 #   - Fix all TODO:s
 
 import pybookwyrm as bw
+from pdb import set_trace as breakpoint
 
+from pymaybe import maybe
 from bs4 import BeautifulSoup
 from furl import furl
 from collections import deque
 from enum import Enum
+import sys
 import requests
 import re
 import isbnlib
 import tempfile
 
-DOMAINS = ('libgen.io',)
+DOMAINS = ('93.174.95.27',)
+DEBUG = __name__ == '__main__'
 
 class SoupError(Exception):
     def __init__(self, soup, error):
@@ -63,19 +67,31 @@ def translate_size(string):
         return
 
     si_prefix = {
-        'k': 1e3,
+        'K': 1e3,
         'M': 1e6,
         'G': 1e9
     }
 
-    # While LibGen lists sizes in '[kM]b', it's actually in bytes (B)
-    return int(count * si_prefix.get(unit[0]))
+    # While LibGen lists sizes in '[KM]b', it's actually in bytes (B)
+    return int(count * si_prefix[unit[0]])
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
+def debuginfo(msg):
+    global DEBUG
+    if DEBUG:
+        eprint(f"\033[93m\tD: {msg}\033[0m")
 
 
 class LibgenSeeker(object):
     def __init__(self, wanted, bookwyrm=FakeBookwyrm()):
         self.queries = self.build_queries(wanted)
         self.bookwyrm = bookwyrm
+
+        debuginfo(self.queries)
 
     def log(self, level, msg):
         if self.bookwyrm:
@@ -120,7 +136,7 @@ class LibgenSeeker(object):
         queries = []
 
         #
-        # The Text Book Category
+        # The Text Book Category (/search.php)
         #
 
         # All appended queries below inherit the following keys
@@ -308,11 +324,30 @@ class LibgenSeeker(object):
             mirrors = columns[9:-1]  # Last column is a link to edit the entry.
 
             # If first <a>-tag has title attribute, the item does not have a series.
-            has_series = False if stei.a.has_attr('title') else True
+            has_series = not stei.a.has_attr('title')
 
             # The title, edition, and isbn section always contain an id-attribute with
             # an integer.
             tei = stei.find_next('a', id=re.compile('\d+$'))
+
+            item = {
+                'series': stei.a.text if has_series else '',
+                'publisher': publisher.text or None,
+                'language': language.text,
+                'authors': authors.text.split(', '),
+                'pages': maybe(re.search('\d+', pages.text)).group(),
+                'size': translate_size(size.text),
+                'extension': extension.text,
+                'mirrors': [m.a['href'] for m in mirrors]
+            }
+
+            def extract_year(year):
+                if not year.text:
+                    return None
+
+                # Extract the first year found, if any
+                year = maybe(re.search('\d+', year.text)).group()
+                return int(year) if year else None
 
             def extract_title():
                 try:
@@ -320,36 +355,14 @@ class LibgenSeeker(object):
                     dd = deque(tei.font.previous_siblings, maxlen=1)
                     return dd.pop()
                 except AttributeError:
-                    # No edtion of isbn numbers; so only the title is given.
+                    # No edtion or isbn numbers; only the title is given.
                     return tei.text
 
             def extract_edition():
                 # Always surrounded by brackets, so look for those.
                 for font in tei.find_all('font', recursive=False):
                     if font.text.startswith('[') and font.text.endswith(']'):
-                        return font.text[1:-1]
-
-            nonexacts = {
-                'series': stei.a.text if has_series else '',
-                'title': extract_title(),
-                'publisher': publisher.text,
-                'edition': extract_edition() or '',
-                'language': language.text,
-                'authors': authors.text.split(', ')
-            }
-
-            def try_toint(s):
-                try:
-                    return int(s.text)
-                except ValueError:
-                    return bw.empty
-
-            exacts = {
-                'year': try_toint(year),
-                'pages': try_toint(pages),
-                'size': translate_size(size) or bw.empty,
-                'extension': extension.text
-            }
+                        return font.text[1:-1].replace('\xa0', ' ')  # replace no-break space
 
             def extract_isbns():
                 def valid_isbn(isbn):
@@ -362,6 +375,7 @@ class LibgenSeeker(object):
                         continue
                     return [isbn for isbn in font.text.split(', ') if valid_isbn(isbn)]
 
+            # XXX: unused
             def extract_mirrors():
                 # libgenpw, libgenio, bookfi, bok = mirrors
                 libgenpw = mirrors[0]
@@ -383,6 +397,7 @@ class LibgenSeeker(object):
                 r = requests.get(libgenio)
                 soup = BeautifulSoup(r.text, 'html.parser')
                 # -2 here, but -1 on foreignfiction
+                # XXX: broken
                 final = soup.table.find_all('td')[-2].a['href']
                 urls.append(final)
 
@@ -403,22 +418,21 @@ class LibgenSeeker(object):
 
                 return urls
 
-            misc = {
-                # 'mirrors': extract_mirrors(),
-                'isbns': extract_isbns() or []
+
+            item = {
+                **item,
+                'title': extract_title().strip(),
+                'edition': extract_edition() or None,
+                'authors': authors.text.split(', '),
+                'isbns': extract_isbns() or None,
+                'year': extract_year(year)
             }
 
-            return {**nonexacts, **exacts, **misc}
+            return item
 
-        # The first row is the column headers, so we skip it.
-        # try:
-            for row in table.find_all('tr')[1:]:
-                # try:
-                    self.bookwyrm.feed(make_item(row))
-                # except AttributeError as e:
-                    # raise SoupError(row, e)
-        # except AttributeError as e:
-            # raise SoupError(table, e)
+        # The first row is the columns' headers, so we skip them.
+        for row in table.find_all('tr')[1:]:
+            self.bookwyrm.feed(make_item(row))
 
     def process_ffiction(self, table):
         """
@@ -516,4 +530,7 @@ if __name__ == "__main__":
         'authors': ['Naomi Novik']
     }
 
-    LibgenSeeker(item).search()
+    try:
+        LibgenSeeker(item).search()
+    except KeyboardInterrupt:
+        sys.exit(-1)

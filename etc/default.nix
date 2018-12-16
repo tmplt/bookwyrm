@@ -64,6 +64,27 @@ let
       license = licenses.lgpl3;
     };
   };
+
+  pymaybe = buildPythonPackage rec {
+    name = "${pname}-${version}";
+    pname = "pymaybe";
+    version = "0.1.6";
+
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "131pc968vh7rywmfaw41f8221vp4xn8lin6hrifv1s5rw411dvbp";
+    };
+
+    # Not critical; no need to test
+    doCheck = false;
+
+    meta = with stdenv.lib; {
+      description = "A Python implementation of the Maybe pattern";
+      homepage = "${homepagePrefix}/${pname}";
+      license = licenses.bsd3;
+    };
+  };
+
 in
   stdenv.mkDerivation rec {
     name = "bookwyrm-${version}";
@@ -89,6 +110,7 @@ in
           furl
           requests
           isbnlib
+          pymaybe
         ];
       })
     ];
