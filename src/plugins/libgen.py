@@ -116,8 +116,8 @@ class LibgenSeeker(object):
 
         # Library Genesis divides its library into the following categories:
         #   * LibGen (Sci-Tech) -- text books (/search.php);
-        #   * Scientific Articles (/scimag/index.php);
         #   * Fiction (/foreignfiction/index.php);
+        #   * Scientific Articles (/scimag/index.php);
         #   * Russion fiction (/fiction_rus/index.php; different structure; on hold);
         #   * Comics (/comics/index.php);
         #   * Standards (/standarts/index.php; different structure; on hold), and
@@ -161,13 +161,13 @@ class LibgenSeeker(object):
             search_for_in(item['publisher'], 'publisher')
 
         #
-        # The Fiction Category
+        # The Fiction Category (/foreignfiction/index.php)
         #
 
         base = {
             'f_ext': item['extension'] if 'extension' in item else "All",
             'f_group': 0,  # Don't group results of differing extensions.
-            'f_lang': 0,   # Search for all languages, for now.
+            'f_lang': 0,   # Search for all languages.
         }
 
         fields = {'all': 0, 'title': 1, 'authors': 2, 'series': 3}
@@ -438,31 +438,29 @@ class LibgenSeeker(object):
         """
         Processes a table soup from LibGen and returns the items found within.
         """
-        # NOTE: this process only works on libgen.io queries. gen.lib.rus.ec does not
-        # yield the same HTML.
-        # TODO: resolve this!
 
         def make_item(row):
             columns = row.find_all('td')
 
-            authors, series, title, language, mirrors = columns
+            # esm: extension, size, and mirrors
+            authors, series, title, language, esm = columns
 
-            # TODO: fix this code for multiple authors.
-            # ',' is used to seperate first and last name, but what
-            # is used for author seperation?
-
-            nonexacts = {
-                'series': series.text,
+            item = {
+                'series': series.text or None,
                 'title': title.text,
                 'language': language.text,
-                'authors': [authors.text]
+                'extension': maybe(esm.text.split('(')[0])
+                    .lower()
+                    .strip()
+                    .or_else(None),
+                'mirrors': [m['href'] for m in esm.find_all('a')],
             }
 
-            def extract_extension(s):
-                return s.split('(', 1)[0]
+            def extract_size():
+                size = esm.text[esm.text.find('(')+1:esm.text.find(')')]
+                return translate_size(size.replace('\xa0', ' '))
 
-            exacts = {'extension': extract_extension(mirrors.text)}
-
+            # XXX: unused
             def extract_mirrors():
                 # Two mirrors are offered: one libgen.io and one libgen.pw.
                 # Both mirrors lead to intermediate download page(s).
@@ -505,17 +503,26 @@ class LibgenSeeker(object):
 
                 return urls
 
-            misc = {
-                # 'mirrors': extract_mirrors()
+            # Transform "<last name>, <first name>" -> "<first name> <last name>" if possible
+            def flip_names(name):
+                # Some items are listed with a single word in author name
+                if ',' not in name:
+                    return name
+
+                lastname, firstname = [s.strip() for s in name.split(',')]
+                return f"{firstname} {lastname}"
+
+            item = {
+                **item,
+                'size': extract_size(),
+                'authors': [flip_names(a.text) for a in authors.find_all('a')]
             }
 
-            return {**nonexacts, **exacts, **misc}
+            return item
 
-        for row in table.find_all('tr'):
-            try:
-                self.feed(make_item(row))
-            except AttributeError as e:
-                raise SoupError(row, e)
+        # The first row is the columns' headers, so we skip them.
+        for row in table.find_all('tr')[1:]:
+            self.feed(make_item(row))
 
 
 def find(wanted, bookwyrm):
