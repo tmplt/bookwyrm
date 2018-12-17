@@ -68,7 +68,7 @@ namespace bookwyrm {
         fs::path base = dldir / fmt::format("{} - {}", vector_to_string(item.nonexacts.authors), item.nonexacts.title);
 
         if (item.exacts.year != core::empty) {
-            base += fmt::format("({})", item.exacts.year);
+            base += fmt::format(" ({})", item.exacts.year);
         }
 
         const auto valid_candidate = [](fs::path p) { return !fs::exists(p); };
