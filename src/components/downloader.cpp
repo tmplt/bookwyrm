@@ -136,6 +136,8 @@ namespace bookwyrm {
                     }
 
                 } else {
+                    std::cout << '\n';
+
                     std::fclose(out);
                     any_success = success = true;
 
