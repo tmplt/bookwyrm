@@ -47,7 +47,7 @@ namespace bookwyrm::tui::screen {
 
     void item_details::print_details()
     {
-        const std::string uris = vector_to_string(item_.misc.uris);
+        const std::string uris = vector_to_string(item_.misc.mirrors);
 
         using pair = std::pair<std::string, std::reference_wrapper<const std::string>>;
         std::string authors = vector_to_string(item_.nonexacts.authors);

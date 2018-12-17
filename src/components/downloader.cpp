@@ -109,7 +109,7 @@ namespace bookwyrm {
             bool success = false;
 
             int mirror = 1;
-            for (const auto &url : item.misc.uris) {
+            for (const auto &url : item.misc.mirrors) {
                 curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
                 std::FILE *out = std::fopen(filename.c_str(), "wb");

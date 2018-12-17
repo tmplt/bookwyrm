@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
-    /* Download previously selected items. */
+    /* Download wanted selected items. */
     try {
         bookwyrm::downloader d(dl_path);
 
