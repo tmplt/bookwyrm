@@ -50,7 +50,11 @@ namespace bookwyrm::core {
     {
     }
 
-    misc_t::misc_t(const py::dict &dict) : uris(get_vector_string(dict, "uris")), isbns(get_vector_string(dict, "isbns")) {}
+    misc_t::misc_t(const py::dict &dict)
+        : uris(get_vector_string(dict, "uris")), isbns(get_vector_string(dict, "isbns")),
+          mirrors(get_vector_string(dict, "mirrors"))
+    {
+    }
 
     bool exacts_t::operator==(const exacts_t &other) const
     {
