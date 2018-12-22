@@ -217,7 +217,7 @@ class LibgenSeeker(object):
                         elif path == '/foreignfiction/index.php':
                             self.process_ffiction(table)
                         else:
-                            self.bookwyrm.log.war('unknown path "%s"; ignored.' % path)
+                            self.bookwyrm.log.warn('unknown path "%s"; ignored.' % path)
                 except requests.exceptions.ConnectionError as e:
                     self.bookwyrm.log.error('connection error (%s)!' % e)
                     continue
@@ -411,7 +411,7 @@ class LibgenSeeker(object):
 
         # The first row is the columns' headers, so we skip them.
         for row in table.find_all('tr')[1:]:
-            self.bookwyrm.feed(make_item(row))
+            self.feed(make_item(row))
 
     def process_ffiction(self, table):
         """
