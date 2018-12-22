@@ -64,6 +64,7 @@ namespace bookwyrm::tui::screen {
             {"Publisher", item_.nonexacts.publisher},
             {"Extension", item_.exacts.extension},
             {"URI", uris},
+            {"Source", item_.misc.origin_plugin},
             // include filesize here
             // and print it red if the item is gigabytes large
         };

@@ -97,6 +97,8 @@ class LibgenSeeker(object):
         """
         Feed an item to the bookwyrm instance, otherwise print it out.
         """
+        item = {**item, 'origin_plugin': 'libgen.py'}
+
         if self.bookwyrm:
             self.bookwyrm.feed(item)
         else:

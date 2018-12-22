@@ -132,6 +132,7 @@ namespace bookwyrm::core {
         const vector<string> uris;
         const vector<string> isbns;
         const vector<string> mirrors;
+        const string origin_plugin;
     };
 
     struct item {

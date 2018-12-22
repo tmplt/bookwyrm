@@ -52,7 +52,7 @@ namespace bookwyrm::core {
 
     misc_t::misc_t(const py::dict &dict)
         : uris(get_vector_string(dict, "uris")), isbns(get_vector_string(dict, "isbns")),
-          mirrors(get_vector_string(dict, "mirrors"))
+          mirrors(get_vector_string(dict, "mirrors")), origin_plugin(get_string(dict, "origin_plugin"))
     {
     }
 
@@ -70,7 +70,7 @@ namespace bookwyrm::core {
                std::tie(other.authors, other.title, other.series, other.publisher, other.journal, other.edition);
     }
 
-    bool misc_t::operator==(const misc_t &other) const { return std::tie(uris, isbns) == std::tie(other.uris, other.isbns); }
+    bool misc_t::operator==(const misc_t &other) const { return std::tie(uris, isbns, mirrors, origin_plugin) == std::tie(other.uris, other.isbns, other.mirrors, other.origin_plugin); }
 
     bool item::operator==(const item &other) const
     {
