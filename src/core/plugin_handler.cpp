@@ -147,6 +147,11 @@ void plugin_handler::async_search()
     this->nogil = std::make_unique<py::gil_scoped_release>();
 }
 
+vector<py::module> plugin_handler::get_plugins()
+{
+    return plugins_;
+}
+
 void plugin_handler::python_module_runner(py::module module)
 {
     /* Aqcuire the Global Interpreter Lock, required for running any Python code.
@@ -210,7 +215,7 @@ void plugin_handler::python_module_runner(py::module module)
         if (!Py_IsInitialized()) {
             args.release();
             func.release();
-            gil.release();
+            delete gil.release();
         }
         throw;
     } catch (const py::error_already_set &err) {
@@ -287,6 +292,11 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
     for (const auto & [ lvl, msg ] : buffer_)
         fe->log(lvl, msg);
     buffer_.clear();
+}
+
+void plugin_handler::clear_frontend()
+{
+    frontend_.reset();
 }
 
 const std::atomic<size_t> &plugin_handler::running_plugins() const

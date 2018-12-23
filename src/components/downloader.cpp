@@ -14,6 +14,7 @@
 #include "../runes.hpp"
 #include "../string.hpp"
 #include "downloader.hpp"
+#include "python.hpp"
 
 namespace bookwyrm {
 
@@ -100,7 +101,29 @@ namespace bookwyrm {
         return candidate;
     }
 
-    bool downloader::sync_download(vector<core::item> items)
+    // TODO: make this use std::optional
+    auto downloader::resolve_mirror(const string &mirror, const core::item &item, vector<py::module> &plugins)
+    {
+        auto gil = std::make_unique<py::gil_scoped_acquire>();
+
+        for (py::module module : plugins) {
+            std::string name = module.attr("__name__").cast<string>() + ".py";
+            if (item.misc.origin_plugin != name)
+                continue;
+
+            py::object obj = module.attr("resolve")(mirror);
+            if (py::isinstance<py::none>(obj)) {
+                /* Function returned None; unable to resolve. */
+                continue;
+            }
+
+            return obj.cast<std::pair<string, py::dict>>();
+        }
+
+        return std::pair<string, py::dict>();
+    }
+
+    bool downloader::sync_download(vector<core::item> items, vector<py::module> &plugins)
     {
         bool any_success = false;
 
@@ -108,8 +131,14 @@ namespace bookwyrm {
             auto filename = generate_filename(item);
             bool success = false;
 
-            int mirror = 1;
-            for (const auto &url : item.misc.mirrors) {
+            int mirror_idx = 1;
+            for (const auto &mirror : item.misc.mirrors) {
+                auto pair = resolve_mirror(mirror, item, plugins);
+                string url = std::get<0>(pair);
+                if (url.empty()) {
+                    /* Unable to resolve mirror. */
+                    continue;
+                }
                 curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
                 std::FILE *out = std::fopen(filename.c_str(), "wb");
@@ -124,7 +153,7 @@ namespace bookwyrm {
                     fmt::print(stderr,
                                "{}error: item download (mirror {}) failed: {} (CURLcode = {})\n",
                                rune::vt100::erase_line,
-                               mirror++,
+                               mirror_idx++,
                                curl_easy_strerror(res),
                                res);
 
@@ -149,7 +178,7 @@ namespace bookwyrm {
 
             if (!success) {
                 fmt::print(stderr,
-                           "error: no good sources for this item: {} - {} ({}). Sorry!\n",
+                           "error: no good sources for item: {} - {} ({}).\n",
                            vector_to_string(item.nonexacts.authors),
                            item.nonexacts.title,
                            item.exacts.year);

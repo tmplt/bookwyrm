@@ -197,13 +197,39 @@ int main(int argc, char *argv[])
         /* Construct and start the plugin handler. */
         auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
         ph.load_plugins();
-        auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"), ph.running_plugins());
-        ph.set_frontend(ui);
-        ph.async_search();
+        {
+            auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"), ph.running_plugins());
+            ph.set_frontend(ui);
+            ph.async_search();
 
-        /* Display the UI, getting wanted items if any where selected. */
-        if (ui->display())
-            wanted_items = ui->get_wanted_items();
+            /* Display the UI, getting wanted items if any where selected. */
+            if (ui->display()) {
+                wanted_items = ui->get_wanted_items();
+            }
+        }
+
+        ph.clear_frontend();
+
+        if (wanted_items.empty()) {
+            /* We have nothing else to do. */
+            return EXIT_SUCCESS;
+        }
+
+        /* Download wanted selected items. */
+        bookwyrm::downloader d(dl_path);
+
+        if (wanted_items.size() == 1)
+            fmt::print("Downloading item...\n");
+        else
+            fmt::print("Downloading {} items...\n", wanted_items.size());
+
+        auto plugins = ph.get_plugins();
+        ph.clear_nogil();
+        const auto success = d.sync_download(wanted_items, plugins);
+        if (!success && wanted_items.size() > 1) {
+            fmt::print("No items were successfully downloaded\n");
+            return EXIT_FAILURE;
+        }
 
     } catch (const component_error &err) {
         fmt::print(stderr, "A dependency failed: {}. Developer error? Terminating...\n", err.what());
@@ -215,31 +241,6 @@ int main(int argc, char *argv[])
         fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
     } catch (const std::runtime_error &err) {
-        fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
-        return EXIT_FAILURE;
-    }
-
-    if (wanted_items.empty()) {
-        /* We have nothing else to do. */
-        return EXIT_SUCCESS;
-    }
-
-    /* Download wanted selected items. */
-    try {
-        bookwyrm::downloader d(dl_path);
-
-        if (wanted_items.size() == 1)
-            fmt::print("Downloading item...\n");
-        else
-            fmt::print("Downloading {} items...\n", wanted_items.size());
-
-        const auto success = d.sync_download(wanted_items);
-        if (!success && wanted_items.size() > 1) {
-            fmt::print("No items were successfully downloaded\n");
-            return EXIT_FAILURE;
-        }
-
-    } catch (const component_error &err) {
         fmt::print(stderr, "Fatal program error: {}; I can't continue! Terminating...\n", err.what());
         return EXIT_FAILURE;
     }

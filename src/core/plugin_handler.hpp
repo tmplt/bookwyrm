@@ -81,6 +81,11 @@ namespace bookwyrm::core {
          */
         void async_search();
 
+        /**
+         * @brief Copy loaded modules from instance.
+         */
+        vector<py::module> get_plugins();
+
 #ifdef DEBUG
         /**
          * @brief Wait for all plugins to finish execution
@@ -119,6 +124,8 @@ namespace bookwyrm::core {
          * @param fe The frontend that we want to notify
          */
         void set_frontend(std::shared_ptr<frontend> fe);
+        void clear_frontend();
+        void clear_nogil() { delete this->nogil.release(); }
 
         /**
          * @brief Return how many plugins are still searching

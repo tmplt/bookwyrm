@@ -31,7 +31,9 @@ namespace bookwyrm {
          * Downloads the given items in a blocking, synchronous order.
          * Returns true if at least one item was downloaded.
          */
-        bool sync_download(vector<core::item> items);
+        bool sync_download(vector<core::item> items, vector<py::module> &plugins);
+
+        auto resolve_mirror(const string &mirror, const core::item &item, vector<py::module> &plugins);
 
         time::timer timer;
         progressbar pbar;

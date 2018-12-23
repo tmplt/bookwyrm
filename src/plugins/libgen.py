@@ -425,7 +425,7 @@ def find(wanted, bookwyrm):
 
 # TODO: make this into a neat wrapper, passing the soup as argument
 def get_soup(url):
-    r = requests.get(mirror)
+    r = requests.get(url)
     r.raise_for_status()
     return BeautifulSoup(r.text, 'html.parser')
 
