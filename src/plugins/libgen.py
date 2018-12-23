@@ -354,49 +354,6 @@ class LibgenSeeker(object):
                         continue
                     return [isbn for isbn in font.text.split(', ') if valid_isbn(isbn)]
 
-            # XXX: unused
-            def extract_mirrors():
-                # libgenpw, libgenio, bookfi, bok = mirrors
-                libgenpw = mirrors[0]
-                libgenio = mirrors[1]
-                # Only libgenpw can be downloaded from directly without fuss;
-                # the rest require the intermediate page as HTTP referer.
-                # TODO: process bookfi and B-Ok?
-
-                libgenio = libgenio.a['href']
-                libgenpw = libgenpw.a['href']
-
-                urls = []
-
-                # libgen.io
-                #
-                # Final URL contains same md5-hash, but an additional key parameter is
-                # required (16 chars, alphanumeric, uppercase). Seems to be generated on
-                # the fly. Or can it be solved for somehow?
-                r = requests.get(libgenio)
-                soup = BeautifulSoup(r.text, 'html.parser')
-                # -2 here, but -1 on foreignfiction
-                # XXX: broken
-                final = soup.table.find_all('td')[-2].a['href']
-                urls.append(final)
-
-                # libgen.pw
-                #
-                # Final URL contains another hash, which is always the same: the two hashes are
-                # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
-                # at CRC-96).
-                r = requests.get(libgenpw)
-                soup = BeautifulSoup(r.text, 'html.parser')
-
-                # We can skip a third request by getting the libgen.pw's hash and
-                # craft the final URL.
-                hsh = soup.find('div', {'class': 'book-info__download'}).a['href'].split('/')[-1]
-                # Yes, the exclusion of the subdomain matters! (fuck)
-                final = 'https://libgen.pw/download/book/' + hsh
-                urls.append(final)
-
-                return urls
-
 
             item = {
                 **item,
@@ -439,48 +396,6 @@ class LibgenSeeker(object):
                 size = esm.text[esm.text.find('(')+1:esm.text.find(')')]
                 return translate_size(size.replace('\xa0', ' '))
 
-            # XXX: unused
-            def extract_mirrors():
-                # Two mirrors are offered: one libgen.io and one libgen.pw.
-                # Both mirrors lead to intermediate download page(s).
-                # The download URl must be extracted from these pages.
-                # Both download links contain the md5-hash of the item (presumebly).
-                # Can the final URL be deduced from this hash? (fetching these pages
-                # really slows things down).
-                # NOTE: Handle this in back-end? No, an intermediate page may fail.
-
-                # NOTE: this happens to be None at times. Why?
-                io, pw = mirrors.div.find_all('a')
-                io = "http://libgen.io" + io['href']
-                pw = pw['href']
-
-                urls = []
-
-                # libgen.io
-                #
-                # Final URL contains same md5-hash, but an additional key parameter is
-                # required (16 chars, alphanumeric, uppercase). Seems to be generated on
-                # the fly. Or can it be solved for somehow?
-                r = requests.get(io)
-                soup = BeautifulSoup(r.text, 'html.parser')
-                final = soup.table.find_all('td')[-1].a['href']
-                urls.append(final)
-
-                # libgen.pw
-                #
-                # Final URL contains another hash, which is always the same: the two hashes are
-                # related. Now, is this a hash of the book itself, or the md5? (hash-finder hints
-                # at CRC-96).
-                r = requests.get(pw)
-                soup = BeautifulSoup(r.text, 'html.parser')
-
-                # We can skip a third request by getting the libgen.pw's hash and
-                # craft the final URL.
-                hsh = soup.find('div', {'class': 'book-info__download'}).a['href'].split('/')[-1]
-                final = 'https://fiction.libgen.pw/download/book/' + hsh
-                urls.append(final)
-
-                return urls
 
             # Transform "<last name>, <first name>" -> "<first name> <last name>" if possible
             def flip_names(name):
@@ -506,6 +421,32 @@ class LibgenSeeker(object):
 
 def find(wanted, bookwyrm):
     LibgenSeeker(wanted, bookwyrm).search()
+
+
+# TODO: make this into a neat wrapper, passing the soup as argument
+def get_soup(url):
+    r = requests.get(mirror)
+    r.raise_for_status()
+    return BeautifulSoup(r.text, 'html.parser')
+
+
+def resolve(mirror):
+    def resolve_libgenpw(mirror):
+        # Input URL is some item ID (e.g., <https://libgen.pw/item/detail/id/426147>)
+        # where the final URL seem to contain some UID in hexadecimal.
+        # (e.g., <https://libgen.pw/download/book/5a1f04993a044650f501160e>).
+        # Can we derive this number?
+        soup = get_soup(mirror)
+        uid = soup.find('div', {'class': 'book-info__download'}).a['href'].split('/')[-1]
+        return ('https://libgen.pw/download/book/' + uid, {})
+
+
+    resolvers = {
+        'libgen.pw': resolve_libgenpw,
+    }
+
+    f = resolvers.get(furl(mirror).host)
+    return f(mirror) if f else None
 
 
 if __name__ == "__main__":
