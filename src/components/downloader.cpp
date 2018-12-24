@@ -103,6 +103,26 @@ namespace bookwyrm {
         return candidate;
     }
 
+    static void draw_progress_bar(downloader *d, string status_text, const double fraction)
+    {
+        const int term_width = std::invoke([]() {
+            struct winsize w;
+            ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+            return w.ws_col;
+        });
+
+        int bar_length = 26, min_bar_length = 5, status_text_length = status_text.length() + 6;
+
+        if (status_text_length + bar_length > term_width)
+            bar_length -= status_text_length + bar_length - term_width;
+
+        /* Don't draw the progress bar if length is less than min_bar_length. */
+        if (bar_length >= min_bar_length)
+            d->pbar.draw(bar_length, fraction);
+
+        std::cerr << status_text << std::flush;
+    }
+
     // TODO: make this use std::optional
     auto downloader::resolve_mirror(const string &mirror, const core::item &item, vector<py::module> &plugins)
     {
@@ -136,6 +156,13 @@ namespace bookwyrm {
 
             int mirror_idx = 1;
             for (const auto &mirror : item.misc.mirrors) {
+                /* Print resolving status. */
+                string status_text = fmt::format(" resolving mirrors... (try {curr}/{total}); {filename}\r",
+                                                 fmt::arg("curr", mirror_idx),
+                                                 fmt::arg("total", item.misc.mirrors.size()),
+                                                 fmt::arg("filename", current_filename_));
+                draw_progress_bar(this, status_text, 0);
+
                 auto pair = resolve_mirror(mirror, item, plugins);
                 string url = std::get<0>(pair);
                 if (url.empty()) {
@@ -191,10 +218,12 @@ namespace bookwyrm {
 
             if (!success) {
                 fmt::print(stderr,
-                           "error: no good sources for item: {} - {} ({}).\n",
+                           "error: unable to resolve any mirrors for item: {} - {} ({})."
+                           " Mirrors: {}. Please submit a bug report.",
                            vector_to_string(item.nonexacts.authors),
                            item.nonexacts.title,
-                           item.exacts.year);
+                           item.exacts.year,
+                           vector_to_string(item.misc.mirrors));
             }
         }
 
@@ -257,22 +286,7 @@ namespace bookwyrm {
                                              fmt::arg("filename", d->current_filename_));
 
             /* Draw the progress bar. */
-            const int term_width = std::invoke([]() {
-                struct winsize w;
-                ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-                return w.ws_col;
-            });
-
-            int bar_length = 26, min_bar_length = 5, status_text_length = status_text.length() + 6;
-
-            if (status_text_length + bar_length > term_width)
-                bar_length -= status_text_length + bar_length - term_width;
-
-            /* Don't draw the progress bar if length is less than min_bar_length. */
-            if (bar_length >= min_bar_length)
-                d->pbar.draw(bar_length, fraction);
-
-            std::cout << status_text << std::flush;
+            draw_progress_bar(d, status_text, fraction);
         }
 
         return 0;
