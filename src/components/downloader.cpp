@@ -131,6 +131,7 @@ namespace bookwyrm {
 
         for (const auto &item : items) {
             auto filename = generate_filename(item);
+            current_filename_ = filename;
             bool success = false;
 
             int mirror_idx = 1;
@@ -247,12 +248,13 @@ namespace bookwyrm {
             const double fraction = static_cast<double>(dlnow) / static_cast<double>(dltotal);
             fmt::print("{}\r  {:.0f}% ", rune::vt100::erase_line, fraction * 100);
 
-            string status_text = fmt::format(" {dlnow:.2f}/{dltotal:.2f}MB @ {rate:.2f}{unit} ETA: {eta}\r",
+            string status_text = fmt::format(" {dlnow:.2f}/{dltotal:.2f}MB @ {rate:.2f}{unit} ETA: {eta}; {filename}\r",
                                              fmt::arg("dlnow", static_cast<double>(dlnow) / std::pow(2, 20)),
                                              fmt::arg("dltotal", static_cast<double>(dltotal) / std::pow(2, 20)),
                                              fmt::arg("rate", rate),
                                              fmt::arg("unit", rate_unit),
-                                             fmt::arg("eta", eta_ss.str()));
+                                             fmt::arg("eta", eta_ss.str()),
+                                             fmt::arg("filename", d->current_filename_));
 
             /* Draw the progress bar. */
             const int term_width = std::invoke([]() {
