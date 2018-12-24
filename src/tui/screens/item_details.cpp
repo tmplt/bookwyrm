@@ -63,7 +63,7 @@ namespace bookwyrm::tui::screen {
             {"Year", year},
             {"Publisher", item_.nonexacts.publisher},
             {"Extension", item_.exacts.extension},
-            {"URI", uris},
+            {"Mirrors", uris},
             {"Source", item_.misc.origin_plugin},
             // include filesize here
             // and print it red if the item is gigabytes large
@@ -82,6 +82,11 @@ namespace bookwyrm::tui::screen {
         for (const auto &p : v) {
             print(0, y, p.first + ':', attribute::bold);
             print(static_cast<int>(len + 4), y++, p.second.get());
+
+            /* How many lines did the string take up? */
+            if (int lines = (static_cast<int>(len + 4) + p.second.get().length()) / get_width(); lines > 1) {
+                y += lines;
+            }
         }
 
 #ifdef DEBUG
