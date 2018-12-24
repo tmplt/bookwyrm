@@ -24,6 +24,7 @@ namespace bookwyrm {
         curl = curl_easy_init();
         if (!curl)
             throw component_error("curl could not initialize");
+        headers = NULL;
 
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0");
@@ -59,6 +60,7 @@ namespace bookwyrm {
     downloader::~downloader()
     {
         curl_easy_cleanup(curl);
+        curl_slist_free_all(headers);
         curl_global_cleanup();
 
         /* std::cout << rune::vt100::show_cursor; */
@@ -140,6 +142,16 @@ namespace bookwyrm {
                     continue;
                 }
                 curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+                /* Set HTTP headers, if any are available. */
+                curl_slist_free_all(headers);
+                assert(headers == NULL);
+                for (auto &header : std::get<1>(pair)) {
+                    /* XXX: can Referer be set this way, or must we use CURLOPT_REFERER? */
+                    headers = curl_slist_append(headers,
+                            fmt::format("{}: {}", header.first, header.second).c_str());
+                }
+                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
                 std::FILE *out = std::fopen(filename.c_str(), "wb");
                 if (out == NULL) {

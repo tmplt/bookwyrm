@@ -47,6 +47,7 @@ namespace bookwyrm {
 
         const fs::path dldir;
         CURL *curl;
+        struct curl_slist *headers;
     };
 
 } // namespace bookwyrm
