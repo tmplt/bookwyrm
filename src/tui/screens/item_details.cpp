@@ -88,29 +88,6 @@ namespace bookwyrm::tui::screen {
                 y += lines;
             }
         }
-
-#ifdef DEBUG
-        print(0, ++y, "Description:", attribute::bold);
-        print_desc(++y, [](int repeats) {
-            const string str = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, "
-                               "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut "
-                               "enim ad "
-                               "minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-                               "aliquip ex ea "
-                               "commodo consequat. Duis aute irure dolor in reprehenderit in "
-                               "voluptate velit e"
-                               "sse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat "
-                               "cupidatat "
-                               "non proident, sunt in culpa qui officia deserunt mollit anim id est "
-                               "laborum.";
-
-            string ret;
-            for (int i = 0; i < repeats; ++i)
-                ret += str + (i == repeats - 1 ? "" : " ");
-
-            return ret;
-        }(20));
-#endif
     }
 
     void item_details::print_desc(int &y, std::string str)
