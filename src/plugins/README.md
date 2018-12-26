@@ -13,6 +13,3 @@ Only the `libgen.io` mirror is parsed for now; the others yield different HTML.
 * furl, for easier URL modifications;
 * requests, for fetching pages, and
 * isbnlib, for validating ISBN numbers.
-
-## `{test*,log-entry-generator,syntax_error, invalid_path_object}.py`
-For debugging purposes only. No dependencies other than Python's standard library and bookwyrm itself.
