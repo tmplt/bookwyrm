@@ -4,6 +4,7 @@
 The core (or backend, if you will) is the integral part of bookwyrm.
 Given at the least a title, author, series or publisher, bookwyrm will propagate your query to all available plugins, handled by the aptly named `plugin_handler`.
 Each plugin exposes a `find()` function which queries its defining source and gives the result of this back to bookwyrm via function callbacks.
+Each plugin also exposes a `resolve(mirror)` function, for resolving the mirrors of a wanted item (getting direct links, setting eventual HTTP headers, etc.).
 Each plugin is run in its own thread by calling `async_search()`, and continues to run until the `plugin_handler` is destructed and the program exits;
 each worker thread is `std::thread::detach()`ed when it's no longer needed.
 
