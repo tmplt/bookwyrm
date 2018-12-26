@@ -1,3 +1,5 @@
 furl
 requests
 isbnlib
+beautifulsoup4
+pymaybe
