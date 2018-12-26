@@ -30,7 +30,7 @@ import requests
 import re
 import isbnlib
 
-DOMAINS = ('93.174.95.27',)
+DOMAINS = ('libgen.io', '93.174.95.27')
 DEBUG = __name__ == '__main__'
 
 class FakeLogger():
@@ -61,6 +61,7 @@ def translate_size(string):
         return
 
     si_prefix = {
+        'k': 1e3,
         'K': 1e3,
         'M': 1e6,
         'G': 1e9
@@ -255,14 +256,17 @@ class LibgenSeeker(object):
         }
         exhaust_conditions = {
             '/search.php': lambda table: len(table.find_all('tr')) == 1,
-            '/foreignfiction/index.php': lambda table: len(table.find_all('tr')) == 1
+            '/foreignfiction/index.php': lambda table: len(table.find_all('tr')) == 0
         }
 
         while True:
             f.set({'page': p}).add(query_params)
 
             # Fetch the page
-            r = requests.get(f.url)
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'
+            }
+            r = requests.get(f.url, headers=headers)
             if r.status_code != requests.codes.ok:
                 r.raise_for_status()
 
@@ -317,7 +321,7 @@ class LibgenSeeker(object):
                 'pages': maybe(re.search('\d+', pages.text)).group(),
                 'size': translate_size(size.text),
                 'extension': extension.text,
-                'mirrors': [m.a['href'] for m in mirrors]
+                'mirrors': [m.a['href'] for m in mirrors if m.a != None]
             }
 
             def extract_year(year):
@@ -367,7 +371,7 @@ class LibgenSeeker(object):
             return item
 
         # The first row is the columns' headers, so we skip them.
-        for row in table.find_all('tr')[1:]:
+        for row in table.find_all('tr', recursive=False)[1:]:
             self.feed(make_item(row))
 
     def process_ffiction(self, table):
@@ -394,7 +398,14 @@ class LibgenSeeker(object):
 
             def extract_size():
                 size = esm.text[esm.text.find('(')+1:esm.text.find(')')]
-                return translate_size(size.replace('\xa0', ' '))
+                size = size.replace('\xa0', ' ')
+
+                if not ' ' in size:
+                    # size looks akin to "280kB"; we inject a space between numbers and letters
+                    idx = re.compile("[^\W\d]").search(size).start()
+                    size = size[:idx] + ' ' + size[idx:]
+
+                return translate_size(size)
 
 
             # Transform "<last name>, <first name>" -> "<first name> <last name>" if possible
