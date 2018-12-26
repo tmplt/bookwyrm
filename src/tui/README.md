@@ -11,7 +11,7 @@ The TUI has a few screen available:
 * `screens/item_details`: displays details about a selected item. The plan is to fetch more data from some database (e.g. WorldCat or Open Library) if the source itself didn't return a good amount.
 * `screens/log`: a simple screen that displays all logs made from the running plugins.
 
-A footer is always visible in the TUI.
+A footer is always visible in the TUI, containing a contextual menu.
 One line is dedicated for the active screen to print whatever it wants on (extra information, error messages, etc.), along with optional scroll amount.
 Another line prints the bindings of the active screen, along with an eventual notification that there are unread logs (cleared after opening the log screen).
 
