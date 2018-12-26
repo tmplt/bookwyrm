@@ -112,8 +112,7 @@ int main(int argc, char *argv[])
         ("-t", "--title",      "Specify title",     "TITLE")
         ("-s", "--series",     "Specify series",     "SERIE")
         ("-p", "--publisher",  "Specify publisher", "PUBLISHER");
-    const auto excl = cligroup("Exclusive", "cannot be combined with any other arguments")
-        ("-d", "--ident",      "Specify an item identification (such as DOI, URL, etc.)", "IDENT");
+    const auto excl = cligroup("Exclusive", "cannot be combined with any other arguments");
     const auto exact = cligroup("Exact", "all are optional")
         ("-y", "--year",       "Specify year of release. "
                                "A prefix modifier can be used to broaden the search. "

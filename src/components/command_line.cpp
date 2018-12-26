@@ -65,6 +65,10 @@ void cliparser::usage() const
     for (const auto &group : valid_groups_) {
         std::cout << group.name << " arguments" << (group.synopsis.empty() ? ":" : " - " + group.synopsis + ":") << '\n';
 
+        if (group.options.empty()) {
+            std::cout << "  N/A, see <https://github.com/Tmplt/bookwyrm/issues/71>\n";
+        }
+
         for (const auto &opt : group.options) {
             /* Padding between flags and description. */
             size_t pad = maxlen - opt.flag_long.length() - opt.token.length();
