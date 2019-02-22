@@ -13,21 +13,21 @@ namespace bookwyrm::core {
 
     static int get_integral(const py::dict &dict, const char *key)
     {
-        if (!dict.contains(key))
+        if (!dict.contains(key) || dict[key].is_none())
             return empty;
         return py::int_(dict[key]);
     }
 
     static string get_string(const py::dict &dict, const char *key)
     {
-        if (!dict.contains(key))
+        if (!dict.contains(key) || dict[key].is_none())
             return "";
         return trim(py::str(dict[key]));
     }
 
     static vector<string> get_vector_string(const py::dict &dict, const char *key)
     {
-        if (!dict.contains(key))
+        if (!dict.contains(key) || dict[key].is_none())
             return {{}};
 
         vector<string> strings;
@@ -70,7 +70,11 @@ namespace bookwyrm::core {
                std::tie(other.authors, other.title, other.series, other.publisher, other.journal, other.edition);
     }
 
-    bool misc_t::operator==(const misc_t &other) const { return std::tie(uris, isbns, mirrors, origin_plugin) == std::tie(other.uris, other.isbns, other.mirrors, other.origin_plugin); }
+    bool misc_t::operator==(const misc_t &other) const
+    {
+        return std::tie(uris, isbns, mirrors, origin_plugin) ==
+               std::tie(other.uris, other.isbns, other.mirrors, other.origin_plugin);
+    }
 
     bool item::operator==(const item &other) const
     {
