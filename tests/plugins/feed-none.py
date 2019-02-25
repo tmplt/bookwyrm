@@ -16,4 +16,4 @@ def find(wanted, bookwyrm):
 
     bookwyrm.feed(book)
 
-#PASS item too similar, or missing title/URI
+#PASS item not a match close enough, or missing title/URI
