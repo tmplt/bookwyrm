@@ -15,7 +15,12 @@ namespace bookwyrm::core {
     {
         if (!dict.contains(key) || dict[key].is_none())
             return empty;
-        return py::int_(dict[key]);
+
+        try {
+            return py::int_(dict[key]);
+        } catch (const py::error_already_set &) {
+            return empty;
+        }
     }
 
     static string get_string(const py::dict &dict, const char *key)
