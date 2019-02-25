@@ -253,7 +253,7 @@ void plugin_handler::add_item(py::dict dict)
     const item item(dict);
     log(log_level::debug, fmt::format("trying to add one new item with title '{}'...", item.nonexacts.title));
     if (item.nonexacts.title.empty() || !item.matches(wanted_, options_.accuracy) || item.misc.uris.size() == 0) {
-        log(log_level::debug, "item too similar, or missing title/URI");
+        log(log_level::debug, "item not a match close enough, or missing title/URI; ignored.");
         return;
     }
 
