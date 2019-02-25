@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         ("-h", "--help",       "Display this text and exit")
         ("-v", "--version",    "Print version information (" + build_info_short + ") and exit")
         ("-D", "--debug",      "Set logging level to debug")
-        ("-A", "--accuracy", "Set searching accuracy in percentage", "ACCURACY");
+        ("-A", "--accuracy", "Set searching accuracy in percentage (default: 75)", "ACCURACY");
     // clang-format on
 
     /* Construct a command line parser */
