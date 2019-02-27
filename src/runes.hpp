@@ -3,8 +3,6 @@
 #include <ncurses.h>
 #include <type_traits>
 
-#include "str_const.hpp"
-
 namespace rune {
 
     namespace single {
@@ -14,9 +12,9 @@ namespace rune {
     namespace bar {
 
         namespace unicode {
-            constexpr str_const left_border = u8"\u2595", right_border = u8"\u258F";
+            const std::string left_border = u8"\u2595", right_border = u8"\u258F";
 
-            constexpr std::array<const str_const, 9> fraction = {
+            const std::array<const std::string, 9> fraction = {
                 " ",        /* unused */
                 u8"\u258F", /* ▏ */
                 u8"\u258E", /* ▎ */
@@ -30,14 +28,13 @@ namespace rune {
 
         } // namespace unicode
 
-        constexpr str_const left_border = "[", right_border = "]", empty_fill = " ", tick = "=";
+        const std::string left_border = "[", right_border = "]", empty_fill = " ", tick = "=";
     } // namespace bar
 
     /* http://ascii-table.com/ansi-escape-sequences.php */
-    // TODO: drop str_const
     namespace vt100 {
-        constexpr str_const bar_colour = "\033[1;34m", border_colour = "\033[1;37m", reset_colour = "\033[0m",
-                            hide_cursor = "\033[?25l", show_cursor = "\033[?25h", erase_line = "\033[K";
+        const std::string bar_colour = "\033[1;34m", border_colour = "\033[1;37m", reset_colour = "\033[0m",
+                          hide_cursor = "\033[?25l", show_cursor = "\033[?25h", erase_line = "\033[K";
     }
 
 } // namespace rune
