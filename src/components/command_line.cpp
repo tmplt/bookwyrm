@@ -247,8 +247,8 @@ bool cliparser::parse_pair(const string_view &input, const string_view &input_ne
 
 bool cliparser::opt_exists(const string_view &option, string opt_short, string opt_long)
 {
-    const bool is_short = option.compare(0, opt_short.length(), opt_short) == 0,
-               is_long = option.compare(0, opt_long.length(), opt_long) == 0;
+    const auto len = std::max({option.length(), opt_short.length(), opt_long.length()});
+    const bool is_short = option.compare(0, len, opt_short) == 0, is_long = option.compare(0, len, opt_long) == 0;
 
     return is_short || is_long;
 }
