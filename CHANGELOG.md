@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 ### [v0.7.0] - 2019-02-28
 
 ### Added
-- `bookwyrm --help` now displayed the default search accuracy.
+- `bookwyrm --help` now displays the default search accuracy.
 - All item information is now printed on the item details screen. #73
 
 ### Changed
