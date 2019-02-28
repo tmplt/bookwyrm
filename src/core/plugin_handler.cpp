@@ -239,14 +239,18 @@ void plugin_handler::python_module_runner(py::module module)
 #ifdef DEBUG
 void plugin_handler::wait()
 {
-    /*
-     * Wait until all plugins have finished
-     * TODO: clean this up
-     */
+    /* TODO: dont poll */
     while (running_plugins_ != 0)
         ;
 }
 #endif
+
+void plugin_handler::wait_for_item()
+{
+    /* TODO: dont poll */
+    while (items_.size() == 0 && running_plugins_ != 0)
+        ;
+}
 
 void plugin_handler::add_item(py::dict dict)
 {

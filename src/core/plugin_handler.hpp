@@ -96,6 +96,11 @@ namespace bookwyrm::core {
 #endif
 
         /**
+         * @brief Wait until one item has been found or until no modules are running.
+         */
+        void wait_for_item();
+
+        /**
          * @brief Try to add a found item, and the update the set frontend.
          * @param dict Python dictionary containing all item information
          * @warning Should be called after the \ref plugin_handler::set_frontend
@@ -131,6 +136,8 @@ namespace bookwyrm::core {
          * @brief Return how many plugins are still searching
          */
         const std::atomic<size_t> &running_plugins() const;
+
+        inline size_t items() { return items_.size(); }
 
     private:
         static bool readable_file(const fs::path &path);

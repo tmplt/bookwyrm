@@ -60,7 +60,7 @@ namespace bookwyrm::tui {
     void logger::flush_to_screen()
     {
         if (screen_.expired())
-            throw std::runtime_error("__func__: buffer is empty");
+            throw std::runtime_error(fmt::format("{}:{}: log screen expired", __FILE__, __LINE__));
 
         std::lock_guard<std::mutex> guard(log_mutex_);
 
@@ -74,16 +74,9 @@ namespace bookwyrm::tui {
     tui::tui(std::set<core::item> &items, bool debug_log, const std::atomic<size_t> &running_plugins)
         : viewing_details_(false), items_(items), running_plugins_(running_plugins)
     {
-        /* Create the log screen. */
-        log_ = std::make_shared<screen::log>();
-
-        /* And create the default menu screen and focus on it. */
-        index_ = std::make_shared<screen::multiselect_menu>(items_);
-        focused_ = index_;
-
         /* Create the logger. */
-        logger_ = std::make_unique<logger>(
-            log_, (debug_log ? core::log_level::debug : core::log_level::warn), [this]() { return this->is_log_focused(); });
+        logger_ = std::make_unique<logger>((debug_log ? core::log_level::debug : core::log_level::warn),
+                                           [this]() { return this->is_log_focused(); });
 
         logger_->debug("the mighty bookwyrm hath been summoned!");
     }
@@ -191,6 +184,14 @@ namespace bookwyrm::tui {
 
     bool tui::display()
     {
+        /* Create the log screen. */
+        log_ = std::make_shared<screen::log>();
+        logger_->set_screen(log_);
+
+        /* And create the default menu screen and focus on it. */
+        index_ = std::make_shared<screen::multiselect_menu>(items_);
+        focused_ = index_;
+
         repaint_screens();
 
         while (true) {

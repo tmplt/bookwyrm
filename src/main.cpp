@@ -201,13 +201,21 @@ int main(int argc, char *argv[])
             ph.set_frontend(ui);
             ph.async_search();
 
-            /* Display the UI, getting wanted items if any where selected. */
-            if (ui->display()) {
+            /* Wait until at least one item has been found (or until all plugins have finished running). */
+            ph.wait_for_item();
+
+            /* Display the UI, getting wanted items if any where found and selected. */
+            if (ph.items() != 0 && ui->display()) {
                 wanted_items = ui->get_wanted_items();
             }
         }
 
         ph.clear_frontend();
+
+        if (ph.items() == 0) {
+            fmt::print(stderr, "Unable to find any items\n");
+            return EXIT_FAILURE;
+        }
 
         if (wanted_items.empty()) {
             /* We have nothing else to do. */

@@ -17,10 +17,8 @@ namespace bookwyrm::tui {
     colour to_colour(core::log_level lvl);
 
     struct logger {
-        explicit logger(std::shared_ptr<screen::log> screen,
-                        core::log_level wanted_level,
-                        std::function<bool(void)> &&predicate)
-            : wanted_level_(wanted_level), screen_(screen), is_log_focused(predicate)
+        explicit logger(core::log_level wanted_level, std::function<bool(void)> &&predicate)
+            : wanted_level_(wanted_level), is_log_focused(predicate)
         {
         }
 
@@ -41,6 +39,7 @@ namespace bookwyrm::tui {
         core::log_level worst_unread() const;
 
         void flush_to_screen();
+        void set_screen(std::shared_ptr<screen::log> screen) { screen_ = screen; }
 
     private:
         const core::log_level wanted_level_;
