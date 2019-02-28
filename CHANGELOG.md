@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](https://semver.org)
 
 ## [Unreleased]
 
+### [v0.7.0] - 2019-02-28
+
+### Added
+- `bookwyrm --help` now displayed the default search accuracy.
+- All item information is now printed on the item details screen. #73
+
+### Changed
+- bookwyrm no longer displays the TUI unless an item has been found. If no items are found, an appropriate error message is printed, and the program exits with an error. #74
+
+### Fixed
+- Program options with the invalid form `-<valid short opt.><random string>` (e.g. `-atest`) are now parsed correctly. #7
+
 ## [v0.6.1] - 2019-02-25
 
 ### Changed
@@ -20,5 +32,6 @@ This project adheres to [Semantic Versioning](https://semver.org)
 
 * Initial (usable) release
 
-[Unreleased]: https://github.com/Tmplt/bookwyrm/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/Tmplt/bookwyrm/compare/v0.7.0...HEAD
+[v0.7.0]: https://github.com/Tmplt/bookwyrm/compare/v0.6.1...v0.7.0
 [v0.6.1]: https://github.com/Tmplt/bookwyrm/compare/v0.6.0...v0.6.1
