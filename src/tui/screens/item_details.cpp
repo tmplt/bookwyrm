@@ -47,26 +47,38 @@ namespace bookwyrm::tui::screen {
 
     void item_details::print_details()
     {
-        const std::string uris = vector_to_string(item_.misc.mirrors);
+        auto to_str = [](int i) -> const std::string { return (i == core::empty) ? "" : std::to_string(i); };
+
+        // clang-format off
+        const std::string authors = vector_to_string(item_.nonexacts.authors),
+              uris = vector_to_string(item_.misc.mirrors),
+              isbns = vector_to_string(item_.misc.isbns),
+              year = to_str(item_.exacts.year),
+              size = to_str(item_.exacts.size) + " B", // size is recorded in bytes
+              pages = to_str(item_.exacts.pages),
+              volume = to_str(item_.exacts.volume),
+              number = to_str(item_.exacts.number);
+        // clang-format on
 
         using pair = std::pair<std::string, std::reference_wrapper<const std::string>>;
-        std::string authors = vector_to_string(item_.nonexacts.authors);
-        const std::string year = std::invoke([year = item_.exacts.year]() {
-            const std::string str = std::to_string(year);
-            return (str == "-1" ? "N/A" : std::move(str));
-        });
-
         const std::vector<pair> v = {
+            {"Authors", authors},
             {"Title", item_.nonexacts.title},
             {"Serie", item_.nonexacts.series},
-            {"Authors", authors},
-            {"Year", year},
             {"Publisher", item_.nonexacts.publisher},
+            {"Edition", item_.nonexacts.edition},
+            {"Year", year},
+
+            {"Journal", item_.nonexacts.journal},
             {"Extension", item_.exacts.extension},
+
+            {"Size", size}, // TODO: print as read if very large
+            {"Pages", pages},
+            {"Volume", volume},
+            {"Number", number},
             {"Mirrors", uris},
             {"Source", item_.misc.origin_plugin},
-            // include filesize here
-            // and print it red if the item is gigabytes large
+            {"ISBNs", isbns},
         };
 
         /* Find the longest string... */
