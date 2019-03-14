@@ -226,15 +226,15 @@ int main(int argc, char *argv[])
         bookwyrm::downloader d(dl_path);
 
         if (wanted_items.size() == 1)
-            fmt::print("Downloading item...\n");
+            fmt::print(stderr, "Downloading item...\n");
         else
-            fmt::print("Downloading {} items...\n", wanted_items.size());
+            fmt::print(stderr, "Downloading {} items...\n", wanted_items.size());
 
         auto plugins = ph.get_plugins();
         ph.clear_nogil();
         const auto success = d.sync_download(wanted_items, plugins);
         if (!success && wanted_items.size() > 1) {
-            fmt::print("No items were successfully downloaded\n");
+            fmt::print(stderr, "No items were successfully downloaded\n");
             return EXIT_FAILURE;
         }
 

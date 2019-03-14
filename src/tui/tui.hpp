@@ -22,7 +22,7 @@ namespace bookwyrm::tui {
         {
         }
 
-        /* Flush buffer to std{out,err} */
+        /* Flush buffer to stderr */
         ~logger();
 
         void log(const core::log_level level, std::string message);

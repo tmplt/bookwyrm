@@ -14,7 +14,7 @@ namespace bookwyrm {
     public:
         progressbar(bool use_unicode, bool use_colour) : use_unicode_(use_unicode), use_colour_(use_colour) {}
 
-        inline void draw(unsigned int length, double fraction) { std::cout << build_bar(length, fraction); }
+        inline void draw(unsigned int length, double fraction) { std::cerr << build_bar(length, fraction); }
 
     private:
         string build_bar(unsigned int length, double fraction);

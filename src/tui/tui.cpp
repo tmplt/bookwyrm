@@ -26,8 +26,10 @@ namespace bookwyrm::tui {
     {
         std::lock_guard<std::mutex> guard(log_mutex_);
 
-        for (const auto & [ lvl, msg ] : buffer_)
-            (lvl <= core::log_level::warn ? std::cout : std::cerr) << msg << "\n";
+        for (const auto & [ lvl, msg ] : buffer_) {
+            std::ignore = lvl;
+            std::cerr << msg << "\n";
+        }
     }
 
     void logger::log(const core::log_level level, std::string message)

@@ -115,7 +115,7 @@ plugin_handler::~plugin_handler()
     for (const auto & [ lvl, msg ] : buffer_) {
         if (!debug_ && lvl <= log_level::debug)
             continue;
-        std::cout << loglvl_to_string(lvl) + ": " + msg << "\n";
+        std::cerr << loglvl_to_string(lvl) + ": " + msg << "\n";
     }
 
     for (auto &t : threads_)
