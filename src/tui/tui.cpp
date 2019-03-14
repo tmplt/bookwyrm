@@ -73,11 +73,11 @@ namespace bookwyrm::tui {
         buffer_.clear();
     }
 
-    tui::tui(std::set<core::item> &items, bool debug_log, const std::atomic<size_t> &running_plugins)
-        : viewing_details_(false), items_(items), running_plugins_(running_plugins)
+    tui::tui(std::shared_ptr<core::backend> backend, bool log_debug)
+        : viewing_details_(false), backend_(backend), items_(backend->search_results())
     {
         /* Create the logger. */
-        logger_ = std::make_unique<logger>((debug_log ? core::log_level::debug : core::log_level::warn),
+        logger_ = std::make_unique<logger>((log_debug ? core::log_level::debug : core::log_level::warn),
                                            [this]() { return this->is_log_focused(); });
 
         logger_->debug("the mighty bookwyrm hath been summoned!");
@@ -145,7 +145,7 @@ namespace bookwyrm::tui {
         };
 
         /* Print number of running plugins and screen info bar. */
-        if (int plugins = running_plugins_.load(); plugins == 0) {
+        if (int plugins = backend_->running_plugins(); plugins == 0) {
             print(0, curses::get_height() - 2, fmt::format("Search finished, I have found {} items.", index_->item_count()));
         } else {
             print(0,

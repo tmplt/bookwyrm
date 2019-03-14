@@ -285,7 +285,7 @@ void plugin_handler::log(log_level lvl, string msg)
     }
 }
 
-std::set<item> &plugin_handler::results()
+std::set<item> &plugin_handler::search_results()
 {
     return items_;
 }
@@ -303,11 +303,6 @@ void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
 void plugin_handler::clear_frontend()
 {
     frontend_.reset();
-}
-
-const std::atomic<size_t> &plugin_handler::running_plugins() const
-{
-    return running_plugins_;
 }
 
 bool plugin_handler::readable_file(const fs::path &path)

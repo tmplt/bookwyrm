@@ -53,7 +53,7 @@ namespace bookwyrm::tui {
 
     class tui : public core::frontend {
     public:
-        explicit tui(std::set<core::item> &items, bool debug_log, const std::atomic<size_t> &running_plugins);
+        explicit tui(std::shared_ptr<core::backend> backend, bool log_debug);
 
         inline void update();
 
@@ -120,11 +120,11 @@ namespace bookwyrm::tui {
          * back? */
         int index_scrollback_ = -1;
 
+        std::shared_ptr<core::backend> backend_;
+
         /* Forwarded to the multiselect menu. */
         std::set<core::item> const &items_;
         std::mutex tui_mutex_;
-
-        const std::atomic<size_t> &running_plugins_;
 
         std::unique_ptr<logger> logger_;
 

@@ -194,25 +194,25 @@ int main(int argc, char *argv[])
         opts.library_path = fmt::format("{}/usr/lib", INSTALL_PREFIX);
 
         /* Construct and start the plugin handler. */
-        auto ph = core::plugin_handler(std::move(wanted), cli.has("debug"), std::move(opts));
-        ph.load_plugins();
+        auto ph = std::make_shared<core::plugin_handler>(std::move(wanted), cli.has("debug"), std::move(opts));
+        ph->load_plugins();
         {
-            auto ui = std::make_shared<tui::tui>(ph.results(), cli.has("debug"), ph.running_plugins());
-            ph.set_frontend(ui);
-            ph.async_search();
+            auto ui = std::make_shared<tui::tui>(ph, cli.has("debug"));
+            ph->set_frontend(ui);
+            ph->async_search();
 
             /* Wait until at least one item has been found (or until all plugins have finished running). */
-            ph.wait_for_item();
+            ph->wait_for_item();
 
             /* Display the UI, getting wanted items if any where found and selected. */
-            if (ph.items() != 0 && ui->display()) {
+            if (ph->items() != 0 && ui->display()) {
                 wanted_items = ui->get_wanted_items();
             }
         }
 
-        ph.clear_frontend();
+        ph->clear_frontend();
 
-        if (ph.items() == 0) {
+        if (ph->items() == 0) {
             fmt::print(stderr, "Unable to find any items\n");
             return EXIT_FAILURE;
         }
@@ -230,8 +230,8 @@ int main(int argc, char *argv[])
         else
             fmt::print(stderr, "Downloading {} items...\n", wanted_items.size());
 
-        auto plugins = ph.get_plugins();
-        ph.clear_nogil();
+        auto plugins = ph->get_plugins();
+        ph->clear_nogil();
         const auto success = d.sync_download(wanted_items, plugins);
         if (!success && wanted_items.size() > 1) {
             fmt::print(stderr, "No items were successfully downloaded\n");

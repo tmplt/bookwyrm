@@ -50,7 +50,16 @@ namespace bookwyrm::core {
         virtual void log(const log_level level, const std::string message) = 0;
     };
 
-    class __attribute__((visibility("hidden"))) plugin_handler {
+    class backend {
+    public:
+        virtual ~backend() {}
+
+        virtual size_t running_plugins() const = 0;
+
+        virtual std::set<core::item> &search_results() = 0;
+    };
+
+    class __attribute__((visibility("hidden"))) plugin_handler : public backend {
     public:
         explicit plugin_handler(const item &&wanted, bool debug, const options options)
             : wanted_(wanted), debug_(debug), options_(options)
@@ -122,7 +131,7 @@ namespace bookwyrm::core {
          *
          * TODO [doc] return const and make const
          */
-        std::set<core::item> &results();
+        std::set<core::item> &search_results();
 
         /**
          * @brief Set the frontend that we want to notify on updates
@@ -135,7 +144,7 @@ namespace bookwyrm::core {
         /**
          * @brief Return how many plugins are still searching
          */
-        const std::atomic<size_t> &running_plugins() const;
+        size_t running_plugins() const { return running_plugins_.load(); }
 
         inline size_t items() { return items_.size(); }
 
