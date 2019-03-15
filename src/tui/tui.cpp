@@ -83,7 +83,28 @@ namespace bookwyrm::tui {
         logger_->debug("the mighty bookwyrm hath been summoned!");
     }
 
-    void tui::update() { repaint_screens(); }
+    void tui::update()
+    {
+        /* Repaint all active screens. */
+        std::lock_guard<std::mutex> guard(tui_mutex_);
+        curses::erase();
+
+        if (!bookwyrm_fits()) {
+            print(0, 0, "The terminal is too small. I don't fit!");
+        } else if (is_log_focused()) {
+            log_->paint();
+            print_footer();
+        } else {
+            index_->paint();
+
+            if (viewing_details_)
+                details_->paint();
+
+            print_footer();
+        }
+
+        curses::refresh();
+    }
 
     bool tui::is_log_focused() const { return focused_ == log_; }
 
@@ -113,29 +134,7 @@ namespace bookwyrm::tui {
             return;
         }
 
-        repaint_screens();
-    }
-
-    void tui::repaint_screens()
-    {
-        std::lock_guard<std::mutex> guard(tui_mutex_);
-        curses::erase();
-
-        if (!bookwyrm_fits()) {
-            print(0, 0, "The terminal is too small. I don't fit!");
-        } else if (is_log_focused()) {
-            log_->paint();
-            print_footer();
-        } else {
-            index_->paint();
-
-            if (viewing_details_)
-                details_->paint();
-
-            print_footer();
-        }
-
-        curses::refresh();
+        update();
     }
 
     void tui::print_footer()
@@ -181,7 +180,7 @@ namespace bookwyrm::tui {
 
         /* Resizing item_details not yet supported. */
 
-        repaint_screens();
+        update();
     }
 
     bool tui::display()
@@ -194,7 +193,7 @@ namespace bookwyrm::tui {
         index_ = std::make_shared<screen::multiselect_menu>(items_);
         focused_ = index_;
 
-        repaint_screens();
+        update();
 
         while (true) {
             const key ch = static_cast<key>(curses::getkey());
@@ -217,7 +216,7 @@ namespace bookwyrm::tui {
                 return true;
 
             if (meta_action(ch) || focused_->action(ch))
-                repaint_screens();
+                update();
         }
     }
 

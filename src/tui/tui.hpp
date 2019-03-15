@@ -55,13 +55,11 @@ namespace bookwyrm::tui {
     public:
         explicit tui(std::shared_ptr<core::backend> backend, bool log_debug);
 
-        inline void update();
+        /* Repaint all screens that need updating. */
+        void update();
 
         /* Send a log entry to the log screen. */
         void log(const core::log_level level, const std::string message);
-
-        /* Repaint all screens that need updating. */
-        void repaint_screens();
 
         /*
          * Display the TUI and let the user enter input.
