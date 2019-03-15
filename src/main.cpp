@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
     }
 
     /* Start bookwyrm */
-    vector<core::item> wanted_items;
+    std::optional<vector<core::item>> wanted_items;
     try {
         /* Construct options */
         const core::item wanted = create_item(cli);
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
             ph->wait_for_item();
 
             /* Display the UI, getting wanted items if any where found and selected. */
-            if (ph->items() != 0 && ui->display()) {
+            if (ph->items() != 0) {
                 wanted_items = ui->get_wanted_items();
             }
         }
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        if (wanted_items.empty()) {
+        if (!wanted_items) {
             /* We have nothing else to do. */
             return EXIT_SUCCESS;
         }
@@ -225,15 +225,15 @@ int main(int argc, char *argv[])
         /* Download wanted selected items. */
         bookwyrm::downloader d(dl_path);
 
-        if (wanted_items.size() == 1)
+        if (wanted_items->size() == 1)
             fmt::print(stderr, "Downloading item...\n");
         else
-            fmt::print(stderr, "Downloading {} items...\n", wanted_items.size());
+            fmt::print(stderr, "Downloading {} items...\n", wanted_items->size());
 
         auto plugins = ph->get_plugins();
         ph->clear_nogil();
-        const auto success = d.sync_download(wanted_items, plugins);
-        if (!success && wanted_items.size() > 1) {
+        const auto success = d.sync_download(*wanted_items, plugins);
+        if (!success && wanted_items->size() > 1) {
             fmt::print(stderr, "No items were successfully downloaded\n");
             return EXIT_FAILURE;
         }

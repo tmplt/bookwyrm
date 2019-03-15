@@ -41,7 +41,6 @@ namespace bookwyrm::core {
 
     class frontend {
     public:
-        frontend(const std::set<core::item> &items) : items_(items) {}
         virtual ~frontend() {}
 
         /* Updates the frontend after more items have been found. */
@@ -49,10 +48,6 @@ namespace bookwyrm::core {
 
         /* Log something to the frontend with a fitting level. */
         virtual void log(const log_level level, const std::string message) = 0;
-
-    protected:
-        /* Read-only access to found items. */
-        const std::set<core::item> &items_;
     };
 
     class backend {
@@ -61,15 +56,13 @@ namespace bookwyrm::core {
 
         virtual size_t running_plugins() const = 0;
 
-        virtual std::set<core::item> &search_results() = 0;
+        /* Found items are immutable outside of backend. */
+        virtual const std::set<core::item> &search_results() const = 0;
     };
 
     class __attribute__((visibility("hidden"))) plugin_handler : public backend {
     public:
-        explicit plugin_handler(const item &&wanted, bool debug, const options options)
-            : wanted_(wanted), debug_(debug), options_(options)
-        {
-        }
+        explicit plugin_handler(const item &&wanted, bool debug, const options options);
 
         /*
          * Explicitly delete the copy-constructor.
@@ -136,7 +129,7 @@ namespace bookwyrm::core {
          *
          * TODO [doc] return const and make const
          */
-        std::set<core::item> &search_results();
+        const std::set<core::item> &search_results() const;
 
         /**
          * @brief Set the frontend that we want to notify on updates

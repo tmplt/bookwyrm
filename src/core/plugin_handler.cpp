@@ -12,6 +12,11 @@
 
 using namespace bookwyrm::core;
 
+plugin_handler::plugin_handler(const item &&wanted, bool debug, const options options)
+    : wanted_(wanted), debug_(debug), options_(options)
+{
+}
+
 void plugin_handler::load_plugins()
 {
     /*
@@ -285,7 +290,7 @@ void plugin_handler::log(log_level lvl, string msg)
     }
 }
 
-std::set<item> &plugin_handler::search_results()
+const std::set<item> &plugin_handler::search_results() const
 {
     return items_;
 }

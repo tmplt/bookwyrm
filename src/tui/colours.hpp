@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 #include <type_traits>
+#include "../core/plugin_handler.hpp"
 
 namespace bookwyrm::tui {
 
@@ -64,6 +65,23 @@ namespace bookwyrm::tui {
     {
         lhs = static_cast<attribute>(static_cast<colour_t>(lhs) | static_cast<attr_t>(rhs));
         return lhs;
+    }
+
+    constexpr inline colour to_colour(core::log_level lvl)
+    {
+        using level = core::log_level;
+
+        switch (lvl) {
+        case level::debug:
+            return colour::blue;
+        case level::warn:
+            return colour::yellow;
+        case level::err:
+        case level::critical:
+            return colour::red;
+        default:
+            return colour::none;
+        }
     }
 
 } // namespace bookwyrm::tui

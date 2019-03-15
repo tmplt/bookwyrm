@@ -13,9 +13,6 @@
 
 namespace bookwyrm::tui {
 
-    /* Translates a level enum to a matching colour. */
-    colour to_colour(core::log_level lvl);
-
     struct logger {
         explicit logger(core::log_level wanted_level, std::function<bool(void)> &&predicate)
             : wanted_level_(wanted_level), is_log_focused(predicate)
@@ -61,6 +58,9 @@ namespace bookwyrm::tui {
         /* Send a log entry to the log screen. */
         void log(const core::log_level level, const std::string message);
 
+        std::optional<std::vector<core::item>> get_wanted_items();
+
+    private:
         /*
          * Display the TUI and let the user enter input.
          * The input is forwarded to the appropriate screen.
@@ -69,15 +69,11 @@ namespace bookwyrm::tui {
          */
         bool display();
 
-        /* Take ownership of the wanted items and move them to the caller. */
-        std::vector<core::item> get_wanted_items();
-
         /* Draw the context sensitive footer. */
         void print_footer();
 
         bool is_log_focused() const;
 
-    private:
         /* Returns false if bookwyrm doesn't fit in the terminal window. */
         static bool bookwyrm_fits();
 

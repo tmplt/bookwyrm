@@ -3,24 +3,10 @@
 #include "curses_wrap.hpp"
 #include "tui.hpp"
 
+#define BOOKWYRM_MINIMUM_HEIGHT 10
+#define BOOKWYRM_MINIMUM_WIDTH 50
+
 namespace bookwyrm::tui {
-
-    colour to_colour(core::log_level lvl)
-    {
-        using level = core::log_level;
-
-        switch (lvl) {
-        case level::debug:
-            return colour::blue;
-        case level::warn:
-            return colour::yellow;
-        case level::err:
-        case level::critical:
-            return colour::red;
-        default:
-            return colour::none;
-        }
-    }
 
     logger::~logger()
     {
@@ -73,8 +59,7 @@ namespace bookwyrm::tui {
         buffer_.clear();
     }
 
-    tui::tui(std::shared_ptr<core::backend> backend, bool log_debug)
-        : frontend(backend->search_results()), viewing_details_(false), backend_(backend)
+    tui::tui(std::shared_ptr<core::backend> backend, bool log_debug) : viewing_details_(false), backend_(backend)
     {
         /* Create the logger. */
         logger_ = std::make_unique<logger>((log_debug ? core::log_level::debug : core::log_level::warn),
@@ -190,7 +175,7 @@ namespace bookwyrm::tui {
         logger_->set_screen(log_);
 
         /* And create the default menu screen and focus on it. */
-        index_ = std::make_shared<screen::multiselect_menu>(items_);
+        index_ = std::make_shared<screen::multiselect_menu>(backend_->search_results());
         focused_ = index_;
 
         update();
@@ -220,17 +205,24 @@ namespace bookwyrm::tui {
         }
     }
 
-    std::vector<core::item> tui::get_wanted_items()
+    std::optional<std::vector<core::item>> tui::get_wanted_items()
     {
+        /* Display the TUI, aloowing the user to select any items. */
+        if (display() == false)
+            return std::nullopt;
+
         std::vector<core::item> items;
 
         for (int idx : index_->marked_items())
-            items.push_back(*std::next(items_.cbegin(), idx));
+            items.push_back(*std::next(backend_->search_results().cbegin(), idx));
 
         return items;
     }
 
-    bool tui::bookwyrm_fits() { return (curses::get_width() >= 50 && curses::get_height() >= 10); }
+    bool tui::bookwyrm_fits()
+    {
+        return (curses::get_width() >= BOOKWYRM_MINIMUM_WIDTH && curses::get_height() >= BOOKWYRM_MINIMUM_HEIGHT);
+    }
 
     bool tui::meta_action(const int ch)
     {
