@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](https://semver.org)
 
 ## [Unreleased]
 
+### Added
+- A signal hander. Send `SIGINT` (^C) to prematurely terminate bookwyrm.
+
 ### [v0.7.0] - 2019-02-28
 
 ### Added

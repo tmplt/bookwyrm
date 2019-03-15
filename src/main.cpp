@@ -1,5 +1,7 @@
 #include <cerrno>
 #include <clocale>
+#include <csignal>
+#include <cstdlib>
 #include <system_error>
 #include <unistd.h>
 
@@ -104,6 +106,16 @@ static const core::item create_item(const cliparser &cli)
 int main(int argc, char *argv[])
 {
     std::setlocale(LC_ALL, "");
+
+    /* Install a rudimentary SIGINT handler */
+    struct sigaction int_handler;
+    int_handler.sa_handler = [](int) {
+        std::cout << std::endl;
+        std::exit(EXIT_FAILURE);
+    };
+    sigemptyset(&int_handler.sa_mask);
+    int_handler.sa_flags = 0;
+    sigaction(SIGINT, &int_handler, NULL);
 
     /* Define command line options */
     // clang-format off
