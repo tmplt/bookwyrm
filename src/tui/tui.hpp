@@ -121,7 +121,6 @@ namespace bookwyrm::tui {
         std::shared_ptr<core::backend> backend_;
 
         /* Forwarded to the multiselect menu. */
-        std::set<core::item> const &items_;
         std::mutex tui_mutex_;
 
         std::unique_ptr<logger> logger_;

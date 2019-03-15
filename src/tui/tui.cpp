@@ -74,7 +74,7 @@ namespace bookwyrm::tui {
     }
 
     tui::tui(std::shared_ptr<core::backend> backend, bool log_debug)
-        : viewing_details_(false), backend_(backend), items_(backend->search_results())
+        : frontend(backend->search_results()), viewing_details_(false), backend_(backend)
     {
         /* Create the logger. */
         logger_ = std::make_unique<logger>((log_debug ? core::log_level::debug : core::log_level::warn),

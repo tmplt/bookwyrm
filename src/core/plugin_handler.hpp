@@ -41,6 +41,7 @@ namespace bookwyrm::core {
 
     class frontend {
     public:
+        frontend(const std::set<core::item> &items) : items_(items) {}
         virtual ~frontend() {}
 
         /* Updates the frontend after more items have been found. */
@@ -48,6 +49,10 @@ namespace bookwyrm::core {
 
         /* Log something to the frontend with a fitting level. */
         virtual void log(const log_level level, const std::string message) = 0;
+
+    protected:
+        /* Read-only access to found items. */
+        const std::set<core::item> &items_;
     };
 
     class backend {
