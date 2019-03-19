@@ -13,41 +13,6 @@
 
 namespace bookwyrm::tui {
 
-    struct logger {
-        explicit logger(core::log_level wanted_level, std::function<bool(void)> &&predicate)
-            : wanted_level_(wanted_level), is_log_focused(predicate)
-        {
-        }
-
-        /* Flush buffer to stderr */
-        ~logger();
-
-        void log(const core::log_level level, std::string message);
-
-        inline void trace(const std::string msg) { log(core::log_level::trace, "trace: " + msg); }
-        inline void debug(const std::string msg) { log(core::log_level::debug, "debug: " + msg); }
-        inline void info(const std::string msg) { log(core::log_level::info, "info: " + msg); }
-        inline void warn(const std::string msg) { log(core::log_level::warn, "warning: " + msg); }
-        inline void err(const std::string msg) { log(core::log_level::err, "error: " + msg); }
-        inline void critical(const std::string msg) { log(core::log_level::critical, "critical: " + msg); }
-
-        inline bool has_unread_logs() const { return !buffer_.empty(); }
-
-        core::log_level worst_unread() const;
-
-        void flush_to_screen();
-        void set_screen(std::shared_ptr<screen::log> screen) { screen_ = screen; }
-
-    private:
-        const core::log_level wanted_level_;
-        using buffer_pair = std::pair<const core::log_level, const std::string>;
-        std::vector<buffer_pair> buffer_;
-        std::mutex log_mutex_;
-
-        std::weak_ptr<screen::log> screen_;
-        std::function<bool(void)> is_log_focused;
-    };
-
     class tui : public core::frontend {
     public:
         explicit tui(std::shared_ptr<core::backend> backend, bool log_debug);
@@ -118,8 +83,6 @@ namespace bookwyrm::tui {
 
         /* Forwarded to the multiselect menu. */
         std::mutex tui_mutex_;
-
-        std::unique_ptr<logger> logger_;
 
         std::shared_ptr<screen::multiselect_menu> index_;
         std::shared_ptr<screen::item_details> details_;

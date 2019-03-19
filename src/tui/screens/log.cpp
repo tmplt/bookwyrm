@@ -5,10 +5,26 @@
 
 namespace bookwyrm::tui::screen {
 
-    log::log() : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right) {}
+    log::log(const core::log_level wanted_level, std::function<bool(void)> &&predicate)
+        : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right),
+          wanted_level_(wanted_level), is_log_focused_(predicate)
+    {
+    }
+
+    log::~log()
+    {
+        for (const auto & [ lvl, msg ] : unread_entries_) {
+            std::ignore = lvl;
+            std::cerr << msg << "\n";
+        }
+    }
 
     void log::paint()
     {
+        /* Mark unread log entries as read. */
+        std::move(unread_entries_.begin(), unread_entries_.end(), std::back_inserter(entries_));
+        unread_entries_.clear();
+
         /*
          * Ad-hoc for now; something is wrong with entry down below.
          * Removing this causes segfault when we have no entries.
@@ -30,7 +46,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void log::print_entry(int &y, const entry_tp entry)
+    void log::print_entry(int &y, const entry_pp entry)
     {
         int x = 0;
 
@@ -88,13 +104,27 @@ namespace bookwyrm::tui::screen {
 
     void log::log_entry(core::log_level level, std::string msg)
     {
+        if (level < wanted_level_)
+            return;
+
         /*
          * We might get some error from Python here, which contain a few newlines.
          * Log entries are a single line, so we strip the line breaks here.
          *
-         * Note: what about \r?
+         * XXX: what about \r?
          */
         std::replace(msg.begin(), msg.end(), '\n', ' ');
+
+        auto emplace_entry = [&](std::vector<entry_pair> &v, core::log_level lvl, std::string msg) {
+            std::string prefix = core::loglvl_to_string(lvl);
+            v.emplace_back(lvl, prefix + ": " + msg);
+        };
+
+        /* Is the log screen focused? */
+        if (!is_log_focused_()) {
+            emplace_entry(unread_entries_, level, msg);
+            return;
+        }
 
         /*
          * The entries_ container will after a while need to resize,
@@ -103,14 +133,42 @@ namespace bookwyrm::tui::screen {
          */
         if (detached_at_.has_value()) {
             const auto dist = std::distance(entries_.cbegin(), detached_at_.value());
-            entries_.emplace_back(level, msg);
+            emplace_entry(entries_, level, msg);
             detached_at_ = entries_.cbegin() + dist;
         } else {
-            entries_.emplace_back(level, msg);
+            emplace_entry(entries_, level, msg);
         }
     }
 
-    size_t log::capacity(entry_tp entry) const
+    std::optional<core::log_level> log::worst_unread() const
+    {
+        const auto worst = std::max_element(cbegin(unread_entries_),
+                                            cend(unread_entries_),
+                                            [](const entry_pair &a, const entry_pair &b) { return a.first < b.first; });
+
+        if (worst == unread_entries_.cend()) {
+            /* No unread entries */
+            return std::nullopt;
+        }
+
+        return worst->first;
+    }
+
+    std::optional<core::log_level> log::worst_unread() const
+    {
+        const auto worst = std::max_element(cbegin(unread_entries_),
+                                            cend(unread_entries_),
+                                            [](const entry_pair &a, const entry_pair &b) { return a.first < b.first; });
+
+        if (worst == unread_entries_.cend()) {
+            /* No unread entries */
+            return std::nullopt;
+        }
+
+        return worst->first;
+    }
+
+    size_t log::capacity(entry_pp entry) const
     {
         size_t remain = get_height();
         int capacity = 0;

@@ -8,68 +8,21 @@
 
 namespace bookwyrm::tui {
 
-    logger::~logger()
-    {
-        std::lock_guard<std::mutex> guard(log_mutex_);
-
-        for (const auto & [ lvl, msg ] : buffer_) {
-            std::ignore = lvl;
-            std::cerr << msg << "\n";
-        }
-    }
-
-    void logger::log(const core::log_level level, std::string message)
-    {
-        if (level < wanted_level_)
-            return;
-
-        std::lock_guard<std::mutex> guard(log_mutex_);
-
-        if (screen_.expired()) {
-            buffer_.emplace_back(level, message);
-        } else if (const auto screen = screen_.lock(); is_log_focused()) {
-            screen->log_entry(level, message);
-        } else {
-            buffer_.emplace_back(level, message);
-        }
-    }
-
-    core::log_level logger::worst_unread() const
-    {
-        if (!has_unread_logs())
-            throw std::runtime_error("__func__: buffer is empty");
-
-        const auto worst = std::max_element(
-            cbegin(buffer_), cend(buffer_), [](const buffer_pair &a, const buffer_pair &b) { return a.first < b.first; });
-
-        return worst->first;
-    }
-
-    void logger::flush_to_screen()
-    {
-        if (screen_.expired())
-            throw std::runtime_error(fmt::format("{}:{}: log screen expired", __FILE__, __LINE__));
-
-        std::lock_guard<std::mutex> guard(log_mutex_);
-
-        const auto screen = screen_.lock();
-        for (const auto & [ level, message ] : buffer_)
-            screen->log_entry(level, message);
-
-        buffer_.clear();
-    }
-
     tui::tui(std::shared_ptr<core::backend> backend, bool log_debug) : viewing_details_(false), backend_(backend)
     {
-        /* Create the logger. */
-        logger_ = std::make_unique<logger>((log_debug ? core::log_level::debug : core::log_level::warn),
-                                           [this]() { return this->is_log_focused(); });
-
-        logger_->debug("the mighty bookwyrm hath been summoned!");
+        /* Create the log screen. */
+        log_ = std::make_shared<screen::log>(log_debug ? core::log_level::debug : core::log_level::warn,
+                                             [this]() { return is_log_focused(); });
+        log_->log_entry(core::log_level::debug, "the mighty bookwyrm hath been summoned!");
     }
 
     void tui::update()
     {
+        /* Don't paint anything unless the index menu exists (when attaching tui to backend) */
+        if (!index_) {
+            return;
+        }
+
         /* Repaint all active screens. */
         std::lock_guard<std::mutex> guard(tui_mutex_);
         curses::erase();
@@ -95,30 +48,8 @@ namespace bookwyrm::tui {
 
     void tui::log(const core::log_level level, const std::string message)
     {
-        /* XXX: ugly; rethink this. */
-        switch (level) {
-        case core::log_level::trace:
-            logger_->trace(message);
-            break;
-        case core::log_level::debug:
-            logger_->debug(message);
-            break;
-        case core::log_level::info:
-            logger_->info(message);
-            break;
-        case core::log_level::warn:
-            logger_->warn(message);
-            break;
-        case core::log_level::err:
-            logger_->err(message);
-            break;
-        case core::log_level::critical:
-            logger_->critical(message);
-            break;
-        default:
-            return;
-        }
-
+        /* Forward to log screen */
+        log_->log_entry(level, message);
         update();
     }
 
@@ -151,10 +82,10 @@ namespace bookwyrm::tui {
                   attribute::reverse | attribute::bold);
 
         /* Any unseen logs? */
-        if (logger_->has_unread_logs()) {
+        if (const auto worst_unread = log_->worst_unread(); worst_unread.has_value()) {
             print_right_align(curses::get_height() - 1,
                               " You have unread logs! ",
-                              to_colour(logger_->worst_unread()) | attribute::reverse | attribute::bold);
+                              to_colour(*worst_unread) | attribute::reverse | attribute::bold);
         }
     }
 
@@ -170,11 +101,7 @@ namespace bookwyrm::tui {
 
     bool tui::display()
     {
-        /* Create the log screen. */
-        log_ = std::make_shared<screen::log>();
-        logger_->set_screen(log_);
-
-        /* And create the default menu screen and focus on it. */
+        /* Create the default menu screen and focus on it. */
         index_ = std::make_shared<screen::multiselect_menu>(backend_->search_results());
         focused_ = index_;
 
@@ -280,8 +207,6 @@ namespace bookwyrm::tui {
         if (focused_ != log_) {
             last_ = focused_;
             focused_ = log_;
-
-            logger_->flush_to_screen();
         } else {
             focused_ = last_;
         }
