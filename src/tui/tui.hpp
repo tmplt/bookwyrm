@@ -18,12 +18,13 @@ namespace bookwyrm::tui {
         explicit tui(std::shared_ptr<core::backend> backend, bool log_debug);
 
         /* Repaint all screens that need updating. */
-        void update();
+        void update() override;
 
         /* Send a log entry to the log screen. */
-        void log(const core::log_level level, const std::string message);
+        void log(const core::log_level level, const std::string message) override;
 
         std::optional<std::vector<core::item>> get_wanted_items();
+        std::vector<core::log_pair> unread_logs() const;
 
     private:
         /*

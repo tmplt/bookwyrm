@@ -17,6 +17,7 @@ namespace fs = std::experimental::filesystem;
 namespace bookwyrm::core {
 
     enum class log_level { trace = 0, debug = 1, info = 2, warn = 3, err = 4, critical = 5, off = 6 };
+    using log_pair = std::pair<const core::log_level, const std::string>;
 
     inline string loglvl_to_string(log_level lvl)
     {

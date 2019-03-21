@@ -146,6 +146,8 @@ namespace bookwyrm::tui {
         return items;
     }
 
+    std::vector<core::log_pair> tui::unread_logs() const { return std::move(log_->unread_logs()); }
+
     bool tui::bookwyrm_fits()
     {
         return (curses::get_width() >= BOOKWYRM_MINIMUM_WIDTH && curses::get_height() >= BOOKWYRM_MINIMUM_HEIGHT);

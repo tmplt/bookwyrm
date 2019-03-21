@@ -11,14 +11,6 @@ namespace bookwyrm::tui::screen {
     {
     }
 
-    log::~log()
-    {
-        for (const auto & [ lvl, msg ] : unread_entries_) {
-            std::ignore = lvl;
-            std::cerr << msg << "\n";
-        }
-    }
-
     void log::paint()
     {
         /* Mark unread log entries as read. */
@@ -46,7 +38,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void log::print_entry(int &y, const entry_pp entry)
+    void log::print_entry(int &y, const log_pp entry)
     {
         int x = 0;
 
@@ -115,7 +107,7 @@ namespace bookwyrm::tui::screen {
          */
         std::replace(msg.begin(), msg.end(), '\n', ' ');
 
-        auto emplace_entry = [&](std::vector<entry_pair> &v, core::log_level lvl, std::string msg) {
+        auto emplace_entry = [&](std::vector<core::log_pair> &v, core::log_level lvl, std::string msg) {
             std::string prefix = core::loglvl_to_string(lvl);
             v.emplace_back(lvl, prefix + ": " + msg);
         };
@@ -142,9 +134,8 @@ namespace bookwyrm::tui::screen {
 
     std::optional<core::log_level> log::worst_unread() const
     {
-        const auto worst = std::max_element(cbegin(unread_entries_),
-                                            cend(unread_entries_),
-                                            [](const entry_pair &a, const entry_pair &b) { return a.first < b.first; });
+        const auto worst = std::max_element(
+            cbegin(unread_entries_), cend(unread_entries_), [](const auto &a, const auto &b) { return a.first < b.first; });
 
         if (worst == unread_entries_.cend()) {
             /* No unread entries */
@@ -154,21 +145,9 @@ namespace bookwyrm::tui::screen {
         return worst->first;
     }
 
-    std::optional<core::log_level> log::worst_unread() const
-    {
-        const auto worst = std::max_element(cbegin(unread_entries_),
-                                            cend(unread_entries_),
-                                            [](const entry_pair &a, const entry_pair &b) { return a.first < b.first; });
+    std::vector<core::log_pair> log::unread_logs() const { return std::move(unread_entries_); }
 
-        if (worst == unread_entries_.cend()) {
-            /* No unread entries */
-            return std::nullopt;
-        }
-
-        return worst->first;
-    }
-
-    size_t log::capacity(entry_pp entry) const
+    size_t log::capacity(log_pp entry) const
     {
         size_t remain = get_height();
         int capacity = 0;

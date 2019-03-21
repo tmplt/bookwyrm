@@ -217,13 +217,22 @@ int main(int argc, char *argv[])
         ph->wait_for_item();
 
         /* Display the UI, getting wanted items if any where found and selected. */
+        std::vector<core::log_pair> unread_logs;
         if (ph->items() != 0) {
             auto ui = std::make_shared<tui::tui>(ph, cli.has("debug"));
             ph->set_frontend(ui);
+
             wanted_items = ui->get_wanted_items();
+            unread_logs = ui->unread_logs();
         }
 
         ph->clear_frontend();
+
+        /* Dump unread logs to stderr */
+        for (const auto & [ lvl, msg ] : unread_logs) {
+            std::ignore = lvl;
+            fmt::print(stderr, "{}\n", msg);
+        }
 
         if (ph->items() == 0) {
             fmt::print(stderr, "Unable to find any items\n");
