@@ -49,6 +49,8 @@ namespace bookwyrm::tui::screen {
 
         virtual ~base();
 
+        void refresh() { wnoutrefresh(window_); }
+
     protected:
         explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
 
@@ -84,6 +86,7 @@ namespace bookwyrm::tui::screen {
 
     private:
         static int screen_count_;
+        WINDOW *window_;
     };
 
 } // namespace bookwyrm::tui::screen

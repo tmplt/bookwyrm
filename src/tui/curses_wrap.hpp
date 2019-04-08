@@ -71,11 +71,34 @@ namespace bookwyrm::tui::curses {
         return retval;
     }
 
+    inline int mvprintn(WINDOW *win,
+                        int x,
+                        int y,
+                        const std::string &str,
+                        int n,
+                        attribute attrs = attribute::none,
+                        colour clr = colour::none)
+    {
+        wattron(win, clr | attrs);
+        int retval = mvwaddnstr(win, y, x, str.c_str(), n);
+        wattroff(win, clr | attrs);
+        return retval;
+    }
+
     inline int mvprint(int x, int y, const std::string &str, attribute attrs = attribute::none, colour clr = colour::none)
     {
         attron(clr | attrs);
         int retval = mvaddstr(y, x, str.c_str());
         attroff(clr | attrs);
+        return retval;
+    }
+
+    inline int
+    mvprint(WINDOW *win, int x, int y, const std::string &str, attribute attrs = attribute::none, colour clr = colour::none)
+    {
+        wattron(win, clr | attrs);
+        int retval = mvwaddstr(win, y, x, str.c_str());
+        wattroff(win, clr | attrs);
         return retval;
     }
 

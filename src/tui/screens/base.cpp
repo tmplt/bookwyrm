@@ -11,9 +11,14 @@ namespace bookwyrm::tui::screen {
     base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
         : padding_top_(pad_top), padding_bot_(pad_bot), padding_left_(pad_left), padding_right_(pad_right)
     {
-        if (screen_count_++ > 0)
-            return;
-        curses::init();
+        if (screen_count_++ == 0) {
+            curses::init();
+        }
+
+        window_ = newwin(curses::get_height() - padding_top_ - padding_bot_,
+                         curses::get_width() - padding_right_ - padding_right_,
+                         padding_top_,
+                         padding_left_);
     }
 
     base::~base()
@@ -21,6 +26,8 @@ namespace bookwyrm::tui::screen {
         if (--screen_count_ == 0)
             curses::terminate();
         assert(screen_count_ >= 0);
+
+        delwin(window_);
     }
 
     int base::get_width() const { return curses::get_width() - padding_left_ - padding_right_; }
@@ -29,19 +36,12 @@ namespace bookwyrm::tui::screen {
 
     void base::print(int x, int y, const std::string &str, const attribute attrs, const colour clr)
     {
-        x += padding_left_;
-        y += padding_top_;
-
-        /* Is the cell owned by the screen? */
-        if (!(x <= get_width()) || !(y <= get_height()))
-            return;
-
-        curses::mvprint(x, y, str, attrs, clr);
+        curses::mvprint(window_, x, y, str, attrs, clr);
     }
 
     int base::printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs, const colour clr)
     {
-        curses::mvprintn(x, y, str, static_cast<int>(space), attrs, clr);
+        curses::mvprintn(window_, x, y, str, static_cast<int>(space), attrs, clr);
 
         int truncd = 0;
         if (str.length() > space) {
@@ -55,7 +55,7 @@ namespace bookwyrm::tui::screen {
 
             truncd = static_cast<int>(str.length() - space + whitespace);
             getyx(stdscr, y, x);
-            curses::mvprint(x - static_cast<int>(whitespace) - 1, y, "~", attrs, clr);
+            curses::mvprint(window_, x - static_cast<int>(whitespace) - 1, y, "~", attrs, clr);
         }
 
         return truncd;

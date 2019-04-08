@@ -27,21 +27,27 @@ namespace bookwyrm::tui {
         std::lock_guard<std::mutex> guard(tui_mutex_);
         curses::erase();
 
+        /* Refresh the footer first */
+        if (bookwyrm_fits())
+            print_footer();
+        wnoutrefresh(stdscr);
+
         if (!bookwyrm_fits()) {
             print(0, 0, "The terminal is too small. I don't fit!");
         } else if (is_log_focused()) {
             log_->paint();
-            print_footer();
+            log_->refresh();
         } else {
             index_->paint();
+            index_->refresh();
 
-            if (viewing_details_)
+            if (viewing_details_) {
                 details_->paint();
-
-            print_footer();
+                details_->refresh();
+            }
         }
 
-        curses::refresh();
+        doupdate();
     }
 
     bool tui::is_log_focused() const { return focused_ == log_; }
