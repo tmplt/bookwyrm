@@ -5,6 +5,7 @@
 #include <ncurses.h>
 
 #include "colours.hpp"
+#include "curses_wrap.hpp"
 #include "keys.hpp"
 #include "runes.hpp"
 
@@ -24,7 +25,7 @@ namespace bookwyrm::tui::screen {
         virtual void paint() = 0;
 
         /* What should be done when the window resizes? */
-        virtual void on_resize(){};
+        virtual void on_resize();
 
         /* Manage the screen. Return true if an action was performed. */
         virtual bool action(const int ch);
@@ -33,23 +34,24 @@ namespace bookwyrm::tui::screen {
         virtual void toggle_action(){};
 
         /* Move around in/with the screen. */
-        virtual void move(move_direction dir) = 0;
+        virtual void move(move_direction dir);
 
         /* When this screen is focused, what should we print in the footer? */
-        virtual std::string footer_info() const = 0;
+        virtual std::string footer_info() const;
 
         /* How do we control the screen? */
-        virtual std::string controls_legacy() const = 0;
+        virtual std::string controls_legacy() const;
 
         /*
          * How many percent have we scrolled?
          * Returns -1 if we can't scroll yet
          */
-        virtual int scrollpercent() const = 0;
+        virtual int scrollpercent() const;
 
         virtual ~base();
 
         void refresh() { wnoutrefresh(window_); }
+        void erase() { werase(window_); }
 
     protected:
         explicit base(int pad_top, int pad_bot, int pad_left, int pad_right);
@@ -77,6 +79,19 @@ namespace bookwyrm::tui::screen {
                      const size_t space,
                      const attribute attrs = attribute::none,
                      const colour clr = colour::none);
+
+        void print_right_align(int y, std::string &&str, const colour attrs = colour::none)
+        {
+            print(curses::get_width(window_) - str.length(), y, str, attrs);
+        }
+
+        void printcont(int x, const int y, const std::string str, const colour attrs)
+        {
+            curses::mvprint(window_, x, y, str, attribute::none, attrs);
+
+            for (int i = x + str.length(); i < curses::get_width(); i++)
+                curses::mvprint(window_, i, y, " ", attribute::none, attrs);
+        }
 
         /* Returns the ratio of a int b in percentage. Used for scroll percentage. */
         static inline int ratio(double a, double b) { return static_cast<int>(std::round(100 * (a / b))); }

@@ -61,6 +61,8 @@ namespace bookwyrm::tui::screen {
         return truncd;
     }
 
+    void base::on_resize() { return; }
+
     bool base::action(const int ch)
     {
         const auto move_halfpage = [this](move_direction dir) {
@@ -96,5 +98,13 @@ namespace bookwyrm::tui::screen {
 
         return false;
     }
+
+    void base::move(move_direction) {}
+
+    std::string base::footer_info() const { return ""; }
+
+    std::string base::controls_legacy() const { return ""; }
+
+    int base::scrollpercent() const { return -1; }
 
 } // namespace bookwyrm::tui::screen

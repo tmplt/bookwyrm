@@ -7,6 +7,7 @@
 #include "item.hpp"
 #include "plugin_handler.hpp"
 #include "screens/base.hpp"
+#include "screens/footer.hpp"
 #include "screens/item_details.hpp"
 #include "screens/log.hpp"
 #include "screens/multiselect_menu.hpp"
@@ -34,9 +35,6 @@ namespace bookwyrm::tui {
          * anything. Returns true otherwise.
          */
         bool display();
-
-        /* Draw the context sensitive footer. */
-        void print_footer();
 
         bool is_log_focused() const;
 
@@ -88,6 +86,7 @@ namespace bookwyrm::tui {
         std::shared_ptr<screen::multiselect_menu> index_;
         std::shared_ptr<screen::item_details> details_;
         std::shared_ptr<screen::log> log_;
+        std::unique_ptr<screen::footer> footer_;
 
         std::shared_ptr<screen::base> focused_, last_;
     };

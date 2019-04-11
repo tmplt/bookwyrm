@@ -25,26 +25,37 @@ namespace bookwyrm::tui {
 
         /* Repaint all active screens. */
         std::lock_guard<std::mutex> guard(tui_mutex_);
-        curses::erase();
 
-        /* Refresh the footer first */
-        if (bookwyrm_fits())
-            print_footer();
-        wnoutrefresh(stdscr);
+        footer_->prepare(backend_->running_plugins(),
+                         index_->item_count(),
+                         focused_->scrollpercent(),
+                         focused_->controls_legacy(),
+                         log_->worst_unread());
 
         if (!bookwyrm_fits()) {
-            print(0, 0, "The terminal is too small. I don't fit!");
+            curses::mvprint(0, 0, "The terminal is too small. I don't fit!");
         } else if (is_log_focused()) {
+            log_->erase();
             log_->paint();
             log_->refresh();
+
+            footer_->erase();
+            footer_->paint();
+            footer_->refresh();
         } else {
+            index_->erase();
             index_->paint();
             index_->refresh();
 
             if (viewing_details_) {
+                details_->erase();
                 details_->paint();
                 details_->refresh();
             }
+
+            footer_->erase();
+            footer_->paint();
+            footer_->refresh();
         }
 
         doupdate();
@@ -57,42 +68,6 @@ namespace bookwyrm::tui {
         /* Forward to log screen */
         log_->log_entry(level, message);
         update();
-    }
-
-    void tui::print_footer()
-    {
-        const auto print_right_align = [this](int y, std::string &&str, const colour attrs = colour::none) {
-            this->print(curses::get_width() - str.length(), y, str, attrs);
-        };
-
-        /* Print number of running plugins and screen info bar. */
-        if (int plugins = backend_->running_plugins(); plugins == 0) {
-            print(0, curses::get_height() - 2, fmt::format("Search finished, I have found {} items.", index_->item_count()));
-        } else {
-            print(0,
-                  curses::get_height() - 2,
-                  fmt::format("Searching with {} plugins... "
-                              "I have found {} items thus far.",
-                              plugins,
-                              index_->item_count()));
-        }
-
-        /* Scroll percentage, if any. */
-        if (int perc = focused_->scrollpercent(); perc > -1)
-            print_right_align(curses::get_height() - 2, fmt::format("({}%)", perc));
-
-        /* Screen controls info bar. */
-        printcont(0,
-                  curses::get_height() - 1,
-                  "[q]Quit [TAB]Toggle log " + focused_->controls_legacy(),
-                  attribute::reverse | attribute::bold);
-
-        /* Any unseen logs? */
-        if (const auto worst_unread = log_->worst_unread(); worst_unread.has_value()) {
-            print_right_align(curses::get_height() - 1,
-                              " You have unread logs! ",
-                              to_colour(*worst_unread) | attribute::reverse | attribute::bold);
-        }
     }
 
     void tui::resize_screens()
@@ -109,6 +84,7 @@ namespace bookwyrm::tui {
     {
         /* Create the default menu screen and focus on it. */
         index_ = std::make_shared<screen::multiselect_menu>(backend_->search_results());
+        footer_ = std::make_unique<screen::footer>();
         focused_ = index_;
 
         update();
@@ -220,19 +196,6 @@ namespace bookwyrm::tui {
         }
 
         return true;
-    }
-
-    void tui::print(int x, const int y, const std::string &str, const colour attrs)
-    {
-        curses::mvprint(x, y, str, attribute::none, attrs);
-    }
-
-    void tui::printcont(int x, const int y, const std::string &str, const colour attrs)
-    {
-        curses::mvprint(x, y, str, attribute::none, attrs);
-
-        for (int i = x + str.length(); i < curses::get_width(); i++)
-            curses::mvprint(i, y, " ", attribute::none, attrs);
     }
 
 } // namespace bookwyrm::tui

@@ -40,25 +40,21 @@ namespace bookwyrm::tui::curses {
 
     inline void terminate() { endwin(); }
 
-    inline void erase() { ::erase(); }
-
-    inline void refresh() { ::refresh(); }
-
     inline int getkey() { return ::getch(); }
 
-    inline int get_height()
+    inline int get_height(WINDOW *win = stdscr)
     {
         int x, y;
         std::ignore = x;
-        getmaxyx(stdscr, y, x);
+        getmaxyx(win, y, x);
         return y;
     }
 
-    inline int get_width()
+    inline int get_width(WINDOW *win = stdscr)
     {
         int x, y;
         std::ignore = y;
-        getmaxyx(stdscr, y, x);
+        getmaxyx(win, y, x);
         return x;
     }
 
