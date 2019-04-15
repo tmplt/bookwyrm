@@ -6,7 +6,7 @@
 namespace rune {
 
     namespace single {
-        const std::string double_right_angle_bracket = "»", em_dash = "—", scrollbar_fg = "█", scrollbar_bg = "▒";
+        const std::string double_right_angle_bracket = "»", em_dash = "—";
     }
 
     namespace bar {
@@ -38,5 +38,3 @@ namespace rune {
     }
 
 } // namespace rune
-
-/* using rune_t = std::underlying_type_t<rune::single>; */
