@@ -42,7 +42,7 @@ namespace bookwyrm::tui::screen {
             curses::terminate();
         assert(screen_count_ >= 0);
 
-        delwin(window_);
+        curses::delwin(window_);
     }
 
     int base::get_width() const { return curses::get_width(window_); }
@@ -69,18 +69,30 @@ namespace bookwyrm::tui::screen {
             }
 
             truncd = static_cast<int>(str.length() - space + whitespace);
-            getyx(stdscr, y, x);
-            curses::mvprint(window_, x - static_cast<int>(whitespace) - 1, y, "~", attrs, clr);
+            curses::mvprint(window_, get_width() - static_cast<int>(whitespace) - 1, get_height(), "~", attrs, clr);
         }
 
         return truncd;
     }
 
+    void base::print_right_align(int y, std::string &&str, const colour attrs)
+    {
+        print(curses::get_width(window_) - str.length(), y, str, attrs);
+    }
+
+    void base::printcont(int x, const int y, const std::string str, const colour attrs)
+    {
+        curses::mvprint(window_, x, y, str, attribute::none, attrs);
+
+        for (int i = x + str.length(); i < curses::get_width(); i++)
+            curses::mvprint(window_, i, y, " ", attribute::none, attrs);
+    }
+
     void base::on_resize()
     {
         auto abs = pads_.to_absolute();
-        wresize(window_, curses::get_height() - abs.top - abs.bot, curses::get_width() - abs.left - abs.right);
-        mvwin(window_, abs.top, abs.bot);
+        curses::wresize(window_, curses::get_height() - abs.top - abs.bot, curses::get_width() - abs.left - abs.right);
+        curses::mvwin(window_, abs.top, abs.bot);
     }
 
     bool base::action(const int ch)
@@ -119,6 +131,8 @@ namespace bookwyrm::tui::screen {
         return false;
     }
 
+    void base::toggle_action() {}
+
     void base::move(move_direction) {}
 
     std::string base::footer_info() const { return ""; }
@@ -126,5 +140,9 @@ namespace bookwyrm::tui::screen {
     std::string base::controls_legacy() const { return ""; }
 
     int base::scrollpercent() const { return -1; }
+
+    void base::refresh() { curses::wnoutrefresh(window_); }
+
+    void base::erase() { curses::werase(window_); }
 
 } // namespace bookwyrm::tui::screen

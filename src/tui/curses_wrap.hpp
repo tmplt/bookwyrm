@@ -42,7 +42,19 @@ namespace bookwyrm::tui::curses {
 
     inline void terminate() { endwin(); }
 
+    inline void doupdate() { ::doupdate(); }
+
+    inline int delwin(WINDOW *win) { return ::delwin(win); }
+
+    inline int wresize(WINDOW *win, int lines, int columns) { return ::wresize(win, lines, columns); }
+
+    inline int mvwin(WINDOW *win, int y, int x) { return ::mvwin(win, y, x); }
+
     inline int getkey() { return ::getch(); }
+
+    inline int wnoutrefresh(WINDOW *win) { return ::wnoutrefresh(win); }
+
+    inline int werase(WINDOW *win) { return ::werase(win); }
 
     inline int get_height(WINDOW *win = stdscr)
     {
@@ -58,15 +70,6 @@ namespace bookwyrm::tui::curses {
         std::ignore = y;
         getmaxyx(win, y, x);
         return x;
-    }
-
-    inline int
-    mvprintn(int x, int y, const std::string &str, int n, attribute attrs = attribute::none, colour clr = colour::none)
-    {
-        attron(clr | attrs);
-        int retval = mvaddnstr(y, x, str.c_str(), n);
-        attroff(clr | attrs);
-        return retval;
     }
 
     inline int mvprintn(WINDOW *win,

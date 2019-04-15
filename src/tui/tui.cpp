@@ -33,7 +33,7 @@ namespace bookwyrm::tui {
                          log_->worst_unread());
 
         if (!bookwyrm_fits()) {
-            werase(stdscr);
+            curses::werase(stdscr);
             curses::mvprint(0, 0, "The terminal is too small. I don't fit!");
         } else if (is_log_focused()) {
             log_->paint();
@@ -48,7 +48,7 @@ namespace bookwyrm::tui {
             footer_->paint();
         }
 
-        doupdate();
+        curses::doupdate();
     }
 
     bool tui::is_log_focused() const { return focused_ == log_; }
