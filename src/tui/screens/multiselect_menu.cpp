@@ -76,7 +76,7 @@ namespace bookwyrm::tui::screen {
         if (item_count() <= menu_capacity())
             return scroll::not_applicable;
 
-        return ratio(menu_capacity() + scroll_offset_, item_count());
+        return ratio(selected_item_, item_count());
     }
 
     bool multiselect_menu::is_marked(const size_t idx) const { return marked_items_.find(idx) != marked_items_.cend(); }
