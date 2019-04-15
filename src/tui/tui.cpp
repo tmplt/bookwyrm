@@ -33,6 +33,7 @@ namespace bookwyrm::tui {
                          log_->worst_unread());
 
         if (!bookwyrm_fits()) {
+            werase(stdscr);
             curses::mvprint(0, 0, "The terminal is too small. I don't fit!");
         } else if (is_log_focused()) {
             log_->erase();
@@ -72,10 +73,14 @@ namespace bookwyrm::tui {
 
     void tui::resize_screens()
     {
-        index_->on_resize();
-        log_->on_resize();
+        close_details();
 
-        /* Resizing item_details not yet supported. */
+        {
+            std::lock_guard<std::mutex> guard(tui_mutex_);
+            index_->on_resize();
+            log_->on_resize();
+            footer_->on_resize();
+        }
 
         update();
     }
@@ -90,10 +95,23 @@ namespace bookwyrm::tui {
         update();
 
         while (true) {
-            const key ch = static_cast<key>(curses::getkey());
+            const key ch = std::invoke([this]() {
+                std::lock_guard<std::mutex> guard(tui_mutex_);
+
+                /*
+                 * Because we use ncurses WINDOWs and have parallel threads that all update the TUI,
+                 * we will eventually end up in a situation where a screen has been resized by an external
+                 * event (SIGWINCH) but have not been handled by ncurses internals. In such a case, all
+                 * affected WINDOWs are updated by getch(3), which is a race condition with update()
+                 * called from other threads. Hence, we must have exclusive TUI access before the call.
+                 * Additionally, the call must be non-blocking.
+                 *
+                 * Can this be improved by using ncurses PADs instead?
+                 */
+                return static_cast<key>(curses::getkey());
+            });
 
             if (ch == key::resize) {
-                close_details();
                 resize_screens();
                 continue;
             }
@@ -109,14 +127,15 @@ namespace bookwyrm::tui {
             if (ch == key::enter)
                 return true;
 
-            if (meta_action(ch) || focused_->action(ch))
+            if (meta_action(ch) || focused_->action(ch)) {
                 update();
+            }
         }
     }
 
     std::optional<std::vector<core::item>> tui::get_wanted_items()
     {
-        /* Display the TUI, aloowing the user to select any items. */
+        /* Display the TUI, allowing the user to select any items. */
         if (display() == false)
             return std::nullopt;
 

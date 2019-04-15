@@ -6,7 +6,7 @@
 
 namespace bookwyrm::tui::curses {
 
-    inline void init()
+    inline bool init()
     {
         /*
          * If this fails, an error is printed to standard output and exit() is called.
@@ -14,10 +14,11 @@ namespace bookwyrm::tui::curses {
          */
         initscr();
 
-        cbreak();             // disable line buffering
-        keypad(stdscr, true); // interpret function key escape sequences for us
-        noecho();             // don't echo input to screen
-        curs_set(0);          // hide the cursor
+        cbreak();              // disable line buffering
+        keypad(stdscr, true);  // interpret function key escape sequences for us
+        noecho();              // don't echo input to screen
+        curs_set(0);           // hide the cursor
+        nodelay(stdscr, true); // make getch(3) a non-blocking call
 
         if (has_colors()) {
             start_color();        // enable colour support
@@ -32,9 +33,10 @@ namespace bookwyrm::tui::curses {
             init_pair(6, COLOR_MAGENTA, -1);
             init_pair(7, COLOR_CYAN, -1);
             init_pair(8, COLOR_WHITE, -1);
+
+            return true;
         } else {
-            // XXX: Can we warn users that colours are not supported?
-            // An exception, perhaps?
+            return false;
         }
     }
 

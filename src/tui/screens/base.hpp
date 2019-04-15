@@ -24,7 +24,7 @@ namespace bookwyrm::tui::screen {
 
         virtual void paint() = 0;
 
-        /* What should be done when the window resizes? */
+        /* Update `WINDOW` dimensions */
         virtual void on_resize();
 
         /* Manage the screen. Return true if an action was performed. */

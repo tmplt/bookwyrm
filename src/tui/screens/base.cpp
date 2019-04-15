@@ -8,17 +8,26 @@ namespace bookwyrm::tui::screen {
 
     int base::screen_count_ = 0;
 
+    static auto absolute_padding = [](auto get_fullsize, int p) -> int { return (p < 0 ? get_fullsize(stdscr) : 0) + p; };
+
     base::base(int pad_top, int pad_bot, int pad_left, int pad_right)
         : padding_top_(pad_top), padding_bot_(pad_bot), padding_left_(pad_left), padding_right_(pad_right)
     {
         if (screen_count_++ == 0) {
+            /* TODO: notify user if colours are not supported and. c.f. NO_COLOR. */
             curses::init();
         }
 
-        window_ = newwin(curses::get_height() - padding_top_ - padding_bot_,
-                         curses::get_width() - padding_right_ - padding_right_,
-                         padding_top_,
-                         padding_left_);
+        /* Translate eventual relative padding values */
+        int abs_pad_top = absolute_padding(curses::get_height, pad_top);
+        int abs_pad_bot = absolute_padding(curses::get_height, pad_bot);
+        int abs_pad_left = absolute_padding(curses::get_width, pad_left);
+        int abs_pad_right = absolute_padding(curses::get_width, pad_right);
+
+        window_ = newwin(curses::get_height() - abs_pad_top - abs_pad_bot,
+                         curses::get_width() - abs_pad_right - abs_pad_right,
+                         abs_pad_top,
+                         abs_pad_left);
     }
 
     base::~base()
@@ -30,9 +39,9 @@ namespace bookwyrm::tui::screen {
         delwin(window_);
     }
 
-    int base::get_width() const { return curses::get_width() - padding_left_ - padding_right_; }
+    int base::get_width() const { return curses::get_width(window_); }
 
-    int base::get_height() const { return curses::get_height() - padding_top_ - padding_bot_; }
+    int base::get_height() const { return curses::get_height(window_); }
 
     void base::print(int x, int y, const std::string &str, const attribute attrs, const colour clr)
     {
@@ -61,7 +70,17 @@ namespace bookwyrm::tui::screen {
         return truncd;
     }
 
-    void base::on_resize() { return; }
+    void base::on_resize()
+    {
+        int abs_pad_top = absolute_padding(curses::get_height, padding_top_);
+        int abs_pad_bot = absolute_padding(curses::get_height, padding_bot_);
+        int abs_pad_left = absolute_padding(curses::get_width, padding_right_);
+        int abs_pad_right = absolute_padding(curses::get_width, padding_right_);
+
+        wresize(
+            window_, curses::get_height() - abs_pad_top - abs_pad_bot, curses::get_width() - abs_pad_left - abs_pad_right);
+        mvwin(window_, abs_pad_top, abs_pad_bot);
+    }
 
     bool base::action(const int ch)
     {

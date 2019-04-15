@@ -82,6 +82,7 @@ namespace bookwyrm::tui {
 
         /* Forwarded to the multiselect menu. */
         std::mutex tui_mutex_;
+        std::mutex resize_mutex_;
 
         std::shared_ptr<screen::multiselect_menu> index_;
         std::shared_ptr<screen::item_details> details_;

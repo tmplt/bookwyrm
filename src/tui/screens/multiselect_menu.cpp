@@ -145,6 +145,8 @@ namespace bookwyrm::tui::screen {
 
     void multiselect_menu::on_resize()
     {
+        base::on_resize();
+
         update_column_widths();
 
         /*
