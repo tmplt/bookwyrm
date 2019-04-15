@@ -25,7 +25,8 @@ namespace bookwyrm::tui::screen {
 
     std::string item_details::footer_info() const
     {
-        return fmt::format("DEBUG: padding top: {}, height: {}", padding_top_, get_height());
+        /* TODO: remove this */
+        return fmt::format("DEBUG: padding top: {}, height: {}", pads_.top, get_height());
     }
 
     int item_details::scrollpercent() const

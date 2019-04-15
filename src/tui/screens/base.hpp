@@ -18,6 +18,17 @@ namespace bookwyrm::tui::screen {
         enum { not_applicable = -1 };
     }
 
+    struct paddings {
+        paddings(int top, int bot, int left, int right) : top(top), bot(bot), left(left), right(right) {}
+
+        paddings to_absolute() const;
+
+        int top;
+        int bot;
+        int left;
+        int right;
+    };
+
     class base {
     public:
         enum move_direction { top, up, down, bot };
@@ -96,8 +107,7 @@ namespace bookwyrm::tui::screen {
         /* Returns the ratio of a int b in percentage. Used for scroll percentage. */
         static inline int ratio(double a, double b) { return static_cast<int>(std::round(100 * (a / b))); }
 
-        /* How much space do we leave for bars? */
-        int padding_top_, padding_bot_, padding_left_, padding_right_;
+        const paddings pads_;
 
     private:
         static int screen_count_;

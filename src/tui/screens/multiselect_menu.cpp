@@ -43,7 +43,7 @@ namespace bookwyrm::tui::screen {
     {
         for (size_t idx = 0; idx < columns_.size(); idx++) {
             /* Can we fit another column? */
-            const size_t allowed_width = get_width() - 1 + padding_left_ - columns_[idx].startx - 2;
+            const size_t allowed_width = get_width() - 1 - columns_[idx].startx - 2;
             if (columns_[idx].width > allowed_width)
                 break;
 
@@ -134,7 +134,7 @@ namespace bookwyrm::tui::screen {
                 column.width = std::get<int>(column.width_w);
             } catch (std::bad_variant_access &) {
                 /* It's a ratio, so multiply it with the full width. */
-                const int width = get_width() - 1 + padding_left_;
+                const int width = get_width() - 1;
                 column.width = width * std::get<double>(column.width_w);
             }
 
@@ -172,7 +172,7 @@ namespace bookwyrm::tui::screen {
         size_t x = 1;
         for (auto &column : columns_) {
             /* Can we fit the next header? */
-            const size_t allowed_width = get_width() - 1 + padding_left_ - column.startx - 2;
+            const size_t allowed_width = get_width() - 1 - column.startx - 2;
             if (column.width > allowed_width)
                 break;
 
@@ -248,7 +248,6 @@ namespace bookwyrm::tui::screen {
     const std::pair<int, int> multiselect_menu::compress()
     {
         const int details_height = menu_capacity() * 0.80;
-        padding_bot_ = details_height;
 
         /*
          * Will the detail menu hide the highlighted item?
@@ -260,10 +259,6 @@ namespace bookwyrm::tui::screen {
         return {scroll, details_height - 1};
     }
 
-    void multiselect_menu::decompress(int scroll)
-    {
-        padding_bot_ = default_padding_bot;
-        scroll_offset_ -= scroll;
-    }
+    void multiselect_menu::decompress(int scroll) { scroll_offset_ -= scroll; }
 
 } // namespace bookwyrm::tui::screen
