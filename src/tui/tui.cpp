@@ -77,7 +77,7 @@ namespace bookwyrm::tui {
     bool tui::display()
     {
         /* Create the default menu screen and focus on it. */
-        index_ = std::make_shared<screen::multiselect_menu>(backend_->search_results());
+        index_ = std::make_shared<screen::index>(backend_->search_results());
         footer_ = std::make_unique<screen::footer>();
         focused_ = index_;
 

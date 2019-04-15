@@ -8,9 +8,9 @@
 #include "plugin_handler.hpp"
 #include "screens/base.hpp"
 #include "screens/footer.hpp"
+#include "screens/index.hpp"
 #include "screens/item_details.hpp"
 #include "screens/log.hpp"
-#include "screens/multiselect_menu.hpp"
 
 namespace bookwyrm::tui {
 
@@ -84,7 +84,7 @@ namespace bookwyrm::tui {
         std::mutex tui_mutex_;
         std::mutex resize_mutex_;
 
-        std::shared_ptr<screen::multiselect_menu> index_;
+        std::shared_ptr<screen::index> index_;
         std::shared_ptr<screen::item_details> details_;
         std::shared_ptr<screen::log> log_;
         std::unique_ptr<screen::footer> footer_;

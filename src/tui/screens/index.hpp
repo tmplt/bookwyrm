@@ -13,9 +13,9 @@
 
 namespace bookwyrm::tui::screen {
 
-    class multiselect_menu : public base {
+    class index : public base {
     public:
-        explicit multiselect_menu(std::set<core::item> const &items);
+        explicit index(std::set<core::item> const &items);
 
         void paint() override;
         void on_resize() override;

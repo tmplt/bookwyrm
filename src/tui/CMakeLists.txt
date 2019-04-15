@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME}-tui STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/screens/base.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/screens/item_details.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/screens/log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/screens/multiselect_menu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/screens/index.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/screens/footer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../string.cpp)

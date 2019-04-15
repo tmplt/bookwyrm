@@ -2,12 +2,12 @@
 #include <ncurses.h>
 
 #include "../../string.hpp"
+#include "screens/index.hpp"
 #include "screens/item_details.hpp"
-#include "screens/multiselect_menu.hpp"
 
 namespace bookwyrm::tui::screen {
 
-    void multiselect_menu::columns_t::operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs)
+    void index::columns_t::operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs)
     {
         int i = 0;
         for (auto &&pair : pairs) {
@@ -16,7 +16,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    multiselect_menu::multiselect_menu(std::set<core::item> const &items)
+    index::index(std::set<core::item> const &items)
         : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right), selected_item_(0),
           scroll_offset_(0), items_(items)
     {
@@ -39,7 +39,7 @@ namespace bookwyrm::tui::screen {
         update_column_widths();
     }
 
-    void multiselect_menu::paint()
+    void index::paint()
     {
         erase();
 
@@ -57,7 +57,7 @@ namespace bookwyrm::tui::screen {
         refresh();
     }
 
-    std::string multiselect_menu::footer_info() const
+    std::string index::footer_info() const
     {
         const auto count = item_count();
         if (count == 0)
@@ -66,12 +66,9 @@ namespace bookwyrm::tui::screen {
             return fmt::format("I've found {} items thus far.", item_count());
     }
 
-    std::string multiselect_menu::controls_legacy() const
-    {
-        return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details";
-    }
+    std::string index::controls_legacy() const { return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details"; }
 
-    int multiselect_menu::scrollpercent() const
+    int index::scrollpercent() const
     {
         if (item_count() <= menu_capacity())
             return scroll::not_applicable;
@@ -79,15 +76,15 @@ namespace bookwyrm::tui::screen {
         return ratio(selected_item_, item_count());
     }
 
-    bool multiselect_menu::is_marked(const size_t idx) const { return marked_items_.find(idx) != marked_items_.cend(); }
+    bool index::is_marked(const size_t idx) const { return marked_items_.find(idx) != marked_items_.cend(); }
 
-    size_t multiselect_menu::menu_capacity() const { return get_height() - 1; }
+    size_t index::menu_capacity() const { return get_height() - 1; }
 
-    bool multiselect_menu::menu_at_bot() const { return selected_item_ == (menu_capacity() - 1 + scroll_offset_); }
+    bool index::menu_at_bot() const { return selected_item_ == (menu_capacity() - 1 + scroll_offset_); }
 
-    bool multiselect_menu::menu_at_top() const { return selected_item_ == scroll_offset_; }
+    bool index::menu_at_top() const { return selected_item_ == scroll_offset_; }
 
-    void multiselect_menu::move(move_direction dir)
+    void index::move(move_direction dir)
     {
         const bool at_first_item = selected_item_ == 0, at_last_item = selected_item_ == (item_count() - 1);
 
@@ -116,11 +113,11 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void multiselect_menu::mark_item(const size_t idx) { marked_items_.insert(idx); }
+    void index::mark_item(const size_t idx) { marked_items_.insert(idx); }
 
-    void multiselect_menu::unmark_item(const size_t idx) { marked_items_.erase(idx); }
+    void index::unmark_item(const size_t idx) { marked_items_.erase(idx); }
 
-    void multiselect_menu::toggle_action()
+    void index::toggle_action()
     {
         /* Toggle item selection. */
 
@@ -130,7 +127,7 @@ namespace bookwyrm::tui::screen {
             mark_item(selected_item_);
     }
 
-    void multiselect_menu::update_column_widths()
+    void index::update_column_widths()
     {
         size_t x = 1;
         for (auto &column : columns_) {
@@ -147,7 +144,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void multiselect_menu::on_resize()
+    void index::on_resize()
     {
         base::on_resize();
 
@@ -167,7 +164,7 @@ namespace bookwyrm::tui::screen {
             selected_item_--;
     }
 
-    void multiselect_menu::print_header()
+    void index::print_header()
     {
         /*
          * You might think we should start at x = 0, but that
@@ -195,7 +192,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void multiselect_menu::print_column(const size_t col_idx)
+    void index::print_column(const size_t col_idx)
     {
         const auto &c = columns_[col_idx];
 
@@ -249,7 +246,7 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    const std::pair<int, int> multiselect_menu::compress()
+    const std::pair<int, int> index::compress()
     {
         const int details_height = menu_capacity() * 0.80;
 
@@ -263,6 +260,6 @@ namespace bookwyrm::tui::screen {
         return {scroll, details_height - 1};
     }
 
-    void multiselect_menu::decompress(int scroll) { scroll_offset_ -= scroll; }
+    void index::decompress(int scroll) { scroll_offset_ -= scroll; }
 
 } // namespace bookwyrm::tui::screen
