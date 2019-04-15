@@ -19,8 +19,10 @@ namespace bookwyrm::tui::screen {
 
     void item_details::paint()
     {
+        erase();
         print_borders();
         print_details();
+        refresh();
     }
 
     std::string item_details::footer_info() const

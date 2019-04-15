@@ -41,6 +41,8 @@ namespace bookwyrm::tui::screen {
 
     void multiselect_menu::paint()
     {
+        erase();
+
         for (size_t idx = 0; idx < columns_.size(); idx++) {
             /* Can we fit another column? */
             const size_t allowed_width = get_width() - 1 - columns_[idx].startx - 2;
@@ -51,6 +53,8 @@ namespace bookwyrm::tui::screen {
         }
 
         print_header();
+
+        refresh();
     }
 
     std::string multiselect_menu::footer_info() const

@@ -9,6 +9,8 @@ namespace bookwyrm::tui::screen {
 
     void footer::paint()
     {
+        erase();
+
         /* Print the number of running plugins and found items. */
         if (plugin_count_ == 0) {
             print(0, 1, fmt::format("Search finished: I found {} items.", item_count_));
@@ -35,6 +37,8 @@ namespace bookwyrm::tui::screen {
             print_right_align(
                 2, " You have unread logs! ", to_colour(worst_unread_.value()) | attribute::reverse | attribute::bold);
         }
+
+        refresh();
     }
 
 } // namespace bookwyrm::tui::screen

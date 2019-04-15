@@ -13,6 +13,8 @@ namespace bookwyrm::tui::screen {
 
     void log::paint()
     {
+        erase();
+
         /* Mark unread log entries as read. */
         std::move(unread_entries_.begin(), unread_entries_.end(), std::back_inserter(entries_));
         unread_entries_.clear();
@@ -36,6 +38,8 @@ namespace bookwyrm::tui::screen {
             print_entry(y, entry++);
             y++;
         }
+
+        refresh();
     }
 
     void log::print_entry(int &y, const log_pp entry)

@@ -36,27 +36,16 @@ namespace bookwyrm::tui {
             werase(stdscr);
             curses::mvprint(0, 0, "The terminal is too small. I don't fit!");
         } else if (is_log_focused()) {
-            log_->erase();
             log_->paint();
-            log_->refresh();
-
-            footer_->erase();
             footer_->paint();
-            footer_->refresh();
         } else {
-            index_->erase();
             index_->paint();
-            index_->refresh();
 
             if (viewing_details_) {
-                details_->erase();
                 details_->paint();
-                details_->refresh();
             }
 
-            footer_->erase();
             footer_->paint();
-            footer_->refresh();
         }
 
         doupdate();
