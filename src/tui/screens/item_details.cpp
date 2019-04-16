@@ -65,24 +65,20 @@ namespace bookwyrm::tui::screen {
             {"ISBNs", isbns},
         };
 
-        /* Find the longest string... */
-        size_t len = 0;
-        for (const auto &p : v)
-            len = std::max(p.first.length(), len);
+        /* Find the longest string, and create an indent length by adding 4. */
+        // clang-format off
+        const auto indent = std::max_element(cbegin(v), cend(v), [](const auto &a, const auto &b) {
+            return a.first.length() < b.first.length();
+        })->first.length() + 4;
+        // clang-format on
 
-        /*
-         * ... which we use to distance field title and field value.
-         * (A magic 4 added to x to emulate a tab).
-         */
+        /* Align all fields to calculated indent. */
         int y = 1;
         for (const auto &p : v) {
             print(0, y, p.first + ':', attribute::bold);
-            print(static_cast<int>(len + 4), y++, p.second.get());
+            print(indent, y, p.second.get());
 
-            /* How many lines did the string take up? */
-            if (int lines = (static_cast<int>(len + 4) + p.second.get().length()) / get_width(); lines > 1) {
-                y += lines;
-            }
+            y += std::ceil(static_cast<double>(indent + p.second.get().length()) / get_width());
         }
     }
 
