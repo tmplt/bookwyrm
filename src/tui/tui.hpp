@@ -64,8 +64,7 @@ namespace bookwyrm::tui {
         std::shared_ptr<core::backend> backend_;
 
         /* Forwarded to the multiselect menu. */
-        std::mutex tui_mutex_;
-        std::mutex resize_mutex_;
+        std::mutex paint_mutex_;
 
         std::shared_ptr<screen::index> index_;
         std::shared_ptr<screen::item_details> details_;

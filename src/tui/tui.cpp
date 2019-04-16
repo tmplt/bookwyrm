@@ -24,7 +24,7 @@ namespace bookwyrm::tui {
         }
 
         /* Repaint all active screens. */
-        std::lock_guard<std::mutex> guard(tui_mutex_);
+        std::lock_guard<std::mutex> guard(paint_mutex_);
 
         footer_->prepare(backend_->running_plugins(),
                          index_->item_count(),
@@ -65,7 +65,7 @@ namespace bookwyrm::tui {
         close_details();
 
         {
-            std::lock_guard<std::mutex> guard(tui_mutex_);
+            std::lock_guard<std::mutex> guard(paint_mutex_);
             index_->on_resize();
             log_->on_resize();
             footer_->on_resize();
@@ -85,7 +85,7 @@ namespace bookwyrm::tui {
 
         while (true) {
             const key ch = std::invoke([this]() {
-                std::lock_guard<std::mutex> guard(tui_mutex_);
+                std::lock_guard<std::mutex> guard(paint_mutex_);
 
                 /*
                  * Because we use ncurses WINDOWs and have parallel threads that all update the TUI,
