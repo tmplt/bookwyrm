@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](https://semver.org)
 ### Added
 - A signal hander. Send `SIGINT` (^C) to prematurely terminate bookwyrm.
 
+### Changed
+* Screens/item_details: field "categories" are now separated by an empty line.
+
 ### Fixed
 * A possible segmentation fault when resizing the terminal.
 * Screens/item_details: correctly account for fields spanning multiple lines.

@@ -44,41 +44,54 @@ namespace bookwyrm::tui::screen {
               number = to_str(item_.exacts.number);
         // clang-format on
 
-        using pair = std::pair<std::string, std::reference_wrapper<const std::string>>;
+        using pair = std::optional<std::pair<std::string, std::reference_wrapper<const std::string>>>;
         const std::vector<pair> v = {
-            {"Authors", authors},
-            {"Title", item_.nonexacts.title},
-            {"Serie", item_.nonexacts.series},
-            {"Publisher", item_.nonexacts.publisher},
-            {"Edition", item_.nonexacts.edition},
-            {"Year", year},
-
-            {"Journal", item_.nonexacts.journal},
-            {"Extension", item_.exacts.extension},
-
-            {"Size", size}, // TODO: print as read if very large
-            {"Pages", pages},
-            {"Volume", volume},
-            {"Number", number},
-            {"Mirrors", uris},
-            {"Source", item_.misc.origin_plugin},
-            {"ISBNs", isbns},
+            {{"Authors", authors}},
+            {{"Title", item_.nonexacts.title}},
+            {{"Serie", item_.nonexacts.series}},
+            {{"Publisher", item_.nonexacts.publisher}},
+            {{"Edition", item_.nonexacts.edition}},
+            {{"Year", year}},
+            {std::nullopt},
+            {{"Journal", item_.nonexacts.journal}},
+            {{"Extension", item_.exacts.extension}},
+            {std::nullopt},
+            {{"Size", size}}, // TODO: print as red if very large
+            {{"Pages", pages}},
+            {{"Volume", volume}},
+            {{"Number", number}},
+            {{"Mirrors", uris}},
+            {{"Source", item_.misc.origin_plugin}},
+            {{"ISBNs", isbns}},
         };
 
         /* Find the longest string, and create an indent length by adding 4. */
         // clang-format off
-        const auto indent = std::max_element(cbegin(v), cend(v), [](const auto &a, const auto &b) {
-            return a.first.length() < b.first.length();
-        })->first.length() + 4;
+        const auto indent = 4 + std::max_element(cbegin(v), cend(v), [](const auto &a, const auto &b) -> bool {
+            /* Account for field separators. */
+            if (!a.has_value())
+                return true;
+            if (!b.has_value())
+                return false;
+
+            return a->first.length() < b->first.length();
+        })->value().first.length();
         // clang-format on
 
-        /* Align all fields to calculated indent. */
+        /* Align all fields to calculated indent */
         int y = 1;
         for (const auto &p : v) {
-            print(0, y, p.first + ':', attribute::bold);
-            print(indent, y, p.second.get());
+            /* Separate field "categories" with an empty line */
+            if (!p.has_value()) {
+                y++;
+                continue;
+            }
 
-            y += std::ceil(static_cast<double>(indent + p.second.get().length()) / get_width());
+            print(0, y, p->first + ':', attribute::bold);
+            print(indent, y, p->second.get());
+
+            /* How many lines did the string take up? */
+            y += std::ceil(static_cast<double>(indent + p->second.get().length()) / get_width());
         }
     }
 
