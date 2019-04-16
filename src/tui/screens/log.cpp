@@ -85,9 +85,10 @@ namespace bookwyrm::tui::screen {
 
     std::string log::footer_info() const
     {
-        /* stub */
-        return fmt::format("You're in the log now. Entries: {}, Attached: {}", entries_.size(), !detached_at_.has_value());
+        return fmt::format("Log entries: {}; attached to tail: {}", entries_.size(), !detached_at_.has_value());
     }
+
+    std::string log::controls_legacy() const { return "[j/k d/u]Navigation [SPACE]attach/detach"; }
 
     int log::scrollpercent() const
     {

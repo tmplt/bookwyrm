@@ -17,7 +17,7 @@ namespace bookwyrm::tui::screen {
 
         std::string footer_info() const override;
         int scrollpercent() const override;
-        inline std::string controls_legacy() const override { return "[j/k d/u]Navigation [SPACE]attach/detach"; }
+        std::string controls_legacy() const override;
 
         void log_entry(core::log_level level, std::string msg);
 

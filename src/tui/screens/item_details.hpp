@@ -25,19 +25,10 @@ namespace bookwyrm::tui::screen {
     public:
         explicit item_details(const core::item &item, int padding_top);
 
-        bool action(const int ch) override;
         void paint() override;
         std::string footer_info() const override;
-        int scrollpercent() const override;
 
-        inline std::string controls_legacy() const override { return "[h/<-]Close details"; }
-
-        void move(move_direction dir)
-        {
-            /* stub */
-            std::ignore = dir;
-            return;
-        }
+        std::string controls_legacy() const override;
 
     private:
         const core::item &item_;

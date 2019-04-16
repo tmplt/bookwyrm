@@ -8,15 +8,6 @@ namespace bookwyrm::tui::screen {
     {
     }
 
-    bool item_details::action(const int ch)
-    {
-        std::ignore = ch;
-
-        /* No actions for this screen yet. */
-
-        return false;
-    }
-
     void item_details::paint()
     {
         erase();
@@ -31,11 +22,7 @@ namespace bookwyrm::tui::screen {
         return fmt::format("DEBUG: padding top: {}, height: {}", pads_.top, get_height());
     }
 
-    int item_details::scrollpercent() const
-    {
-        /* stub */
-        return 42;
-    }
+    std::string item_details::controls_legacy() const { return "[h/<-]Close details"; }
 
     void item_details::print_borders()
     {
