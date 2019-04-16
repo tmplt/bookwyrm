@@ -95,41 +95,4 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void item_details::print_desc(int &y, std::string str)
-    {
-        int x = 0;
-        const auto words = split_string(str);
-
-        auto word_fits = [this, &x](const std::string &str) -> bool {
-            return static_cast<size_t>(get_width() - x) > str.length();
-        };
-
-        for (auto word = words.cbegin(); word != words.cend(); ++word) {
-            if (!word_fits(*word)) {
-                if (y == get_height() - 1) {
-                    /* No more lines to draw on; can't fit any more. */
-
-                    if (word != words.cend() - 1) {
-                        /* We haven't printed the whole description yet. */
-
-                        /*
-                         * Make sure the dots are printed in the screen.
-                         * Subtracts an additional 1 to overwrite the space
-                         * from the last word.
-                         */
-                        print(word_fits("...") ? --x : x - 4, y, "...");
-                    }
-
-                    return;
-                }
-
-                ++y;
-                x = 0;
-            }
-
-            print(x, y, *word + ' ');
-            x += static_cast<int>(word->length()) + 1;
-        }
-    }
-
 } // namespace bookwyrm::tui::screen

@@ -34,9 +34,6 @@ namespace bookwyrm::tui::screen {
 
         void print_borders();
         void print_details();
-
-        /* Print the item's description from line y and downward. */
-        void print_desc(int &y, std::string str);
     };
 
 } // namespace bookwyrm::tui::screen
