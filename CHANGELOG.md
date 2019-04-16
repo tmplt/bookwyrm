@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](https://semver.org)
 ### Added
 - A signal hander. Send `SIGINT` (^C) to prematurely terminate bookwyrm.
 
+### Fixed
+* A possible segmentation fault when resizing the terminal.
+
 ### [v0.7.0] - 2019-02-28
 
 ### Added
