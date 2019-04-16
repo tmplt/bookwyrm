@@ -1,9 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <iostream>
-
-#include "colours.hpp"
 #include "item.hpp"
 #include "plugin_handler.hpp"
 #include "screens/base.hpp"
@@ -57,19 +53,6 @@ namespace bookwyrm::tui {
         bool toggle_log();
 
         void resize_screens();
-
-        static void print(int x, const int y, const std::string &str, const colour attrs = colour::white);
-
-        /*
-         * Print passed string starting from (x, y) along the x-axis.
-         * All other cells on the same line will be empty (' ') with
-         * attrs applied.
-         */
-        static void printcont(int x, const int y, const std::string &str, const colour attrs = colour::white);
-        static inline void printcont(int x, const int y, const std::string &str, const attribute attr)
-        {
-            printcont(x, y, str, colour::white | attr);
-        }
 
         /* Is a screen::item_details open? */
         bool viewing_details_;
