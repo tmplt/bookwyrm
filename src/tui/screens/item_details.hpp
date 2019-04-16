@@ -26,7 +26,6 @@ namespace bookwyrm::tui::screen {
         explicit item_details(const core::item &item, int padding_top);
 
         void paint() override;
-        std::string footer_info() const override;
 
         std::string controls_legacy() const override;
 

@@ -59,11 +59,12 @@ namespace bookwyrm::tui::screen {
 
     std::string index::footer_info() const
     {
-        const auto count = item_count();
-        if (count == 0)
-            return "I haven't found any items yet.";
-        else
-            return fmt::format("I've found {} items thus far.", item_count());
+        if (plugin_count_ == 0) {
+            return fmt::format("Search finished: I found {} items.", item_count());
+        } else {
+            return fmt::format(
+                "Searching with {} running plugins... I have found {} items thus far.", plugin_count_, item_count());
+        }
     }
 
     std::string index::controls_legacy() const { return "[j/k d/u G/g]Navigation [SPACE]Toggle select [l/->]Open details"; }
@@ -75,6 +76,8 @@ namespace bookwyrm::tui::screen {
 
         return ratio(selected_item_, item_count());
     }
+
+    void index::prepare(int plugin_count) { plugin_count_ = plugin_count; }
 
     bool index::is_marked(const size_t idx) const { return marked_items_.find(idx) != marked_items_.cend(); }
 

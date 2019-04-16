@@ -11,15 +11,8 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
-        /* Print the number of running plugins and found items. */
-        if (plugin_count_ == 0) {
-            print(0, 1, fmt::format("Search finished: I found {} items.", item_count_));
-        } else {
-            print(0,
-                  1,
-                  fmt::format(
-                      "Searching with {} running plugins... I have found {} items thus far.", plugin_count_, item_count_));
-        }
+        /* Print the contextual info string. */
+        print(0, 1, footer_info_);
 
         /* Print scroll percentage, if any. */
         if (scroll_perc_ > -1) {
@@ -39,6 +32,17 @@ namespace bookwyrm::tui::screen {
         }
 
         refresh();
+    }
+
+    void footer::prepare(std::string footer_info,
+                         int scroll_perc,
+                         std::string screen_controls,
+                         std::optional<core::log_level> worst_unread)
+    {
+        footer_info_ = footer_info;
+        scroll_perc_ = scroll_perc;
+        screen_controls_ = screen_controls;
+        worst_unread_ = worst_unread;
     }
 
 } // namespace bookwyrm::tui::screen

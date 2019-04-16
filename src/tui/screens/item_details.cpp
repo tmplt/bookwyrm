@@ -16,12 +16,6 @@ namespace bookwyrm::tui::screen {
         refresh();
     }
 
-    std::string item_details::footer_info() const
-    {
-        /* TODO: remove this */
-        return fmt::format("DEBUG: padding top: {}, height: {}", pads_.top, get_height());
-    }
-
     std::string item_details::controls_legacy() const { return "[h/<-]Close details"; }
 
     void item_details::print_borders()

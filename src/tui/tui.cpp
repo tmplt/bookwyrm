@@ -26,11 +26,9 @@ namespace bookwyrm::tui {
         /* Repaint all active screens. */
         std::lock_guard<std::mutex> guard(paint_mutex_);
 
-        footer_->prepare(backend_->running_plugins(),
-                         index_->item_count(),
-                         focused_->scrollpercent(),
-                         focused_->controls_legacy(),
-                         log_->worst_unread());
+        index_->prepare(backend_->running_plugins());
+        footer_->prepare(
+            focused_->footer_info(), focused_->scrollpercent(), focused_->controls_legacy(), log_->worst_unread());
 
         if (!bookwyrm_fits()) {
             curses::werase(stdscr);

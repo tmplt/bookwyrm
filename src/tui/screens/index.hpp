@@ -25,6 +25,8 @@ namespace bookwyrm::tui::screen {
         std::string controls_legacy() const override;
         int scrollpercent() const override;
 
+        void prepare(int plugin_count);
+
         /*
          * Make some space for a screen:item_details,
          * and return how much we scrolled and how
@@ -84,6 +86,8 @@ namespace bookwyrm::tui::screen {
 
         /* How many lines have we scrolled? */
         size_t scroll_offset_;
+
+        int plugin_count_;
 
         std::mutex menu_mutex_;
         std::set<core::item> const &items_;
