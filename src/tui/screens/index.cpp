@@ -7,16 +7,13 @@
 
 namespace bookwyrm::tui::screen {
 
-    void index::columns_t::operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs)
+    void index::column_t::operator=(std::pair<std::string, column_t::width_w_t> &&pair)
     {
-        int i = 0;
-        for (auto &&pair : pairs) {
-            columns_[i].width_w = std::get<1>(pair);
-            columns_[i++].title = std::get<0>(pair);
-        }
+        width_w = std::get<1>(pair);
+        title = std::get<0>(pair);
     }
 
-    bool index::columns_t::column_t::operator==(const column_t &other) const
+    bool index::column_t::operator==(const column_t &other) const
     {
         return std::tie(title, width_w, width, startx) == std::tie(other.title, other.width_w, other.width, other.startx);
     }
@@ -32,14 +29,14 @@ namespace bookwyrm::tui::screen {
          *
          * TODO: Remedy this.
          */
-        columns_ = {
-            {"Title", .30},
-            {"Year", 4},
-            {"Series", .15},
-            {"Authors", .20},
-            {"Publisher", .15},
-            {"Format", 6},
-        };
+        columns_ = {{
+            {"Title", .30, 0, 0},
+            {"Year", 4, 0, 0},
+            {"Series", .15, 0, 0},
+            {"Authors", .20, 0, 0},
+            {"Publisher", .15, 0, 0},
+            {"Format", 6, 0, 0},
+        }};
 
         update_column_widths();
     }
@@ -160,7 +157,7 @@ namespace bookwyrm::tui::screen {
             selected_item_ = tail;
     }
 
-    int index::print_header(const columns_t::column_t &col)
+    int index::print_header(const column_t &col)
     {
         int x = 0;
 
@@ -180,7 +177,7 @@ namespace bookwyrm::tui::screen {
         return x;
     }
 
-    void index::print_column(const columns_t::column_t &col)
+    void index::print_column(const column_t &col)
     {
         for (size_t i = scroll_offset_, y = 1; i < item_count() && y <= menu_capacity(); i++, y++) {
 
@@ -199,7 +196,7 @@ namespace bookwyrm::tui::screen {
             const auto str = std::invoke([&]() {
                 const auto item = std::next(items_.cbegin(), i);
 
-                switch (std::find(columns_.cbegin(), columns_.cend(), col) - columns_.cbegin()) {
+                switch (std::find(cbegin(columns_), cend(columns_), col) - cbegin(columns_)) {
                 case 0:
                     return item->nonexacts.title;
                 case 1: {

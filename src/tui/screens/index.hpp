@@ -44,43 +44,28 @@ namespace bookwyrm::tui::screen {
         const std::set<int> &marked_items() const;
 
     private:
-        struct columns_t {
+        struct column_t {
+            using width_w_t = std::variant<int, double>;
 
-            struct column_t {
-                using width_w_t = std::variant<int, double>;
+            std::string title;
 
-                std::string title;
+            /*
+             * width_w (wanted).
+             * How much space does the column want?
+             * Can be specified as an absolute value or
+             * as a multiplier, e.g. 0.30 for 30% of get_width().
+             */
+            width_w_t width_w;
 
-                /*
-                 * width_w(wanted).
-                 * How much space does the column want?
-                 * Can be specified as an absolute value or
-                 * as a multiplier, e.g. 0.30 for 30% of tb_width().
-                 */
-                width_w_t width_w;
+            /* Changes whenever the window dimensions are changed. */
+            size_t width, startx;
 
-                /* Changes whenever the window dimensions are changed. */
-                size_t width, startx;
-
-                bool operator==(const column_t &other) const;
-            };
-
-            /* Called upon index construction. */
-            void operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs);
-
-            column_t &operator[](const size_t i) { return columns_[i]; }
-            auto size() { return columns_.size(); }
-            auto cbegin() { return columns_.cbegin(); }
-            auto cend() { return columns_.cend(); }
-            auto begin() { return columns_.begin(); }
-            auto end() { return columns_.end(); }
-
-        private:
-            std::array<column_t, 6> columns_;
+            bool operator==(const column_t &other) const;
+            void operator=(std::pair<std::string, width_w_t> &&pair);
         };
 
         /* Store data about each column between updates. */
-        columns_t columns_;
+        std::array<column_t, 6> columns_;
 
         /* Index of the currently selected item. */
         size_t selected_item_;
@@ -106,8 +91,8 @@ namespace bookwyrm::tui::screen {
 
         void update_column_widths();
 
-        int print_header(const columns_t::column_t &col);
-        void print_column(const columns_t::column_t &col);
+        int print_header(const column_t &col);
+        void print_column(const column_t &col);
     };
 
 } // namespace bookwyrm::tui::screen
