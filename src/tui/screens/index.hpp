@@ -75,7 +75,6 @@ namespace bookwyrm::tui::screen {
 
         int plugin_count_;
 
-        std::mutex menu_mutex_;
         std::set<core::item> const &items_;
 
         /* Item indices marked for download. */
@@ -83,8 +82,8 @@ namespace bookwyrm::tui::screen {
 
         bool is_marked(const size_t idx) const;
 
-        /* How many entries can the menu print in the terminal? */
-        size_t menu_capacity() const;
+        /* How many entries can the index print in the terminal? */
+        size_t capacity() const;
 
         void mark_item(const size_t idx);
         void unmark_item(const size_t idx);

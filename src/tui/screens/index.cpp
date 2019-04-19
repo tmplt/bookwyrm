@@ -73,7 +73,7 @@ namespace bookwyrm::tui::screen {
 
     int index::scrollpercent() const
     {
-        if (item_count() <= menu_capacity())
+        if (item_count() <= capacity())
             return scroll::not_applicable;
 
         return ratio(selected_item_, item_count());
@@ -83,13 +83,13 @@ namespace bookwyrm::tui::screen {
 
     bool index::is_marked(const size_t idx) const { return marked_items_.find(idx) != marked_items_.cend(); }
 
-    size_t index::menu_capacity() const { return get_height() - 1; }
+    size_t index::capacity() const { return get_height() - 1; }
 
     void index::move(move_direction dir)
     {
         const bool at_first_item = selected_item_ == 0, at_last_item = selected_item_ == (item_count() - 1),
                    head_selected = selected_item_ == scroll_offset_,
-                   tail_selected = selected_item_ == (menu_capacity() - 1 + scroll_offset_);
+                   tail_selected = selected_item_ == (capacity() - 1 + scroll_offset_);
 
         switch (dir) {
         case up:
@@ -111,7 +111,7 @@ namespace bookwyrm::tui::screen {
             break;
         case bot:
             selected_item_ = item_count() - 1;
-            scroll_offset_ = selected_item_ - menu_capacity() + 1;
+            scroll_offset_ = selected_item_ - capacity() + 1;
             break;
         }
     }
@@ -153,7 +153,7 @@ namespace bookwyrm::tui::screen {
         update_column_widths();
 
         /* Ensure we don't select an item past the tail. */
-        if (auto tail = scroll_offset_ + menu_capacity() - 1; selected_item_ > tail)
+        if (auto tail = scroll_offset_ + capacity() - 1; selected_item_ > tail)
             selected_item_ = tail;
     }
 
@@ -179,7 +179,7 @@ namespace bookwyrm::tui::screen {
 
     void index::print_column(const column_t &col)
     {
-        for (size_t i = scroll_offset_, y = 1; i < item_count() && y <= menu_capacity(); i++, y++) {
+        for (size_t i = scroll_offset_, y = 1; i < item_count() && y <= capacity(); i++, y++) {
 
             const bool on_selected_item = (y + scroll_offset_ == selected_item_ + 1),
                        on_marked_item = is_marked(y + scroll_offset_ - 1);
@@ -238,13 +238,13 @@ namespace bookwyrm::tui::screen {
 
     const std::pair<int, int> index::compress_to(double part)
     {
-        const int details_height = menu_capacity() * (1 - part);
+        const int details_height = capacity() * (1 - part);
 
         /*
-         * Will the detail menu hide the currently highlighted item?
+         * Will the detail screen hide the currently highlighted item?
          * How much do we need to scroll if we don't want that to happen?
          */
-        const int scroll = std::max<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1, 0);
+        const int scroll = std::max<int>(selected_item_ - scroll_offset_ - capacity() + 1, 0);
         scroll_offset_ += scroll;
 
         return {scroll, details_height - 1};
