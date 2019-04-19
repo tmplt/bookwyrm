@@ -16,6 +16,11 @@ namespace bookwyrm::tui::screen {
         }
     }
 
+    bool index::columns_t::column_t::operator==(const column_t &other) const
+    {
+        return std::tie(title, width_w, width, startx) == std::tie(other.title, other.width_w, other.width, other.startx);
+    }
+
     index::index(std::set<core::item> const &items)
         : base(default_padding_top, default_padding_bot, default_padding_left, default_padding_right), selected_item_(0),
           scroll_offset_(0), items_(items)
@@ -249,5 +254,14 @@ namespace bookwyrm::tui::screen {
     }
 
     void index::decompress(int scroll) { scroll_offset_ -= scroll; }
+
+    const core::item &index::selected_item() const
+    {
+        return *std::next(items_.cbegin(), static_cast<long int>(selected_item_));
+    }
+
+    size_t index::item_count() const { return items_.size(); }
+
+    const std::set<int> &index::marked_items() const { return marked_items_; }
 
 } // namespace bookwyrm::tui::screen

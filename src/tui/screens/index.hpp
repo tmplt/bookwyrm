@@ -37,14 +37,11 @@ namespace bookwyrm::tui::screen {
         /* Take back the space lent to screen::item_details */
         void decompress(int scroll);
 
-        inline const core::item &selected_item() const
-        {
-            return *std::next(items_.cbegin(), static_cast<long int>(selected_item_));
-        }
+        const core::item &selected_item() const;
 
-        inline size_t item_count() const { return items_.size(); }
+        size_t item_count() const;
 
-        inline auto marked_items() { return marked_items_; }
+        const std::set<int> &marked_items() const;
 
     private:
         struct columns_t {
@@ -65,18 +62,14 @@ namespace bookwyrm::tui::screen {
                 /* Changes whenever the window dimensions are changed. */
                 size_t width, startx;
 
-                bool operator==(const column_t &other) const
-                {
-                    return std::tie(title, width_w, width, startx) ==
-                           std::tie(other.title, other.width_w, other.width, other.startx);
-                }
+                bool operator==(const column_t &other) const;
             };
 
-            /* Called upon menu construction. */
+            /* Called upon index construction. */
             void operator=(std::vector<std::pair<std::string, column_t::width_w_t>> &&pairs);
 
             column_t &operator[](const size_t i) { return columns_[i]; }
-            size_t size() { return columns_.size(); }
+            auto size() { return columns_.size(); }
             auto cbegin() { return columns_.cbegin(); }
             auto cend() { return columns_.cend(); }
             auto begin() { return columns_.begin(); }
