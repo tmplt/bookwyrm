@@ -32,7 +32,7 @@ namespace bookwyrm::tui::screen {
          * and return how much we scrolled and how
          * big the new screen will be.
          */
-        const std::pair<int, int> compress();
+        const std::pair<int, int> compress_to(double part);
 
         /* Take back the space lent to screen::item_details */
         void decompress(int scroll);

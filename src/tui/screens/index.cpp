@@ -245,12 +245,12 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    const std::pair<int, int> index::compress()
+    const std::pair<int, int> index::compress_to(double part)
     {
-        const int details_height = menu_capacity() * 0.80;
+        const int details_height = menu_capacity() * (1 - part);
 
         /*
-         * Will the detail menu hide the highlighted item?
+         * Will the detail menu hide the currently highlighted item?
          * How much do we need to scroll if we don't want that to happen?
          */
         const int scroll = std::max<int>(selected_item_ - scroll_offset_ - menu_capacity() + 1, 0);

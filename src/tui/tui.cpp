@@ -162,7 +162,7 @@ namespace bookwyrm::tui {
 
         /* How much space will the detail menu take up? */
         int height;
-        std::tie(index_scrollback_, height) = index_->compress();
+        std::tie(index_scrollback_, height) = index_->compress_to(0.20);
 
         details_ = std::make_shared<screen::item_details>(index_->selected_item(), curses::get_height() - height - 1);
         focused_ = details_;
