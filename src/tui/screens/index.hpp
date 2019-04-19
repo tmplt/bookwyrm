@@ -108,18 +108,6 @@ namespace bookwyrm::tui::screen {
         /* How many entries can the menu print in the terminal? */
         size_t menu_capacity() const;
 
-        /*
-         * Is the currently selected item the last one in the
-         * menu screen?
-         */
-        bool menu_at_bot() const;
-
-        /*
-         * Is the currently selected item the first one in the
-         * menu screen?
-         */
-        bool menu_at_top() const;
-
         void mark_item(const size_t idx);
         void unmark_item(const size_t idx);
 

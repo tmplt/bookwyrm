@@ -83,26 +83,24 @@ namespace bookwyrm::tui::screen {
 
     size_t index::menu_capacity() const { return get_height() - 1; }
 
-    bool index::menu_at_bot() const { return selected_item_ == (menu_capacity() - 1 + scroll_offset_); }
-
-    bool index::menu_at_top() const { return selected_item_ == scroll_offset_; }
-
     void index::move(move_direction dir)
     {
-        const bool at_first_item = selected_item_ == 0, at_last_item = selected_item_ == (item_count() - 1);
+        const bool at_first_item = selected_item_ == 0, at_last_item = selected_item_ == (item_count() - 1),
+                   head_selected = selected_item_ == scroll_offset_,
+                   tail_selected = selected_item_ == (menu_capacity() - 1 + scroll_offset_);
 
         switch (dir) {
         case up:
             if (at_first_item)
                 return;
-            if (menu_at_top())
+            if (head_selected)
                 scroll_offset_--;
             selected_item_--;
             break;
         case down:
             if (at_last_item)
                 return;
-            if (menu_at_bot())
+            if (tail_selected)
                 scroll_offset_++;
             selected_item_++;
             break;
