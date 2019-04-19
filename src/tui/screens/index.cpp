@@ -43,16 +43,16 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
-        for (size_t idx = 0; idx < columns_.size(); idx++) {
-            /* Can we fit another column? */
-            const size_t allowed_width = get_width() - 1 - columns_[idx].startx - 2;
-            if (columns_[idx].width > allowed_width)
+        size_t x = 0;
+        /* Start at x = 1 to align with column strings. */
+        for (auto &column : columns_) {
+            /* Can we fit the next header? */
+            if (column.width > get_width() - x)
                 break;
 
-            print_column(idx);
+            x += print_header(column);
+            print_column(column);
         }
-
-        print_header();
 
         refresh();
     }
@@ -123,7 +123,6 @@ namespace bookwyrm::tui::screen {
     void index::toggle_action()
     {
         /* Toggle item selection. */
-
         if (is_marked(selected_item_))
             unmark_item(selected_item_);
         else
@@ -167,38 +166,28 @@ namespace bookwyrm::tui::screen {
             selected_item_--;
     }
 
-    void index::print_header()
+    int index::print_header(const columns_t::column_t &col)
     {
-        /*
-         * You might think we should start at x = 0, but that
-         * screws up the alignment with the column strings.
-         */
-        size_t x = 1;
-        for (auto &column : columns_) {
-            /* Can we fit the next header? */
-            const size_t allowed_width = get_width() - 1 - column.startx - 2;
-            if (column.width > allowed_width)
-                break;
+        int x = 0;
 
-            /* Center the title. */
-            print(x + column.width / 2 - column.title.length() / 2, 0, column.title, attribute::bold, colour::blue);
-            x += std::max(column.width, column.title.length());
+        /* Center the title. */
+        print(col.startx + col.width / 2 - col.title.length() / 2, 0, col.title, attribute::bold, colour::blue);
+        x += std::max(col.width, col.title.length());
 
-            /* Padding between the title and the seperator to the left.. */
-            x++;
+        /* Padding between the title and the seperator to the left. */
+        x++;
 
-            /* Print the seperator. */
-            print(x++, 0, "|");
+        /* Print the seperator. */
+        print(col.startx + x++, 0, "|");
 
-            /* ..and to the right. */
-            x++;
-        }
+        /* Padding between the title and the seperator to the right. */
+        x++;
+
+        return x;
     }
 
-    void index::print_column(const size_t col_idx)
+    void index::print_column(const columns_t::column_t &col)
     {
-        const auto &c = columns_[col_idx];
-
         for (size_t i = scroll_offset_, y = 1; i < item_count() && y <= menu_capacity(); i++, y++) {
 
             const bool on_selected_item = (y + scroll_offset_ == selected_item_ + 1),
@@ -213,25 +202,33 @@ namespace bookwyrm::tui::screen {
                 print(0, y, " ", attribute::reverse);
             }
 
-            const attribute attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
+            const auto str = std::invoke([&]() {
+                const auto item = std::next(items_.cbegin(), i);
 
-            const auto item = *std::next(items_.cbegin(), i);
-
-            const std::string authors = vector_to_string(item.nonexacts.authors);
-            const std::string year = std::invoke([year = item.exacts.year]() {
-                const std::string str = std::to_string(year);
-                return (str == "-1" ? " " : std::move(str));
+                switch (std::find(columns_.cbegin(), columns_.cend(), col) - columns_.cbegin()) {
+                case 0:
+                    return item->nonexacts.title;
+                case 1: {
+                    auto &y = item->exacts.year;
+                    return (y == core::empty ? " " : std::to_string(y));
+                }
+                case 2:
+                    return item->nonexacts.series;
+                case 3:
+                    return vector_to_string(item->nonexacts.authors);
+                case 4:
+                    return item->nonexacts.publisher;
+                case 5:
+                    return item->exacts.extension;
+                default:
+                    assert(false);
+                }
             });
 
-            const std::array<std::reference_wrapper<const std::string>, 6> strings = {{item.nonexacts.title,
-                                                                                       year,
-                                                                                       item.nonexacts.series,
-                                                                                       authors,
-                                                                                       item.nonexacts.publisher,
-                                                                                       item.exacts.extension}};
+            const auto attrs = (on_selected_item || on_marked_item) ? attribute::reverse : attribute::none;
 
             /* Print the string, check if it was truncated. */
-            const int trunc_len = printlim(c.startx, y, strings[col_idx].get(), c.width, attrs);
+            const int trunc_len = printlim(col.startx, y, str, col.width, attrs);
 
             /*
              * Fill the space between the two column strings with inverted spaces.
@@ -242,8 +239,7 @@ namespace bookwyrm::tui::screen {
              * padding on the right side of it (e.g. up to and including the first char
              * in the next column, hence the magic).
              */
-            const auto string_end = c.startx + strings[col_idx].get().length() - trunc_len,
-                       next_start = c.startx + c.width + 2;
+            const auto string_end = col.startx + str.length() - trunc_len, next_start = col.startx + col.width + 2;
             for (auto x = string_end; x <= next_start; x++)
                 print(x, y, " ", attrs);
         }

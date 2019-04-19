@@ -64,6 +64,12 @@ namespace bookwyrm::tui::screen {
 
                 /* Changes whenever the window dimensions are changed. */
                 size_t width, startx;
+
+                bool operator==(const column_t &other) const
+                {
+                    return std::tie(title, width_w, width, startx) ==
+                           std::tie(other.title, other.width_w, other.width, other.startx);
+                }
             };
 
             /* Called upon menu construction. */
@@ -71,6 +77,8 @@ namespace bookwyrm::tui::screen {
 
             column_t &operator[](const size_t i) { return columns_[i]; }
             size_t size() { return columns_.size(); }
+            auto cbegin() { return columns_.cbegin(); }
+            auto cend() { return columns_.cend(); }
             auto begin() { return columns_.begin(); }
             auto end() { return columns_.end(); }
 
@@ -117,8 +125,8 @@ namespace bookwyrm::tui::screen {
 
         void update_column_widths();
 
-        void print_header();
-        void print_column(const size_t col_idx);
+        int print_header(const columns_t::column_t &col);
+        void print_column(const columns_t::column_t &col);
     };
 
 } // namespace bookwyrm::tui::screen
