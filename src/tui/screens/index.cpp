@@ -152,18 +152,9 @@ namespace bookwyrm::tui::screen {
 
         update_column_widths();
 
-        /*
-         * When the window is resized from the lower left/right
-         * corner, the currently selected item may escape the
-         * menu, so we lock it here.
-         *
-         * TODO: fix this for cases where the cursor has
-         * jumped more than one step down under.
-         * (check whether it's just below what's valid, and
-         * if so, move it to menu_bot).
-         */
-        if (menu_at_bot())
-            selected_item_--;
+        /* Ensure we don't select an item past the tail. */
+        if (auto tail = scroll_offset_ + menu_capacity() - 1; selected_item_ > tail)
+            selected_item_ = tail;
     }
 
     int index::print_header(const columns_t::column_t &col)
