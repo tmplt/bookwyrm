@@ -89,7 +89,7 @@ namespace bookwyrm::tui {
                  * Can this be improved by using ncurses PADs instead?
                  */
                 std::lock_guard<std::mutex> guard(paint_mutex_);
-                return static_cast<key>(curses::getkey());
+                return static_cast<key>(focused_->getkey());
             });
 
             if (ch == key::resize) {

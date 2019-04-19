@@ -59,6 +59,8 @@ namespace bookwyrm::tui::screen {
          */
         virtual int scrollpercent() const;
 
+        int getkey();
+
         virtual ~base();
 
     protected:

@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 ### Fixed
 * A possible segmentation fault when resizing the terminal.
 * Screens/item_details: correctly account for fields spanning multiple lines.
+* TUI: possible blank screen until first key input.
 
 ### [v0.7.0] - 2019-02-28
 

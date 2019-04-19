@@ -34,6 +34,9 @@ namespace bookwyrm::tui::screen {
         auto abs = pads_.to_absolute();
         window_ =
             newwin(curses::get_height() - abs.top - abs.bot, curses::get_width() - abs.right - abs.left, abs.top, abs.left);
+
+        curses::keypad(window_, true);  // interpret function key escape sequences for us
+        curses::nodelay(window_, true); // make wgetch(3) a non-blocking call
     }
 
     base::~base()
@@ -144,5 +147,7 @@ namespace bookwyrm::tui::screen {
     void base::refresh() { curses::wnoutrefresh(window_); }
 
     void base::erase() { curses::werase(window_); }
+
+    int base::getkey() { return curses::getkey(window_); }
 
 } // namespace bookwyrm::tui::screen

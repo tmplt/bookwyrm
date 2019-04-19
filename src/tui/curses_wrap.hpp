@@ -14,11 +14,9 @@ namespace bookwyrm::tui::curses {
          */
         initscr();
 
-        cbreak();              // disable line buffering
-        keypad(stdscr, true);  // interpret function key escape sequences for us
-        noecho();              // don't echo input to screen
-        curs_set(0);           // hide the cursor
-        nodelay(stdscr, true); // make getch(3) a non-blocking call
+        cbreak();    // disable line buffering
+        noecho();    // don't echo input to screen
+        curs_set(0); // hide the cursor
 
         if (has_colors()) {
             start_color();        // enable colour support
@@ -44,13 +42,17 @@ namespace bookwyrm::tui::curses {
 
     inline void doupdate() { ::doupdate(); }
 
+    inline int keypad(WINDOW *win, bool enable) { return ::keypad(win, enable); }
+
+    inline int nodelay(WINDOW *win, bool enable) { return ::nodelay(win, enable); }
+
     inline int delwin(WINDOW *win) { return ::delwin(win); }
 
     inline int wresize(WINDOW *win, int lines, int columns) { return ::wresize(win, lines, columns); }
 
     inline int mvwin(WINDOW *win, int y, int x) { return ::mvwin(win, y, x); }
 
-    inline int getkey() { return ::getch(); }
+    inline int getkey(WINDOW *win) { return ::wgetch(win); }
 
     inline int wnoutrefresh(WINDOW *win) { return ::wnoutrefresh(win); }
 
