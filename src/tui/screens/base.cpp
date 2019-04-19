@@ -65,14 +65,15 @@ namespace bookwyrm::tui::screen {
         if (str.length() > space) {
             /* The whole string did not fit; indicate this to the user. */
 
-            auto ch = str.cbegin() + static_cast<long int>(space) - 1;
+            /* From the substing written in the space, find the number of whitespaces from the end of the string to the first
+             * multi-character word. Uses look ahead; can STL be used? */
+            auto ch = str.cbegin() + space - 1;
             size_t whitespace = 0;
-            while (std::isspace(*(--ch))) {
+            while (std::isspace(*(--ch)))
                 ++whitespace;
-            }
 
-            truncd = static_cast<int>(str.length() - space + whitespace);
-            curses::mvprint(window_, get_width() - static_cast<int>(whitespace) - 1, get_height(), "~", attrs, clr);
+            truncd = str.length() - space + whitespace;
+            curses::mvprint(window_, x + str.length() - truncd - 1, y, "~", attrs, clr);
         }
 
         return truncd;
