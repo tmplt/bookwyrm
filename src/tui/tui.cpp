@@ -10,19 +10,21 @@ namespace bookwyrm::tui {
 
     tui::tui(std::shared_ptr<core::backend> backend, bool log_debug) : viewing_details_(false), backend_(backend)
     {
+        /* Create the index screen and focus on it. */
+        index_ = std::make_shared<screen::index>(backend_->search_results());
+        footer_ = std::make_unique<screen::footer>();
+        focused_ = index_;
+
         /* Create the log screen. */
         log_ = std::make_shared<screen::log>(log_debug ? core::log_level::debug : core::log_level::warn,
                                              [this]() { return is_log_focused(); });
         log_->log_entry(core::log_level::debug, "the mighty bookwyrm hath been summoned!");
+
+        update();
     }
 
     void tui::update()
     {
-        /* Don't paint anything unless the index menu exists (when attaching tui to backend) */
-        if (!index_) {
-            return;
-        }
-
         /* Repaint all active screens. */
         std::lock_guard<std::mutex> guard(paint_mutex_);
 
@@ -74,17 +76,8 @@ namespace bookwyrm::tui {
 
     bool tui::display()
     {
-        /* Create the default menu screen and focus on it. */
-        index_ = std::make_shared<screen::index>(backend_->search_results());
-        footer_ = std::make_unique<screen::footer>();
-        focused_ = index_;
-
-        update();
-
         while (true) {
             const key ch = std::invoke([this]() {
-                std::lock_guard<std::mutex> guard(paint_mutex_);
-
                 /*
                  * Because we use ncurses WINDOWs and have parallel threads that all update the TUI,
                  * we will eventually end up in a situation where a screen has been resized by an external
@@ -95,6 +88,7 @@ namespace bookwyrm::tui {
                  *
                  * Can this be improved by using ncurses PADs instead?
                  */
+                std::lock_guard<std::mutex> guard(paint_mutex_);
                 return static_cast<key>(curses::getkey());
             });
 
