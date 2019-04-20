@@ -36,7 +36,7 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
-        for (auto &column : columns_) {
+        for (const auto &column : columns_) {
             print_header(column);
             print_column(column);
         }
@@ -112,7 +112,7 @@ namespace bookwyrm::tui::screen {
 
     void index::update_column_widths()
     {
-        size_t x = 1;
+        size_t x = 1; // x = 0 used by selection marker
         for (auto &column : columns_) {
             try {
                 column.width = std::get<int>(column.width_w);

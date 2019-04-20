@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/item_details: correctly account for fields spanning multiple lines.
 * TUI: possible blank screen until first key input.
 * Screens/index: utilize 100% of terminal width.
+* Screens/index: possible line overflow.
 
 ### [v0.7.0] - 2019-02-28
 

@@ -54,12 +54,12 @@ namespace bookwyrm::tui::screen {
 
     void base::print(int x, int y, const std::string &str, const attribute attrs, const colour clr)
     {
-        curses::mvprint(window_, x, y, str, attrs, clr);
+        curses::mvprintn(window_, x, y, str, get_width() - x, attrs, clr);
     }
 
     int base::printlim(int x, int y, const std::string &str, const size_t space, const attribute attrs, const colour clr)
     {
-        curses::mvprintn(window_, x, y, str, static_cast<int>(space), attrs, clr);
+        curses::mvprintn(window_, x, y, str, std::min<size_t>(space, get_width() - x), attrs, clr);
 
         int truncd = 0;
         if (str.length() > space) {
@@ -86,10 +86,10 @@ namespace bookwyrm::tui::screen {
 
     void base::printcont(int x, const int y, const std::string str, const colour attrs)
     {
-        curses::mvprint(window_, x, y, str, attribute::none, attrs);
+        print(x, y, str, attribute::none, attrs);
 
         for (int i = x + str.length(); i < curses::get_width(); i++)
-            curses::mvprint(window_, i, y, " ", attribute::none, attrs);
+            print(i, y, " ", attribute::none, attrs);
     }
 
     void base::on_resize()
