@@ -36,12 +36,6 @@ namespace bookwyrm::tui::screen {
         using log_pp = decltype(entries_.cbegin());
         std::optional<log_pp> detached_at_;
 
-        /*
-         * Returns the amount of entries in entries_ (starting at the last entry)
-         * that can fit on screen.
-         */
-        size_t capacity(log_pp entry) const;
-
         void print_entry(int &y, const log_pp entry);
     };
 

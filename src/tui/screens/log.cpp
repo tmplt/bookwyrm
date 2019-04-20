@@ -20,6 +20,16 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
+        const auto capacity = [this](auto e) -> int {
+            // TODO: use std::count_if with reverse iterators
+            int capacity = 0;
+            for (int lines = get_height(); e != crend(entries_) && lines > 0; e++, capacity++) {
+                lines -= std::ceil(static_cast<double>(e->second.length()) / get_width());
+            }
+
+            return capacity;
+        };
+
         /*
          * Starting the counting from the latest entry,
          * how many entries back can we fit on screen?
@@ -145,25 +155,6 @@ namespace bookwyrm::tui::screen {
     }
 
     std::vector<core::log_pair> log::unread_logs() const { return std::move(unread_entries_); }
-
-    size_t log::capacity(log_pp entry) const
-    {
-        int remain = get_height();
-        int capacity = 0;
-
-        const auto entry_height = [line_width = get_width()](const auto e)
-        {
-            return std::ceil(e->second.length() / line_width);
-        };
-
-        while (entry != entries_.cbegin() && remain > 0) {
-            remain -= entry_height(entry--);
-            if (remain > 0)
-                capacity++;
-        }
-
-        return capacity;
-    }
 
     void log::toggle_action()
     {
