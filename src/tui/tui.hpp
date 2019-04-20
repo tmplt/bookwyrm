@@ -50,7 +50,7 @@ namespace bookwyrm::tui {
         /* And close it. Return true if the operation was successful. */
         bool close_details();
 
-        bool toggle_log();
+        void toggle_log();
 
         void resize_screens();
 

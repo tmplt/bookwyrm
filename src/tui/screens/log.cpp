@@ -10,13 +10,15 @@ namespace bookwyrm::tui::screen {
     {
     }
 
+    void log::mark_read()
+    {
+        std::move(unread_entries_.begin(), unread_entries_.end(), std::back_inserter(entries_));
+        unread_entries_.clear();
+    }
+
     void log::paint()
     {
         erase();
-
-        /* Mark unread log entries as read. */
-        std::move(unread_entries_.begin(), unread_entries_.end(), std::back_inserter(entries_));
-        unread_entries_.clear();
 
         /*
          * Ad-hoc for now; something is wrong with entry down below.

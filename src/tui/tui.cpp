@@ -149,7 +149,8 @@ namespace bookwyrm::tui {
                 return false;
             return close_details();
         case key::tab:
-            return toggle_log();
+            toggle_log();
+            return true;
         default:
             return false;
         }
@@ -186,16 +187,15 @@ namespace bookwyrm::tui {
         return true;
     }
 
-    bool tui::toggle_log()
+    void tui::toggle_log()
     {
         if (focused_ != log_) {
             last_ = focused_;
             focused_ = log_;
+            log_->mark_read();
         } else {
             focused_ = last_;
         }
-
-        return true;
     }
 
 } // namespace bookwyrm::tui

@@ -21,6 +21,8 @@ namespace bookwyrm::tui::screen {
 
         void log_entry(core::log_level level, std::string msg);
 
+        void mark_read();
+
         std::optional<core::log_level> worst_unread() const;
         std::vector<core::log_pair> unread_logs() const;
 
