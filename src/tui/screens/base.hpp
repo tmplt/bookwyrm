@@ -89,7 +89,7 @@ namespace bookwyrm::tui::screen {
         int printlim(int x,
                      int y,
                      const std::string &str,
-                     const size_t space,
+                     size_t space,
                      const attribute attrs = attribute::none,
                      const colour clr = colour::none);
 
