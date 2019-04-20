@@ -11,8 +11,8 @@ namespace bookwyrm::tui::screen {
     void item_details::paint()
     {
         erase();
-        print_borders();
         print_details();
+        print_borders();
         refresh();
     }
 
