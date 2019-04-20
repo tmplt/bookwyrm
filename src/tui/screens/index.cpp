@@ -7,12 +7,6 @@
 
 namespace bookwyrm::tui::screen {
 
-    void index::column_t::operator=(std::pair<std::string, column_t::width_w_t> &&pair)
-    {
-        width_w = std::get<1>(pair);
-        title = std::get<0>(pair);
-    }
-
     bool index::column_t::operator==(const column_t &other) const
     {
         return std::tie(title, width_w, width, startx) == std::tie(other.title, other.width_w, other.width, other.startx);

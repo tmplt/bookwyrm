@@ -61,7 +61,6 @@ namespace bookwyrm::tui::screen {
             size_t width, startx;
 
             bool operator==(const column_t &other) const;
-            void operator=(std::pair<std::string, width_w_t> &&pair);
         };
 
         /* Store data about each column between updates. */
