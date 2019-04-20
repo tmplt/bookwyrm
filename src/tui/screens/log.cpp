@@ -21,18 +21,11 @@ namespace bookwyrm::tui::screen {
         erase();
 
         /*
-         * Ad-hoc for now; something is wrong with entry down below.
-         * Removing this causes segfault when we have no entries.
-         */
-        if (entries_.size() == 0)
-            return;
-
-        /*
          * Starting the counting from the latest entry,
          * how many entries back can we fit on screen?
          */
-        const auto start_entry = detached_at_.value_or(entries_.cend());
-        auto entry = start_entry - static_cast<long int>(capacity(start_entry)) - 1;
+        const auto last_entry = detached_at_.value_or(entries_.cend() - 1);
+        auto entry = last_entry - capacity(last_entry);
 
         int y = 0;
         while (entry != entries_.cend()) {
@@ -155,13 +148,12 @@ namespace bookwyrm::tui::screen {
 
     size_t log::capacity(log_pp entry) const
     {
-        size_t remain = get_height();
+        int remain = get_height();
         int capacity = 0;
-        entry--; // We want to point at something that exists.
 
-        const auto entry_height = [line_width = get_width()](const auto e)->size_t
+        const auto entry_height = [line_width = get_width()](const auto e)
         {
-            return std::max<size_t>(std::ceil(e->second.length() / line_width), 1);
+            return std::ceil(e->second.length() / line_width);
         };
 
         while (entry != entries_.cbegin() && remain > 0) {
