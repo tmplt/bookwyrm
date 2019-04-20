@@ -6,5 +6,5 @@
 
 namespace bookwyrm::tui::rune {
 
-    static const std::string double_right_angle_bracket = "»", em_dash = "—", scrollbar_fg = "█", scrollbar_bg = "▒";
+    static const std::string double_right_angle_bracket = "»", em_dash = "—", separator = "|";
 }

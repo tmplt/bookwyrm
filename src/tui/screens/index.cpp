@@ -17,17 +17,14 @@ namespace bookwyrm::tui::screen {
           scroll_offset_(0), items_(items)
     {
         /*
-         * These wanted widths works fine for now,
-         * but we are still not utilizing the full 100%
-         * of the width, which we should.
-         *
-         * TODO: Remedy this.
+         * For an example 100px wide window:
+         *   35 + 4 + 15 + 25 + 15 + 6 = 100
          */
         columns_ = {{
-            {"Title", .30, 0, 0},
+            {"Title", .35, 0, 0},
             {"Year", 4, 0, 0},
             {"Series", .15, 0, 0},
-            {"Authors", .20, 0, 0},
+            {"Authors", .25, 0, 0},
             {"Publisher", .15, 0, 0},
             {"Format", 6, 0, 0},
         }};
@@ -39,14 +36,8 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
-        size_t x = 0;
-        /* Start at x = 1 to align with column strings. */
         for (auto &column : columns_) {
-            /* Can we fit the next header? */
-            if (column.width > get_width() - x)
-                break;
-
-            x += print_header(column);
+            print_header(column);
             print_column(column);
         }
 
@@ -147,7 +138,7 @@ namespace bookwyrm::tui::screen {
             selected_item_ = tail;
     }
 
-    int index::print_header(const column_t &col)
+    void index::print_header(const column_t &col)
     {
         int x = 0;
 
@@ -155,16 +146,8 @@ namespace bookwyrm::tui::screen {
         print(col.startx + col.width / 2 - col.title.length() / 2, 0, col.title, attribute::bold, colour::blue);
         x += std::max(col.width, col.title.length());
 
-        /* Padding between the title and the seperator to the left. */
-        x++;
-
-        /* Print the seperator. */
-        print(col.startx + x++, 0, "|");
-
-        /* Padding between the title and the seperator to the right. */
-        x++;
-
-        return x;
+        /* Print the seperator; account for padding */
+        print(col.startx + x + 1, 0, rune::separator);
     }
 
     void index::print_column(const column_t &col)

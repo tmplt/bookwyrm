@@ -86,7 +86,7 @@ namespace bookwyrm::tui::screen {
 
         void update_column_widths();
 
-        int print_header(const column_t &col);
+        void print_header(const column_t &col);
         void print_column(const column_t &col);
     };
 
