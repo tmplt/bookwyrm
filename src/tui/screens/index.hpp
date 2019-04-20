@@ -85,9 +85,6 @@ namespace bookwyrm::tui::screen {
         /* How many entries can the index print in the terminal? */
         size_t capacity() const;
 
-        void mark_item(const size_t idx);
-        void unmark_item(const size_t idx);
-
         void update_column_widths();
 
         int print_header(const column_t &col);

@@ -116,17 +116,13 @@ namespace bookwyrm::tui::screen {
         }
     }
 
-    void index::mark_item(const size_t idx) { marked_items_.insert(idx); }
-
-    void index::unmark_item(const size_t idx) { marked_items_.erase(idx); }
-
     void index::toggle_action()
     {
         /* Toggle item selection. */
         if (is_marked(selected_item_))
-            unmark_item(selected_item_);
+            marked_items_.erase(selected_item_);
         else
-            mark_item(selected_item_);
+            marked_items_.insert(selected_item_);
     }
 
     void index::update_column_widths()
