@@ -201,10 +201,10 @@ namespace bookwyrm::tui::screen {
              * We start at the end of the string, just after the last character (or the
              * '~'), and write until the end of the column, plus seperator and the
              * padding on the right side of it (e.g. up to and including the first char
-             * in the next column, hence the magic).
+             * in the next column, hence the magic offset).
              */
-            const auto string_end = col.startx + str.length() - trunc_len, next_start = col.startx + col.width + 2;
-            for (auto x = string_end; x <= next_start; x++)
+            const auto start = col.startx + str.length() - trunc_len, end = col.startx + col.width + 2;
+            for (auto x = start; x <= end; x++)
                 print(x, y, " ", attrs);
         }
     }
