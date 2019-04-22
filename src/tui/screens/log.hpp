@@ -36,6 +36,7 @@ namespace bookwyrm::tui::screen {
         std::optional<entry_ri> detached_at_;
 
         void maybe_update_detached(std::function<void()> &&fun);
+        int capacity(const entry_ri &start) const;
         void print_entry(int &y, const entry_ri entry);
     };
 

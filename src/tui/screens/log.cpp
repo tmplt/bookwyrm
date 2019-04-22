@@ -20,6 +20,13 @@ namespace bookwyrm::tui::screen {
             const auto dist = std::distance(entries_.crend(), detached_at_.value());
             fun();
             detached_at_ = entries_.crend() + dist; // `dist` is negative
+
+            /*
+             * If the screen is not full, bump detachment to the most recent entry.
+             * This retains a "sliding window" behavior for when the screen does eventually fill up.
+             */
+            if (capacity(entries_.crbegin()) > capacity(*detached_at_))
+                detached_at_ = entries_.crbegin();
         } else {
             fun();
         }
@@ -34,19 +41,23 @@ namespace bookwyrm::tui::screen {
         });
     }
 
+    /* Figure out how many entries we can fit on screen given an entry to start from. */
+    int log::capacity(const entry_ri &start) const
+    {
+        int lines = get_height();
+        return std::count_if(start, crend(entries_), [&](const auto e) {
+            lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
+            return lines >= 0;
+        });
+    }
+
     void log::paint()
     {
         erase();
 
-        /* Figure out how many entries we can fit on screen; return staring point. */
         entry_ri entry = std::invoke([this]() {
             const auto last_entry = detached_at_.value_or(crbegin(entries_));
-            int lines = get_height();
-
-            return last_entry - 1 + std::count_if(last_entry, crend(entries_), [this, &lines](const auto e) {
-                       lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
-                       return lines >= 0;
-                   });
+            return last_entry - 1 + capacity(last_entry);
         });
 
         int y = 0;
@@ -157,7 +168,7 @@ namespace bookwyrm::tui::screen {
         if (!detached_at_.has_value())
             return;
 
-        const bool at_first_entry = *detached_at_ == entries_.crend() - 1,
+        const bool at_first_entry = *detached_at_ == entries_.crend() - capacity(*detached_at_),
                    at_last_entry = *detached_at_ == entries_.crbegin();
 
         switch (dir) {

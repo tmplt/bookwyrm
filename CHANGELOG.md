@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/index: possible line overflow.
 * Screens/log: segmentation fault when toggling the log in a detached state.
 * Screens/log: scroll "jitter" with multi-line entries. #46
+* Screens/log: always behave in a "sliding window" manner. #20
 
 ### [v0.7.0] - 2019-02-28
 
