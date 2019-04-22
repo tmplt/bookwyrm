@@ -68,36 +68,21 @@ namespace bookwyrm::tui::screen {
          */
         const auto[lvl, msg] = split_at_first(entry->second, ":");
         print(x, y, lvl, to_colour(entry->first));
-        x += static_cast<int>(lvl.length());
+        x += lvl.length();
 
-        /*
-         * Next up, the actual message. If the whole message doesn't fit on one line
-         * we want to split it across multiple lines. But course, if one word is
-         * longer than the line itself (e.g. a long path), we'll just split it where
-         * the line ends.
-         */
-        for (auto word : split_string(msg)) {
-            if (int remain = get_width() - 1 - x; static_cast<int>(word.length()) + 1 > remain) {
-                /* The word doesn't fit on the rest of the line. */
-
-                /* 3 is an arbitrary divisor, but we use it so that only very long words
-                 * are split. */
-                if (static_cast<int>(word.length()) > get_width() / 3) {
-                    while (static_cast<int>(word.length()) > remain) {
-                        print(x, y++, " " + word.substr(0, remain));
-                        word = word.substr(remain);
-                        x = 0;
-                        remain = get_width() - 1;
-                    }
-                } else {
-                    ++y;
-                    x = 0;
-                }
-            }
-
-            print(x, y, " " + word);
-            x += word.length() + 1;
+        /* Split msg into n substrings of length get_width() - x. */
+        std::vector<std::string> substrings;
+        for (size_t i = 0; i < msg.length(); i += get_width() - x) {
+            substrings.push_back(msg.substr(i, get_width() - x));
         }
+
+        for (const auto str : substrings) {
+            print(x, y++, str);
+            x = 0;
+        }
+
+        y--;
+        return;
     }
 
     std::string log::footer_info() const
