@@ -12,7 +12,7 @@ namespace bookwyrm::tui::screen {
 
     void log::mark_read()
     {
-        std::move(unread_entries_.begin(), unread_entries_.end(), std::back_inserter(entries_));
+        entries_.insert(entries_.end(), unread_entries_.begin(), unread_entries_.end());
         unread_entries_.clear();
     }
 
@@ -34,12 +34,12 @@ namespace bookwyrm::tui::screen {
          * Starting the counting from the latest entry,
          * how many entries back can we fit on screen?
          */
-        const auto last_entry = detached_at_.value_or(entries_.cend() - 1);
-        auto entry = last_entry - capacity(last_entry);
+        const auto last_entry = detached_at_.value_or(crbegin(entries_));
+        auto entry = last_entry + capacity(last_entry) - 1;
 
         int y = 0;
-        while (entry != entries_.cend()) {
-            print_entry(y, entry++);
+        while (entry != entries_.crbegin() - 1) {
+            print_entry(y, entry--);
             y++;
         }
 
@@ -97,10 +97,11 @@ namespace bookwyrm::tui::screen {
 
     int log::scrollpercent() const
     {
+        // TODO: inline as value_or
         if (!detached_at_.has_value())
             return 100;
 
-        return ratio(std::distance(entries_.cbegin(), *detached_at_), entries_.size());
+        return ratio(std::distance(*detached_at_, entries_.crend()), entries_.size());
     }
 
     void log::log_entry(core::log_level level, std::string msg)
@@ -127,15 +128,14 @@ namespace bookwyrm::tui::screen {
             return;
         }
 
-        /*
-         * The entries_ container will after a while need to resize,
-         * this invalidates any pointers to an element within (detached_at_).
-         * So we must update that pointer here, if we indeed are detached.
-         */
         if (detached_at_.has_value()) {
-            const auto dist = std::distance(entries_.cbegin(), detached_at_.value());
+            /*
+             * The entries_ container will after a while need to resize.
+             * This may invalidate any iterators to an element within (e.g. detached_at_).
+             */
+            const auto dist = std::distance(entries_.crend(), detached_at_.value());
             emplace_entry(entries_, level, msg);
-            detached_at_ = entries_.cbegin() + dist;
+            detached_at_ = entries_.crend() + dist; // `dist` is negative
         } else {
             emplace_entry(entries_, level, msg);
         }
@@ -163,7 +163,7 @@ namespace bookwyrm::tui::screen {
         if (detached_at_.has_value())
             detached_at_.reset();
         else
-            detached_at_ = entries_.cend();
+            detached_at_ = entries_.crbegin();
     }
 
     void log::move(move_direction dir)
@@ -171,25 +171,25 @@ namespace bookwyrm::tui::screen {
         if (!detached_at_.has_value())
             return;
 
-        const bool at_first_entry = *detached_at_ == entries_.cbegin() + 1,
-                   at_last_entry = *detached_at_ == entries_.cend() - 1;
+        const bool at_first_entry = *detached_at_ == entries_.crend() - 1,
+                   at_last_entry = *detached_at_ == entries_.crbegin();
 
         switch (dir) {
         case up:
             if (at_first_entry)
                 return;
-            (*detached_at_)--;
+            (*detached_at_)++;
             break;
         case down:
             if (at_last_entry)
                 return;
-            (*detached_at_)++;
+            (*detached_at_)--;
             break;
         case top:
-            detached_at_ = entries_.cbegin() + 1;
+            detached_at_ = entries_.crend() - 1;
             break;
         case bot:
-            detached_at_ = entries_.cend() - 1;
+            detached_at_ = entries_.crbegin();
             break;
         }
     }

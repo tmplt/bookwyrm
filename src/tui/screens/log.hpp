@@ -30,10 +30,9 @@ namespace bookwyrm::tui::screen {
         const core::log_level wanted_level_;
         std::function<bool(void)> is_log_focused_;
 
-        std::vector<core::log_pair> entries_;
-        std::vector<core::log_pair> unread_entries_;
+        std::vector<core::log_pair> entries_, unread_entries_;
 
-        using log_pp = decltype(entries_.cbegin());
+        using log_pp = decltype(entries_.crbegin());
         std::optional<log_pp> detached_at_;
 
         void print_entry(int &y, const log_pp entry);
