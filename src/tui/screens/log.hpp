@@ -32,10 +32,10 @@ namespace bookwyrm::tui::screen {
 
         std::vector<core::log_pair> entries_, unread_entries_;
 
-        using log_pp = decltype(entries_.crbegin());
-        std::optional<log_pp> detached_at_;
+        using entry_ri = decltype(entries_.crbegin());
+        std::optional<entry_ri> detached_at_;
 
-        void print_entry(int &y, const log_pp entry);
+        void print_entry(int &y, const entry_ri entry);
     };
 
 } // namespace bookwyrm::tui::screen

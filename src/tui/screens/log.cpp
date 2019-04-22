@@ -21,7 +21,7 @@ namespace bookwyrm::tui::screen {
         erase();
 
         /* Figure out how many entries we can fit on screen; return staring point. */
-        log_pp entry = std::invoke([this]() {
+        entry_ri entry = std::invoke([this]() {
             const auto last_entry = detached_at_.value_or(crbegin(entries_));
             int lines = get_height();
 
@@ -40,7 +40,7 @@ namespace bookwyrm::tui::screen {
         refresh();
     }
 
-    void log::print_entry(int &y, const log_pp entry)
+    void log::print_entry(int &y, const entry_ri entry)
     {
         int x = 0;
 
