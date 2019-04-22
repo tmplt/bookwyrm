@@ -109,11 +109,7 @@ namespace bookwyrm::tui::screen {
 
     int log::scrollpercent() const
     {
-        // TODO: inline as value_or
-        if (!detached_at_.has_value())
-            return 100;
-
-        return ratio(std::distance(*detached_at_, entries_.crend()), entries_.size());
+        return ratio(std::distance(detached_at_.value_or(entries_.crbegin()), entries_.crend()), entries_.size());
     }
 
     void log::log_entry(core::log_level level, std::string msg)
