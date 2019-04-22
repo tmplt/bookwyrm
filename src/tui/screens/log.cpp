@@ -10,10 +10,28 @@ namespace bookwyrm::tui::screen {
     {
     }
 
+    void log::maybe_update_detached(std::function<void()> &&fun)
+    {
+        if (detached_at_.has_value()) {
+            /*
+             * The entries_ container will after a while need to resize.
+             * This may invalidate any iterators to an element within (e.g. detached_at_).
+             */
+            const auto dist = std::distance(entries_.crend(), detached_at_.value());
+            fun();
+            detached_at_ = entries_.crend() + dist; // `dist` is negative
+        } else {
+            fun();
+        }
+    }
+
     void log::mark_read()
     {
-        entries_.insert(entries_.end(), unread_entries_.begin(), unread_entries_.end());
-        unread_entries_.clear();
+        maybe_update_detached([&]() {
+            entries_.insert(entries_.end(), unread_entries_.begin(), unread_entries_.end());
+            unread_entries_.clear();
+            return;
+        });
     }
 
     void log::paint()
@@ -122,17 +140,10 @@ namespace bookwyrm::tui::screen {
             return;
         }
 
-        if (detached_at_.has_value()) {
-            /*
-             * The entries_ container will after a while need to resize.
-             * This may invalidate any iterators to an element within (e.g. detached_at_).
-             */
-            const auto dist = std::distance(entries_.crend(), detached_at_.value());
+        maybe_update_detached([&]() {
             emplace_entry(entries_, level, msg);
-            detached_at_ = entries_.crend() + dist; // `dist` is negative
-        } else {
-            emplace_entry(entries_, level, msg);
-        }
+            return;
+        });
     }
 
     std::optional<core::log_level> log::worst_unread() const

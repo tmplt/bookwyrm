@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * TUI: possible blank screen until first key input.
 * Screens/index: utilize 100% of terminal width.
 * Screens/index: possible line overflow.
+* Screens/log: segmentation fault when toggling the log in a detached state.
 
 ### [v0.7.0] - 2019-02-28
 

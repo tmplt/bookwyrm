@@ -35,6 +35,7 @@ namespace bookwyrm::tui::screen {
         using entry_ri = decltype(entries_.crbegin());
         std::optional<entry_ri> detached_at_;
 
+        void maybe_update_detached(std::function<void()> &&fun);
         void print_entry(int &y, const entry_ri entry);
     };
 
