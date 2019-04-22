@@ -20,22 +20,16 @@ namespace bookwyrm::tui::screen {
     {
         erase();
 
-        const auto capacity = [this](auto e) -> int {
-            // TODO: use std::count_if with reverse iterators
-            int capacity = 0;
-            for (int lines = get_height(); e != crend(entries_) && lines > 0; e++, capacity++) {
-                lines -= std::ceil(static_cast<double>(e->second.length()) / get_width());
-            }
+        /* Figure out how many entries we can fit on screen; return staring point. */
+        log_pp entry = std::invoke([this]() {
+            const auto last_entry = detached_at_.value_or(crbegin(entries_));
+            int lines = get_height();
 
-            return capacity;
-        };
-
-        /*
-         * Starting the counting from the latest entry,
-         * how many entries back can we fit on screen?
-         */
-        const auto last_entry = detached_at_.value_or(crbegin(entries_));
-        auto entry = last_entry + capacity(last_entry) - 1;
+            return last_entry - 1 + std::count_if(last_entry, crend(entries_), [this, &lines](const auto e) {
+                       lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
+                       return lines >= 0;
+                   });
+        });
 
         int y = 0;
         while (entry != entries_.crbegin() - 1) {
