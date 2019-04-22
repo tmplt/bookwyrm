@@ -282,6 +282,8 @@ void plugin_handler::add_item(py::dict dict)
 
 void plugin_handler::log(log_level lvl, string msg)
 {
+    std::lock_guard<std::mutex> guard(frontend_mutex_);
+
     if (frontend_.expired()) {
         buffer_.emplace_back(lvl, msg);
     } else {
@@ -297,6 +299,7 @@ const std::set<item> &plugin_handler::search_results() const
 
 void plugin_handler::set_frontend(std::shared_ptr<frontend> fe)
 {
+    std::lock_guard<std::mutex> guard(frontend_mutex_);
     frontend_ = fe;
 
     /* Propegate the log buffer, if any entries. */

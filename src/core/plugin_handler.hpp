@@ -172,6 +172,7 @@ namespace bookwyrm::core {
         using buffer_pair = std::pair<const log_level, const std::string>;
         std::vector<buffer_pair> buffer_;
         std::weak_ptr<frontend> frontend_;
+        std::mutex frontend_mutex_;
 
         std::atomic<size_t> running_plugins_{0};
 
