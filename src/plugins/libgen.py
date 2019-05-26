@@ -30,7 +30,7 @@ import requests
 import re
 import isbnlib
 
-DOMAINS = ('libgen.io', '93.174.95.27')
+DOMAINS = ('libgen.io',)
 DEBUG = __name__ == '__main__'
 
 class FakeLogger():
@@ -440,22 +440,11 @@ def get_soup(url):
 
 
 def resolve(mirror):
-    def resolve_libgenpw(mirror):
-        # Input URL is some item ID (e.g., <https://libgen.pw/item/detail/id/426147>)
-        # where the final URL seem to contain some UID in hexadecimal.
-        # (e.g., <https://libgen.pw/download/book/5a1f04993a044650f501160e>).
-        # Can we derive this number?
-        soup = get_soup(mirror)
-        uid = soup.find('div', {'class': 'book-info__download'}).a['href'].split('/')[-1]
-        return ('https://libgen.pw/download/book/' + uid, {})
-
-
-    resolvers = {
-        'libgen.pw': resolve_libgenpw,
-    }
-
-    f = resolvers.get(furl(mirror).host)
-    return f(mirror) if f else None
+    try:
+        md5 = furl(mirror).args['md5']
+        return ('http://booksdl.org/get.php?md5=' + md5, {})
+    except KeyError:
+        return None
 
 
 if __name__ == "__main__":
