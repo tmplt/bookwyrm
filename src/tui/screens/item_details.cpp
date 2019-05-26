@@ -88,10 +88,17 @@ namespace bookwyrm::tui::screen {
             }
 
             print(0, y, p->first + ':', attribute::bold);
-            print(indent, y, p->second.get());
 
-            /* How many lines did the string take up? */
-            y += std::ceil(static_cast<double>(indent + p->second.get().length()) / get_width());
+            /* Split msg into n substrings of length get_width() - x. */
+            std::vector<std::string> substrings;
+            auto x = indent;
+            for (size_t i = 0; i < p->second.get().length(); i += get_width() - x) {
+                substrings.push_back(p->second.get().substr(i, get_width() - x));
+            }
+
+            for (const auto str : substrings) {
+                print(indent, y++, str);
+            }
         }
     }
 
