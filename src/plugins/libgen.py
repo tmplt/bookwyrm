@@ -270,7 +270,12 @@ class LibgenSeeker(object):
 
             # Extract table
             soup = BeautifulSoup(r.text, 'html.parser')
-            table = table_extractors[str(f.path)](soup)
+            try:
+                table = table_extractors[str(f.path)](soup)
+            except IndexError:
+                # TODO: check for this in exhaust_conditions
+                self.bookwyrm.log.debug('No table found; assuming end of results.')
+                return
 
             # Have we exhaused all pages?
             if exhaust_conditions[str(f.path)](table):

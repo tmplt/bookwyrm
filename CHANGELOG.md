@@ -21,6 +21,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/log: scroll "jitter" with multi-line entries. #46
 * Screens/log: always behave in a "sliding window" manner. #20
 * Plugins/libgen: generalized mirror resolution via usage of MD5 value.
+* Plugins/libgen: handle failed table extraction. #87
 
 ### [v0.7.0] - 2019-02-28
 
