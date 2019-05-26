@@ -176,8 +176,7 @@ namespace bookwyrm {
                 assert(headers == NULL);
                 for (auto &header : std::get<1>(pair)) {
                     /* XXX: can Referer be set this way, or must we use CURLOPT_REFERER? */
-                    headers = curl_slist_append(headers,
-                            fmt::format("{}: {}", header.first, header.second).c_str());
+                    headers = curl_slist_append(headers, fmt::format("{}: {}", header.first, header.second).c_str());
                 }
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -218,8 +217,9 @@ namespace bookwyrm {
 
             if (!success) {
                 fmt::print(stderr,
-                           "error: unable to resolve any mirrors for item: {} - {} ({})."
-                           " Mirrors: {}. Please submit a bug report.",
+                           "error: unable to resolve any mirrors for item: {} - {} ({}).\n"
+                           "Mirrors: {}.\n"
+                           "Please submit a bug report.\n",
                            vector_to_string(item.nonexacts.authors),
                            item.nonexacts.title,
                            item.exacts.year,

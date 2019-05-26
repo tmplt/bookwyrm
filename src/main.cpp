@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
         ph->clear_frontend();
 
         /* Dump unread logs to stderr */
-        for (const auto & [ lvl, msg ] : unread_logs) {
+        for (const auto &[lvl, msg] : unread_logs) {
             std::ignore = lvl;
             fmt::print(stderr, "{}\n", msg);
         }
@@ -255,8 +255,8 @@ int main(int argc, char *argv[])
         auto plugins = ph->get_plugins();
         ph->clear_nogil();
         const auto success = d.sync_download(*wanted_items, plugins);
-        if (!success && wanted_items->size() > 1) {
-            fmt::print(stderr, "No items were successfully downloaded\n");
+        if (!success) {
+            fmt::print(stderr, "No items were successfully downloaded.\n");
             return EXIT_FAILURE;
         }
 
