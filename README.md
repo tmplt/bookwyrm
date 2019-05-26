@@ -17,7 +17,7 @@ For example, one might run bookwyrm as follows:
 
     $ bookwyrm --author "Naomi Novik" --series Temeraire --year >=2005 .
 
-[![asciicast](https://asciinema.org/a/6uHcYEo2ERS6nSWzNbzjYCtNt.png)](https://asciinema.org/a/6uHcYEo2ERS6nSWzNbzjYCtNt)
+[![asciicast](https://asciinema.org/a/248462.png)](https://asciinema.org/a/248462)
 
 # Dependencies
 
