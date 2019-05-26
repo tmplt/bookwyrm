@@ -15,7 +15,7 @@ All unread logs are printed to stderr upon program termination.
 
 For example, one might run bookwyrm as follows:
 
-    $ bookwyrm --author "Naomi Novik" --series Temeraire --year >=2005 .
+    $ bookwyrm --title "discrete mathematics" --extension pdf
 
 [![asciicast](https://asciinema.org/a/248462.png)](https://asciinema.org/a/248462)
 
