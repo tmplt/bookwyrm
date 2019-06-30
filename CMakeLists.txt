@@ -28,9 +28,10 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     # Relocation R_X86_64_PC32 against symbols declared in the following libraries
     # cannot be used when making a shared object; compilation must be done with -fPIC
-    set_target_properties(fmt PROPERTIES COMPILE_FLAGS "-fPIC")
-    set_target_properties(fuzzywuzzy PROPERTIES COMPILE_FLAGS "-fPIC")
-    set_target_properties(${PROJECT_NAME}-core PROPERTIES COMPILE_FLAGS "-fPIC")
+    # TODO: implied by SHARED property; investigate
+    set_property(TARGET fmt PROPERTY POSITION_INDEPENDENT_CODE ON)
+    set_property(TARGET fuzzywuzzy PROPERTY POSITION_INDEPENDENT_CODE ON)
+    set_property(TARGET levenshtein PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
 file(GLOB_RECURSE check_cxx_source_files src/*.[ch]pp)
