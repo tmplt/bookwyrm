@@ -226,7 +226,7 @@ namespace bookwyrm {
             if (!success) {
                 fmt::print(stderr,
                            "error: unable to resolve any mirrors for item: {} - {} ({})."
-                           " Mirrors: {}. Please submit a bug report.",
+                           " Mirrors: {}. Please submit a bug report.\n",
                            vector_to_string(item.nonexacts.authors),
                            item.nonexacts.title,
                            item.exacts.year,
