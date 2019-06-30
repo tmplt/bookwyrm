@@ -133,7 +133,15 @@ namespace bookwyrm {
             if (item.misc.origin_plugin != name)
                 continue;
 
-            py::object obj = module.attr("resolve")(mirror);
+            py::object obj = std::invoke([&]() {
+                try {
+                    return module.attr("resolve")(mirror);
+                } catch (const py::error_already_set &) {
+                    std::stringstream ss;
+                    ss << "module " << name << " missing required resolve(mirror: str) -> (str, dict) function";
+                    throw std::runtime_error(ss.str());
+                }
+            });
             if (py::isinstance<py::none>(obj)) {
                 /* Function returned None; unable to resolve. */
                 continue;
@@ -176,8 +184,7 @@ namespace bookwyrm {
                 assert(headers == NULL);
                 for (auto &header : std::get<1>(pair)) {
                     /* XXX: can Referer be set this way, or must we use CURLOPT_REFERER? */
-                    headers = curl_slist_append(headers,
-                            fmt::format("{}: {}", header.first, header.second).c_str());
+                    headers = curl_slist_append(headers, fmt::format("{}: {}", header.first, header.second).c_str());
                 }
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
