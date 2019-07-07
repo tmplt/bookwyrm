@@ -40,7 +40,7 @@ namespace detail {
         if (!item.exacts.extension.empty())
             dict["extension"] = py::cast(item.exacts.extension);
 
-        /* /1* Nonexact attributes *1/ */
+        /* Nonexact attributes */
         if (!item.nonexacts.authors.empty())
             dict["authors"] = py::cast(item.nonexacts.authors);
         std::array<std::pair<string, string>, 5> nonexact_pairs = {{{"title", item.nonexacts.title},
@@ -82,16 +82,17 @@ PYBIND11_MODULE(pybookwyrm, m)
         .def("error", &detail::log_wrapper::error);
 
     py::class_<core::plugin_handler>(m, "bookwyrm")
-        .def("feed", [&m](core::plugin_handler &ph, py::dict dict) {
-            /* Find the base name of the plugin calling this function. */
-            auto sys = py::module::import("sys");
-            auto os = py::module::import("os");
-            py::str filepath = sys.attr("_getframe")(0).attr("f_code").attr("co_filename");
-            py::str basename = os.attr("path").attr("basename")(filepath);
+        .def("feed",
+             [&m](core::plugin_handler &ph, py::dict dict) {
+                 /* Find the base name of the plugin calling this function. */
+                 auto sys = py::module::import("sys");
+                 auto os = py::module::import("os");
+                 py::str filepath = sys.attr("_getframe")(0).attr("f_code").attr("co_filename");
+                 py::str basename = os.attr("path").attr("basename")(filepath);
 
-            dict["origin_plugin"] = basename;
-            ph.add_item(std::move(dict));
-        })
+                 dict["origin_plugin"] = basename;
+                 ph.add_item(std::move(dict));
+             })
         .def("__getattr__", [&](core::plugin_handler &ph, const std::string &key) {
             /* TODO: Don't create a new wrapper instance every time */
             if (key == "log") {
