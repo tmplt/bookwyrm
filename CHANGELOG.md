@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Downloader: uncaught exception on missing `resolve()` plugin function.
 * Downloader: missing newline in error message.
 * Correctly look for `--author` option, not `--authors`.
+* Screens/details: "Serie" -> "Series"
 
 ### [v0.7.0] - 2019-02-28
 

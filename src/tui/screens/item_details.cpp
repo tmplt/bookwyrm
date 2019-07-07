@@ -48,7 +48,7 @@ namespace bookwyrm::tui::screen {
         const std::vector<pair> v = {
             {{"Authors", authors}},
             {{"Title", item_.nonexacts.title}},
-            {{"Serie", item_.nonexacts.series}},
+            {{"Series", item_.nonexacts.series}},
             {{"Publisher", item_.nonexacts.publisher}},
             {{"Edition", item_.nonexacts.edition}},
             {{"Year", year}},
