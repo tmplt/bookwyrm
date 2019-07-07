@@ -41,7 +41,7 @@ static std::error_code validate_download_dir(const fs::path &path)
 static const core::item create_item(const cliparser &cli)
 {
     const core::nonexacts_t ne(
-        cli.get_many("authors"), cli.get("title"), cli.get("series"), cli.get("publisher"), cli.get("journal"));
+        cli.get_many("author"), cli.get("title"), cli.get("series"), cli.get("publisher"), cli.get("journal"));
 
     const auto yearmod = std::invoke([&cli]() -> std::pair<core::year_mod, int> {
         const auto year_str = cli.get("year");
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
         ph->clear_frontend();
 
         /* Dump unread logs to stderr */
-        for (const auto & [ lvl, msg ] : unread_logs) {
+        for (const auto &[lvl, msg] : unread_logs) {
             std::ignore = lvl;
             fmt::print(stderr, "{}\n", msg);
         }

@@ -22,6 +22,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/log: always behave in a "sliding window" manner. #20
 * Downloader: uncaught exception on missing `resolve()` plugin function.
 * Downloader: missing newline in error message.
+* Correctly look for `--author` option, not `--authors`.
 
 ### [v0.7.0] - 2019-02-28
 
