@@ -108,7 +108,8 @@ def libgen(wanted, bookwyrm):
             'mirrors': [f"http://booksdescr.org/ads.php?md5={row['MD5'].strip()}"],
             'coverurl': f"http://booksdescr.org/covers/{row['Coverurl']}",
             'isbns': extract_valid_isbns(row['Identifier'].split(',')),
-            'year': _int(row['Year']),
+            # NOTE(maybe): 'Year' column is a string here
+            'year': _int(row['Year']) if maybe(_int(row['Year'])) > 0 else None,
             'volume': _int(maybe(re.search(r'\d+', row['VolumeInfo'])).group()),
         }
         bookwyrm.feed(item)
@@ -193,6 +194,7 @@ def fiction(wanted, bookwyrm):
                 'mirrors': [f"http://booksdescr.org/foreignfiction/ads.php?md5={row['MD5'].strip()}"],
                 'coverurl': f"http://booksdescr.org/fictioncovers/32000/{row['MD5'].strip()}.jpg",
                 'isbns': extract_valid_isbns(row['Identifier'].split(',')),
+                # NOTE(maybe): 'Year' column is a string here
                 'year': _int(row['Year']) if maybe(_int(row['Year'])) > 0 else None,
             }
             bookwyrm.feed(item)
