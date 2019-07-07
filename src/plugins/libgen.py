@@ -15,6 +15,7 @@ import sqlite3
 import isbnlib
 import threading
 import itertools
+import concurrent.futures
 from pathlib import Path
 from pymaybe import maybe
 from timeit import default_timer as timer
@@ -204,12 +205,12 @@ def resolve(mirror: str) -> (str, dict):
 
 def find(wanted, bookwyrm):
     tasks = [libgen, fiction]
-    threads = [threading.Thread(target=t, args=(wanted, bookwyrm)) for t in tasks]
-    for t in threads:
-        t.start()
-
-    for t in threads:
-        t.join()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(tasks), thread_name_prefix='bw/libgen') as executor:
+        fs = {executor.submit(task, wanted, bookwyrm): task for task in tasks}
+        concurrent.futures.wait(fs, return_when=concurrent.futures.FIRST_EXCEPTION)
+        for f in concurrent.futures.as_completed(fs):
+            # Raise any exceptions to bookwyrm
+            f.result()
 
 
 if __name__ == "__main__":
