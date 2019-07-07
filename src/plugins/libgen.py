@@ -180,11 +180,14 @@ def fiction(wanted, bookwyrm):
             ]
             authors = [" ".join([e.strip() for e in tup if e != '']) for tup in authors_cols]
 
+            # XXX: we only consider the first non-empty series column
+            series = next((s.strip() for s in (row['Series1'], row['Series2'], row['Series3'], row['Series4']) if s.strip() != ''), None)
+
+
             item = {
                 'title': row['Title'].strip(),
                 'edition': _int(row['Edition']),
-                # XXX: we only consider the first non-empty series column
-                'series': next(s.strip() for s in (row['Series1'], row['Series2'], row['Series3'], row['Series4']) if s.strip() != ''),
+                'series': series,
                 'publisher': row['Publisher'].strip(),
                 'language': row['Language'].strip(),
                 'authors': authors,
