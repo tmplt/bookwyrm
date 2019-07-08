@@ -99,6 +99,10 @@ namespace bookwyrm::tui::screen {
             for (const auto str : substrings) {
                 print(indent, y++, str);
             }
+
+            if (substrings.empty()) {
+                y++;
+            }
         }
     }
 

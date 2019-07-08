@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Downloader: uncaught exception on missing `resolve()` plugin function.
 * Correctly look for `--author` option, not `--authors`.
 * Screens/details: "Serie" -> "Series"
+* Screens/details: Correctly print empty fields.
 
 ## [v0.8.0] - 2019-05-26
 
