@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org)
 
 ## [Unreleased]
 
+### Fixes
+* Downloader: uncaught exception on missing `resolve()` plugin function.
+* Correctly look for `--author` option, not `--authors`.
+* Screens/details: "Serie" -> "Series"
+
+## [v0.8.0] - 2019-05-26
+
 ### Added
 - A signal hander. Send `SIGINT` (^C) to prematurely terminate bookwyrm.
 
@@ -20,10 +27,8 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/log: segmentation fault when toggling the log in a detached state.
 * Screens/log: scroll "jitter" with multi-line entries. #46
 * Screens/log: always behave in a "sliding window" manner. #20
-* Downloader: uncaught exception on missing `resolve()` plugin function.
-* Downloader: missing newline in error message.
-* Correctly look for `--author` option, not `--authors`.
-* Screens/details: "Serie" -> "Series"
+* Plugins/libgen: generalized mirror resolution via usage of MD5 value.
+* Plugins/libgen: handle failed table extraction. #87
 
 ### [v0.7.0] - 2019-02-28
 
@@ -52,6 +57,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 
 * Initial (usable) release
 
-[Unreleased]: https://github.com/Tmplt/bookwyrm/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/Tmplt/bookwyrm/compare/v0.8.0...HEAD
+[v0.8.0]: https://github.com/Tmplt/bookwyrm/compare/v0.7.0...v0.8.0
 [v0.7.0]: https://github.com/Tmplt/bookwyrm/compare/v0.6.1...v0.7.0
 [v0.6.1]: https://github.com/Tmplt/bookwyrm/compare/v0.6.0...v0.6.1
