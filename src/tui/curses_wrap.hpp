@@ -83,7 +83,18 @@ namespace bookwyrm::tui::curses {
                         colour clr = colour::none)
     {
         wattron(win, clr | attrs);
-        int retval = mvwaddnstr(win, y, x, str.c_str(), n);
+
+        /*
+         * Special handling for eventual Unicode strings.
+         * We want to print n characters, not n bytes.
+         *
+         * XXX: inefficient, must std::wstring be used?
+         */
+        std::vector<wchar_t> wstr;
+        wstr.resize(std::max<int>(str.size(), n));
+        std::mbstowcs(wstr.data(), str.c_str(), n);
+        int retval = mvwaddnwstr(win, y, x, wstr.data(), n);
+
         wattroff(win, clr | attrs);
         return retval;
     }

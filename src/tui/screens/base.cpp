@@ -61,9 +61,10 @@ namespace bookwyrm::tui::screen {
     {
         space = std::min<size_t>(space, get_width() - x);
         curses::mvprintn(window_, x, y, str, space, attrs, clr);
+        const auto len = std::mbstowcs(nullptr, str.c_str(), str.size());
 
         int truncd = 0;
-        if (str.length() > space) {
+        if (len > space) {
             /* The whole string did not fit; indicate this to the user. */
 
             /* From the substing written in the space, find the number of whitespaces from the end of the string to the first
@@ -73,8 +74,8 @@ namespace bookwyrm::tui::screen {
             while (std::isspace(*(--ch)))
                 ++whitespace;
 
-            truncd = str.length() - space + whitespace;
-            curses::mvprint(window_, x + str.length() - truncd - 1, y, "~", attrs, clr);
+            truncd = len - space + whitespace;
+            curses::mvprint(window_, x + len - truncd - 1, y, "~", attrs, clr);
         }
 
         return truncd;

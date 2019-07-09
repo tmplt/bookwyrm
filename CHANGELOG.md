@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Correctly look for `--author` option, not `--authors`.
 * Screens/details: "Serie" -> "Series"
 * Screens/details: Correctly print empty fields.
+* Screens/index: Correctly print Unicode strings. #83
 
 ## [v0.8.0] - 2019-05-26
 
