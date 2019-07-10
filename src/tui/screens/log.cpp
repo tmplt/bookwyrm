@@ -12,6 +12,8 @@ namespace bookwyrm::tui::screen {
 
     void log::maybe_update_detached(std::function<void()> &&fun)
     {
+        assert(!entries_mutex_.try_lock());
+
         if (detached_at_.has_value()) {
             /*
              * The entries_ container will after a while need to resize.
@@ -34,6 +36,8 @@ namespace bookwyrm::tui::screen {
 
     void log::mark_read()
     {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
+
         maybe_update_detached([&]() {
             entries_.insert(entries_.end(), unread_entries_.begin(), unread_entries_.end());
             unread_entries_.clear();
@@ -44,6 +48,8 @@ namespace bookwyrm::tui::screen {
     /* Figure out how many entries we can fit on screen given an entry to start from. */
     int log::capacity(const entry_ri &start) const
     {
+        assert(!entries_mutex_.try_lock());
+
         int lines = get_height();
         return std::count_if(start, crend(entries_), [&](const auto e) {
             lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
@@ -54,6 +60,8 @@ namespace bookwyrm::tui::screen {
     void log::paint()
     {
         erase();
+
+        std::lock_guard<std::mutex> guard{entries_mutex_};
 
         entry_ri entry = std::invoke([this]() {
             const auto last_entry = detached_at_.value_or(crbegin(entries_));
@@ -77,7 +85,7 @@ namespace bookwyrm::tui::screen {
          * First up, split the log level from the message, and print the
          * level in a fitting colour.
          */
-        const auto[lvl, msg] = split_at_first(entry->second, ":");
+        const auto [lvl, msg] = split_at_first(entry->second, ":");
         print(x, y, lvl, to_colour(entry->first));
         x += lvl.length();
 
@@ -98,6 +106,7 @@ namespace bookwyrm::tui::screen {
 
     std::string log::footer_info() const
     {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
         return fmt::format("Log entries: {}; attached to tail: {}", entries_.size(), !detached_at_.has_value());
     }
 
@@ -105,6 +114,7 @@ namespace bookwyrm::tui::screen {
 
     int log::scrollpercent() const
     {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
         return ratio(std::distance(detached_at_.value_or(entries_.crbegin()), entries_.crend()), entries_.size());
     }
 
@@ -121,7 +131,9 @@ namespace bookwyrm::tui::screen {
          */
         std::replace(msg.begin(), msg.end(), '\n', ' ');
 
-        auto emplace_entry = [&](std::vector<core::log_pair> &v, core::log_level lvl, std::string msg) {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
+
+        const auto emplace_entry = [](std::vector<core::log_pair> &v, core::log_level lvl, std::string msg) {
             std::string prefix = core::loglvl_to_string(lvl);
             v.emplace_back(lvl, prefix + ": " + msg);
         };
@@ -140,6 +152,8 @@ namespace bookwyrm::tui::screen {
 
     std::optional<core::log_level> log::worst_unread() const
     {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
+
         const auto worst = std::max_element(
             cbegin(unread_entries_), cend(unread_entries_), [](const auto &a, const auto &b) { return a.first < b.first; });
 
@@ -151,11 +165,16 @@ namespace bookwyrm::tui::screen {
         return worst->first;
     }
 
-    std::vector<core::log_pair> log::unread_logs() const { return std::move(unread_entries_); }
+    std::vector<core::log_pair> log::unread_logs() const
+    {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
+        return std::move(unread_entries_);
+    }
 
     void log::toggle_action()
     {
         /* Toggle log attachment. */
+        std::lock_guard<std::mutex> guard{entries_mutex_};
 
         if (detached_at_.has_value())
             detached_at_.reset();
@@ -165,6 +184,8 @@ namespace bookwyrm::tui::screen {
 
     void log::move(move_direction dir)
     {
+        std::lock_guard<std::mutex> guard{entries_mutex_};
+
         if (!detached_at_.has_value())
             return;
 

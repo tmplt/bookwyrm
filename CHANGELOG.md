@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/details: "Serie" -> "Series"
 * Screens/details: Correctly print empty fields.
 * Screens/index: Correctly print Unicode strings. #83
+* Screens/log: Possible MT-related crashes when marking log entries as seen.
 
 ## [v0.8.0] - 2019-05-26
 
