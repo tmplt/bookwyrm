@@ -31,12 +31,20 @@ namespace bookwyrm::tui::screen {
         std::function<bool(void)> is_log_focused_;
 
         std::vector<core::log_pair> entries_, unread_entries_;
-
         using entry_ri = decltype(entries_.crbegin());
+        using entry_i = decltype(entries_.cbegin());
         std::optional<entry_ri> detached_at_;
+
+        /*
+         * Entries will be modified both by calls to `log_entry()` from plugins
+         * and by calls to `mark_read()` when the log is toggled.
+         * Protects `{,unread_}entries_` and `detached_at_` above.
+         */
+        mutable std::mutex entries_mutex_;
 
         void maybe_update_detached(std::function<void()> &&fun);
         int capacity(const entry_ri &start) const;
+        int fcapacity(const entry_i &start) const;
         void print_entry(int &y, const entry_ri entry);
     };
 

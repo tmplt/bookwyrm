@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org)
 * Screens/details: Correctly print empty fields.
 * Screens/index: Correctly print Unicode strings. #83
 * Screens/log: Possible MT-related crashes when marking log entries as seen.
+* Screens/log: Correctly jump-to-top if entries do not fit in screen. #89
 
 ## [v0.8.0] - 2019-05-26
 

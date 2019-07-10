@@ -45,13 +45,25 @@ namespace bookwyrm::tui::screen {
         });
     }
 
-    /* Figure out how many entries we can fit on screen given an entry to start from. */
+    /* Figure out how many entries we can fit on screen given a reverse entry to start from. */
     int log::capacity(const entry_ri &start) const
     {
         assert(!entries_mutex_.try_lock());
 
         int lines = get_height();
         return std::count_if(start, crend(entries_), [&](const auto e) {
+            lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
+            return lines >= 0;
+        });
+    }
+
+    /* Figure out how many entries we can fit on screen given a forward entry to start from. */
+    int log::fcapacity(const entry_i &start) const
+    {
+        assert(!entries_mutex_.try_lock());
+
+        int lines = get_height();
+        return std::count_if(start, cend(entries_), [&](const auto e) {
             lines -= std::ceil(static_cast<double>(e.second.length()) / get_width());
             return lines >= 0;
         });
@@ -204,7 +216,7 @@ namespace bookwyrm::tui::screen {
             (*detached_at_)--;
             break;
         case top:
-            detached_at_ = entries_.crend() - 1;
+            detached_at_ = entries_.crend() - fcapacity(entries_.cbegin());
             break;
         case bot:
             detached_at_ = entries_.crbegin();
