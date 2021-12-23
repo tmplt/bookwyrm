@@ -21,7 +21,7 @@ namespace bookwyrm::tui::screen {
                      absolute_padding(curses::get_width, left),
                      absolute_padding(curses::get_width, right));
 
-        return std::move(abs);
+        return abs;
     }
 
     base::base(int pad_top, int pad_bot, int pad_left, int pad_right) : pads_(pad_top, pad_bot, pad_left, pad_right)

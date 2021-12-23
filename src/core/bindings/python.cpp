@@ -53,7 +53,7 @@ namespace detail {
                 dict[std::get<0>(pair).c_str()] = py::cast(std::get<1>(pair).c_str());
         }
 
-        return std::move(dict);
+        return dict;
     }
 
 } // namespace detail

@@ -10,6 +10,7 @@ project(bookwyrm VERSION 0.5.0 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(FindPythonInterp)
 include(utils)

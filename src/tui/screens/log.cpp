@@ -87,7 +87,7 @@ namespace bookwyrm::tui::screen {
             substrings.push_back(msg.substr(i, get_width() - x));
         }
 
-        for (const auto str : substrings) {
+        for (const auto &str : substrings) {
             print(x, y++, str);
             x = 0;
         }
@@ -151,7 +151,7 @@ namespace bookwyrm::tui::screen {
         return worst->first;
     }
 
-    std::vector<core::log_pair> log::unread_logs() const { return std::move(unread_entries_); }
+    std::vector<core::log_pair> log::unread_logs() const { return unread_entries_; }
 
     void log::toggle_action()
     {
