@@ -60,7 +60,8 @@ namespace bookwyrm::tui::curses {
 
     inline int get_height(WINDOW *win = stdscr)
     {
-        int x, y;
+        int x = 0;
+        int y = 0;
         std::ignore = x;
         getmaxyx(win, y, x);
         return y;
@@ -68,7 +69,8 @@ namespace bookwyrm::tui::curses {
 
     inline int get_width(WINDOW *win = stdscr)
     {
-        int x, y;
+        int x = 0;
+        int y = 0;
         std::ignore = y;
         getmaxyx(win, y, x);
         return x;

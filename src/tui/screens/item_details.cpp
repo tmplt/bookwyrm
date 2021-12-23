@@ -96,7 +96,7 @@ namespace bookwyrm::tui::screen {
                 substrings.push_back(p->second.get().substr(i, get_width() - x));
             }
 
-            for (const auto str : substrings) {
+            for (const auto &str : substrings) {
                 print(indent, y++, str);
             }
         }

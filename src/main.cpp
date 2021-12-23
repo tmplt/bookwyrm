@@ -100,7 +100,7 @@ static const core::item create_item(const cliparser &cli)
 
     const core::item item(std::move(ne), std::move(e));
 
-    return std::move(item);
+    return item;
 }
 
 int main(int argc, char *argv[])
